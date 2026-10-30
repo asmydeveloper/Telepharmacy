@@ -1,0 +1,21 @@
+{
+  "code": "C302",
+  "screen": "matched",
+  "title": "เภสัชกรรับคิว",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C302.1",
+      "state": "chat",
+      "label": "ขอแชท",
+      "url": "/?screen=matched&state=chat&splash=0"
+    },
+    {
+      "code": "C302.2",
+      "state": "video",
+      "label": "ขอวิดีโอ",
+      "url": "/?screen=matched&state=video&splash=0"
+    }
+  ]
+}

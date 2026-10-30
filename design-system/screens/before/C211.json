@@ -1,0 +1,21 @@
+{
+  "code": "C211",
+  "screen": "favorites",
+  "title": "ร้านยาโปรด",
+  "group": "before",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C211.1",
+      "state": "normal",
+      "label": "มีร้านโปรด",
+      "url": "/?screen=favorites&state=normal&splash=0"
+    },
+    {
+      "code": "C211.2",
+      "state": "empty",
+      "label": "ยังไม่มีร้านโปรด",
+      "url": "/?screen=favorites&state=empty&splash=0"
+    }
+  ]
+}

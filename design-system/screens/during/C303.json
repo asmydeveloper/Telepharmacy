@@ -1,0 +1,69 @@
+{
+  "code": "C303",
+  "screen": "room",
+  "title": "ห้องปรึกษา (แชท)",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C303.1",
+      "state": "live",
+      "label": "เล่นบทสนทนา",
+      "url": "/?screen=room&state=live&splash=0"
+    },
+    {
+      "code": "C303.2",
+      "state": "order",
+      "label": "มีรายการยารอชำระ",
+      "url": "/?screen=room&state=order&splash=0"
+    },
+    {
+      "code": "C303.3",
+      "state": "paid",
+      "label": "ชำระแล้ว",
+      "url": "/?screen=room&state=paid&splash=0"
+    },
+    {
+      "code": "C303.4",
+      "state": "expired",
+      "label": "รายการหมดอายุ",
+      "url": "/?screen=room&state=expired&splash=0"
+    },
+    {
+      "code": "C303.5",
+      "state": "offline",
+      "label": "ไม่มีอินเทอร์เน็ต",
+      "url": "/?screen=room&state=offline&splash=0"
+    },
+    {
+      "code": "C303.6",
+      "state": "closed",
+      "label": "ปิดเคส + ใบสรุป",
+      "url": "/?screen=room&state=closed&splash=0"
+    },
+    {
+      "code": "C303.7",
+      "state": "call",
+      "label": "คุยวิดีโออยู่",
+      "url": "/?screen=room&state=call&splash=0"
+    },
+    {
+      "code": "C303.8",
+      "state": "idle",
+      "label": "เงียบ 13 นาที ใกล้ปิดเอง",
+      "url": "/?screen=room&state=idle&splash=0"
+    },
+    {
+      "code": "C303.9",
+      "state": "idleclosed",
+      "label": "ปิดเองเพราะเงียบ 15 นาที",
+      "url": "/?screen=room&state=idleclosed&splash=0"
+    },
+    {
+      "code": "C303.10",
+      "state": "moved",
+      "label": "เภสัชกรย้ายไปสาขาอื่น",
+      "url": "/?screen=room&state=moved&splash=0"
+    }
+  ]
+}

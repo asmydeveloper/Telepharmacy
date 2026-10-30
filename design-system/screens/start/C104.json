@@ -1,0 +1,33 @@
+{
+  "code": "C104",
+  "screen": "profile",
+  "title": "ข้อมูลของคุณและความยินยอม",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C104.1",
+      "state": "empty",
+      "label": "เบอร์ใหม่: ยังไม่กรอก",
+      "url": "/?screen=profile&state=empty&splash=0"
+    },
+    {
+      "code": "C104.2",
+      "state": "filled",
+      "label": "เบอร์ใหม่: กรอกแล้ว",
+      "url": "/?screen=profile&state=filled&splash=0"
+    },
+    {
+      "code": "C104.3",
+      "state": "error",
+      "label": "ปีเกิดไม่ถูกต้อง",
+      "url": "/?screen=profile&state=error&splash=0"
+    },
+    {
+      "code": "C104.4",
+      "state": "acct",
+      "label": "มีบัญชีเว็บ: ความยินยอมฉบับใหม่",
+      "url": "/?screen=profile&state=acct&splash=0"
+    }
+  ]
+}

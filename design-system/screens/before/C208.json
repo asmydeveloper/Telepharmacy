@@ -1,0 +1,15 @@
+{
+  "code": "C208",
+  "screen": "cancelq",
+  "title": "ยกเลิกคิวไหม",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C208",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=cancelq&splash=0"
+    }
+  ]
+}

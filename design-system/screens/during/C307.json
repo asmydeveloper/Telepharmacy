@@ -1,0 +1,15 @@
+{
+  "code": "C307",
+  "screen": "hangup",
+  "title": "วางสายไหม",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C307",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=hangup&splash=0"
+    }
+  ]
+}

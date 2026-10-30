@@ -1,0 +1,21 @@
+{
+  "code": "C107",
+  "screen": "faceid",
+  "title": "Face ID / ลายนิ้วมือ",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C107.1",
+      "state": "ios",
+      "label": "iPhone (Face ID)",
+      "url": "/?screen=faceid&state=ios&splash=0"
+    },
+    {
+      "code": "C107.2",
+      "state": "android",
+      "label": "Android (ลายนิ้วมือ)",
+      "url": "/?screen=faceid&state=android&splash=0"
+    }
+  ]
+}

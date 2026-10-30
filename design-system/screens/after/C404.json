@@ -1,0 +1,27 @@
+{
+  "code": "C404",
+  "screen": "inbox",
+  "title": "กล่องแจ้งเตือน",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C404.1",
+      "state": "normal",
+      "label": "มีรายการใหม่",
+      "url": "/?screen=inbox&state=normal&splash=0"
+    },
+    {
+      "code": "C404.2",
+      "state": "read",
+      "label": "อ่านหมดแล้ว",
+      "url": "/?screen=inbox&state=read&splash=0"
+    },
+    {
+      "code": "C404.3",
+      "state": "empty",
+      "label": "ยังไม่มี",
+      "url": "/?screen=inbox&state=empty&splash=0"
+    }
+  ]
+}

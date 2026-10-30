@@ -1,0 +1,33 @@
+{
+  "code": "C410",
+  "screen": "fureminder",
+  "title": "ตั้งเวลาเตือน",
+  "group": "after",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C410.1",
+      "state": "normal",
+      "label": "เปิดเตือน",
+      "url": "/?screen=fureminder&state=normal&splash=0"
+    },
+    {
+      "code": "C410.2",
+      "state": "off",
+      "label": "ปิดเตือนอยู่",
+      "url": "/?screen=fureminder&state=off&splash=0"
+    },
+    {
+      "code": "C410.3",
+      "state": "notifoff",
+      "label": "ปิดแจ้งเตือนของแอป",
+      "url": "/?screen=fureminder&state=notifoff&splash=0"
+    },
+    {
+      "code": "C410.4",
+      "state": "error",
+      "label": "เวลาไม่เรียง",
+      "url": "/?screen=fureminder&state=error&splash=0"
+    }
+  ]
+}

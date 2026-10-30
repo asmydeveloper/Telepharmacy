@@ -1,0 +1,15 @@
+{
+  "code": "C507",
+  "screen": "consenttext",
+  "title": "ข้อความความยินยอม",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C507",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=consenttext&splash=0"
+    }
+  ]
+}

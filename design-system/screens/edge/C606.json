@@ -1,0 +1,15 @@
+{
+  "code": "C606",
+  "screen": "declined",
+  "title": "เภสัชกรไม่รับเคส",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C606",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=declined&splash=0"
+    }
+  ]
+}

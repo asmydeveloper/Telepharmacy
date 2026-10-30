@@ -1,0 +1,21 @@
+{
+  "code": "C506",
+  "screen": "consents",
+  "title": "ความยินยอม",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C506.1",
+      "state": "normal",
+      "label": "ยินยอมแล้ว",
+      "url": "/?screen=consents&state=normal&splash=0"
+    },
+    {
+      "code": "C506.2",
+      "state": "withdrawn",
+      "label": "ถอนแล้ว",
+      "url": "/?screen=consents&state=withdrawn&splash=0"
+    }
+  ]
+}

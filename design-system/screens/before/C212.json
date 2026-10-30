@@ -1,0 +1,39 @@
+{
+  "code": "C212",
+  "screen": "storeinfo",
+  "title": "ข้อมูลร้านและเภสัชกร",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C212.1",
+      "state": "normal",
+      "label": "เปิดรับปรึกษา",
+      "url": "/?screen=storeinfo&state=normal&splash=0"
+    },
+    {
+      "code": "C212.2",
+      "state": "paused",
+      "label": "เภสัชกรพัก",
+      "url": "/?screen=storeinfo&state=paused&splash=0"
+    },
+    {
+      "code": "C212.3",
+      "state": "closed",
+      "label": "ร้านปิด",
+      "url": "/?screen=storeinfo&state=closed&splash=0"
+    },
+    {
+      "code": "C212.4",
+      "state": "choose-mode",
+      "label": "เลือกสนทนาหรือวิดีโอ",
+      "url": "/?screen=storeinfo&state=choose-mode&splash=0"
+    },
+    {
+      "code": "C212.5",
+      "state": "system-off",
+      "label": "ระบบปรึกษาปิด",
+      "url": "/?screen=storeinfo&state=system-off&splash=0"
+    }
+  ]
+}

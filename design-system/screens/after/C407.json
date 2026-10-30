@@ -1,0 +1,57 @@
+{
+  "code": "C407",
+  "screen": "furesult",
+  "title": "ส่งคำตอบแล้ว",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C407.1",
+      "state": "better",
+      "label": "ดีขึ้น",
+      "url": "/?screen=furesult&state=better&splash=0"
+    },
+    {
+      "code": "C407.2",
+      "state": "same",
+      "label": "เหมือนเดิม",
+      "url": "/?screen=furesult&state=same&splash=0"
+    },
+    {
+      "code": "C407.3",
+      "state": "worse",
+      "label": "แย่ลง",
+      "url": "/?screen=furesult&state=worse&splash=0"
+    },
+    {
+      "code": "C407.4",
+      "state": "danger",
+      "label": "มีอาการรุนแรง",
+      "url": "/?screen=furesult&state=danger&splash=0"
+    },
+    {
+      "code": "C407.5",
+      "state": "closed",
+      "label": "แย่ลง ตอนร้านปิด",
+      "url": "/?screen=furesult&state=closed&splash=0"
+    },
+    {
+      "code": "C407.6",
+      "state": "symbetter",
+      "label": "ไม่มียา ดีขึ้น",
+      "url": "/?screen=furesult&state=symbetter&splash=0"
+    },
+    {
+      "code": "C407.7",
+      "state": "symsame",
+      "label": "ไม่มียา เหมือนเดิม",
+      "url": "/?screen=furesult&state=symsame&splash=0"
+    },
+    {
+      "code": "C407.8",
+      "state": "late",
+      "label": "แย่ลง ก่อนร้านปิดไม่ถึง 2 ชั่วโมง",
+      "url": "/?screen=furesult&state=late&splash=0"
+    }
+  ]
+}

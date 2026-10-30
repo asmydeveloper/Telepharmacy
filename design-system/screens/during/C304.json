@@ -1,0 +1,15 @@
+{
+  "code": "C304",
+  "screen": "roommenu",
+  "title": "ตัวเลือกในห้องปรึกษา",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C304",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=roommenu&splash=0"
+    }
+  ]
+}

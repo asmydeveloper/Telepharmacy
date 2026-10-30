@@ -66,6 +66,7 @@ TP.PATH = {
   'clipboard-list': '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/>',
   pill: '<path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/>',
   stethoscope: '<path d="M11 2v2"/><path d="M5 2v2"/><path d="M5 3H4a2 2 0 0 0-2 2v4a6 6 0 0 0 12 0V5a2 2 0 0 0-2-2h-1"/><path d="M8 15a6 6 0 0 0 12 0v-3"/><circle cx="20" cy="10" r="2"/>',
+  'heart': '<path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/>',
   'heart-pulse': '<path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/>',
   thermometer: '<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>',
   hospital: '<path d="M12 6v4"/><path d="M14 14h-4"/><path d="M14 18h-4"/><path d="M14 8h-4"/><path d="M18 12h2a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2v-9a2 2 0 0 1 2-2h2"/><path d="M18 22V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v18"/>',
@@ -174,6 +175,12 @@ TP.BRANCHES = [
   { id: 'on', name: 'สาขาอ่อนนุช', short: 'อ่อนนุช', lic: 'ข.ย.5 กท 52/2567', km: 4.8, hours: '09:00-21:00', phone: '080-235-3950', pharm: 'tp', area: 'ซอยสุขุมวิท 77',
     addr: '16 ซอยสุขุมวิท 77 แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110', map: 'https://maps.app.goo.gl/An74SFhk1YE56BNB7' }
 ];
+/* Design preview stores: fictional records; no real licence or contact details. */
+TP.BRANCHES.push(...[
+  ['demo-1','ร้านยาสุขใจ',3.1,'08:00-21:00'], ['demo-2','ร้านยาใกล้บ้าน',4.6,'09:00-22:00'],
+  ['demo-3','ร้านยาอารีเฮลท์',6.2,'08:30-20:30'], ['demo-4','ร้านยาอบอุ่น',8.4,'09:00-20:00'],
+  ['demo-5','ร้านยาพร้อมดูแล',10.2,'08:00-22:00']
+].map(([id,name,km,hours])=>({id,name,short:name,km,hours,demo:true,pharm:'kj',area:'ข้อมูลร้านตัวอย่าง',addr:'ที่อยู่ร้านตัวอย่าง',lic:'ข้อมูลตัวอย่าง',phone:'',map:''})));
 /* store-level facts every error screen and the pharmacist pass can show (licence from the old LIFF mask, owner to confirm) */
 TP.STORE = { lic: 'ข.ย.5 กท 29/2566', cs: '098-035-8000', csHours: '10:00-18:00' };
 /* item 70 (owner 20/10 "12.00 ดีกว่า"): a question left while the store is closed is answered by 12:00 on the day it opens */
@@ -227,7 +234,7 @@ TP.EXP_RULE = 'ส่งด่วนส่งได้ไม่เกิน 15 �
 TP.ZONE_RULE = 'ส่งยาได้เฉพาะที่อยู่ที่ห่างสาขาไม่เกิน 15 กม. วัดตามระยะทางถนน รวมในกรุงเทพ';
 const ROAD_KM = { 'ทวีวัฒนา': { tw: 2.4, on: 41 }, 'อ่อนนุช': { tw: 38, on: 2.5 }, 'สวนหลวง': { tw: 36, on: 4.2 }, 'พัฒนาการ': { tw: 34, on: 6.1 }, 'คลองเตย': { tw: 28, on: 7.4 }, 'คลองตัน': { tw: 30, on: 5.3 }, 'พระโขนง': { tw: 31, on: 3.1 }, 'บางจาก': { tw: 33, on: 3.6 }, 'พระโขนงใต้': { tw: 32, on: 4.4 }, 'ศาลาธรรมสพน์': { tw: 6.5, on: 44 }, 'ประเวศ': { tw: 42, on: 9.2 }, 'หนองบอน': { tw: 40, on: 8.3 }, 'ดอกไม้': { tw: 44, on: 11 }, 'กระทุ่มราย': { tw: 62, on: 32 }, 'หนองจอก': { tw: 66, on: 36 },
   'บางสีทอง': { tw: 12, on: 36 }, 'วัดชลอ': { tw: 17, on: 39 }, 'เสาธงหิน': { tw: 13, on: 41 }, 'สำโรงเหนือ': { tw: 41, on: 9.4 }, 'เทพารักษ์': { tw: 44, on: 12 }, 'บางพลีใหญ่': { tw: 52, on: 19 }, 'บางแก้ว': { tw: 47, on: 14 }, 'ศรีภูมิ': { tw: 690, on: 700 }, 'ช้างเผือก': { tw: 692, on: 702 } };
-TP.zoneOf = (a, br) => { if (!a) return null; const km = ROAD_KM[a.dist]?.[br || TP.S.branch] ?? null; return { ok: km != null && km <= TP.ZONE_KM, bkk: a.prov === 'กรุงเทพมหานคร', km }; };
+TP.zoneOf = (a, br) => { if (!a) return null; const branch = br || TP.S.branch, known = ROAD_KM[a.dist]; const km = branch?.startsWith('demo-') && known && Math.min(...Object.values(known)) <= TP.ZONE_KM ? TP.BRANCHES.find(b=>b.id===branch)?.km ?? null : known?.[branch] ?? null; return { ok: km != null && km <= TP.ZONE_KM, bkk: a.prov === 'กรุงเทพมหานคร', km }; };
 /* zone lock (owner 20/10 "ทำสวิตช์ไว้แต่บอก อย. ตรงๆ"): an admin switch in the console, ON by default and in the FDA filing.
    ON = layer 1 (location at the start of a consult) and layer 2 (address at billing) both hold the drug zone.
    OFF (only after the FDA allows it; owner 21/10 "lalamove บังคับ 15 km ส่วนที่เหลือไม่บังคับ") = only express keeps 15 km: consulting is open
@@ -238,7 +245,7 @@ TP.zoneLine = () => TP.zoneLock() ? 'ส่งยาได้เฉพาะท�
 /* mock phone positions for layer 1 (real build: the phone's GPS once, at the start of a consult) */
 TP.LOCS = { near: { label: 'ทวีวัฒนา กรุงเทพ', dist: 'ทวีวัฒนา', prov: 'กรุงเทพมหานคร' }, out: { label: 'วัดชลอ นนทบุรี', dist: 'วัดชลอ', prov: 'นนทบุรี' } };
 TP.locZone = () => {
-  const l = TP.LOCS[TP.S.loc]; if (!l) return null;
+  const l = TP.homeAddress?.() || TP.LOCS[TP.S.loc]; if (!l) return null;
   const per = TP.BRANCHES.map(b => ({ b, z: TP.zoneOf(l, b.id) })), near = per.filter(x => x.z.km != null).sort((x, y) => x.z.km - y.z.km)[0];
   return { ok: per.some(x => x.z.ok), loc: l, km: near?.z.km ?? null, br: near?.b || TP.branch() };
 };
@@ -278,8 +285,8 @@ TP.fresh = () => ({
   case: null,                // see TP.newCase in 60-main
   /* the website account address book (customer_addresses): no labels like บ้าน/ที่ทำงาน, one main address, pin = has a confirmed map point */
   addrs: [
-    { id: 'a1', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '88/12', alley: 'ซอยทวีวัฒนา 25', road: '', prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170', main: true, pin: false },
-    { id: 'a2', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '99/9 ชั้น 12', alley: '', road: 'พระรามที่ 4', prov: 'กรุงเทพมหานคร', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110', main: false, pin: true }
+    { id: 'a1', label: 'บ้าน', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '88/12', alley: 'ซอยทวีวัฒนา 25', road: '', prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170', main: true, pin: false },
+    { id: 'a2', label: 'ที่ทำงาน', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '99/9 ชั้น 12', alley: '', road: 'พระรามที่ 4', prov: 'กรุงเทพมหานคร', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110', main: false, pin: true }
   ],
   history: [
     { id: 'TC-261002-0087', date: '02/10/2026', time: '19:40', who: 'me', topic: 'ไข้ ไอ เจ็บคอ', branch: 'tw', pharm: 'kj', bought: 265, rated: 5, summary: true },
@@ -351,7 +358,13 @@ function build(entry) {
 function afterInsert(entry) {
   const el = entry.el, def = SCREENS[entry.id];
   const dock = $(':scope > .dock', el);
-  if (dock) { el.classList.add('has-dock'); el.style.setProperty('--dock-h', dock.offsetHeight + 'px'); }
+  if (dock) {
+    el.classList.add('has-dock');
+    const measureDock = () => { const value = dock.offsetHeight + 'px'; if (el.style.getPropertyValue('--dock-h') !== value) el.style.setProperty('--dock-h', value); };
+    measureDock();
+    const observer = new ResizeObserver(measureDock); observer.observe(dock);
+    entry.cleanups.push(() => observer.disconnect());
+  }
   if (def.tab && !miniWanted()) el.classList.add('no-mini');
   wireScroll(entry);
   def.mount?.(el, entry.ctx);
@@ -458,7 +471,7 @@ TP.refresh = (o = {}) => {
   return chain;
 };
 TP.tab = name => {
-  const target = { home: 'home', history: 'history', account: 'account' }[name];
+  const target = { home: 'home', history: 'history', inbox: 'inbox', account: 'account' }[name];
   if (!target) return;
   if (cur?.id === target && !hist.length) { const sc = $(':scope > .scroll', cur.el); sc?.scrollTo({ top: 0, behavior: TP.RED() ? 'auto' : 'smooth' }); return; }
   return TP.go(target, { via: 'tab', root: true });
@@ -786,7 +799,7 @@ const ui = TP.ui = {
   },
   /* scrolling body. lt = large title, sub = line under it */
   page(inner, o = {}) {
-    return `<div class="scroll${o.nonav ? ' nonav' : ''}${o.cls ? ' ' + o.cls : ''}">${o.lt ? `<h2 class="lt" data-in="0">${esc(o.lt)}</h2>` : ''}${o.sub ? `<p class="lt-sub" data-in="0">${o.sub}</p>` : ''}${inner}</div>`;
+    return `<div class="scroll app-page${o.nonav ? ' nonav' : ''}${o.cls ? ' ' + o.cls : ''}">${o.lt ? `<h2 class="lt" data-in="0">${esc(o.lt)}</h2>` : ''}${o.sub ? `<p class="lt-sub" data-in="0">${o.sub}</p>` : ''}${inner}</div>`;
   },
   dock(inner, o = {}) { return `<div class="dock${o.clear ? ' clear' : ''}">${inner}${o.note ? `<p class="dock-note">${o.note}</p>` : ''}</div>`; },
   /* button. kind: primary|secondary|tint|ghost|danger|danger-line|white|glass ; sm ; icon ; disabled ; + route props */
@@ -2102,10 +2115,13 @@ TP.caseOpen = () => { const c = TP.S.case; return !!(c && !['closed', 'cancelled
 const stateTag = st => st === 'open' ? ui.tag('เปิดรับ', 'ok', { dot: true, live: true }) : st === 'pause' ? ui.tag('พักชั่วคราว', 'warn', { dot: true }) : ui.tag('ปิดรับวันนี้', 'muted', { dot: true });
 /* C03: nearest open branch picked for the customer; paused/closed nearest -> next one, with the reason */
 TP.pickBranch = () => {
-  const S = TP.S, open = TP.BRANCHES.filter(b => S.branchState[b.id] === 'open').sort((a, b) => a.km - b.km);
-  const nearest = [...TP.BRANCHES].sort((a, b) => a.km - b.km)[0];
-  if (!S.branchPicked) { S.branch = (open[0] || nearest).id; S.autoReason = open[0] && open[0].id !== nearest.id ? `${nearest.name} ${S.branchState[nearest.id] === 'pause' ? 'พักชั่วคราว' : 'ปิดรับวันนี้'} เลือกสาขาถัดไปให้แล้ว` : ''; }
-  return TP.branch();
+  const S = TP.S, candidates = TP.homeStores ? TP.homeStores() : [...TP.BRANCHES].sort((a,b) => a.km - b.km);
+  if (!S.branchPicked || !candidates.some(b => b.id === S.branch)) {
+    const b = candidates.find(b => S.branchState[b.id] === 'open') || candidates[0];
+    if (b) S.branch = b.id;
+    S.autoReason = b && candidates[0]?.id !== b.id ? 'เลือกสาขาที่เปิดรับปรึกษาในบริเวณที่อยู่นี้ให้แล้ว' : '';
+  }
+  return TP.branch() || TP.BRANCHES[0];
 };
 
 /* =====================================================================
@@ -2139,36 +2155,169 @@ TP.act('splashSkip', () => {
 /* =====================================================================
    Home (C01)
    ===================================================================== */
+/* C210 / C211 / C514 / C515: address-based discovery and saved pharmacies. */
+TP.homeAddress = () => (TP.S.addrs || []).find(a => a.id === TP.S.deliveryAddressId) || (TP.S.addrs || []).find(a => a.main) || (TP.S.addrs || [])[0] || null;
+TP.addressName = a => a ? String(a.label || '').trim() || (a.main ? 'ที่อยู่หลัก' : 'ที่อยู่จัดส่ง') : 'เพิ่มที่อยู่จัดส่ง';
+TP.homeDistance = b => { const a = TP.homeAddress(); return a ? TP.zoneOf(a, b.id)?.km ?? null : null; };
+TP.homeStores = () => TP.homeAddress() ? TP.BRANCHES.filter(b => TP.homeDistance(b) != null && TP.homeDistance(b) <= TP.ZONE_KM).sort((a,b) => TP.homeDistance(a) - TP.homeDistance(b)) : [];
+TP.saveHomePreferences = () => {
+  if (new URLSearchParams(location.search).has('state') || new URLSearchParams(location.search).get('registry') === '1') return;
+  try { localStorage.setItem('mitraree.home.preferences.v1', JSON.stringify({ addrs: TP.S.addrs, deliveryAddressId: TP.S.deliveryAddressId, favoriteBranches: TP.S.favoriteBranches || [] })); } catch (_) { /* The current session remains usable when storage is unavailable. */ }
+};
+if (!new URLSearchParams(location.search).has('state') && new URLSearchParams(location.search).get('registry') !== '1') {
+  try {
+    const saved = JSON.parse(localStorage.getItem('mitraree.home.preferences.v1') || 'null');
+    if (saved && Array.isArray(saved.addrs) && saved.addrs.every(a => a && typeof a.id === 'string' && typeof a.dist === 'string')) {
+      TP.S.addrs = saved.addrs;
+      const primary = TP.S.addrs.find(a => a.main) || TP.S.addrs[0];
+      TP.S.addrs.forEach(a => a.main = a.id === primary?.id);
+      TP.S.deliveryAddressId = null;
+      TP.S.favoriteBranches = Array.isArray(saved.favoriteBranches) ? saved.favoriteBranches.filter(id => TP.BRANCHES.some(b => b.id === id)) : [];
+    }
+  } catch (_) {}
+}
+TP.homeScenario = (S, st) => {
+  const scenarios = ['address-alt', 'noaddress', 'outarea', 'unknownarea'];
+  if (scenarios.includes(st)) {
+    if (!TP._addressScenarioBase) TP._addressScenarioBase = { addrs: structuredClone(S.addrs), deliveryAddressId: S.deliveryAddressId };
+    if (st === 'noaddress') { S.addrs = []; S.deliveryAddressId = null; }
+    else {
+      S.addrs = TP.fresh().addrs;
+      if (st === 'address-alt') S.deliveryAddressId = 'a2';
+      else { const a = { ...S.addrs[0], id: 'demo-area', dist: st === 'outarea' ? 'ศรีภูมิ' : 'พื้นที่ตัวอย่าง', amp: 'เมือง', prov: 'เชียงใหม่', main: false }; S.addrs.push(a); S.deliveryAddressId = a.id; }
+    }
+    S.branchPicked = false;
+  } else if (TP._addressScenarioBase) { Object.assign(S, TP._addressScenarioBase); TP._addressScenarioBase = null; S.branchPicked = false; }
+};
+const homeAddressCards = (S, picker) => (S.addrs || []).map(a => `<article class="hm-address-card${a.id === TP.homeAddress()?.id ? ' selected' : ''}">
+  <div class="hm-address-card-head"><b>${esc(TP.addressName(a))}</b>${a.main ? '<span class="tag">ที่อยู่หลัก</span>' : ''}</div>
+  <p>${esc(a.first)} ${esc(a.last)} · ${esc(a.phone)}</p><p>${esc(TP.fmtAddr(a))}</p>
+  <div class="hm-address-actions">${picker ? `<button type="button" class="btn sm ${a.id === TP.homeAddress()?.id ? 'secondary' : ''}" data-a="hmSelectAddress" data-v="${esc(a.id)}">${a.id === TP.homeAddress()?.id ? 'เลือกอยู่' : 'ใช้ที่อยู่นี้'}</button>` : `<button type="button" class="btn secondary sm" data-a="hmEditAddress" data-v="${esc(a.id)}">แก้ไข</button><button type="button" class="btn sm ${a.main ? 'secondary' : ''}" data-a="hmMainAddress" data-v="${esc(a.id)}" ${a.main ? 'disabled' : ''}>${a.main ? 'ที่อยู่หลัก' : 'ตั้งเป็นที่อยู่หลัก'}</button>`}</div>
+</article>`).join('');
+const addressEmpty = () => `<div class="hm-empty">${ic('map-pin', 32, 1.7)}<h3>ยังไม่มีที่อยู่จัดส่ง</h3><p>เพิ่มที่อยู่เพื่อค้นหาร้านยาในบริเวณนั้น</p>${ui.btn('เพิ่มที่อยู่', { a: 'hmNewAddress', icon: 'plus' })}</div>`;
+TP.sheetDef('homeaddress', {
+  group: 'before', title: 'เลือกที่อยู่จัดส่ง', code: 'C210', host: 'home', tall: true,
+  states: [['normal', 'มีที่อยู่'], ['empty', 'ยังไม่มีที่อยู่'], ['named', 'ที่อยู่ตั้งชื่อเอง']],
+  prep(S) { if (S.st.homeaddress === 'empty') { S.addrs = []; S.deliveryAddressId = null; } else if (S.st.homeaddress === 'named') { S.addrs = TP.fresh().addrs; S.addrs[0].label = 'บ้านแม่'; S.deliveryAddressId = null; } },
+  render(ctx) { return `<p class="small">เลือกรายการเพื่อดูร้านยาใกล้ที่อยู่นี้ การเลือกไม่เปลี่ยนที่อยู่หลัก</p><div class="hm-address-list">${ctx.S.addrs?.length ? homeAddressCards(ctx.S, true) : addressEmpty()}</div>`; },
+  foot: () => ui.btn('จัดการสมุดที่อยู่', { a: 'hmAddressBook', kind: 'secondary', icon: 'map-pin' })
+});
+TP.screen('addressbook', {
+  group: 'account', title: 'สมุดที่อยู่', code: 'C514', parent: 'account',
+  states: [['normal', 'มีที่อยู่หลัก'], ['empty', 'ยังไม่มีที่อยู่'], ['alternate', 'เปลี่ยนที่อยู่หลัก'], ['named', 'ชื่อที่อยู่ บ้านแม่']],
+  prep(S) { if (S.st.addressbook === 'named') { S.addrs = TP.fresh().addrs; S.addrs[0].label = 'บ้านแม่'; } else if (S.st.addressbook === 'empty') S.addrs = []; else if (S.st.addressbook === 'alternate') { S.addrs = TP.fresh().addrs; S.addrs.forEach(a => a.main = a.id === 'a2'); S.deliveryAddressId = null; } },
+  render(ctx) { return ui.nav({ back: true, title: 'สมุดที่อยู่' }) + ui.page(`<p class="lt-sub">ที่อยู่หลักจะใช้เป็นค่าเริ่มต้นเมื่อเปิดหน้าแรก</p><div class="hm-address-list">${ctx.S.addrs?.length ? homeAddressCards(ctx.S, false) : addressEmpty()}</div>${ctx.S.addrs?.length ? `<div class="mt16">${ui.btn('เพิ่มที่อยู่ใหม่', { a: 'hmNewAddress', icon: 'plus' })}</div>` : ''}`, { lt: 'สมุดที่อยู่' }); }
+});
+const addressFields = [['label','ชื่อที่อยู่ (เช่น บ้าน ที่ทำงาน บ้านแม่)','text',true],['first','ชื่อผู้รับ','text'],['last','นามสกุล','text'],['phone','เบอร์โทร','tel'],['house','บ้านเลขที่ / อาคาร / ชั้น','text'],['alley','ซอย (ถ้ามี)','text',true],['road','ถนน (ถ้ามี)','text',true],['dist','แขวง / ตำบล','text'],['amp','เขต / อำเภอ','text'],['prov','จังหวัด','text'],['zip','รหัสไปรษณีย์','text']];
+TP.screen('addressedit', {
+  group: 'account', title: 'เพิ่ม / แก้ไขที่อยู่', code: 'C515', parent: 'addressbook',
+  states: [['normal', 'เพิ่มที่อยู่'], ['edit', 'แก้ไขที่อยู่'], ['invalid', 'ข้อมูลไม่ครบ'], ['named', 'แก้ไขชื่อที่อยู่']],
+  prep(S) { if (S.st.addressedit === 'named') { S.addrs = TP.fresh().addrs; S.addrs[0].label = 'บ้านแม่'; S._homeEditAddress = S.addrs[0].id; } if (S.st.addressedit === 'edit') S._homeEditAddress = S.addrs?.[0]?.id; if (S.st.addressedit === 'invalid') S._homeAddressInvalid = true; },
+  render(ctx) { const a = (ctx.S.addrs || []).find(a => a.id === ctx.S._homeEditAddress) || {}; return ui.nav({ back: true, title: a.id ? 'แก้ไขที่อยู่' : 'เพิ่มที่อยู่' }) + ui.page(`<div class="hm-address-form">${addressFields.map(([key,label,type,optional]) => `<div class="field"><label for="home-address-${key}">${label}</label><input class="input" id="home-address-${key}" name="${key}" type="${type}" value="${esc(a[key] || '')}" ${key === 'label' ? 'maxlength="40" placeholder="ตั้งชื่อที่อยู่"' : ''} ${optional ? '' : 'required'} ${key === 'phone' ? 'inputmode="tel" pattern="0[0-9]{8,9}" maxlength="10"' : key === 'zip' ? 'inputmode="numeric" pattern="[0-9]{5}" maxlength="5"' : ''}></div>`).join('')}<label class="hm-primary-check"><input type="checkbox" id="home-address-main" ${a.main || !ctx.S.addrs?.length ? 'checked' : ''}> ตั้งเป็นที่อยู่หลัก</label><p id="home-address-error" class="danger-t" role="alert">${ctx.S._homeAddressInvalid ? 'กรุณากรอกข้อมูลให้ครบและตรวจสอบเบอร์โทรกับรหัสไปรษณีย์' : ''}</p>${ui.btn('บันทึกที่อยู่', { a: 'hmSaveAddress' })}</div>`, { lt: a.id ? 'แก้ไขที่อยู่' : 'เพิ่มที่อยู่' }); }
+});
+TP.screen('favorites', {
+  group: 'before', title: 'ร้านยาโปรด', code: 'C211', parent: 'home',
+  states: [['normal', 'มีร้านโปรด'], ['empty', 'ยังไม่มีร้านโปรด']],
+  prep(S) { if (S.st.favorites === 'normal') S.favoriteBranches = ['tw']; else if (S.st.favorites === 'empty') S.favoriteBranches = []; },
+  render(ctx) { const stores = TP.BRANCHES.filter(b => (ctx.S.favoriteBranches || []).includes(b.id)); return ui.nav({ back: true, title: 'ร้านยาโปรด' }) + ui.page(stores.length ? `<div class="hm-address-list">${stores.map(b => `<article class="hm-address-card"><div class="hm-address-card-head"><h3>${esc(b.name)}</h3><button type="button" class="ibtn hm-favorite-button" data-a="hmFavorite" data-v="${b.id}" aria-pressed="true" aria-label="นำ${esc(b.name)}ออกจากร้านโปรด">${ic('heart', 22, 2)}</button></div><p>${esc(b.area)}</p><p>เวลาทำการ ${esc(b.hours)} น.</p><p>${TP.homeDistance(b) == null ? 'เลือกที่อยู่เพื่อดูระยะทาง' : `${TP.homeDistance(b)} กม. จากที่อยู่ที่เลือก`}</p><a class="btn secondary sm" href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">ดูแผนที่ร้าน</a></article>`).join('')}</div>` : `<div class="hm-empty">${ic('heart', 36, 1.6)}<h3>ยังไม่มีร้านยาโปรด</h3><p>กดหัวใจบนการ์ดร้าน เพื่อเก็บร้านที่คุณใช้ประจำ</p>${ui.btn('ดูร้านยาใกล้ที่อยู่', { go: 'home' })}</div>`, { lt: 'ร้านยาโปรด' }); }
+});
+TP.act('hmOpenAddress', () => TP.sheet('homeaddress'));
+TP.act('hmSelectAddress', async t => {
+  if (!(TP.S.addrs || []).some(a => a.id === t.dataset.v)) return;
+  TP.S.deliveryAddressId = t.dataset.v; TP.S.branchPicked = false;
+  TP.saveHomePreferences(); await TP.closeSheet({ instant: true }); TP.refresh({ anim: false });
+});
+TP.act('hmAddressBook', async () => { await TP.closeSheet({ instant: true }); TP.go('addressbook'); });
+TP.act('hmNewAddress', async () => { TP.S._homeEditAddress = null; TP.S._homeAddressInvalid = false; TP.S.st.addressedit = undefined; await TP.closeSheet({ instant: true }); TP.go('addressedit'); });
+TP.act('hmEditAddress', t => { TP.S._homeEditAddress = t.dataset.v; TP.S._homeAddressInvalid = false; TP.S.st.addressedit = undefined; TP.go('addressedit'); });
+TP.act('hmMainAddress', t => {
+  const a = (TP.S.addrs || []).find(a => a.id === t.dataset.v); if (!a) return;
+  TP.S.addrs.forEach(x => x.main = x.id === a.id); TP.S.deliveryAddressId = null; TP.S.branchPicked = false;
+  TP.saveHomePreferences(); TP.refresh({ anim: false }); TP.notify('ตั้งเป็นที่อยู่หลักแล้ว', { icon: 'map-pin' });
+});
+TP.act('hmSaveAddress', () => {
+  const values = {}; let invalid = null;
+  for (const [key,,,optional] of addressFields) { const input = document.getElementById('home-address-' + key); if (!input) return; values[key] = input.value.trim(); if (((!optional && !values[key]) || !input.checkValidity()) && !invalid) invalid = input; }
+  if (invalid) { document.getElementById('home-address-error').textContent = 'กรุณากรอกข้อมูลให้ครบและตรวจสอบเบอร์โทรกับรหัสไปรษณีย์'; invalid.focus(); invalid.reportValidity(); return; }
+  const list = TP.S.addrs || (TP.S.addrs = []); let a = list.find(a => a.id === TP.S._homeEditAddress);
+  if (a) { Object.assign(a, values, { pin: false }); } else { a = { id: 'a' + Date.now(), ...values, main: false, pin: false }; list.push(a); }
+  if (document.getElementById('home-address-main').checked || list.length === 1) { list.forEach(x => x.main = x.id === a.id); TP.S.deliveryAddressId = null; }
+  else if (!list.some(x => x.main)) list[0].main = true;
+  TP.S.branchPicked = false; TP.saveHomePreferences(); TP.S.st.addressbook = undefined; TP.go('addressbook', { via: 'none' }); TP.notify('บันทึกที่อยู่แล้ว', { icon: 'map-pin' });
+});
+TP.act('hmFavorite', t => {
+  const id = t.dataset.v; if (!TP.BRANCHES.some(b => b.id === id)) return;
+  const favorites = TP.S.favoriteBranches || []; TP.S.favoriteBranches = favorites.includes(id) ? favorites.filter(x => x !== id) : [...favorites, id];
+  TP.saveHomePreferences(); TP.refresh({ anim: false });
+});
+const homeBanner = S => { const a = TP.homeAddress(); return `<header class="hm-banner" data-in="0"><img class="hm-banner-image" src="/assets/banners/pharmacy-interior-v1.png" alt="" aria-hidden="true" fetchpriority="high" width="1536" height="1024"><div class="hm-banner-tools"><button type="button" class="hm-delivery-select" data-sheet="homeaddress" aria-haspopup="dialog" aria-label="เลือกที่อยู่จัดส่ง: ${esc(TP.addressName(a))}">${ic('map-pin', 20, 1.8)}<span><small>ที่อยู่จัดส่ง</small><b class="hm-delivery-name"><span>${esc(TP.addressName(a))}</span>${ic('chevron-down', 16, 2)}</b></span></button><button type="button" class="ibtn hm-banner-heart" data-go="favorites" aria-label="ร้านยาโปรด">${ic('heart', 24, 1.8)}${S.favoriteBranches?.length ? `<span>${S.favoriteBranches.length}</span>` : ''}</button></div><div class="hm-banner-copy"><span>MITRAREE · เภสัชกรใกล้บ้าน</span><h2>ดูแลคุณ<br>ใกล้กว่าที่เคย</h2><p>สวัสดี${S.user.name ? ' คุณ' + esc(S.user.name) : ''} เลือกร้านยาใกล้ที่อยู่คุณได้เลย</p></div></header>`; };
+
 /* C201: selected nearby pharmacy, using the same branches and status as C202. */
 function nearbyStoresHtml(S, { hideAction = false } = {}) {
   const b = TP.pickBranch(), ph = TP.PHARM[b.pharm];
-  const located = !!TP.LOCS[S.loc];
-  const distance = branch => !located ? null : S.loc === 'near' ? branch.km : TP.zoneOf(TP.LOCS[S.loc], branch.id)?.km;
+  const address = TP.homeAddress(), located = !!address;
+  const distance = branch => TP.homeDistance(branch);
   const distanceText = branch => { const km = distance(branch); return km == null ? '' : `${km} กม.`; };
-  const status = branch => S.storeOpen === false ? 'closed' : S.branchState[branch.id] || 'closed';
+  const status = branch => S.storeOpen === false ? 'closed' : S.branchState[branch.id] || (branch.demo ? 'open' : 'closed');
   const state = status(b), offline = state === 'closed', paused = state === 'pause';
-  const others = TP.BRANCHES.filter(x => x.id !== b.id).sort((a, b) => (distance(a) ?? Infinity) - (distance(b) ?? Infinity));
+  const stores = TP.homeStores(), others = stores.filter(x => x.id !== b.id);
+  if (!address || !stores.length) return `<section class="hm-nearby"><div class="hm-section-head"><h2>ร้านยาใกล้ที่อยู่</h2></div><div class="hm-empty">${ic('map-pin', 32, 1.8)}<h3>${!address ? 'เลือกที่อยู่จัดส่งก่อน' : TP.BRANCHES.some(b => distance(b) != null) ? 'ยังไม่มีร้านยาในบริเวณนี้' : 'ยังตรวจสอบพื้นที่นี้ไม่ได้'}</h3><p>${!address ? 'เพิ่มหรือเลือกที่อยู่เพื่อค้นหาร้านยาใกล้คุณ' : 'เลือกที่อยู่อื่น หรือแก้ไขข้อมูลในสมุดที่อยู่'}</p>${ui.btn(address ? 'เปลี่ยนที่อยู่' : 'เลือกที่อยู่จัดส่ง', { sheet: 'homeaddress', a: 'hmOpenAddress' })}</div></section>`;
   const availability = branch => status(branch) === 'closed' ? 'ปิดรับปรึกษา' : status(branch) === 'pause' ? 'เภสัชกรพักชั่วคราว' : 'เปิดรับปรึกษา';
-  const action = S.sysOff && !offline
-    ? ui.btn('ดูช่องทางติดต่อร้าน', { go: 'sysoff', iconRight: 'arrow-right' })
-    : offline ? ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', iconRight: 'arrow-right' })
-    : ui.btn(paused ? 'เข้าคิวปรึกษา' : 'ปรึกษาเภสัชกรสาขานี้', { a: 'hmStart', iconRight: 'arrow-right' });
   return `<section class="hm-nearby" aria-labelledby="hmNearbyTitle" data-in="1">
-    <div class="hm-section-head"><h2 id="hmNearbyTitle">${located ? 'ร้านยาใกล้ฉัน' : 'ร้านยาของเรา'}</h2><button type="button" class="hm-text-action" data-sheet="branch">เปลี่ยนสาขา ${ic('chevron-right', 16, 2)}</button></div>
-    <p class="hm-location">${ic(located ? 'navigation' : 'map-pin', 16, 2)}<span>${located ? esc(TP.LOCS[S.loc].label) : 'ยังไม่ได้ระบุตำแหน่ง · เลือกสาขาได้ด้วยตัวเอง'}</span></p>
-    <article class="hm-store-card${offline ? ' is-closed' : ''}">
-      <div class="hm-store-top"><span class="hm-store-symbol">${ic('store', 24, 1.8)}</span><div class="hm-store-name"><span>มิตรอารี</span><h3>${esc(b.name)}</h3></div></div>
-      ${distanceText(b) ? `<span class="hm-distance">${ic('map-pin', 14, 2)}${distanceText(b)}</span>` : ''}
-      <p class="hm-store-area">${esc(b.area)}</p>
-      <dl class="hm-store-facts"><div><dt>สถานะรับปรึกษา</dt><dd><span class="hm-status-dot ${state}"></span>${availability(b)}</dd></div><div><dt>เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div></dl>
-      <div class="hm-store-service">${ic(offline ? 'clock' : 'message-circle', 18, 1.8)}<span>${S.sysOff && !offline ? 'ระบบปรึกษาในแอปปิดชั่วคราว' : offline ? 'ฝากคำถามไว้ให้เภสัชกรตอบเมื่อร้านเปิด' : paused ? `เข้าคิวรอได้ · รอก่อนคุณ ${S.queueLen[b.id] || 0} คน` : `แชท / วิดีโอคอล · รอก่อนคุณ ${S.queueLen[b.id] || 0} คน`}</span></div>
-      <details class="hm-store-details"><summary>ข้อมูลร้านและเภสัชกร ${ic('chevron-down', 16, 2)}</summary><div class="hm-store-detail-body"><div class="hm-store-pharm">${ui.av('', { ini: ph.ini })}<div><b>${esc(ph.short)}</b><span>ใบประกอบวิชาชีพ ${esc(ph.lic)}</span></div></div><p>${esc(b.addr)}</p><p>ใบอนุญาตร้านยา ${esc(b.lic)}</p><div class="hm-store-links"><a href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">${ic('map-pin', 16, 2)} ดูแผนที่</a><a href="tel:${esc(b.phone)}">${ic('phone', 16, 2)} โทรหาร้าน</a></div></div></details>
-      ${hideAction ? '' : `<div class="hm-store-action">${action}<p>${offline ? `เภสัชกรตอบ${TP.OF_REPLY}` : 'ไม่มีค่าปรึกษา · จ่ายเฉพาะเมื่อซื้อยา'}</p></div>`}
-    </article>
+    <div class="hm-section-head"><h2 id="hmNearbyTitle">ร้านยาใกล้ที่อยู่</h2><button type="button" class="hm-text-action" data-sheet="allbranches">สาขาทั้งหมด ${ic('chevron-right', 16, 2)}</button></div>
+    <div class="hm-store-list">${stores.slice(0,6).map(b => `<article class="hm-branch-tile">
+      <button type="button" class="hm-branch-open" data-sheet="storeinfo" data-p='${esc(JSON.stringify({ branch: b.id }))}' aria-label="ดูข้อมูล${esc(b.name)}และเลือกวิธีปรึกษา">
+        <img src="/assets/stores/pharmacy-thumbnail-v1.png" alt="ภาพประกอบบรรยากาศร้านยา" width="96" height="96" loading="lazy">
+        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status"><span class="hm-status-dot ${status(b)}"></span>${S.sysOff && status(b) !== 'closed' ? 'ปิดปรึกษาชั่วคราว' : availability(b)}</span><span class="hm-branch-distance">${ic('map-pin',14,2)}${distanceText(b)}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span>
+        <span class="hm-branch-arrow">${ic('chevron-right',18,2)}</span>
+      </button>
+      <button type="button" class="hm-branch-favorite" data-a="hmFavorite" data-v="${b.id}" aria-pressed="${(S.favoriteBranches || []).includes(b.id)}" aria-label="${(S.favoriteBranches || []).includes(b.id) ? 'นำออกจากร้านโปรด' : 'บันทึกร้านโปรด'}">${ic('heart',20,1.8)}</button>
+    </article>`).join('')}</div>
     ${S.autoReason ? `<p class="hm-store-notice">${ic('info', 16, 2)}<span>${esc(S.autoReason)}</span></p>` : ''}
-    ${others.length ? `<details class="hm-other-stores"><summary>ดูสาขาอื่นอีก ${others.length} แห่ง ${ic('chevron-down', 16, 2)}</summary><div>${others.map(other => `<button type="button" class="hm-other-store" data-a="hmChooseStore" data-v="${esc(other.id)}" ${status(other) === 'closed' ? 'disabled' : ''}><span class="hm-other-icon">${ic('store', 20, 1.8)}</span><span class="hm-other-copy"><b>${esc(other.name)}</b><small>${availability(other)} · ${esc(other.hours)} น.</small></span><span class="hm-other-distance">${distanceText(other)}${ic('chevron-right', 16, 2)}</span></button>`).join('')}</div></details>` : ''}
+
   </section>`;
 }
+TP.sheetDef('allbranches', {
+  group: 'before', title: 'สาขาทั้งหมด', code: 'C213', host: 'home', tall: true,
+  states: [['normal', 'หลายสาขา'], ['noaddress', 'ยังไม่มีที่อยู่'], ['closed', 'ร้านปิด']],
+  prep(S) { TP.homeScenario(S, S.st.allbranches === 'noaddress' ? 'noaddress' : 'normal'); if (S.st.allbranches === 'closed') S.storeOpen = false; },
+  render(ctx) { const S = ctx.S, address = TP.homeAddress(); return `<p class="small">${address ? 'ระยะทางอ้างอิงจาก ' + esc(TP.addressName(address)) : 'ดูข้อมูลได้ทุกสาขา เลือกที่อยู่บนหน้าแรกเพื่อดูสาขาที่จัดส่งได้'}</p><div class="hm-address-list">${[...TP.BRANCHES].sort((a,b) => (TP.homeDistance(a) ?? Infinity) - (TP.homeDistance(b) ?? Infinity)).map(b => {
+    const km = TP.homeDistance(b), closed = S.storeOpen === false || S.branchState[b.id] === 'closed', eligible = !closed && km != null && km <= TP.ZONE_KM;
+    const status = closed ? 'ปิดรับปรึกษา' : S.branchState[b.id] === 'pause' ? 'พักรับปรึกษาชั่วคราว' : 'เปิดรับปรึกษา';
+    return `<article class="hm-address-card"><div class="all-branch-head"><h3>${esc(b.name)}</h3>${b.id === S.branch ? '<span class="tag">สาขาที่เลือก</span>' : ''}</div><p>${status}${km == null ? '' : ' · ' + km + ' กม.'}</p><p>${esc(b.area)} · ${esc(b.hours)} น.</p>${address && !eligible && !closed ? `<p class="all-branch-note">${km == null ? 'ยังตรวจสอบระยะทางจากที่อยู่นี้ไม่ได้' : 'อยู่นอกพื้นที่จัดส่งของที่อยู่ที่เลือก'}</p>` : ''}<div class="hm-address-actions">${ui.btn('ข้อมูลร้าน', { kind: 'secondary', sm: true, sheet: 'storeinfo', p: { branch: b.id } })}<button type="button" class="btn sm" data-a="hmSelectAllBranch" data-v="${b.id}" ${eligible ? '' : 'disabled'}>${!address ? 'เลือกที่อยู่ก่อน' : b.id === S.branch ? 'เลือกอยู่' : 'ใช้สาขานี้'}</button></div></article>`;
+  }).join('')}</div>`; }
+});
+TP.act('hmSelectAllBranch', async t => {
+  const b = TP.homeStores().find(b => b.id === t.dataset.v); if (!b || TP.S.storeOpen === false || TP.S.branchState[b.id] === 'closed') return;
+  TP.S.branch = b.id; TP.S.branchPicked = true; TP.S.autoReason = '';
+  await TP.closeSheet({ instant: true }); TP.refresh({ anim: false });
+});
+
+TP.sheetDef('storeinfo', {
+  group: 'before', title: 'ข้อมูลร้านและเภสัชกร', code: 'C212', host: 'home', tall: true,
+  states: [['normal', 'เปิดรับปรึกษา'], ['paused', 'เภสัชกรพัก'], ['closed', 'ร้านปิด'], ['choose-mode', 'เลือกสนทนาหรือวิดีโอ'], ['system-off', 'ระบบปรึกษาปิด']],
+  prep(S) { const st = S.st.storeinfo; if (!st) return; S.storeOpen = st !== 'closed'; S.branchState[S.branch] = st === 'paused' ? 'pause' : 'open'; S.sysOff = st === 'system-off'; },
+  render(ctx) { const b = TP.branch(ctx.params?.branch) || TP.branch(), ph = TP.PHARM[b.pharm]; return `<div class="bc-detail"><img class="bc-detail-photo" src="/assets/stores/pharmacy-thumbnail-v1.png" alt="ภาพประกอบบรรยากาศร้านยา" width="1536" height="1024"><h3>${b.demo ? esc(b.name) : 'มิตรอารี · ' + esc(b.name)}</h3>${b.demo ? '<p class="small">ร้านตัวอย่างสำหรับแสดงหน้าจอ</p>' : ''}<p>${ctx.S.storeOpen === false || ctx.S.branchState[b.id] === 'closed' ? 'ปิดรับปรึกษา' : ctx.S.branchState[b.id] === 'pause' ? 'เภสัชกรพัก · เข้าคิวรอได้' : 'เปิดรับปรึกษา'} · รอ ${ctx.S.queueLen[b.id] || 0} คิว</p><p>${esc(b.area)}</p><dl><div><dt>เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>ที่อยู่ร้าน</dt><dd>${esc(b.addr)}</dd></div><div><dt>ใบอนุญาตร้านยา</dt><dd>${esc(b.lic)}</dd></div></dl><div class="hm-store-pharm">${ui.av('', { ini: ph.ini })}<div><b>${esc(ph.short)}</b><span>ใบประกอบวิชาชีพ ${esc(ph.lic)}</span></div></div><p class="bc-fee">แชทหรือวิดีโอคอล · ไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา</p>${b.demo ? '' : `<div class="hm-store-links"><a href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">${ic('map-pin',16,2)} ดูแผนที่</a><a href="tel:${esc(b.phone)}">${ic('phone',16,2)} โทรหาร้าน</a></div>`}</div>`; },
+  foot(ctx) {
+    const b = TP.branch(ctx.params?.branch) || TP.branch(), closed = ctx.S.storeOpen === false || ctx.S.branchState[b.id] === 'closed';
+    const available = TP.homeStores().some(x => x.id === b.id);
+    if (TP.caseOpen()) return ui.btn('กลับไปการปรึกษาที่ค้าง', { a: 'hmReturnCase', icon: 'message-circle' });
+    if (!available) return `<p class="small">สาขานี้อยู่นอกพื้นที่ของที่อยู่ที่เลือก กรุณาเลือกที่อยู่อื่นก่อนเริ่มปรึกษา</p>`;
+    if (closed) return ui.btn('ฝากคำถามถึงเภสัชกร', { a: 'hmStoreOffline', p: { branch: b.id } });
+    if (ctx.S.sysOff) return ui.btn('ดูช่องทางติดต่อร้าน', { a: 'hmStoreContact' });
+    return `<div class="hm-consult-options"><p>เลือกวิธีปรึกษา</p><div><button type="button" class="btn" data-a="hmConsultMode" data-v="chat" data-branch="${b.id}">${ic('message-circle',20,2)}<span>สนทนา</span></button><button type="button" class="btn vid" data-a="hmConsultMode" data-v="video" data-branch="${b.id}">${ic('video',20,2)}<span>วิดีโอคอล</span></button></div></div>`;
+  }
+});
+TP.act('hmConsultMode', async t => {
+  const mode = t.dataset.v, b = TP.homeStores().find(b => b.id === t.dataset.branch);
+  if (!['chat','video'].includes(mode) || !b || TP.S.storeOpen === false || TP.S.branchState[b.id] === 'closed' || TP.S.sysOff) return;
+  if (TP.caseOpen()) return;
+  TP.S.branch = b.id; TP.S.branchPicked = true;
+  await TP.closeSheet({ instant: true }); TP.ACTS.hmStart({ dataset: { mode } });
+});
+TP.act('hmReturnCase', async () => { await TP.closeSheet({ instant: true }); TP.go(['room','matched'].includes(TP.S.case?.status) ? 'room' : 'queue'); });
+TP.act('hmStoreOffline', async (t,ctx) => { const b = TP.branch(ctx.params?.branch) || TP.branch(); TP.S.branch = b.id; TP.S.branchPicked = true; await TP.closeSheet({ instant: true }); TP.go('offline'); });
+TP.act('hmStoreContact', async () => { await TP.closeSheet({ instant: true }); TP.go('sysoff'); });
 TP.act('hmChooseStore', t => {
   const b = TP.BRANCHES.find(b => b.id === t.dataset.v);
   if (!b || TP.S.storeOpen === false || TP.S.branchState[b.id] === 'closed') return;
@@ -2197,43 +2346,40 @@ function heroHtml(S, st) {
 }
 
 TP.screen('home', {
-  group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home',
-  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด']],
+  group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
+  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่'], ['outarea', 'ไม่พบร้านในพื้นที่'], ['unknownarea', 'พื้นที่ยังตรวจสอบไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ'], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน'], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ'], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์'], ['compact-store', 'การ์ดสาขาแบบกระชับ'], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์'], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ'], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา'], ['white-canvas', 'พื้นหลังสีขาว'], ['layout-system', 'กริดและระยะกลางทั้งแอป'], ['store-list', 'ลิสต์ร้านยา 6 ร้าน'], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู']],
   notes: ['C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
-    const st = S.st.home; if (!st) return;
+    const st = S.st.home; TP.homeScenario(S, st || 'normal'); if (!st) return;
     if (st === 'active') { if (!TP.caseOpen()) TP.newCase(); } else if (TP.caseOpen()) S.case = null;
     S.branchState.tw = st === 'busy' ? 'pause' : 'open'; S.branchState.on = 'pause';
     S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); S.branchPicked = false; TP.emit('state');
   },
   render(ctx) {
     const S = ctx.S, st = ctx.state;
-    const unread = S.inbox.some(n => !n.read);
-    const head = `<div class="hm-head" data-in="0">${brand.logo('wmen', { style: 'width:150px;height:23.6px' })}<button type="button" class="ibtn" data-go="inbox" aria-label="กล่องแจ้งเตือน${unread ? ' มีรายการใหม่' : ''}">${ic('bell', 23, 1.8)}${unread ? '<i class="dot"></i>' : ''}</button></div>`;
+    const head = homeBanner(S);
     if (st === 'loading') {
-      return ui.page(`${head}<div class="hm-hi">${ui.skel('62%', 28)}<span class="mt8" style="display:block">${ui.skel('44%', 16)}</span></div>
-        <div class="skel" style="height:236px;border-radius:20px;margin-top:20px"></div>
-        <div class="hm-quick mt24">${'<div class="skel" style="height:96px;border-radius:14px"></div>'.repeat(4)}</div>`, { nonav: true });
+      return ui.page(`<div class="hm-content">${head}<div class="hm-loading" aria-busy="true" aria-label="กำลังโหลดหน้าหลัก"><div class="hm-loading-shortcuts">${Array.from({length:4}, () => '<span class="skel"></span>').join('')}</div><div class="skel hm-loading-card"></div><div class="skel hm-loading-card"></div></div></div>`, { nonav: true });
     }
-    const last = S.history[0];
     const quick = [
-      ['adr', 'heart-pulse', 'แพ้ยา / ผลข้างเคียง'],
-      ['family', 'users', 'สมาชิกในบ้าน'],
-      ['health', 'clipboard-list', 'ข้อมูลสุขภาพของฉัน'],
-      ['history', 'history', 'ประวัติการปรึกษา']
+      ['adr', 'heart-pulse', 'แพ้ยา'],
+      ['family', 'users', 'ครอบครัว'],
+      ['health', 'clipboard-list', 'สุขภาพ'],
+      ['follow', 'pill', 'ติดตามยา'],
+      ['history', 'history', 'ประวัติ']
     ];
+    const updates = [TP.orderReadyRow?.(S, { din: 2 }) || '',
+      S._fidOffer && !S.faceId && !TP.caseOpen() ? fidCard() : '',
+      S.ofPending ? ui.group([ui.row({ icon: 'message-square-text', title: 'คำถามที่ฝากไว้', sub: `${S.ofPending.whoName} · ฝากไว้ ${S.ofPending.at} · เภสัชกรจะตอบ${TP.OF_REPLY}`, chev: false })]) : ''
+    ].filter(Boolean).join('');
+    const shortcuts = `<nav class="hm-mini-menu" aria-label="ดูแลสุขภาพของคุณ">${quick.map(([go, icon, label]) => `<button type="button" class="hm-mini-item" ${go === 'adr' ? 'aria-label="แพ้ยา / ผลข้างเคียง"' : ''} ${go === 'history' ? 'data-tab="history"' : `data-go="${go}"`}><span class="hm-mini-icon">${ic(icon, 22, 1.8)}</span><span>${esc(label)}</span></button>`).join('')}</nav>`;
     return ui.page(`<div class="hm-content">${head}
-      <div class="hm-hi" data-in="0"><h2>สวัสดี${S.user.name ? ' คุณ' + esc(S.user.name) : ''}</h2><p>ดูร้านยาใกล้คุณ แล้วปรึกษาเภสัชกรได้เลย</p></div>
+      ${shortcuts}
       ${heroHtml(S, st)}
       ${(st === 'active' || TP.caseOpen()) ? nearbyStoresHtml(S, { hideAction: true }) : ''}
-      ${TP.orderReadyRow?.(S, { din: 2 }) || ''}
-      ${TP.followHomeCard?.(S, { din: 2 }) || ''}
-      ${S._fidOffer && !S.faceId && !TP.caseOpen() ? fidCard() : ''}
-      ${S.ofPending ? ui.group([ui.row({ icon: 'message-square-text', title: 'คำถามที่ฝากไว้', sub: `${S.ofPending.whoName} · ฝากไว้ ${S.ofPending.at} · เภสัชกรจะตอบ${TP.OF_REPLY}`, chev: false })], { din: 2 }) : ''}
-      <section class="hm-tools" aria-label="ดูแลสุขภาพ"><h2 class="hm-section-title">ดูแลสุขภาพของคุณ</h2><div class="hm-quick">${quick.map(([go, i, t], n) => `<button type="button" class="qk" ${go === 'history' ? 'data-tab="history"' : `data-go="${go}"`} data-in="${3 + n}"><span class="qk-i">${ic(i, 22, 1.8)}</span><b>${esc(t)}</b></button>`).join('')}</div></section>
-      ${last ? `<section class="hm-recent" aria-label="การปรึกษาล่าสุด">${ui.secH('ล่าสุด', { link: { label: 'ดูทั้งหมด', a: 'tabHistory' } })}
-      ${ui.group([ui.row({ av: ui.av('', { ini: TP.PHARM[last.pharm].ini }), title: last.topic, sub: `${last.date} · ${TP.PHARM[last.pharm].short} · ${TP.branch(last.branch).short}`, go: 'summary', p: { id: last.id } })], { rv: true })}</section>` : ''}
-      <p class="hm-trust" data-rv>${ic('badge-check', 16, 2)}<span>เภสัชกรทุกท่านมีใบอนุญาต ตรวจสอบได้ก่อนเริ่มคุย</span></p></div>`, { nonav: true });
+      ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}
+
+      </div>`, { nonav: true });
   }
 });
 TP.act('tabHistory', () => TP.tab('history'));
@@ -2242,9 +2388,10 @@ TP.act('tabHistory', () => TP.tab('history'));
 const fidCard = () => `<article class="card hm-fid" data-in="2"><div class="hm-fid-h"><span class="hm-fid-i">${ic('scan-face', 22, 1.9)}</span><div class="grow"><b>เปิดแอปด้วย Face ID หรือลายนิ้วมือ</b><span>คนอื่นที่ใช้เครื่องนี้เปิดดูประวัติการปรึกษาของคุณไม่ได้</span></div></div>
   <div class="btn-row mt12">${ui.btn('ไม่ใช่ตอนนี้', { kind: 'secondary', sm: true, a: 'hmFidNo' })}${ui.btn('เปิดใช้', { sm: true, go: 'faceid', via: 'push' })}</div></article>`;
 TP.act('hmFidNo', () => { Object.assign(TP.S, { _fidOffer: false, _fidAsked: true }); TP.refresh({ anim: false }); TP.notify('เปิดได้ภายหลังที่หน้าบัญชี', { icon: 'info' }); });
-TP.act('hmStart', () => {
+TP.act('hmStart', t => {
   const S = TP.S;
   if (S.case && !TP.caseOpen()) Object.assign(S.intake, { who: 'me', symptoms: [], custom: [], otherOpen: false, urgent: [], note: '', photos: 0 });
+  if (['chat','video'].includes(t?.dataset?.mode)) S.intake.mode = t.dataset.mode;
   const g = !TP.caseOpen() && TP.areaGate?.();
   if (g) { S.st.area = g; TP.go('area'); return; }
   TP.go(S.sysOff && TP.SCREENS.sysoff ? 'sysoff' : 'intake');
@@ -2255,8 +2402,8 @@ TP.act('hmStart', () => {
    ===================================================================== */
 TP.areaGate = () => {
   const S = TP.S;
-  if (S.loc === 'ask') return 'ask';
-  if (S.loc === 'deny') return S.locDenySeen ? '' : 'deny';
+  if (!TP.homeAddress?.() && S.loc === 'ask') return 'ask';
+  if (!TP.homeAddress?.() && S.loc === 'deny') return S.locDenySeen ? '' : 'deny';
   const z = TP.locZone(); if (!z || z.ok) return '';
   /* owner 21/10: lock ON = no consult beyond 15 km · lock OFF = consult anyway, told once first that express cannot reach */
   return TP.zoneLock() ? 'out' : S.locWarnSeen ? '' : 'warn';
@@ -2344,24 +2491,25 @@ document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target?.i
 /* ---------- branch sheet (C03, A10 queue counts) ---------- */
 TP.sheetDef('branch', {
   group: 'before', title: 'เลือกสาขา', code: 'C202', ref: 'C03', host: 'home',
-  states: [['normal', 'เปิดตำแหน่ง'], ['noloc', 'ไม่ให้ตำแหน่ง']],
+  states: [['normal', 'ร้านตามที่อยู่'], ['noloc', 'ยังไม่ได้เลือกที่อยู่'], ['outarea', 'ไม่มีร้านในพื้นที่']],
   notes: ['เรียงจากใกล้สุด เลือกสาขาใกล้สุดที่เปิดรับให้อัตโนมัติ', 'A10: โชว์จำนวนคิวของแต่ละสาขา', 'พัก = เข้าคิวรอได้ ไม่เสียคิว · ปิดรับ = เลือกไม่ได้ พร้อมเหตุผล', 'ไม่ให้ตำแหน่ง = ไม่ตัน สาขาที่ใช้ล่าสุดอยู่บนสุด'],
   render(ctx) {
-    const S = ctx.S, noloc = ctx.state === 'noloc';
-    const list = [...TP.BRANCHES].sort((a, b) => noloc ? (a.id === S.branch ? -1 : 1) : a.km - b.km);
-    return `${noloc ? ui.note('ยังไม่ได้อนุญาตตำแหน่ง เรียงจากสาขาที่คุณใช้ล่าสุด <button type="button" class="link" data-a="askLoc">อนุญาตตำแหน่ง</button>', { icon: 'map-pin' }) : `<p class="small" style="margin:0 4px 12px">${ic('navigation', 14, 2)} เรียงจากใกล้คุณที่สุด</p>`}
+    const S = ctx.S, noloc = !TP.homeAddress();
+    const list = TP.homeStores();
+    if (!list.length) return `<div class="hm-empty"><h3>${noloc ? 'เลือกที่อยู่จัดส่งก่อน' : 'ไม่มีร้านในบริเวณที่อยู่นี้'}</h3><p>กลับหน้าแรกเพื่อเลือกหรือแก้ไขที่อยู่จัดส่ง</p></div>`;
+    return `${noloc ? ui.note('ยังไม่ได้อนุญาตตำแหน่ง เรียงจากสาขาที่คุณใช้ล่าสุด <button type="button" class="link" data-a="askLoc">อนุญาตตำแหน่ง</button>', { icon: 'map-pin' }) : `<p class="small" style="margin:0 4px 12px">${ic('navigation', 14, 2)} เรียงจากใกล้ที่อยู่ที่เลือกที่สุด</p>`}
       <div class="opts mt12" data-radio-scope>${list.map(b => {
-        const st = S.branchState[b.id], q = S.queueLen[b.id] || 0;
+        const st = S.storeOpen === false ? 'closed' : S.branchState[b.id], q = S.queueLen[b.id] || 0;
         const sub = (b.area ? b.area + ' · ' : '') + (st === 'open' ? `รอก่อนคุณ ${q} คน · ${b.hours}` : st === 'pause' ? `เภสัชกรดูแลหน้าร้าน · คิวรอ ${q} คน · รอได้ไม่เสียคิว` : 'ปิดรับปรึกษาวันนี้ · เปิดพรุ่งนี้ 09:00');
-        return `<button type="button" class="opt br-opt" role="radio" data-radio="br" data-v="${b.id}" aria-checked="${b.id === S.branch}" ${st === 'closed' ? 'disabled' : ''}>${ui.radioMark}<span class="tx"><b>${esc(b.name)}</b><span>${esc(sub)}</span></span><span class="br-r">${noloc ? '' : `<span class="small">${b.km} กม.</span>`}${stateTag(st)}</span></button>`;
+        return `<button type="button" class="opt br-opt" role="radio" data-radio="br" data-v="${b.id}" aria-checked="${b.id === S.branch}" ${st === 'closed' ? 'disabled' : ''}>${ui.radioMark}<span class="tx"><b>${esc(b.name)}</b><span>${esc(sub)}</span></span><span class="br-r">${noloc ? '' : `<span class="small">${TP.homeDistance(b)} กม.</span>`}${stateTag(st)}</span></button>`;
       }).join('')}</div>`;
   },
-  foot: () => ui.btn('ใช้สาขานี้', { a: 'pickBranch' }),
-  prep(S) { S.branchState.on = S.branchState.on || 'pause'; }
+  foot: () => ui.btn('ใช้สาขานี้', { a: 'pickBranch', disabled: !TP.homeStores().some(b => TP.S.storeOpen !== false && TP.S.branchState[b.id] !== 'closed') }),
+  prep(S) { S.branchState.on = S.branchState.on || 'pause'; TP.homeScenario(S, S.st.branch === 'noloc' ? 'noaddress' : S.st.branch === 'outarea' ? 'outarea' : 'normal'); }
 });
 TP.act('pickBranch', (t, ctx) => {
   const v = $('.br-opt[aria-checked=true]', $('#sheet'))?.dataset.v;
-  if (v) { TP.S.branch = v; TP.S.branchPicked = true; TP.S.autoReason = ''; }
+  if (v && TP.homeStores().some(b => b.id === v && TP.S.storeOpen !== false && TP.S.branchState[b.id] !== 'closed')) { TP.S.branch = v; TP.S.branchPicked = true; TP.S.autoReason = ''; }
   TP.closeSheet().then(() => { TP.refresh(); TP.notify('เปลี่ยนเป็น' + TP.branch().name, { icon: 'map-pin' }); });
 });
 TP.act('askLoc', () => { TP.S.st.branch = 'normal'; TP.closeSheet({ instant: true }).then(() => TP.sheet('branch')); });
@@ -3420,7 +3568,7 @@ const fmtAddr = a => [a.house, a.alley, a.road && 'ถ.' + a.road, 'ต.' + a.di
 TP.fmtAddr = fmtAddr;
 const fmtPhone = s => { const d = String(s || '').replace(/\D/g, ''); return d.length === 10 ? `${d.slice(0, 3)}-${d.slice(3, 6)}-${d.slice(6)}` : d.length === 9 ? `${d.slice(0, 2)}-${d.slice(2, 5)}-${d.slice(5)}` : String(s || ''); };
 /* defaults: pickup checked (owner 19/10, website checkout CSM:409) · main address checked · PromptPay checked (PL:550) · Flash checked (PL courier block) */
-const P = () => TP.S.pay || (TP.S.pay = { recv: 'pickup', courier: 'flash', addr: (addrs().find(a => a.main) || addrs()[0])?.id || null, method: 'promptpay', bank: 'KBANK', form: null, q: null, geo: '', geoMsg: '', moved: false, pinXY: null, acc: 0 });
+const P = () => TP.S.pay || (TP.S.pay = { recv: 'pickup', courier: 'flash', addr: (TP.homeAddress?.() || addrs().find(a => a.main) || addrs()[0])?.id || null, method: 'promptpay', bank: 'KBANK', form: null, q: null, geo: '', geoMsg: '', moved: false, pinXY: null, acc: 0 });
 const addr = () => addrs().find(a => a.id === P().addr) || null;
 const qKey = () => P().recv + ':' + (addr()?.id || '');
 const quoted = () => P().q?.st === 'done' && P().q.key === qKey();
@@ -4959,7 +5107,7 @@ function openNote(n) {
   return TP.go(n.go, { params });
 }
 TP.screen('inbox', {
-  group: 'after', title: 'กล่องแจ้งเตือน', code: 'C404', ref: 'A13', parent: 'home',
+  group: 'after', title: 'กล่องแจ้งเตือน', code: 'C404', ref: 'A13', tab: 'inbox',
   states: [['normal', 'มีรายการใหม่'], ['read', 'อ่านหมดแล้ว'], ['empty', 'ยังไม่มี']],
   notes: ['A13: รอบแรกไม่มี SMS / LINE flex ใช้กล่องแจ้งเตือนในแอปแทน', 'ข้อความเป็นคำกลาง ๆ ไม่มีอาการ ชื่อยา หรือยอดเงิน (PDPA)', 'ยังไม่อ่าน = จุด + ตัวหนา ไม่ใช้สีอย่างเดียว', 'แตะแล้วไปจอที่เกี่ยวข้อง · อ่านทั้งหมดได้ในครั้งเดียว'],
   prep(S) {
@@ -5015,7 +5163,8 @@ TP.screen('account', {
       ${ui.group([
         ui.row({ icon: 'user', title: 'ข้อมูลส่วนตัว', sub: 'ชื่อ นามสกุล ปีเกิด เพศ', a: 'afEditProf' }),
         ui.row({ icon: 'users', title: 'สมาชิกในบ้าน', sub: S.family.length ? `${S.family.length} คน · ปรึกษาแทนคนในบ้านได้` : 'ยังไม่มีสมาชิก', go: 'family' }),
-        ui.row({ icon: 'clipboard-list', title: 'ข้อมูลสุขภาพของฉัน', sub: algText(u), go: 'health' })
+        ui.row({ icon: 'clipboard-list', title: 'ข้อมูลสุขภาพของฉัน', sub: algText(u), go: 'health' }),
+        ui.row({ icon: 'map-pin', title: 'สมุดที่อยู่', sub: 'เพิ่ม แก้ไข และตั้งที่อยู่หลัก', go: 'addressbook' })
       ], { title: 'ข้อมูลของฉัน', din: 2 })}
       ${ui.group([ui.row({ icon: 'shield-check', title: 'ความยินยอม', sub: `PDPA ฉบับที่ ${S.consentVer} · ${S.consent ? 'ยินยอมแล้ว' : 'ถอนแล้ว'}`, go: 'consents' })], { title: 'ความเป็นส่วนตัว', din: 3 })}
       ${ui.group([

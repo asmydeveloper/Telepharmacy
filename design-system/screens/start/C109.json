@@ -1,0 +1,27 @@
+{
+  "code": "C109",
+  "screen": "onboard",
+  "title": "แนะนำแอป",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C109.1",
+      "state": "p1",
+      "label": "หน้า 1 เภสัชกรตัวจริง",
+      "url": "/?screen=onboard&state=p1&splash=0"
+    },
+    {
+      "code": "C109.2",
+      "state": "p2",
+      "label": "หน้า 2 เวลาให้บริการ",
+      "url": "/?screen=onboard&state=p2&splash=0"
+    },
+    {
+      "code": "C109.3",
+      "state": "p3",
+      "label": "หน้า 3 ขั้นตอนและความเสี่ยง",
+      "url": "/?screen=onboard&state=p3&splash=0"
+    }
+  ]
+}

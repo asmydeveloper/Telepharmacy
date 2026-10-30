@@ -1,0 +1,21 @@
+{
+  "code": "C105",
+  "screen": "consent",
+  "title": "ยินยอมให้ใช้ข้อมูล",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C105.1",
+      "state": "first",
+      "label": "ยินยอมภายหลัง",
+      "url": "/?screen=consent&state=first&splash=0"
+    },
+    {
+      "code": "C105.2",
+      "state": "reconsent",
+      "label": "ฉบับใหม่ ขอยินยอมอีกครั้ง",
+      "url": "/?screen=consent&state=reconsent&splash=0"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "code": "C103",
+  "screen": "otp",
+  "title": "กรอกรหัส OTP",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C103.1",
+      "state": "normal",
+      "label": "ปกติ",
+      "url": "/?screen=otp&state=normal&splash=0"
+    },
+    {
+      "code": "C103.2",
+      "state": "wrong",
+      "label": "รหัสผิด",
+      "url": "/?screen=otp&state=wrong&splash=0"
+    },
+    {
+      "code": "C103.3",
+      "state": "expired",
+      "label": "รหัสหมดอายุ",
+      "url": "/?screen=otp&state=expired&splash=0"
+    },
+    {
+      "code": "C103.4",
+      "state": "newacct",
+      "label": "ผ่านแล้วไป: เบอร์ใหม่",
+      "url": "/?screen=otp&state=newacct&splash=0"
+    },
+    {
+      "code": "C103.5",
+      "state": "hasacct",
+      "label": "ผ่านแล้วไป: มีบัญชีเว็บ",
+      "url": "/?screen=otp&state=hasacct&splash=0"
+    },
+    {
+      "code": "C103.6",
+      "state": "returning",
+      "label": "ผ่านแล้วไป: เคยใช้แอป",
+      "url": "/?screen=otp&state=returning&splash=0"
+    }
+  ]
+}

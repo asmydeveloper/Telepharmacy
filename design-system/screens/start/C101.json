@@ -1,0 +1,15 @@
+{
+  "code": "C101",
+  "screen": "splash",
+  "title": "เปิดแอป",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C101",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=splash&splash=0"
+    }
+  ]
+}

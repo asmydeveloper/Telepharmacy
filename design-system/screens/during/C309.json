@@ -1,0 +1,63 @@
+{
+  "code": "C309",
+  "screen": "paid",
+  "title": "ชำระสำเร็จ",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C309.1",
+      "state": "pickup",
+      "label": "รับที่ร้าน",
+      "url": "/?screen=paid&state=pickup&splash=0"
+    },
+    {
+      "code": "C309.2",
+      "state": "parcel",
+      "label": "ส่งพัสดุ",
+      "url": "/?screen=paid&state=parcel&splash=0"
+    },
+    {
+      "code": "C309.3",
+      "state": "express",
+      "label": "ส่งด่วน",
+      "url": "/?screen=paid&state=express&splash=0"
+    },
+    {
+      "code": "C309.4",
+      "state": "night",
+      "label": "จ่ายตอนร้านปิด",
+      "url": "/?screen=paid&state=night&splash=0"
+    },
+    {
+      "code": "C309.5",
+      "state": "ready",
+      "label": "ยาพร้อมรับแล้ว",
+      "url": "/?screen=paid&state=ready&splash=0"
+    },
+    {
+      "code": "C309.6",
+      "state": "sent",
+      "label": "ส่งพัสดุแล้ว มีเลขพัสดุ",
+      "url": "/?screen=paid&state=sent&splash=0"
+    },
+    {
+      "code": "C309.7",
+      "state": "rider",
+      "label": "ไรเดอร์รับยาแล้ว",
+      "url": "/?screen=paid&state=rider&splash=0"
+    },
+    {
+      "code": "C309.8",
+      "state": "cold",
+      "label": "ส่งเย็น Inter Express มีเลขพัสดุ",
+      "url": "/?screen=paid&state=cold&splash=0"
+    },
+    {
+      "code": "C309.9",
+      "state": "overdue",
+      "label": "เลยกำหนดรับยา",
+      "url": "/?screen=paid&state=overdue&splash=0"
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "code": "C308",
+  "screen": "pay",
+  "title": "ชำระเงิน",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C308.1",
+      "state": "normal",
+      "label": "รับที่ร้าน (ค่าเริ่มต้น)",
+      "url": "/?screen=pay&state=normal&splash=0"
+    },
+    {
+      "code": "C308.2",
+      "state": "parcel",
+      "label": "ส่งพัสดุ",
+      "url": "/?screen=pay&state=parcel&splash=0"
+    },
+    {
+      "code": "C308.3",
+      "state": "express",
+      "label": "ส่งด่วน ยังไม่ปักหมุด",
+      "url": "/?screen=pay&state=express&splash=0"
+    },
+    {
+      "code": "C308.4",
+      "state": "noaddr",
+      "label": "ยังไม่มีที่อยู่",
+      "url": "/?screen=pay&state=noaddr&splash=0"
+    },
+    {
+      "code": "C308.5",
+      "state": "form",
+      "label": "กำลังเพิ่มที่อยู่",
+      "url": "/?screen=pay&state=form&splash=0"
+    },
+    {
+      "code": "C308.6",
+      "state": "closed",
+      "label": "ร้านปิด",
+      "url": "/?screen=pay&state=closed&splash=0"
+    },
+    {
+      "code": "C308.7",
+      "state": "card",
+      "label": "จ่ายด้วยบัตร",
+      "url": "/?screen=pay&state=card&splash=0"
+    },
+    {
+      "code": "C308.8",
+      "state": "otp",
+      "label": "บัตร: หน้ายืนยันของธนาคาร",
+      "url": "/?screen=pay&state=otp&splash=0"
+    },
+    {
+      "code": "C308.9",
+      "state": "qr",
+      "label": "หน้า QR พร้อมเพย์",
+      "url": "/?screen=pay&state=qr&splash=0"
+    },
+    {
+      "code": "C308.10",
+      "state": "qrexp",
+      "label": "QR หมดอายุ",
+      "url": "/?screen=pay&state=qrexp&splash=0"
+    },
+    {
+      "code": "C308.11",
+      "state": "bankon",
+      "label": "เลือกแอปธนาคาร",
+      "url": "/?screen=pay&state=bankon&splash=0"
+    },
+    {
+      "code": "C308.12",
+      "state": "bankapp",
+      "label": "หน้าแอปธนาคาร",
+      "url": "/?screen=pay&state=bankapp&splash=0"
+    },
+    {
+      "code": "C308.13",
+      "state": "checking",
+      "label": "กำลังตรวจสอบการชำระ",
+      "url": "/?screen=pay&state=checking&splash=0"
+    },
+    {
+      "code": "C308.14",
+      "state": "expmap",
+      "label": "ส่งด่วน ปักหมุดเองบนแผนที่",
+      "url": "/?screen=pay&state=expmap&splash=0"
+    },
+    {
+      "code": "C308.15",
+      "state": "exppin",
+      "label": "ส่งด่วน ยืนยันตำแหน่งแล้ว",
+      "url": "/?screen=pay&state=exppin&splash=0"
+    },
+    {
+      "code": "C308.16",
+      "state": "locdeny",
+      "label": "ส่งด่วน ไม่ให้สิทธิ์ตำแหน่ง",
+      "url": "/?screen=pay&state=locdeny&splash=0"
+    },
+    {
+      "code": "C308.17",
+      "state": "far",
+      "label": "กรุงเทพแต่เกิน 15 กม.",
+      "url": "/?screen=pay&state=far&splash=0"
+    },
+    {
+      "code": "C308.18",
+      "state": "outzone",
+      "label": "ที่อยู่นอกเขตส่งยา",
+      "url": "/?screen=pay&state=outzone&splash=0"
+    },
+    {
+      "code": "C308.19",
+      "state": "recvoff",
+      "label": "เภสัชกรปิดบางทาง",
+      "url": "/?screen=pay&state=recvoff&splash=0"
+    },
+    {
+      "code": "C308.20",
+      "state": "cold",
+      "label": "มียาเก็บเย็น",
+      "url": "/?screen=pay&state=cold&splash=0"
+    },
+    {
+      "code": "C308.21",
+      "state": "unlock",
+      "label": "ปลดล็อกเขต ส่งพัสดุได้",
+      "url": "/?screen=pay&state=unlock&splash=0"
+    }
+  ]
+}

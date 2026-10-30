@@ -1,0 +1,51 @@
+{
+  "code": "C414",
+  "screen": "track",
+  "title": "ติดตามพัสดุ",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C414.1",
+      "state": "transit",
+      "label": "กำลังขนส่ง",
+      "url": "/?screen=track&state=transit&splash=0"
+    },
+    {
+      "code": "C414.2",
+      "state": "delivered",
+      "label": "ส่งถึงแล้ว",
+      "url": "/?screen=track&state=delivered&splash=0"
+    },
+    {
+      "code": "C414.3",
+      "state": "received",
+      "label": "กดได้รับยาแล้ว",
+      "url": "/?screen=track&state=received&splash=0"
+    },
+    {
+      "code": "C414.4",
+      "state": "cold",
+      "label": "ส่งเย็น Inter Express",
+      "url": "/?screen=track&state=cold&splash=0"
+    },
+    {
+      "code": "C414.5",
+      "state": "rider",
+      "label": "ส่งด่วน Lalamove",
+      "url": "/?screen=track&state=rider&splash=0"
+    },
+    {
+      "code": "C414.6",
+      "state": "prep",
+      "label": "ร้านยังไม่ส่งของ",
+      "url": "/?screen=track&state=prep&splash=0"
+    },
+    {
+      "code": "C414.7",
+      "state": "coldlink",
+      "label": "ส่งเย็น ร้านแปะลิงก์ติดตาม",
+      "url": "/?screen=track&state=coldlink&splash=0"
+    }
+  ]
+}

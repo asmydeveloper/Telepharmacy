@@ -1,0 +1,27 @@
+{
+  "code": "C403",
+  "screen": "history",
+  "title": "ประวัติ",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C403.1",
+      "state": "normal",
+      "label": "มีรายการ",
+      "url": "/?screen=history&state=normal&splash=0"
+    },
+    {
+      "code": "C403.2",
+      "state": "empty",
+      "label": "ยังไม่มี",
+      "url": "/?screen=history&state=empty&splash=0"
+    },
+    {
+      "code": "C403.3",
+      "state": "loading",
+      "label": "กำลังโหลด",
+      "url": "/?screen=history&state=loading&splash=0"
+    }
+  ]
+}

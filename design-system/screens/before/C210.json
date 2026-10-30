@@ -1,0 +1,27 @@
+{
+  "code": "C210",
+  "screen": "homeaddress",
+  "title": "เลือกที่อยู่จัดส่ง",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C210.1",
+      "state": "normal",
+      "label": "มีที่อยู่",
+      "url": "/?screen=homeaddress&state=normal&splash=0"
+    },
+    {
+      "code": "C210.2",
+      "state": "empty",
+      "label": "ยังไม่มีที่อยู่",
+      "url": "/?screen=homeaddress&state=empty&splash=0"
+    },
+    {
+      "code": "C210.3",
+      "state": "named",
+      "label": "ที่อยู่ตั้งชื่อเอง",
+      "url": "/?screen=homeaddress&state=named&splash=0"
+    }
+  ]
+}

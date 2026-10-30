@@ -1,0 +1,27 @@
+{
+  "code": "C505",
+  "screen": "health",
+  "title": "ข้อมูลสุขภาพของฉัน",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C505.1",
+      "state": "normal",
+      "label": "มีข้อมูล",
+      "url": "/?screen=health&state=normal&splash=0"
+    },
+    {
+      "code": "C505.2",
+      "state": "unknown",
+      "label": "ยังไม่ระบุ",
+      "url": "/?screen=health&state=unknown&splash=0"
+    },
+    {
+      "code": "C505.3",
+      "state": "sfx",
+      "label": "มีผลข้างเคียงที่เคยมี",
+      "url": "/?screen=health&state=sfx&splash=0"
+    }
+  ]
+}

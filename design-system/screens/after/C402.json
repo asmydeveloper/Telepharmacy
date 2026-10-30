@@ -1,0 +1,39 @@
+{
+  "code": "C402",
+  "screen": "receipt",
+  "title": "ใบเสร็จรับเงิน",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C402.1",
+      "state": "normal",
+      "label": "รับที่ร้าน พร้อมเพย์",
+      "url": "/?screen=receipt&state=normal&splash=0"
+    },
+    {
+      "code": "C402.2",
+      "state": "parcel",
+      "label": "ส่งพัสดุ จ่ายบัตร",
+      "url": "/?screen=receipt&state=parcel&splash=0"
+    },
+    {
+      "code": "C402.3",
+      "state": "notax",
+      "label": "บัญชียังไม่มีที่อยู่",
+      "url": "/?screen=receipt&state=notax&splash=0"
+    },
+    {
+      "code": "C402.4",
+      "state": "taxdone",
+      "label": "ดาวน์โหลดตัวเต็มแล้ว",
+      "url": "/?screen=receipt&state=taxdone&splash=0"
+    },
+    {
+      "code": "C402.5",
+      "state": "late",
+      "label": "เลยกำหนดออกตัวเต็ม",
+      "url": "/?screen=receipt&state=late&splash=0"
+    }
+  ]
+}

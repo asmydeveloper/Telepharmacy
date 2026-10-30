@@ -1,0 +1,33 @@
+{
+  "code": "C401",
+  "screen": "summary",
+  "title": "ใบสรุปการปรึกษา",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C401.1",
+      "state": "normal",
+      "label": "มียา",
+      "url": "/?screen=summary&state=normal&splash=0"
+    },
+    {
+      "code": "C401.2",
+      "state": "nomeds",
+      "label": "ไม่ได้ซื้อยา",
+      "url": "/?screen=summary&state=nomeds&splash=0"
+    },
+    {
+      "code": "C401.3",
+      "state": "closed",
+      "label": "เพิ่งจบเคส",
+      "url": "/?screen=summary&state=closed&splash=0"
+    },
+    {
+      "code": "C401.4",
+      "state": "rated",
+      "label": "ให้คะแนนแล้ว",
+      "url": "/?screen=summary&state=rated&splash=0"
+    }
+  ]
+}

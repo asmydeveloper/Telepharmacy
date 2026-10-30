@@ -1,0 +1,21 @@
+{
+  "code": "C501",
+  "screen": "account",
+  "title": "บัญชี",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C501.1",
+      "state": "normal",
+      "label": "ปกติ",
+      "url": "/?screen=account&state=normal&splash=0"
+    },
+    {
+      "code": "C501.2",
+      "state": "withdrawn",
+      "label": "ถอนความยินยอมแล้ว",
+      "url": "/?screen=account&state=withdrawn&splash=0"
+    }
+  ]
+}

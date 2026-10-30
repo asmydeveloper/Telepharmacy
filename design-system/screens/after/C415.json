@@ -1,0 +1,15 @@
+{
+  "code": "C415",
+  "screen": "gotask",
+  "title": "ยืนยันได้รับยา",
+  "group": "after",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C415",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=gotask&splash=0"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "code": "C202",
+  "screen": "branch",
+  "title": "เลือกสาขา",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C202.1",
+      "state": "normal",
+      "label": "ร้านตามที่อยู่",
+      "url": "/?screen=branch&state=normal&splash=0"
+    },
+    {
+      "code": "C202.2",
+      "state": "noloc",
+      "label": "ยังไม่ได้เลือกที่อยู่",
+      "url": "/?screen=branch&state=noloc&splash=0"
+    },
+    {
+      "code": "C202.3",
+      "state": "outarea",
+      "label": "ไม่มีร้านในพื้นที่",
+      "url": "/?screen=branch&state=outarea&splash=0"
+    }
+  ]
+}

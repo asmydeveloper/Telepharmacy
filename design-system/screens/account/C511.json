@@ -1,0 +1,27 @@
+{
+  "code": "C511",
+  "screen": "deleteacc",
+  "title": "ลบบัญชี",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C511.1",
+      "state": "normal",
+      "label": "ลบได้",
+      "url": "/?screen=deleteacc&state=normal&splash=0"
+    },
+    {
+      "code": "C511.2",
+      "state": "blocked",
+      "label": "มีการปรึกษาค้าง",
+      "url": "/?screen=deleteacc&state=blocked&splash=0"
+    },
+    {
+      "code": "C511.3",
+      "state": "unpaid",
+      "label": "มีรายการรอชำระ",
+      "url": "/?screen=deleteacc&state=unpaid&splash=0"
+    }
+  ]
+}

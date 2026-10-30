@@ -1,0 +1,15 @@
+{
+  "code": "C508",
+  "screen": "consentwd",
+  "title": "ถอนความยินยอม",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C508",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=consentwd&splash=0"
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const vm = require('node:vm');
+const source = fs.readFileSync('public/runtime/customer.js', 'utf8');
+const registrations = {}, actions = {}, storage = new Map();
+const addresses = [{id:'a1',first:'สมใจ',last:'ใจดี',house:'88/12',dist:'ทวีวัฒนา',prov:'กรุงเทพมหานคร',main:true},{id:'a2',first:'สมใจ',last:'ใจดี',house:'99/9',dist:'คลองเตย',prov:'กรุงเทพมหานคร',main:false}];
+const TP = {
+  S: {addrs:structuredClone(addresses),branch:'tw',branchState:{tw:'open',on:'pause'},st:{},user:{name:'สมใจ'}},
+  BRANCHES:[{id:'tw',km:1.2},{id:'on',km:4.8}], ZONE_KM:15,
+  fresh:()=>({addrs:structuredClone(addresses)}),
+  screen:(id,def)=>registrations[id]=def, sheetDef:(id,def)=>registrations[id]=def,
+  act:(id,fn)=>actions[id]=fn, branch(id){return this.BRANCHES.find(b=>b.id===(id||this.S.branch))},
+  fmtAddr:a=>a.house+' '+a.dist, refresh:()=>{}, notify:()=>{}, closeSheet:()=>Promise.resolve(), go:()=>{}, sheet:()=>{},
+};
+const context = vm.createContext({TP,ui:{},esc:String,ic:()=>'',location:{search:''},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},URLSearchParams,structuredClone,document:{},console});
+const zoneStart=source.indexOf('const ROAD_KM =');
+const zoneEnd=source.indexOf('\n',source.indexOf('TP.zoneOf =',zoneStart));
+vm.runInContext(source.slice(zoneStart,zoneEnd),context);
+const start=source.indexOf('/* C210 / C211 / C514 / C515:');
+const end=source.indexOf('/* C201: selected nearby pharmacy',start);
+const feature=source.slice(start,end);
+vm.runInContext(feature,context);
+const pickStart=source.indexOf('TP.pickBranch = () => {');
+vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),context);
+(async()=>{
+  assert.equal(TP.homeAddress().id,'a1');
+  assert.equal(TP.homeDistance(TP.BRANCHES[0]),2.4);
+  assert.equal(TP.homeStores().map(b=>b.id).join(','),'tw');
+  await actions.hmSelectAddress({dataset:{v:'a2'}});
+  assert.equal(TP.homeAddress().id,'a2');
+  assert.equal(TP.S.addrs.find(a=>a.main).id,'a1','choosing an address must not change the default');
+  assert.equal(TP.homeStores().map(b=>b.id).join(','),'on');
+  assert.equal(TP.pickBranch().id,'on');
+  actions.hmMainAddress({dataset:{v:'a2'}});
+  assert.equal(TP.S.addrs.filter(a=>a.main).length,1);
+  assert.equal(TP.homeAddress().id,'a2');
+  actions.hmFavorite({dataset:{v:'on'}});
+  assert.equal(TP.S.favoriteBranches.join(','),'on');
+  actions.hmFavorite({dataset:{v:'on'}});
+  assert.equal(TP.S.favoriteBranches.length,0);
+  TP.homeScenario(TP.S,'outarea');assert.equal(TP.homeStores().length,0);
+  TP.homeScenario(TP.S,'unknownarea');assert.equal(TP.homeStores().length,0);
+  TP.homeScenario(TP.S,'noaddress');assert.equal(TP.homeAddress(),null);
+  TP.homeScenario(TP.S,'normal');assert.equal(TP.homeAddress().id,'a2');
+  const inputs = {};
+  for (const [key, value] of Object.entries({label:'บ้านแม่',first:'ทดสอบ',last:'ผู้รับ',phone:'0812345678',house:'15/2',alley:'',road:'สุขุมวิท',dist:'อ่อนนุช',amp:'สวนหลวง',prov:'กรุงเทพมหานคร',zip:'10250'})) {
+    inputs['home-address-'+key] = {value,checkValidity:()=>true,focus:()=>{},reportValidity:()=>{}};
+  }
+  inputs['home-address-main']={checked:true}; inputs['home-address-error']={textContent:''};
+  context.document.getElementById=id=>inputs[id];
+  TP.S._homeEditAddress=null;
+  inputs['home-address-phone'].checkValidity=()=>false;
+  const before=TP.S.addrs.length; actions.hmSaveAddress();
+  assert.equal(TP.S.addrs.length,before,'invalid form must not save');
+  assert.ok(inputs['home-address-error'].textContent);
+  inputs['home-address-phone'].checkValidity=()=>true;
+  actions.hmSaveAddress();
+  assert.equal(TP.S.addrs.length,before+1);
+  assert.equal(TP.homeAddress().road,'สุขุมวิท');
+  assert.equal(TP.addressName(TP.homeAddress()),'บ้านแม่');
+  assert.equal(JSON.parse(storage.get('mitraree.home.preferences.v1')).addrs.find(a=>a.main).label,'บ้านแม่');
+  TP.S._homeEditAddress=TP.homeAddress().id;
+  inputs['home-address-label'].value='ที่ทำงาน';
+  actions.hmSaveAddress();
+  assert.equal(TP.S.addrs.length,before+1,'renaming must not add another address');
+  assert.equal(TP.addressName(TP.homeAddress()),'ที่ทำงาน');
+  assert.equal(TP.addressName({main:true}),'ที่อยู่หลัก');
+  assert.equal(TP.homeAddress().main,true);
+  assert.equal(TP.S.addrs.filter(a=>a.main).length,1);
+  for(const id of ['homeaddress','addressbook','addressedit','favorites']) assert.ok(registrations[id].code && registrations[id].states.length>1);
+  assert.equal(new Set(Object.values(registrations).map(d=>d.code)).size,4);
+  const modeStart=source.indexOf("TP.act('hmConsultMode'");
+  vm.runInContext(source.slice(modeStart,source.indexOf("TP.act('hmChooseStore'",modeStart)),context);
+  const startAction=source.indexOf("TP.act('hmStart'");
+  vm.runInContext(source.slice(startAction,source.indexOf('\n});',startAction)+4),context);
+  TP.ACTS=actions; TP.caseOpen=()=>false; TP.areaGate=()=>'';
+  TP.S.intake={mode:'chat'}; TP.S.storeOpen=true; TP.S.sysOff=false; TP.S.case={status:'closed'};
+  let navigated=null; TP.go=id=>{navigated=id};
+  await actions.hmConsultMode({dataset:{v:'video',branch:'on'}});
+  assert.equal(TP.S.intake.mode,'video'); assert.equal(navigated,'intake');
+  await actions.hmConsultMode({dataset:{v:'chat',branch:'on'}});
+  assert.equal(TP.S.intake.mode,'chat');
+  navigated=null; TP.S.storeOpen=false;
+  await actions.hmConsultMode({dataset:{v:'video',branch:'on'}});
+  assert.equal(navigated,null,'closed store cannot start consultation');
+  console.log('PASS: selected address, nearby coverage, primary address, favorites, empty/outside/unknown cases and screen registrations');
+})().catch(e=>{console.error(e);process.exitCode=1});

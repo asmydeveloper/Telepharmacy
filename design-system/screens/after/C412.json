@@ -1,0 +1,27 @@
+{
+  "code": "C412",
+  "screen": "adr",
+  "title": "แจ้งอาการหลังใช้ยา",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C412.1",
+      "state": "normal",
+      "label": "ว่าง",
+      "url": "/?screen=adr&state=normal&splash=0"
+    },
+    {
+      "code": "C412.2",
+      "state": "filled",
+      "label": "กรอกแล้ว",
+      "url": "/?screen=adr&state=filled&splash=0"
+    },
+    {
+      "code": "C412.3",
+      "state": "severe",
+      "label": "อาการรุนแรง",
+      "url": "/?screen=adr&state=severe&splash=0"
+    }
+  ]
+}

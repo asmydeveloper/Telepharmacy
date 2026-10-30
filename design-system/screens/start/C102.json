@@ -1,0 +1,27 @@
+{
+  "code": "C102",
+  "screen": "login",
+  "title": "เข้าสู่ระบบ",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C102.1",
+      "state": "normal",
+      "label": "ปกติ",
+      "url": "/?screen=login&state=normal&splash=0"
+    },
+    {
+      "code": "C102.2",
+      "state": "error",
+      "label": "เบอร์ไม่ถูกต้อง",
+      "url": "/?screen=login&state=error&splash=0"
+    },
+    {
+      "code": "C102.3",
+      "state": "signedout",
+      "label": "หลุดจากระบบ 30 วัน",
+      "url": "/?screen=login&state=signedout&splash=0"
+    }
+  ]
+}

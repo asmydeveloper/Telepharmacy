@@ -1,0 +1,21 @@
+{
+  "code": "C602",
+  "screen": "sysoff",
+  "title": "ปิดรับปรึกษาชั่วคราว",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C602.1",
+      "state": "off",
+      "label": "ไม่มีเคสค้าง",
+      "url": "/?screen=sysoff&state=off&splash=0"
+    },
+    {
+      "code": "C602.2",
+      "state": "case",
+      "label": "มีเคสค้างตอนปิด",
+      "url": "/?screen=sysoff&state=case&splash=0"
+    }
+  ]
+}

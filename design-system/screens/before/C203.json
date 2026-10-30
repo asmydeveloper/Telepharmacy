@@ -1,0 +1,57 @@
+{
+  "code": "C203",
+  "screen": "intake",
+  "title": "แจ้งอาการ",
+  "group": "before",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C203.1",
+      "state": "normal",
+      "label": "ว่าง",
+      "url": "/?screen=intake&state=normal&splash=0"
+    },
+    {
+      "code": "C203.2",
+      "state": "filled",
+      "label": "กรอกแล้ว",
+      "url": "/?screen=intake&state=filled&splash=0"
+    },
+    {
+      "code": "C203.3",
+      "state": "kid",
+      "label": "ปรึกษาให้ลูก",
+      "url": "/?screen=intake&state=kid&splash=0"
+    },
+    {
+      "code": "C203.4",
+      "state": "other",
+      "label": "พิมพ์อาการเอง",
+      "url": "/?screen=intake&state=other&splash=0"
+    },
+    {
+      "code": "C203.5",
+      "state": "noallergy",
+      "label": "ยังไม่ระบุแพ้ยา",
+      "url": "/?screen=intake&state=noallergy&splash=0"
+    },
+    {
+      "code": "C203.6",
+      "state": "fail",
+      "label": "เข้าคิวไม่สำเร็จ",
+      "url": "/?screen=intake&state=fail&splash=0"
+    },
+    {
+      "code": "C203.7",
+      "state": "ack",
+      "label": "ติ๊กรับทราบแล้ว",
+      "url": "/?screen=intake&state=ack&splash=0"
+    },
+    {
+      "code": "C203.8",
+      "state": "outzone",
+      "label": "ที่อยู่หลักนอกเขตส่งยา",
+      "url": "/?screen=intake&state=outzone&splash=0"
+    }
+  ]
+}

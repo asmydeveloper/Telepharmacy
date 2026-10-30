@@ -1,0 +1,15 @@
+{
+  "code": "C510",
+  "screen": "logout",
+  "title": "ออกจากระบบ",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C510",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=logout&splash=0"
+    }
+  ]
+}

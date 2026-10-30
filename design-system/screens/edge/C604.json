@@ -1,0 +1,15 @@
+{
+  "code": "C604",
+  "screen": "expired",
+  "title": "คิวหมดเวลา",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C604",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=expired&splash=0"
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "code": "C413",
+  "screen": "adrsent",
+  "title": "ส่งรายงานแล้ว",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C413.1",
+      "state": "sent",
+      "label": "ส่งแล้ว รอติดต่อ",
+      "url": "/?screen=adrsent&state=sent&splash=0"
+    },
+    {
+      "code": "C413.2",
+      "state": "severe",
+      "label": "อาการรุนแรง (ลูก)",
+      "url": "/?screen=adrsent&state=severe&splash=0"
+    },
+    {
+      "code": "C413.3",
+      "state": "replied",
+      "label": "เภสัชกรตอบแล้ว",
+      "url": "/?screen=adrsent&state=replied&splash=0"
+    },
+    {
+      "code": "C413.4",
+      "state": "closed",
+      "label": "ส่งตอนร้านปิด",
+      "url": "/?screen=adrsent&state=closed&splash=0"
+    },
+    {
+      "code": "C413.5",
+      "state": "sfx",
+      "label": "ตอบว่าเป็นผลข้างเคียง",
+      "url": "/?screen=adrsent&state=sfx&splash=0"
+    }
+  ]
+}

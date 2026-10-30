@@ -1,0 +1,27 @@
+{
+  "code": "C608",
+  "screen": "lost",
+  "title": "สัญญาณหลุด",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C608.1",
+      "state": "me",
+      "label": "เน็ตของคุณหลุด",
+      "url": "/?screen=lost&state=me&splash=0"
+    },
+    {
+      "code": "C608.2",
+      "state": "peer",
+      "label": "เภสัชกรหลุด",
+      "url": "/?screen=lost&state=peer&splash=0"
+    },
+    {
+      "code": "C608.3",
+      "state": "fail",
+      "label": "ต่อไม่สำเร็จ",
+      "url": "/?screen=lost&state=fail&splash=0"
+    }
+  ]
+}

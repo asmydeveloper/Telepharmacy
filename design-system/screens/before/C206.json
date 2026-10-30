@@ -1,0 +1,15 @@
+{
+  "code": "C206",
+  "screen": "pushask",
+  "title": "เปิดการแจ้งเตือน",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C206",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=pushask&splash=0"
+    }
+  ]
+}

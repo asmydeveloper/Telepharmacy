@@ -1,0 +1,33 @@
+{
+  "code": "C514",
+  "screen": "addressbook",
+  "title": "สมุดที่อยู่",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C514.1",
+      "state": "normal",
+      "label": "มีที่อยู่หลัก",
+      "url": "/?screen=addressbook&state=normal&splash=0"
+    },
+    {
+      "code": "C514.2",
+      "state": "empty",
+      "label": "ยังไม่มีที่อยู่",
+      "url": "/?screen=addressbook&state=empty&splash=0"
+    },
+    {
+      "code": "C514.3",
+      "state": "alternate",
+      "label": "เปลี่ยนที่อยู่หลัก",
+      "url": "/?screen=addressbook&state=alternate&splash=0"
+    },
+    {
+      "code": "C514.4",
+      "state": "named",
+      "label": "ชื่อที่อยู่ บ้านแม่",
+      "url": "/?screen=addressbook&state=named&splash=0"
+    }
+  ]
+}

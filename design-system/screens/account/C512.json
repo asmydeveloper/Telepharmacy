@@ -1,0 +1,15 @@
+{
+  "code": "C512",
+  "screen": "deleted",
+  "title": "ลบบัญชีแล้ว",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C512",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=deleted&splash=0"
+    }
+  ]
+}

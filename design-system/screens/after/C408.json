@@ -1,0 +1,33 @@
+{
+  "code": "C408",
+  "screen": "fulog",
+  "title": "บันทึกการกินยา",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C408.1",
+      "state": "normal",
+      "label": "ระหว่างคอร์ส",
+      "url": "/?screen=fulog&state=normal&splash=0"
+    },
+    {
+      "code": "C408.2",
+      "state": "done",
+      "label": "ครบคอร์สแล้ว",
+      "url": "/?screen=fulog&state=done&splash=0"
+    },
+    {
+      "code": "C408.3",
+      "state": "empty",
+      "label": "เพิ่งเริ่ม ยังไม่มี",
+      "url": "/?screen=fulog&state=empty&splash=0"
+    },
+    {
+      "code": "C408.4",
+      "state": "loading",
+      "label": "กำลังโหลด",
+      "url": "/?screen=fulog&state=loading&splash=0"
+    }
+  ]
+}

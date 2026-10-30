@@ -1,0 +1,33 @@
+{
+  "code": "C515",
+  "screen": "addressedit",
+  "title": "เพิ่ม / แก้ไขที่อยู่",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C515.1",
+      "state": "normal",
+      "label": "เพิ่มที่อยู่",
+      "url": "/?screen=addressedit&state=normal&splash=0"
+    },
+    {
+      "code": "C515.2",
+      "state": "edit",
+      "label": "แก้ไขที่อยู่",
+      "url": "/?screen=addressedit&state=edit&splash=0"
+    },
+    {
+      "code": "C515.3",
+      "state": "invalid",
+      "label": "ข้อมูลไม่ครบ",
+      "url": "/?screen=addressedit&state=invalid&splash=0"
+    },
+    {
+      "code": "C515.4",
+      "state": "named",
+      "label": "แก้ไขชื่อที่อยู่",
+      "url": "/?screen=addressedit&state=named&splash=0"
+    }
+  ]
+}

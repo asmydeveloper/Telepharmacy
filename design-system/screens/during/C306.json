@@ -1,0 +1,39 @@
+{
+  "code": "C306",
+  "screen": "video",
+  "title": "วิดีโอคอล",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C306.1",
+      "state": "on",
+      "label": "คุยอยู่",
+      "url": "/?screen=video&state=on&splash=0"
+    },
+    {
+      "code": "C306.2",
+      "state": "connecting",
+      "label": "กำลังเชื่อมต่อ",
+      "url": "/?screen=video&state=connecting&splash=0"
+    },
+    {
+      "code": "C306.3",
+      "state": "camoff",
+      "label": "ปิดกล้องตัวเอง",
+      "url": "/?screen=video&state=camoff&splash=0"
+    },
+    {
+      "code": "C306.4",
+      "state": "weak",
+      "label": "สัญญาณอ่อน",
+      "url": "/?screen=video&state=weak&splash=0"
+    },
+    {
+      "code": "C306.5",
+      "state": "pcam",
+      "label": "กล้องเภสัชกรใช้ไม่ได้",
+      "url": "/?screen=video&state=pcam&splash=0"
+    }
+  ]
+}

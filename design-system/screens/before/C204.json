@@ -1,0 +1,15 @@
+{
+  "code": "C204",
+  "screen": "allergy",
+  "title": "แพ้ยาและยาประจำ",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C204",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=allergy&splash=0"
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+{
+  "code": "C106",
+  "screen": "noconsent",
+  "title": "ไม่ยินยอม",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C106.1",
+      "state": "decline",
+      "label": "ไม่ยินยอมตอนเริ่มใช้",
+      "url": "/?screen=noconsent&state=decline&splash=0"
+    },
+    {
+      "code": "C106.2",
+      "state": "withdrawn",
+      "label": "ถอนความยินยอมแล้ว",
+      "url": "/?screen=noconsent&state=withdrawn&splash=0"
+    }
+  ]
+}

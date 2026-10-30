@@ -6,7 +6,10 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "test:smoke": "node tests/smoke.cjs"
+    "test:smoke": "node tests/smoke.cjs",
+    "test:home": "node tests/home-addresses.cjs",
+    "screens:sync": "node scripts/sync-screen-manifests.cjs",
+    "screens:check": "node scripts/sync-screen-manifests.cjs --check"
   },
   "dependencies": {
     "next": "16.4.3",

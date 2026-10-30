@@ -1,0 +1,135 @@
+{
+  "code": "C201",
+  "screen": "home",
+  "title": "หน้าแรก",
+  "group": "before",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C201.1",
+      "state": "normal",
+      "label": "ปกติ",
+      "url": "/?screen=home&state=normal&splash=0"
+    },
+    {
+      "code": "C201.2",
+      "state": "loading",
+      "label": "กำลังโหลด",
+      "url": "/?screen=home&state=loading&splash=0"
+    },
+    {
+      "code": "C201.3",
+      "state": "active",
+      "label": "มีเคสค้าง",
+      "url": "/?screen=home&state=active&splash=0"
+    },
+    {
+      "code": "C201.4",
+      "state": "busy",
+      "label": "สาขาใกล้สุดพัก",
+      "url": "/?screen=home&state=busy&splash=0"
+    },
+    {
+      "code": "C201.5",
+      "state": "closed",
+      "label": "ร้านปิด",
+      "url": "/?screen=home&state=closed&splash=0"
+    },
+    {
+      "code": "C201.6",
+      "state": "address-alt",
+      "label": "เลือกที่อยู่คลองเตย",
+      "url": "/?screen=home&state=address-alt&splash=0"
+    },
+    {
+      "code": "C201.7",
+      "state": "noaddress",
+      "label": "ไม่มีที่อยู่",
+      "url": "/?screen=home&state=noaddress&splash=0"
+    },
+    {
+      "code": "C201.8",
+      "state": "outarea",
+      "label": "ไม่พบร้านในพื้นที่",
+      "url": "/?screen=home&state=outarea&splash=0"
+    },
+    {
+      "code": "C201.9",
+      "state": "unknownarea",
+      "label": "พื้นที่ยังตรวจสอบไม่ได้",
+      "url": "/?screen=home&state=unknownarea&splash=0"
+    },
+    {
+      "code": "C201.10",
+      "state": "banner-edge",
+      "label": "แบนเนอร์เต็มขอบ",
+      "url": "/?screen=home&state=banner-edge&splash=0"
+    },
+    {
+      "code": "C201.11",
+      "state": "blue-canvas",
+      "label": "พื้นหลังเทาอมฟ้าอ่อน",
+      "url": "/?screen=home&state=blue-canvas&splash=0"
+    },
+    {
+      "code": "C201.12",
+      "state": "pharmacy-banner",
+      "label": "ภาพร้านยาและเฟดข้อความ",
+      "url": "/?screen=home&state=pharmacy-banner&splash=0"
+    },
+    {
+      "code": "C201.13",
+      "state": "mini-menu",
+      "label": "มินิเมนูสุขภาพใต้แบนเนอร์",
+      "url": "/?screen=home&state=mini-menu&splash=0"
+    },
+    {
+      "code": "C201.14",
+      "state": "compact-store",
+      "label": "การ์ดสาขาแบบกระชับ",
+      "url": "/?screen=home&state=compact-store&splash=0"
+    },
+    {
+      "code": "C201.15",
+      "state": "named-address",
+      "label": "ชื่อที่อยู่และดรอปดาวน์",
+      "url": "/?screen=home&state=named-address&splash=0"
+    },
+    {
+      "code": "C201.16",
+      "state": "plain-mini-menu",
+      "label": "มินิเมนูไม่มีกรอบ",
+      "url": "/?screen=home&state=plain-mini-menu&splash=0"
+    },
+    {
+      "code": "C201.17",
+      "state": "branch-tile",
+      "label": "การ์ดรูปซ้ายและเลือกวิธีปรึกษา",
+      "url": "/?screen=home&state=branch-tile&splash=0"
+    },
+    {
+      "code": "C201.18",
+      "state": "white-canvas",
+      "label": "พื้นหลังสีขาว",
+      "url": "/?screen=home&state=white-canvas&splash=0"
+    },
+    {
+      "code": "C201.19",
+      "state": "layout-system",
+      "label": "กริดและระยะกลางทั้งแอป",
+      "url": "/?screen=home&state=layout-system&splash=0"
+    },
+    {
+      "code": "C201.20",
+      "state": "store-list",
+      "label": "ลิสต์ร้านยา 6 ร้าน",
+      "url": "/?screen=home&state=store-list&splash=0"
+    },
+    {
+      "code": "C201.21",
+      "state": "care-shortcuts",
+      "label": "ติดตามยาและประวัติในมินิเมนู",
+      "url": "/?screen=home&state=care-shortcuts&splash=0"
+    }
+  ]
+}

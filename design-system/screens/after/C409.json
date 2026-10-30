@@ -1,0 +1,27 @@
+{
+  "code": "C409",
+  "screen": "fudone",
+  "title": "ครบคอร์สยาแล้ว",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C409.1",
+      "state": "ask",
+      "label": "ถามหลังครบคอร์ส",
+      "url": "/?screen=fudone&state=ask&splash=0"
+    },
+    {
+      "code": "C409.2",
+      "state": "healed",
+      "label": "หายดีแล้ว",
+      "url": "/?screen=fudone&state=healed&splash=0"
+    },
+    {
+      "code": "C409.3",
+      "state": "still",
+      "label": "ยังมีอาการ",
+      "url": "/?screen=fudone&state=still&splash=0"
+    }
+  ]
+}

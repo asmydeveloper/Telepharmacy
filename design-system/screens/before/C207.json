@@ -1,0 +1,39 @@
+{
+  "code": "C207",
+  "screen": "queue",
+  "title": "รอคิว",
+  "group": "before",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C207.1",
+      "state": "q2",
+      "label": "ลำดับ 2",
+      "url": "/?screen=queue&state=q2&splash=0"
+    },
+    {
+      "code": "C207.2",
+      "state": "q1",
+      "label": "คิวถัดไป",
+      "url": "/?screen=queue&state=q1&splash=0"
+    },
+    {
+      "code": "C207.3",
+      "state": "paused",
+      "label": "เภสัชกรพัก",
+      "url": "/?screen=queue&state=paused&splash=0"
+    },
+    {
+      "code": "C207.4",
+      "state": "urgent",
+      "label": "มีธงด่วน",
+      "url": "/?screen=queue&state=urgent&splash=0"
+    },
+    {
+      "code": "C207.5",
+      "state": "notifoff",
+      "label": "ปิดการแจ้งเตือนไว้",
+      "url": "/?screen=queue&state=notifoff&splash=0"
+    }
+  ]
+}

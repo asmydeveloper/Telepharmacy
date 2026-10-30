@@ -1,0 +1,15 @@
+{
+  "code": "C305",
+  "screen": "endcase",
+  "title": "จบการปรึกษานี้ไหม",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C305",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=endcase&splash=0"
+    }
+  ]
+}

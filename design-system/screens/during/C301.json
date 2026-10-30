@@ -1,0 +1,63 @@
+{
+  "code": "C301",
+  "screen": "lock",
+  "title": "แจ้งเตือนบนจอล็อก",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C301.1",
+      "state": "accept",
+      "label": "รับคิว",
+      "url": "/?screen=lock&state=accept&splash=0"
+    },
+    {
+      "code": "C301.2",
+      "state": "msg",
+      "label": "ข้อความใหม่",
+      "url": "/?screen=lock&state=msg&splash=0"
+    },
+    {
+      "code": "C301.3",
+      "state": "order",
+      "label": "รายการยา",
+      "url": "/?screen=lock&state=order&splash=0"
+    },
+    {
+      "code": "C301.4",
+      "state": "payexp",
+      "label": "รายการใกล้หมดเวลา",
+      "url": "/?screen=lock&state=payexp&splash=0"
+    },
+    {
+      "code": "C301.5",
+      "state": "paused",
+      "label": "เภสัชกรพัก",
+      "url": "/?screen=lock&state=paused&splash=0"
+    },
+    {
+      "code": "C301.6",
+      "state": "summary",
+      "label": "ใบสรุป",
+      "url": "/?screen=lock&state=summary&splash=0"
+    },
+    {
+      "code": "C301.7",
+      "state": "adr",
+      "label": "ตอบเรื่องอาการหลังใช้ยา",
+      "url": "/?screen=lock&state=adr&splash=0"
+    },
+    {
+      "code": "C301.8",
+      "state": "fudose",
+      "label": "เตือนกินยา",
+      "url": "/?screen=lock&state=fudose&splash=0"
+    },
+    {
+      "code": "C301.9",
+      "state": "fucheck",
+      "label": "ถามอาการระหว่างใช้ยา",
+      "url": "/?screen=lock&state=fucheck&splash=0"
+    }
+  ]
+}

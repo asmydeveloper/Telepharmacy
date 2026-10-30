@@ -1,0 +1,21 @@
+{
+  "code": "C509",
+  "screen": "help",
+  "title": "ช่วยเหลือ",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C509.1",
+      "state": "open",
+      "label": "ในเวลาทำการ",
+      "url": "/?screen=help&state=open&splash=0"
+    },
+    {
+      "code": "C509.2",
+      "state": "closed",
+      "label": "นอกเวลาทำการ",
+      "url": "/?screen=help&state=closed&splash=0"
+    }
+  ]
+}

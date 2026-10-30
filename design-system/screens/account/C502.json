@@ -1,0 +1,27 @@
+{
+  "code": "C502",
+  "screen": "family",
+  "title": "สมาชิกในบ้าน",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C502.1",
+      "state": "normal",
+      "label": "มี 2 คน",
+      "url": "/?screen=family&state=normal&splash=0"
+    },
+    {
+      "code": "C502.2",
+      "state": "empty",
+      "label": "ยังไม่มี",
+      "url": "/?screen=family&state=empty&splash=0"
+    },
+    {
+      "code": "C502.3",
+      "state": "full",
+      "label": "ครบ 6 คน",
+      "url": "/?screen=family&state=full&splash=0"
+    }
+  ]
+}
