@@ -1,0 +1,3 @@
+/* Compatibility entry: edit shared source files in src/styles instead. */
+@import "../src/styles/tokens.css";
+@import "../src/styles/customer-ui.css";

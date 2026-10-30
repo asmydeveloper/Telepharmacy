@@ -1,0 +1,21 @@
+body:has(.change-log){margin:0;height:auto;overflow:auto;background:#F5F1EA;color:#0C1514;font-family:'Noto Sans Thai',sans-serif;line-height:1.65}
+.change-log{box-sizing:border-box;max-width:840px;margin:0 auto;padding:28px 24px 64px}
+.change-log *{box-sizing:border-box}
+.change-log nav{display:flex;gap:12px 24px;flex-wrap:wrap;margin-bottom:48px}
+.change-log a{color:#035C67;text-decoration:none}
+.change-log a:hover{text-decoration:underline}
+.change-log a:focus-visible{outline:2px solid #035C67;outline-offset:5px}
+.change-log header{margin-bottom:28px}
+.change-log .log-brand{font-size:12px;letter-spacing:.16em;font-weight:700;color:#035C67;margin:0 0 8px}
+.change-log h1{font-size:30px;line-height:1.4;margin:0 0 8px}
+.change-log header>p:last-child{margin:0;color:#5F6B6A}
+.log-entries{display:grid;gap:16px}
+.log-entries article{padding:24px;background:#fff;border:1px solid #E6E1D7;border-radius:14px}
+.log-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13px;color:#5F6B6A;margin-bottom:10px}
+.log-code,.log-scope{padding:3px 9px;border-radius:6px;background:#E6EFF0;color:#035C67;font-weight:600}
+.log-scope{background:#F5F1EA;color:#5F6B6A}
+.change-log h2{margin:0 0 12px;font-size:18px}
+.change-log h2 span{font-size:13px;font-weight:400;color:#737E7D;margin-left:8px}
+.change-log ul{list-style:disc;margin:0;padding-left:22px}
+.change-log li+li{margin-top:6px}
+@media(max-width:480px){.change-log{padding:20px 16px 40px}.change-log nav{font-size:14px;margin-bottom:32px}.log-entries article{padding:20px}.change-log h1{font-size:26px}}
