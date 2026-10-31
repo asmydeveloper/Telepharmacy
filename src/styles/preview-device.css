@@ -14,7 +14,7 @@ html.bare .stage>.device-real,html.mob .stage>.device-real {position:fixed;inset
 /* Reviewer workspace: separate from the portable app canvas. */
 .stage {background:#F0F7F7}
 .stage::before {display:none}
-.panel {padding:28px 24px 40px;background:#F7FAFA;scrollbar-gutter:stable;border-left:1px solid #DFE8E8;box-shadow:none}
+.panel {padding:28px 24px 40px;background:#FFFFFF;scrollbar-gutter:stable;border-left:1px solid #DFE8E8;box-shadow:none}
 .panel h1 {margin-top:20px;font-size:17px;line-height:1.6}
 .panel .pn-sub {margin-top:8px;font-size:13px;line-height:1.7}
 .panel .pn-sec {margin-top:28px}
@@ -36,4 +36,4 @@ html.bare .stage>.device-real,html.mob .stage>.device-real {position:fixed;inset
 .panel .pn-grp>b {margin:0 0 12px}
 .panel .pn-foot {margin-top:28px;padding-top:20px;border-top:1px solid #DFE8E8;line-height:1.75}
 html.mob .panel {padding:24px 20px 40px}
-html.mob .panel .pn-top {background:#F7FAFA;margin:-24px -20px 0;padding:16px 20px;top:-24px}
+html.mob .panel .pn-top {background:#FFFFFF;margin:-24px -20px 0;padding:16px 20px;top:-24px}

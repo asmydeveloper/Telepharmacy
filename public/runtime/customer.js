@@ -6806,11 +6806,14 @@ function mode() {
 function fit() {
   const dv = TP.$('#device'), st = TP.$('#stage');
   if (R.classList.contains('mob') || bare) { dv.style.removeProperty('--k'); return; }
-  const k = Math.min(1, (st.clientHeight - 24) / dv.offsetHeight, (st.clientWidth - 24) / dv.offsetWidth);
+  const k = Math.max(0, Math.min((st.clientHeight - 24) / dv.offsetHeight, (st.clientWidth - 24) / dv.offsetWidth));
   dv.style.setProperty('--k', k.toFixed(4));
 }
 mode();
 addEventListener('resize', TP.rafT(mode));
+// The preview also follows workspace/panel resizing without a window resize.
+const previewSizeObserver = new ResizeObserver(TP.rafT(fit));
+previewSizeObserver.observe(TP.$('#stage'));
 TP.icons(document.getElementById('app'));
 /* ?motif=curve|glow|type : trial replacements for the "+" pattern (home hero only for now) */
 TP.MOTIF = ['plus', 'curve', 'glow', 'type'].includes(Q.get('motif')) ? Q.get('motif') : 'glow';   /* v1.2 default = glow (owner 19/10/2026) */
