@@ -1,0 +1,5 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Asset type: default account profile cover image for MITRAREE Thai healthcare app. A beautiful calm premium abstract botanical landscape, soft rolling jade and pale mint hills, translucent frosted aqua glass arcs and delicate out-of-focus ginkgo leaves at far corners, gentle early morning light, airy warm ivory sky. Minimal contemporary wellness mood, sophisticated and reassuring, teal #005F69 with sage mint pale aqua and subtle warm cream. Panoramic horizontal composition, no dominant central object; lower center is a quiet light mint area where a circular profile avatar will overlap live in UI. Keep contrast restrained and details away from lower center. Polished soft 3D illustration with matte surfaces and very subtle depth. No text, no people, no icons, no medicine, no logo, no watermark. Landscape 3:2 image suitable for a wide shallow cover crop.",
+  "output": "account-cover-v1.png"
+}

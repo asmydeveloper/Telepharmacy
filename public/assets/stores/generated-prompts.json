@@ -1,0 +1,36 @@
+{
+  "tool": "built-in image_gen",
+  "created": "2026-10-31",
+  "images": [
+    {
+      "id": "demo-1",
+      "prompt": "Use case: photorealistic-natural. Asset type: square thumbnail photograph for a fictional pharmacy listing in a Thai telepharmacy prototype. A compact friendly Bangkok neighborhood pharmacy interior viewed from its open entrance, light oak counter on the LEFT, mint green wall, white medicine shelves, small leafy plant, natural morning sunlight. Authentic architectural photography, realistic materials and ordinary local retail proportions, clean professional pharmacy without luxury exaggeration. Eye-level wide view, clear main counter or entrance centered for a square crop, balanced natural color with subtle teal brand accents. No people, no readable text, no logos, no watermark, no red cross symbol, no medical claims or certificates. Must look like a different shop from other pharmacy thumbnails, detailed but calm.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-bbfdc78f-42c1-4a1b-9a24-b4ce3db95b6b.png"
+    },
+    {
+      "id": "demo-2",
+      "prompt": "Use case: photorealistic-natural. Asset type: square thumbnail photograph for a fictional pharmacy listing in a Thai telepharmacy prototype. A bright modern Thai suburban pharmacy exterior, glass storefront with teal metal frames, visible central white counter and orderly medicine shelves inside, pale concrete paving, daytime, realistic modest shop scale. Authentic architectural photography, realistic materials and ordinary local retail proportions, clean professional pharmacy without luxury exaggeration. Eye-level wide view, clear main counter or entrance centered for a square crop, balanced natural color with subtle teal brand accents. No people, no readable text, no logos, no watermark, no red cross symbol, no medical claims or certificates. Must look like a different shop from other pharmacy thumbnails, detailed but calm.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-5a2604c6-05e8-4a37-80d2-cfbbe8089fa3.png"
+    },
+    {
+      "id": "demo-3",
+      "prompt": "Use case: photorealistic-natural. Asset type: square thumbnail photograph for a fictional pharmacy listing in a Thai telepharmacy prototype. An airy corner pharmacy interior in Thailand, long pale blue counter on the RIGHT, large windows on left, neat white shelving with generic colorful medicine cartons, contemporary clean design. Authentic architectural photography, realistic materials and ordinary local retail proportions, clean professional pharmacy without luxury exaggeration. Eye-level wide view, clear main counter or entrance centered for a square crop, balanced natural color with subtle teal brand accents. No people, no readable text, no logos, no watermark, no red cross symbol, no medical claims or certificates. Must look like a different shop from other pharmacy thumbnails, detailed but calm.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-e99b2a7c-df56-4041-9044-00b2dfe373da.png"
+    },
+    {
+      "id": "demo-4",
+      "prompt": "Use case: photorealistic-natural. Asset type: square thumbnail photograph for a fictional pharmacy listing in a Thai telepharmacy prototype. A welcoming small Thai community pharmacy interior, warm beige and sage decor, rounded cream consultation counter centered at back, timber shelves, two simple waiting chairs to side, soft daylight. Authentic architectural photography, realistic materials and ordinary local retail proportions, clean professional pharmacy without luxury exaggeration. Eye-level wide view, clear main counter or entrance centered for a square crop, balanced natural color with subtle teal brand accents. No people, no readable text, no logos, no watermark, no red cross symbol, no medical claims or certificates. Must look like a different shop from other pharmacy thumbnails, detailed but calm.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-39c777dd-3700-45c6-9750-e50fc21c683e.png"
+    },
+    {
+      "id": "demo-5",
+      "prompt": "Use case: photorealistic-natural. Asset type: square thumbnail photograph for a fictional pharmacy listing in a Thai telepharmacy prototype. A clean urban Thai pharmacy storefront at early evening, sage green awning without lettering, warmly illuminated interior visible through glass, modern teal counter, orderly shelves, realistic street level view. Authentic architectural photography, realistic materials and ordinary local retail proportions, clean professional pharmacy without luxury exaggeration. Eye-level wide view, clear main counter or entrance centered for a square crop, balanced natural color with subtle teal brand accents. No people, no readable text, no logos, no watermark, no red cross symbol, no medical claims or certificates. Must look like a different shop from other pharmacy thumbnails, detailed but calm.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-24d335f2-602f-4da6-811a-a2fcfd57f124.png"
+    },
+    {
+      "id": "on",
+      "prompt": "Use case: photorealistic-natural. Asset type: square photograph for a fictional Thai pharmacy prototype. A modest Bangkok pharmacy interior viewed from glass entry, white and teal L-shaped counter to the back left, narrow orderly medicine aisles, pale grey tiled floor and warm oak ceiling accents, bright daylight. Different shop layout from other images. Authentic local pharmacy architecture, eye level, clean professional ordinary retail setting, realistic materials. No people, no readable text, no logos, no watermark, no red cross, no medical claims or certificates.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-9d541d77-c72d-4246-9f79-09aaa50d2d9f.png"
+    }
+  ]
+}

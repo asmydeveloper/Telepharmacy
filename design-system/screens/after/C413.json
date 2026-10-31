@@ -1,7 +1,7 @@
 {
   "code": "C413",
   "screen": "adrsent",
-  "title": "ส่งรายงานแล้ว",
+  "title": "รายงานอาการหลังใช้ยา",
   "group": "after",
   "kind": "screen",
   "cases": [
@@ -34,6 +34,30 @@
       "state": "sfx",
       "label": "ตอบว่าเป็นผลข้างเคียง",
       "url": "/?screen=adrsent&state=sfx&splash=0"
+    },
+    {
+      "code": "C413.6",
+      "state": "patient-report",
+      "label": "รายงานใหม่รอประเมิน",
+      "url": "/?screen=adrsent&state=patient-report&splash=0"
+    },
+    {
+      "code": "C413.7",
+      "state": "patient-reply",
+      "label": "ข้อความตอบกลับรายงานใหม่",
+      "url": "/?screen=adrsent&state=patient-reply&splash=0"
+    },
+    {
+      "code": "C413.8",
+      "state": "family-report",
+      "label": "รายงานของคุณแม่",
+      "url": "/?screen=adrsent&state=family-report&splash=0"
+    },
+    {
+      "code": "C413.9",
+      "state": "unknown-drug",
+      "label": "ไม่ทราบชื่อยา",
+      "url": "/?screen=adrsent&state=unknown-drug&splash=0"
     }
   ]
 }

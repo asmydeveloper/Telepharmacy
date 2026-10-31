@@ -16,6 +16,30 @@
       "state": "empty",
       "label": "ยังไม่มีร้านโปรด",
       "url": "/?screen=favorites&state=empty&splash=0"
+    },
+    {
+      "code": "C211.3",
+      "state": "many",
+      "label": "ร้านโปรดหลายร้าน",
+      "url": "/?screen=favorites&state=many&splash=0"
+    },
+    {
+      "code": "C211.4",
+      "state": "noaddress",
+      "label": "ยังไม่มีที่อยู่จัดส่ง",
+      "url": "/?screen=favorites&state=noaddress&splash=0"
+    },
+    {
+      "code": "C211.5",
+      "state": "closed",
+      "label": "ร้านโปรดปิด",
+      "url": "/?screen=favorites&state=closed&splash=0"
+    },
+    {
+      "code": "C211.6",
+      "state": "paused",
+      "label": "เภสัชกรพัก",
+      "url": "/?screen=favorites&state=paused&splash=0"
     }
   ]
 }

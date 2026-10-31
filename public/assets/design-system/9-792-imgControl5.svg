@@ -1,0 +1,7 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="44" height="24" viewBox="0 0 44 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Control">
+<path d="M12 0.5H32C38.3513 0.5 43.5 5.64873 43.5 12C43.5 18.3513 38.3513 23.5 32 23.5H12C5.64873 23.5 0.5 18.3513 0.5 12C0.5 5.64873 5.64873 0.5 12 0.5Z" fill="#F1F1F1"/>
+<path d="M12 0.5H32C38.3513 0.5 43.5 5.64873 43.5 12C43.5 18.3513 38.3513 23.5 32 23.5H12C5.64873 23.5 0.5 18.3513 0.5 12C0.5 5.64873 5.64873 0.5 12 0.5Z" stroke="#EBEBEB"/>
+<circle id="Ellipse" cx="31" cy="12" r="10" fill="white"/>
+</g>
+</svg>

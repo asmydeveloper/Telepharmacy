@@ -1,0 +1,7 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: precise-object-edit. Edit this MITRAREE pharmacy bear banner into a more delightful polished cute 3D mascot cover. Preserve the pharmacy interior setting and its teal CI. Bear on rightmost third, white pharmacist lab coat over teal shirt, cream fluffy fur, round chubby cheeks, large warm sparkling eyes, little rosy cheeks, joyful gentle smile, adorable rounded baby-bear proportions, one small paw waving hello and other resting on counter. Soft premium animated-film 3D character integrated into real bright pharmacy. Improve crispness, warm natural light, lively but clean pastel teal mint and cream colors. IMPORTANT: remove all lateral gradient fades, teal veils and dark overlays from this source image. Do not dim the bear at all. Leftmost 60% should be a naturally SOLID deep teal pharmacy wall with only very subtle depth and few indistinct fixtures, quiet and evenly dark behind live white app copy, not a digital fade or gradient overlay. Pharmacy shelves and well-lit counter concentrated behind bear on right. Uppermost 20% visually quiet deep teal for app controls, no UI drawn. Bear ears clear with generous room at top right for heart icon. Landscape banner 3:2, no text, no logos, no watermark, no red cross. Keep character entirely on right, no central objects that collide with text.",
+  "refinement": "Extend natural teal wall down bottom-left; remove counter from left 60%, preserve bear, no lateral overlays.",
+  "reference": "pharmacy-bear-v1.png",
+  "output": "pharmacy-bear-v2.png"
+}

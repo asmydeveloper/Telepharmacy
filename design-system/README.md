@@ -1,38 +1,19 @@
 # MITRAREE Design System
 
-ดูตัวอย่างที่ `/design-system` และหน้าที่ใช้งานจริง C201 ที่ `/?screen=home&splash=0`
+อ้างอิง Figma Telepharmacy เป็นชุดหลัก ดู [แผนที่ component และวิธีตรวจ](figma-component-mapping.md)
 
-- `src/styles/tokens.css`: แหล่งค่ากลางของ spacing, radius, typography และขนาด controls
-- `src/styles/customer-ui.css`: รูปแบบ controls และข้อความร่วม
-- `src/styles/layout.css`: โครงหน้าร่วม ขอบหน้า ฟอร์ม แผ่นข้อมูล และพื้นที่เหนือเมนูล่าง
-- `src/styles/home.css`: โครงหน้าแรก ร้านยา และที่อยู่
-- `src/app/styles.css`: สไตล์ฐานและหน้าจอเดิม
+เปิด `/design-system` เพื่อดู tokens/component ที่ใช้งานจริง พร้อมเลือกเคสและความกว้าง 320/360/393/430px
 
-ใช้ spacing 4/8/12/16/20/24/32/40 px; page gutter 20 px (16 px บนจอแคบ); section gap 24 px; card padding 16 px; hero padding 20 px
-ปุ่มสูงอย่างน้อย 52 px, ปุ่มเล็กและพื้นที่กดไอคอน 44 px; radius ปุ่ม 12 px, การ์ด 16 px, hero 20 px
+- `src/design-system/figma-tokens.json`: source tokens ที่อ่านจากตัวแปร Figma
+- `src/styles/figma-tokens.css`: generated tokens
+- `src/styles/tokens.css`: compatibility aliases สำหรับหน้าจอเดิม
+- `src/styles/components.css`: component กลาง
+- `src/styles/layout.css`: layout, gutter และ safe area
+- `src/styles/home.css`: layout หน้าแรกและร้านยา
 
-หน้าแรกใช้ `.hm-content` จัด gap กลางแทน margin ของการ์ดแต่ละใบ ความสูงเพิ่มตามข้อความไทยได้
-แก้ token ที่ไฟล์กลางเท่านั้น ไม่ฝังสำเนา CSS แยกในแต่ละหน้า
+มือถือใช้ gutter16px, spacing4/8/12/16/24/32/48/64, controls44/48/56, radius4/8/12/16/24/pill และ Noto Sans Thai
 
-## รหัสหน้าและกรณีทดสอบ
+รัน `npm run design:sync` หลังแก้ token source และ `npm run design:check` เพื่อตรวจการอ้างอิง
+ทะเบียนหน้าจอใช้ `npm run screens:sync` / `npm run screens:check` จัดตามกลุ่มใน `/screens`
 
-ไฟล์ใน `design-system/screens/` ระบุรหัสหน้า รหัสเคส และลิงก์เปิดตรงแต่ละกรณี
-ปุ่มทดสอบในแผงข้างแอปและ `/screens` อ่านจาก states ของหน้าจอเดียวกัน
-
-- C201: แบนเนอร์ ที่อยู่ และร้านยาในบริเวณที่เลือก
-- C210: เลือกที่อยู่จัดส่ง (ไม่เปลี่ยนที่อยู่หลัก)
-- C211: ร้านยาโปรด
-- C514: สมุดที่อยู่และการตั้งที่อยู่หลัก
-- C515: เพิ่ม/แก้ไขที่อยู่และตรวจข้อมูล
-- C404: แจ้งเตือนในเมนูด้านล่าง
-
-รายการที่อยู่และร้านโปรดเก็บในเบราว์เซอร์นี้สำหรับต้นแบบ ระยะทางยังใช้ชุดข้อมูลจำลองของแต่ละแขวง/ตำบล พื้นที่ที่ไม่มีข้อมูลจะแสดงว่าไม่สามารถตรวจสอบได้ ไม่เดาระยะทาง
-
-## โครงเลย์เอาต์กลาง
-
-หน้าแรกใช้ grid สามแนว: ขอบซ้าย / เนื้อหา / ขอบขวา แบนเนอร์เต็มแนว ส่วนอื่นอยู่ในแนวเนื้อหา ไม่บวก margin กับ width การ์ด ขอบหน้า 20 px ลดเหลือ 16 px ที่จอกว้างไม่เกิน 360 px แยกกลุ่มด้วยระยะ 24 px และเผื่อพื้นที่เลื่อนตามความสูง footer จริง
-
-จัดข้อมูลที่เกี่ยวข้องใกล้กัน (8–12 px) ตาม [Gestalt proximity](https://www.nngroup.com/articles/gestalt-proximity/) และ [white space ในฟอร์ม](https://www.nngroup.com/articles/form-design-white-space/)
-
-หน้า `/design-system` มีตัวอย่าง 7 หน้าพร้อมความกว้าง 320/360/393/430 px และตัวตรวจล้นขอบเบื้องต้น
-หลังแก้ states รัน `npm run screens:sync` และตรวจด้วย `npm run screens:check` เพื่อให้รายการรหัสและลิงก์ตรงกับ runtime
+ต้นแบบยังใช้ข้อมูลที่อยู่ ร้านยา ระยะทางและสถานะจำลอง แยกข้อกำหนดการย้ายเนื้อแอปไว้ใน `APP-HANDOFF.md`

@@ -16,6 +16,24 @@
       "state": "withdrawn",
       "label": "ถอนความยินยอมแล้ว",
       "url": "/?screen=account&state=withdrawn&splash=0"
+    },
+    {
+      "code": "C501.3",
+      "state": "profile-cover",
+      "label": "ปกบัญชีและโปรไฟล์ตรงกลาง",
+      "url": "/?screen=account&state=profile-cover&splash=0"
+    },
+    {
+      "code": "C501.4",
+      "state": "abstract-cover",
+      "label": "ปก Abstract CI เต็ม safe area",
+      "url": "/?screen=account&state=abstract-cover&splash=0"
+    },
+    {
+      "code": "C501.5",
+      "state": "clean-profile",
+      "label": "โปรไฟล์พื้นเทาและเมนูพื้นขาว",
+      "url": "/?screen=account&state=clean-profile&splash=0"
     }
   ]
 }

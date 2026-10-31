@@ -1,0 +1,16 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('public/runtime/customer.js','utf8'),actions={},listeners={};
+const input={value:'',focus(){this.focused=true},setAttribute(k,v){this[k]=v}},error={hidden:true},empty={hidden:true};
+const chips=[{textContent:'ไข้',hidden:false},{textContent:'ปวดหัว',hidden:false},{textContent:'ไอ',hidden:false}];
+let refreshed=0;
+const TP={S:{intake:{symptoms:['ไข้','ไอ'],custom:[],otherOpen:true}},SYMPTOMS:['ไข้','ไอ','ปวดหัว'],act:(key,fn)=>actions[key]=fn,cur:()=>({el:{}}),refresh:()=>refreshed++,$$:()=>chips,$:()=>empty};
+const context=vm.createContext({TP,esc:s=>String(s).replaceAll('<','&lt;'),ic:()=>'',document:{addEventListener:(type,fn)=>listeners[type]=fn},$:(sel)=>sel==='#ikOtherIn'?input:error});
+const start=source.indexOf("TP.act('ikRemoveSym'");const end=source.indexOf("TP.act('symOther',",start);vm.runInContext(source.slice(start,end),context);
+const add=source.indexOf("TP.act('symOtherAdd'");vm.runInContext(source.slice(add,source.indexOf("TP.act('pickWho'",add)),context);
+listeners.input({target:{id:'ikSymSearch',value:'ปวด'}});assert.deepEqual(chips.map(c=>c.hidden),[true,false,true]);assert.deepEqual(TP.S.intake.symptoms,['ไข้','ไอ']);
+listeners.input({target:{id:'ikSymSearch',value:'ไม่พบ'}});assert.equal(empty.hidden,false);
+listeners.input({target:{id:'ikSymSearch',value:''}});assert(chips.every(c=>!c.hidden));
+actions.symOtherAdd();assert.equal(error.hidden,false);assert.equal(input['aria-invalid'],'true');
+input.value='  เวียนหัว  ';actions.symOtherAdd();assert.equal(TP.S.intake.symptoms.at(-1),'เวียนหัว');input.value='เวียนหัว';actions.symOtherAdd();assert.equal(TP.S.intake.symptoms.filter(x=>x==='เวียนหัว').length,1);
+actions.ikRemoveSym({dataset:{v:'ไข้'}});assert.deepEqual(Array.from(TP.S.intake.symptoms),['ไอ','เวียนหัว']);assert(refreshed>0);
+console.log('PASS: search/clear/no-results preserve selections; empty/custom/duplicate symptoms and removal');

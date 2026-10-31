@@ -1,0 +1,5 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: stylized-concept. Asset type: default account cover for MITRAREE healthcare app. Elegant purely ABSTRACT flowing soft 3D ribbons and broad rounded sculptural waves, frosted glass and matte satin forms, layered curves with gentle depth. CI dominant deep teal #005F69, dark teal #004D55, soft mint and pale aqua accents. Calm premium friendly healthcare aesthetic, clean minimal polished render. NO landscape, NO mountains, NO leaves, NO plants, NO recognizable objects, NO people, NO text, NO icons, NO logo. Landscape composition. Upper third dark teal and visually quiet for white system status and account heading; middle soft sweeping aqua curves, lower center calm for a profile avatar overlapping in UI. Subtle lighting, no busy details, no harsh highlights or sharp boundaries.",
+  "output": "account-cover-abstract-v2.png"
+}

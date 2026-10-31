@@ -52,6 +52,18 @@
       "state": "outzone",
       "label": "ที่อยู่หลักนอกเขตส่งยา",
       "url": "/?screen=intake&state=outzone&splash=0"
+    },
+    {
+      "code": "C203.9",
+      "state": "search",
+      "label": "ค้นหาและเพิ่มอาการ",
+      "url": "/?screen=intake&state=search&splash=0"
+    },
+    {
+      "code": "C203.10",
+      "state": "urgent",
+      "label": "แจ้งเตือนอาการอันตราย",
+      "url": "/?screen=intake&state=urgent&splash=0"
     }
   ]
 }

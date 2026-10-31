@@ -34,6 +34,12 @@
       "state": "late",
       "label": "เลยกำหนดออกตัวเต็ม",
       "url": "/?screen=receipt&state=late&splash=0"
+    },
+    {
+      "code": "C402.6",
+      "state": "missing",
+      "label": "ไม่พบใบเสร็จ",
+      "url": "/?screen=receipt&state=missing&splash=0"
     }
   ]
 }

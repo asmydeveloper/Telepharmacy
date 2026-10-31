@@ -8,7 +8,7 @@
     {
       "code": "C502.1",
       "state": "normal",
-      "label": "มี 2 คน",
+      "label": "สมาชิก 5 คน รวมตัวเองเป็น 6",
       "url": "/?screen=family&state=normal&splash=0"
     },
     {
@@ -22,6 +22,12 @@
       "state": "full",
       "label": "ครบ 6 คน",
       "url": "/?screen=family&state=full&splash=0"
+    },
+    {
+      "code": "C502.4",
+      "state": "generated-members",
+      "label": "รูปโปรไฟล์สมาชิกใหม่ 3 คน",
+      "url": "/?screen=family&state=generated-members&splash=0"
     }
   ]
 }

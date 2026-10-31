@@ -34,6 +34,36 @@
       "state": "system-off",
       "label": "ระบบปรึกษาปิด",
       "url": "/?screen=storeinfo&state=system-off&splash=0"
+    },
+    {
+      "code": "C212.6",
+      "state": "grouped",
+      "label": "รายละเอียดแบ่งหมวด",
+      "url": "/?screen=storeinfo&state=grouped&splash=0"
+    },
+    {
+      "code": "C212.7",
+      "state": "license",
+      "label": "ตรวจใบอนุญาตร้านยา",
+      "url": "/?screen=storeinfo&state=license&splash=0"
+    },
+    {
+      "code": "C212.8",
+      "state": "favorite",
+      "label": "บันทึกร้านโปรดแล้ว",
+      "url": "/?screen=storeinfo&state=favorite&splash=0"
+    },
+    {
+      "code": "C212.9",
+      "state": "unfavorite",
+      "label": "ยังไม่บันทึกร้านโปรด",
+      "url": "/?screen=storeinfo&state=unfavorite&splash=0"
+    },
+    {
+      "code": "C212.10",
+      "state": "neutral-sections",
+      "label": "หมวดข้อมูลพื้นเทาอ่อน",
+      "url": "/?screen=storeinfo&state=neutral-sections&splash=0"
     }
   ]
 }

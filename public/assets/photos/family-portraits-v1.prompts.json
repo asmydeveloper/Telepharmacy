@@ -1,0 +1,23 @@
+{
+  "tool": "built-in image_gen",
+  "portraits": [
+    {
+      "id": "dad",
+      "prompt": "Photorealistic fictional family profile portrait, square 1:1. A friendly Thai man aged 71, naturally grey short hair, warm gentle smile, realistic healthy ageing and skin texture, wearing a modest light beige casual shirt, chest-up portrait facing camera. Clean softly lit pale warm-grey studio background, soft daylight, professional natural portrait photography. Entire head and hair visible with generous space around face so it crops well into a tiny circular app avatar. No medical uniform, no text, no logos, no props, no watermark. Ordinary approachable family member, not a fashion model.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-3bb1d046-e664-4f82-a8d2-d7517f5c2723.png",
+      "asset": "family-dad-v1.png"
+    },
+    {
+      "id": "sp",
+      "prompt": "Photorealistic fictional family profile portrait, square 1:1. A friendly Thai-Chinese man aged 39, short neat dark hair, warm natural smile, clean shaven, wearing a plain muted navy casual polo shirt, chest-up portrait facing camera. Clean softly lit pale warm-grey studio background, soft daylight, realistic skin texture, professional natural portrait photography. Entire head and hair visible with generous space around face so it crops well into a tiny circular app avatar. No medical uniform, no text, no logos, no props, no watermark. Ordinary approachable family member, not a fashion model.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-d9a1551f-77f7-4782-ab33-2621096cacb6.png",
+      "asset": "family-spouse-v1.png"
+    },
+    {
+      "id": "kid2",
+      "prompt": "Photorealistic fictional family profile portrait, square 1:1. A happy Thai-Chinese little girl aged 3 years old, natural dark hair in two small simple ponytails, smiling gently at the camera, wearing a modest plain pale mint cotton t-shirt, chest-up portrait. Age-appropriate everyday appearance, no makeup or accessories. Clean softly lit pale warm-grey studio background, soft daylight, natural family portrait photography. Entire head and hair visible with generous space around face so it crops well into a tiny circular app avatar. No text, logos, props, medical objects or watermark.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-2f396ea3-4593-4b4e-b18b-6b40541f724e.png",
+      "asset": "family-younger-child-v1.png"
+    }
+  ]
+}

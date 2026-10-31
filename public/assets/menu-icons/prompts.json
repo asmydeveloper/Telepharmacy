@@ -1,0 +1,31 @@
+{
+  "tool": "built-in image_gen",
+  "style": "Pastel flat illustration with soft shading",
+  "icons": [
+    {
+      "name": "allergy",
+      "prompt": "Use case: stylized-concept. Asset type: one small mobile healthcare menu icon for MITRAREE. Subject: A teal medicine capsule beside a small peach shield with a simple exclamation mark; communicate medicine allergy awareness. Style: friendly Korean insurance app pastel flat illustration icon, soft rounded geometric forms, nearly flat with very subtle soft shading, no outlines, no photorealism, no 3D glossy render. Centered single compact symbol occupying 75% of a square canvas, consistent front-facing view, broad clean shapes recognizable at 48px. Palette: teal #005F69, mint, pale aqua, gentle peach and light lavender. Transparent background, no background tile, no text, no letters, no watermark, no red cross emblem.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-bc9be1e7-c0a7-4998-aa1b-60b0b345d04d.png"
+    },
+    {
+      "name": "family",
+      "prompt": "Use case: stylized-concept. Asset type: one small mobile healthcare menu icon for MITRAREE. Subject: Three friendly simplified human busts, two adults behind one child, teal mint and peach clothes, minimal dot eyes. Style: friendly Korean insurance app pastel flat illustration icon, soft rounded geometric forms, nearly flat with very subtle soft shading, no outlines, no photorealism, no 3D glossy render. Centered single compact symbol occupying 75% of a square canvas, consistent front-facing view, broad clean shapes recognizable at 48px. Palette: teal #005F69, mint, pale aqua, gentle peach and light lavender. Transparent background, no background tile, no text, no letters, no watermark, no red cross emblem.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-fc012230-45c9-482a-81ba-631627c416ef.png"
+    },
+    {
+      "name": "health",
+      "prompt": "Use case: stylized-concept. Asset type: one small mobile healthcare menu icon for MITRAREE. Subject: A rounded mint medical clipboard with three simple teal checklist lines and a small coral heart. Style: friendly Korean insurance app pastel flat illustration icon, soft rounded geometric forms, nearly flat with very subtle soft shading, no outlines, no photorealism, no 3D glossy render. Centered single compact symbol occupying 75% of a square canvas, consistent front-facing view, broad clean shapes recognizable at 48px. Palette: teal #005F69, mint, pale aqua, gentle peach and light lavender. Transparent background, no background tile, no text, no letters, no watermark, no red cross emblem.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-c6b9cf31-0685-480e-a48d-f013811d3216.png"
+    },
+    {
+      "name": "medication",
+      "prompt": "Use case: stylized-concept. Asset type: one small mobile healthcare menu icon for MITRAREE. Subject: A mint medicine bottle beside one teal and cream capsule, with a tiny simple clock indicating medication tracking. Style: friendly Korean insurance app pastel flat illustration icon, soft rounded geometric forms, nearly flat with very subtle soft shading, no outlines, no photorealism, no 3D glossy render. Centered single compact symbol occupying 75% of a square canvas, consistent front-facing view, broad clean shapes recognizable at 48px. Palette: teal #005F69, mint, pale aqua, gentle peach and light lavender. Transparent background, no background tile, no text, no letters, no watermark, no red cross emblem.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-e6ebbcfa-2fd4-4777-8495-c37d6d3e50a4.png"
+    },
+    {
+      "name": "history",
+      "prompt": "Use case: stylized-concept. Asset type: one small mobile healthcare menu icon for MITRAREE. Subject: A light lavender rounded consultation document with a teal speech bubble and a small clock indicating past consultations. Style: friendly Korean insurance app pastel flat illustration icon, soft rounded geometric forms, nearly flat with very subtle soft shading, no outlines, no photorealism, no 3D glossy render. Centered single compact symbol occupying 75% of a square canvas, consistent front-facing view, broad clean shapes recognizable at 48px. Palette: teal #005F69, mint, pale aqua, gentle peach and light lavender. Transparent background, no background tile, no text, no letters, no watermark, no red cross emblem.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-a062a52b-37d4-48e3-b193-6fd2274f9bb6.png"
+    }
+  ]
+}

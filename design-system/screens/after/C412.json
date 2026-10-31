@@ -8,20 +8,74 @@
     {
       "code": "C412.1",
       "state": "normal",
-      "label": "ว่าง",
+      "label": "เลือกยา",
       "url": "/?screen=adr&state=normal&splash=0"
     },
     {
       "code": "C412.2",
       "state": "filled",
-      "label": "กรอกแล้ว",
+      "label": "ตรวจทานก่อนส่ง",
       "url": "/?screen=adr&state=filled&splash=0"
     },
     {
       "code": "C412.3",
       "state": "severe",
-      "label": "อาการรุนแรง",
+      "label": "อาการเร่งด่วน",
       "url": "/?screen=adr&state=severe&splash=0"
+    },
+    {
+      "code": "C412.4",
+      "state": "mother",
+      "label": "กรอกให้คุณแม่",
+      "url": "/?screen=adr&state=mother&splash=0"
+    },
+    {
+      "code": "C412.5",
+      "state": "child",
+      "label": "กรอกให้ลูก",
+      "url": "/?screen=adr&state=child&splash=0"
+    },
+    {
+      "code": "C412.6",
+      "state": "search",
+      "label": "ค้นหายา",
+      "url": "/?screen=adr&state=search&splash=0"
+    },
+    {
+      "code": "C412.7",
+      "state": "no-results",
+      "label": "ค้นหาไม่พบ",
+      "url": "/?screen=adr&state=no-results&splash=0"
+    },
+    {
+      "code": "C412.8",
+      "state": "manual",
+      "label": "ระบุยาจากที่อื่น",
+      "url": "/?screen=adr&state=manual&splash=0"
+    },
+    {
+      "code": "C412.9",
+      "state": "unknown",
+      "label": "ไม่ทราบชื่อยา",
+      "url": "/?screen=adr&state=unknown&splash=0"
+    },
+    {
+      "code": "C412.10",
+      "state": "symptoms",
+      "label": "ระบุอาการ",
+      "url": "/?screen=adr&state=symptoms&splash=0"
+    },
+    {
+      "code": "C412.11",
+      "state": "drafts",
+      "label": "ร่างแยกแต่ละคน",
+      "url": "/?screen=adr&state=drafts&splash=0"
+    },
+    {
+      "code": "C412.12",
+      "state": "submit-error",
+      "label": "ส่งไม่สำเร็จ ข้อมูลยังอยู่",
+      "url": "/?screen=adr&state=submit-error&splash=0"
     }
   ]
 }

@@ -13,6 +13,8 @@ const TP = {
   fmtAddr:a=>a.house+' '+a.dist, refresh:()=>{}, notify:()=>{}, closeSheet:()=>Promise.resolve(), go:()=>{}, sheet:()=>{},
 };
 const context = vm.createContext({TP,ui:{},esc:String,ic:()=>'',location:{search:''},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},URLSearchParams,structuredClone,document:{},console});
+const emptyArtMethod=source.match(/  emptyArt\(icon = 'inbox'\) \{[^\n]+/)[0].trim().replace(/,$/,'');
+vm.runInContext('Object.assign(ui, {'+emptyArtMethod+'})',context);
 const zoneStart=source.indexOf('const ROAD_KM =');
 const zoneEnd=source.indexOf('\n',source.indexOf('TP.zoneOf =',zoneStart));
 vm.runInContext(source.slice(zoneStart,zoneEnd),context);
@@ -38,6 +40,19 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   assert.equal(TP.S.favoriteBranches.join(','),'on');
   actions.hmFavorite({dataset:{v:'on'}});
   assert.equal(TP.S.favoriteBranches.length,0);
+  const favoriteButtons = [{attrs:{},setAttribute(k,v){this.attrs[k]=v}}, {attrs:{},setAttribute(k,v){this.attrs[k]=v}}];
+  let refreshCount=0; const refreshBefore=TP.refresh;
+  TP.refresh=()=>{refreshCount++}; TP.sheetOpen=()=>({id:'storeinfo'});
+  context.document.querySelectorAll=()=>favoriteButtons;
+  actions.hmFavorite({dataset:{v:'on'}});
+  assert.equal(refreshCount,0,'toggling in store sheet must not refresh and close it');
+  assert.ok(favoriteButtons.every(b=>b.attrs['aria-pressed']==='true'));
+  assert.ok(JSON.parse(storage.get('mitraree.home.preferences.v1')).favoriteBranches.includes('on'));
+  actions.hmFavorite({dataset:{v:'on'}});
+  assert.ok(favoriteButtons.every(b=>b.attrs['aria-pressed']==='false'));
+  assert.equal(TP.S.favoriteBranches.length,0);
+  TP.sheetOpen=()=>null; TP.refresh=refreshBefore;
+
   TP.homeScenario(TP.S,'outarea');assert.equal(TP.homeStores().length,0);
   TP.homeScenario(TP.S,'unknownarea');assert.equal(TP.homeStores().length,0);
   TP.homeScenario(TP.S,'noaddress');assert.equal(TP.homeAddress(),null);
@@ -83,5 +98,25 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   navigated=null; TP.S.storeOpen=false;
   await actions.hmConsultMode({dataset:{v:'video',branch:'on'}});
   assert.equal(navigated,null,'closed store cannot start consultation');
+  const rowsStart=source.indexOf('function storeListHtml(');
+  vm.runInContext(source.slice(rowsStart,source.indexOf('function nearbyStoresHtml(',rowsStart)),context);
+  context.ui.nav=()=>''; context.ui.page=x=>x; context.ui.tag=(label,tone)=>`<span class="tag ${tone}">${label}</span>`; context.ui.btn=label=>label;
+  TP.S.favoriteBranches=['tw']; TP.S.storeOpen=true; TP.S.sysOff=false;
+  let favoriteHtml=registrations.favorites.render({S:TP.S});
+  assert.ok(favoriteHtml.includes('data-sheet="storeinfo"'));
+  assert.ok(favoriteHtml.includes('hm-branch-favorite'));
+  assert.ok(favoriteHtml.includes('1 ร้านที่บันทึกไว้'));
+  TP.S.favoriteBranches=[];
+  assert.ok(registrations.favorites.render({S:TP.S}).includes('เก็บร้านที่คุณไว้ใจไว้ที่นี่'));
+  const menuStart=source.indexOf("TP.sheetDef('storeactions'");
+  vm.runInContext(source.slice(menuStart,source.indexOf("TP.sheetDef('allbranches'",menuStart)),context);
+  TP.S.favoriteBranches=[];
+  assert.ok(registrations.storeactions.render({S:TP.S,params:{branch:'tw'}}).includes('บันทึกร้านโปรด'));
+  await actions.hmMenuFavorite({dataset:{v:'tw'}});
+  assert.ok(TP.S.favoriteBranches.includes('tw'));
+  assert.ok(registrations.storeactions.render({S:TP.S,params:{branch:'tw'}}).includes('นำออกจากร้านโปรด'));
+  await actions.hmMenuFavorite({dataset:{v:'tw'}});
+  assert.ok(!TP.S.favoriteBranches.includes('tw'));
+  assert.ok(vm.runInContext('storeListHtml(TP.S,TP.BRANCHES)',context).includes('data-sheet="storeactions"'));
   console.log('PASS: selected address, nearby coverage, primary address, favorites, empty/outside/unknown cases and screen registrations');
 })().catch(e=>{console.error(e);process.exitCode=1});

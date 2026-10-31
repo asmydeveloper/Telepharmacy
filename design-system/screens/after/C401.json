@@ -28,6 +28,12 @@
       "state": "rated",
       "label": "ให้คะแนนแล้ว",
       "url": "/?screen=summary&state=rated&splash=0"
+    },
+    {
+      "code": "C401.5",
+      "state": "missing",
+      "label": "ไม่พบใบสรุป",
+      "url": "/?screen=summary&state=missing&splash=0"
     }
   ]
 }

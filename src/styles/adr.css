@@ -1,0 +1,58 @@
+/* Family-specific medication reaction reporting. */
+.adr-care,.adr-form {display:grid;gap:var(--section-gap)}
+.adr-person {background:var(--color-brand-50);padding:var(--space-3) var(--space-4);border-radius:var(--radius-card);min-width:0}
+.adr-person label {display:block;font-size:var(--text-small);color:var(--ink-3)}
+.adr-start {display:grid;gap:var(--space-3)}
+.adr-start h2,.adr-block h2 {margin:0;font-size:var(--text-heading);font-weight:var(--weight-semibold);line-height:var(--leading-body)}
+.adr-start p {margin:0;color:var(--ink-3)}
+.adr-section-icon {display:grid;place-items:center;background:var(--color-brand-50);border-radius:var(--radius-control);height:var(--size-control);width:var(--size-control);color:var(--brand)}
+.adr-block {display:grid;gap:var(--space-4);min-width:0}
+.adr-care>.adr-block {border-top:1px solid var(--line-soft);padding-top:var(--section-gap)}
+.adr-block h2>span {font-size:var(--text-small);color:var(--ink-3);font-weight:var(--weight-regular)}
+.adr-help {font-size:var(--text-small);color:var(--ink-3);line-height:var(--leading-body);margin:0}
+.adr-allergies {list-style:none;padding:0;margin:0;display:grid;gap:var(--space-2)}
+.adr-allergies li {display:flex;gap:var(--space-2);align-items:center;padding:var(--space-3);background:var(--warn-tint);border-radius:var(--radius-control);color:var(--warn)}
+.adr-report {display:flex;align-items:center;gap:var(--space-3);width:100%;text-align:left;color:var(--ink);font:inherit;background:var(--surface);border:1px solid var(--line-soft);border-radius:var(--radius-card);padding:var(--space-4)}
+.adr-report>span {display:grid;gap:var(--space-2);flex:1;min-width:0}
+.adr-report b {overflow-wrap:anywhere}
+.adr-report .tag {justify-self:start}
+.adr-report small,.adr-report>span>span:not(.tag) {color:var(--ink-3);font-size:var(--text-small)}
+.adr-empty {display:grid;gap:var(--space-2);justify-items:center;padding:var(--space-6) var(--space-3);text-align:center;background:var(--color-neutral-50);border-radius:var(--radius-card);color:var(--ink-3);font-size:var(--text-small)}
+.adr-empty p {margin:0}
+.adr-steps {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2);list-style:none;margin:0;padding:0}
+.adr-steps li {display:flex;gap:var(--space-2);align-items:center;color:var(--ink-3);font-size:var(--text-small)}
+.adr-steps li>span {display:grid;place-items:center;width:var(--size-badge);height:var(--size-badge);flex:none;border-radius:var(--radius-pill);background:var(--color-neutral-100)}
+.adr-steps li[aria-current] {color:var(--brand);font-weight:var(--weight-semibold)}
+.adr-steps li[aria-current]>span {background:var(--brand);color:var(--brand-white)}
+.adr-form>.note {font-size:var(--text-small);line-height:var(--leading-body)}
+.adr-form .note a {color:inherit;font-weight:var(--weight-semibold);text-decoration:underline;display:inline-block;padding-block:var(--space-2)}
+.adr-medicines {display:grid;gap:var(--space-2);margin-top:var(--space-3)}
+.adr-medicine {width:100%;display:flex;gap:var(--space-3);align-items:center;min-height:var(--size-touch);padding:var(--space-3);border:1px solid var(--line-soft);border-radius:var(--radius-control);font:inherit;text-align:left;background:var(--surface);color:var(--ink)}
+.adr-medicine[aria-pressed=true],.adr-manual[aria-pressed=true] {border-color:var(--brand);background:var(--color-brand-50);box-shadow:inset 0 0 0 1px var(--brand)}
+.adr-medicine>span:not(.adr-medicine-placeholder) {display:grid;gap:var(--space-1);flex:1;min-width:0}
+.adr-medicine b {font-size:var(--text-body);overflow-wrap:anywhere}
+.adr-medicine small {font-size:var(--text-caption);color:var(--ink-3)}
+.adr-medicine>svg {flex:none;color:var(--brand)}
+.phone .adr-medicine img,.adr-medicine-placeholder {display:grid;place-items:center;flex:none;width:56px;height:56px;border-radius:var(--radius-control);object-fit:cover;background:var(--color-neutral-50);color:var(--brand)}
+.adr-manual-fields {display:grid;gap:var(--space-4);padding:var(--space-4);background:var(--color-neutral-50);border-radius:var(--radius-card)}
+.adr-checkbox {display:flex;gap:var(--space-3);align-items:center;min-height:var(--size-touch);font-size:var(--text-small)}
+.adr-checkbox input {width:20px;height:20px;accent-color:var(--brand);flex:none}
+.adr-upload {display:grid;gap:var(--space-2);font-size:var(--text-small);color:var(--brand)}
+.adr-upload input {max-width:100%;font:inherit;min-height:var(--size-touch);color:var(--ink-3)}
+.adr-form details {border-top:1px solid var(--line-soft);padding-top:var(--space-2)}
+.adr-form summary {min-height:var(--size-touch);padding-block:var(--space-3);font-size:var(--text-small);color:var(--brand);cursor:pointer}
+.adr-form details[open] .field {margin-block:var(--space-3)}
+.adr-selected-drug {display:flex;gap:var(--space-2);align-items:center;padding:var(--space-3);border-radius:var(--radius-control);background:var(--color-neutral-50);margin:0;font-size:var(--text-small)}
+.adr-selected-drug svg {flex:none;color:var(--brand)}
+.adr-form .field {margin:0}
+.adr-form .adr-urgent {background:var(--warn-tint);padding:var(--space-4);border-radius:var(--radius-card)}
+.adr-form .adr-urgent legend {float:left;width:100%;color:var(--warn);margin-bottom:var(--space-3)}
+.adr-form .adr-urgent .chips {clear:both}
+.adr-review {margin:0;padding:var(--space-4);background:var(--color-neutral-50);border-radius:var(--radius-card);display:grid;gap:var(--space-4)}
+.adr-review dt {font-size:var(--text-small);color:var(--ink-3);margin-bottom:var(--space-1)}
+.adr-review dd {margin:0;color:var(--ink);overflow-wrap:anywhere;font-size:var(--text-body)}
+
+.adr-attachments {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2)}
+.adr-attachments figure {margin:0;min-width:0}
+.adr-attachments img {width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-control)}
+.adr-attachments figcaption {font-size:var(--text-caption);overflow-wrap:anywhere;color:var(--ink-3)}

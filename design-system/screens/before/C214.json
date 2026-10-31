@@ -1,0 +1,21 @@
+{
+  "code": "C214",
+  "screen": "storeactions",
+  "title": "ตัวเลือกร้านยา",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C214.1",
+      "state": "normal",
+      "label": "เพิ่มร้านโปรด",
+      "url": "/?screen=storeactions&state=normal&splash=0"
+    },
+    {
+      "code": "C214.2",
+      "state": "saved",
+      "label": "นำออกจากร้านโปรด",
+      "url": "/?screen=storeactions&state=saved&splash=0"
+    }
+  ]
+}

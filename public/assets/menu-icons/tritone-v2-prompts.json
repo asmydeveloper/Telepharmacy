@@ -1,0 +1,35 @@
+{
+  "tool": "built-in image_gen",
+  "palette": [
+    "#005F69",
+    "#51B9BD",
+    "#DDF3F2"
+  ],
+  "icons": [
+    {
+      "name": "allergy",
+      "prompt": "Use case: stylized-concept. Asset type: one Tri-tone Flat Icon for a Thai healthcare app menu. Subject: a simple medicine capsule beside a small shield containing an exclamation symbol. Match a cohesive professional friendly three-color icon family: use ONLY three flat solid colors deep teal #005F69, medium teal #51B9BD, pale mint #DDF3F2, plus true transparent background. Geometric filled shapes, soft rounded corners, simple bold silhouettes, restrained detail readable at 48px. Strict flat 2D graphic, no outlines, no gradients, no shading, no shadows, no texture, no photographic material, no 3D. Center the subject in a square canvas, symbol fills 75% of canvas with equal margin on all sides, no background tile. No text or letters or words, no logos, no watermark. Uniform visual weight with all icons in this menu family. Do not add decorative sparkles or other colors.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-f3b56dd0-ecff-42cb-885b-b9a8ae047f70.png"
+    },
+    {
+      "name": "family",
+      "prompt": "Use case: stylized-concept. Asset type: one Tri-tone Flat Icon for a Thai healthcare app menu. Subject: three simple rounded human bust silhouettes, two adults behind one child, no facial details. Match a cohesive professional friendly three-color icon family: use ONLY three flat solid colors deep teal #005F69, medium teal #51B9BD, pale mint #DDF3F2, plus true transparent background. Geometric filled shapes, soft rounded corners, simple bold silhouettes, restrained detail readable at 48px. Strict flat 2D graphic, no outlines, no gradients, no shading, no shadows, no texture, no photographic material, no 3D. Center the subject in a square canvas, symbol fills 75% of canvas with equal margin on all sides, no background tile. No text or letters or words, no logos, no watermark. Uniform visual weight with all icons in this menu family. Do not add decorative sparkles or other colors.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-8882e77e-e908-4a36-ad17-07435141cd9a.png"
+    },
+    {
+      "name": "health",
+      "prompt": "Use case: stylized-concept. Asset type: one Tri-tone Flat Icon for a Thai healthcare app menu. Subject: a simple rounded medical clipboard with two checkmarks and a small heart. Match a cohesive professional friendly three-color icon family: use ONLY three flat solid colors deep teal #005F69, medium teal #51B9BD, pale mint #DDF3F2, plus true transparent background. Geometric filled shapes, soft rounded corners, simple bold silhouettes, restrained detail readable at 48px. Strict flat 2D graphic, no outlines, no gradients, no shading, no shadows, no texture, no photographic material, no 3D. Center the subject in a square canvas, symbol fills 75% of canvas with equal margin on all sides, no background tile. No text or letters or words, no logos, no watermark. Uniform visual weight with all icons in this menu family. Do not add decorative sparkles or other colors.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-945e177c-594f-43f3-9a14-28c29b30f5fe.png"
+    },
+    {
+      "name": "medication",
+      "prompt": "Use case: stylized-concept. Asset type: one Tri-tone Flat Icon for a Thai healthcare app menu. Subject: a simple medicine bottle beside a single capsule and one tiny clock. Match a cohesive professional friendly three-color icon family: use ONLY three flat solid colors deep teal #005F69, medium teal #51B9BD, pale mint #DDF3F2, plus true transparent background. Geometric filled shapes, soft rounded corners, simple bold silhouettes, restrained detail readable at 48px. Strict flat 2D graphic, no outlines, no gradients, no shading, no shadows, no texture, no photographic material, no 3D. Center the subject in a square canvas, symbol fills 75% of canvas with equal margin on all sides, no background tile. No text or letters or words, no logos, no watermark. Uniform visual weight with all icons in this menu family. Do not add decorative sparkles or other colors.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-8d5e98c9-95d2-4480-b99d-12db0ee3b299.png"
+    },
+    {
+      "name": "history",
+      "prompt": "Use case: stylized-concept. Asset type: one Tri-tone Flat Icon for a Thai healthcare app menu. Subject: a simple speech bubble with a small counterclockwise history arrow and clock. Match a cohesive professional friendly three-color icon family: use ONLY three flat solid colors deep teal #005F69, medium teal #51B9BD, pale mint #DDF3F2, plus true transparent background. Geometric filled shapes, soft rounded corners, simple bold silhouettes, restrained detail readable at 48px. Strict flat 2D graphic, no outlines, no gradients, no shading, no shadows, no texture, no photographic material, no 3D. Center the subject in a square canvas, symbol fills 75% of canvas with equal margin on all sides, no background tile. No text or letters or words, no logos, no watermark. Uniform visual weight with all icons in this menu family. Do not add decorative sparkles or other colors.",
+      "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-88be6298-a571-4b01-b6cf-ccdaf56ffed0.png"
+    }
+  ]
+}

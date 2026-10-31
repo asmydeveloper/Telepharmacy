@@ -1,0 +1,7 @@
+{
+  "tool": "built-in image_gen",
+  "prompt": "Use case: precise-object-edit. Edit target: the attached pharmacy banner. Preserve the SAME pharmacy interior, shelves, counter, natural lighting, perspective and teal CI palette. Remove the human female pharmacist entirely and replace her with a cute original 3D bear pharmacist mascot positioned in the LOWER RIGHT of the image, not center. Bear: warm cream/beige soft rounded body, small round ears, friendly dark eyes and gentle smile, adorable compact proportions, white pharmacist lab coat over teal shirt, two little paws resting near the counter, polished soft matte 3D render, no stethoscope, no text or logo or red cross. Bear occupies roughly rightmost 30% and bottom 65% of the canvas, head around 45% from top, clearly visible at small mobile banner scale. Keep upper right roomy for favorite control and leftmost 60% calm dark teal negative space for live white text. Maintain photo-real pharmacy background with gentle blur, seamlessly integrate the charming 3D character into the original lighting. Do not add any text, watermark or UI. Landscape aspect ratio same as reference.",
+  "reference": "pharmacy-interior-v1.png",
+  "output": "pharmacy-bear-v1.png",
+  "description": "AI-generated bear mascot in fictional pharmacy interior"
+}

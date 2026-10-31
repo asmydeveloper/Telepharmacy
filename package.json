@@ -9,7 +9,13 @@
     "test:smoke": "node tests/smoke.cjs",
     "test:home": "node tests/home-addresses.cjs",
     "screens:sync": "node scripts/sync-screen-manifests.cjs",
-    "screens:check": "node scripts/sync-screen-manifests.cjs --check"
+    "screens:check": "node scripts/sync-screen-manifests.cjs --check",
+    "design:check": "node scripts/generate-figma-tokens.cjs --check && node scripts/check-design-system.cjs",
+    "design:sync": "node scripts/generate-figma-tokens.cjs",
+    "test:intake": "node tests/intake.cjs",
+    "test:history": "node tests/history.cjs",
+    "test:adr": "node tests/adr.cjs",
+    "test:empty": "node tests/empty-states.cjs"
   },
   "dependencies": {
     "next": "16.4.3",

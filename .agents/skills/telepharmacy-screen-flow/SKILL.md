@@ -15,3 +15,5 @@ Use for screen and flow changes in this project.
 - Keep form and communication choices connected to the existing flow. Selecting chat/video should carry that choice into intake and queue; do not skip the intake/consent flow or start a real call from a preview.
 - Log only design and UI changes in `src/data/change-log.json`: short Thai bullets with actual affected screen codes.
 - Check syntax and build. Verify the changed behavior and case links at a level appropriate to the change. Update this guidance only when the user's workflow requirements change.
+
+- Follow the project-wide healthcare UX/UI principles in `AGENTS.md`: research relevant primary guidance before layout/flow changes, use clear first-glance hierarchy, remove unhelpful repetition, show contextual alerts, and preserve pharmacist consultation before medication purchase. Verify in the built-in Codex browser only and disclose any unverified visual/usability checks.
