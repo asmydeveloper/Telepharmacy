@@ -735,8 +735,8 @@ button.row:hover .st-call{background:var(--brand);color:var(--semantic-surface)}
 .st-sug:hover,.st-sug:active{background:rgba(255,255,255,.6)}
 .st-keys{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--space-2);padding:0 var(--space-1) var(--space-2)}
 .st-key{height:47px;border-radius:var(--radius-sm);background:var(--semantic-surface);box-shadow:0 1px 0 rgba(0,0,0,.28);display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--color-neutral-900);line-height:1;transition:background .08s linear}
-.st-key b{font:400 var(--type-h2-mobile-size)/var(--type-h2-mobile-line) var(--font)}
-.st-key small{font:600 var(--type-caption-mobile-size)/var(--type-caption-mobile-line) var(--font);letter-spacing:.2em;margin-top:0;min-height:10px}
+.st-key b{font:400 var(--type-h2-mobile-size)/1 var(--font)}
+.st-key small{font:600 var(--type-caption-mobile-size)/1 var(--font);letter-spacing:.2em;margin-top:0;min-height:0}
 .st-key:hover{background:var(--color-neutral-50)}
 .st-key:active{background:var(--color-neutral-300)}
 .st-key.fn{background:transparent;box-shadow:none}
@@ -2017,3 +2017,7 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 
 
 
+
+/* Shared OTP keypad: keep both labels inside the key. */
+.st-key{padding:2px 0;gap:2px;flex-shrink:0}
+.st-key small:empty{display:none}

@@ -1,0 +1,15 @@
+{
+  "code": "C113",
+  "screen": "marketingconsent",
+  "title": "ความยินยอมรับข่าวสาร",
+  "group": "start",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C113",
+      "state": "normal",
+      "label": "อ่านรายละเอียด ไม่เปลี่ยนการเลือก",
+      "url": "/?screen=marketingconsent&state=normal&splash=0"
+    }
+  ]
+}

@@ -8,14 +8,32 @@
     {
       "code": "C506.1",
       "state": "normal",
-      "label": "ยินยอมแล้ว",
+      "label": "อ่านเอกสารความยินยอม",
       "url": "/?screen=consents&state=normal&splash=0"
     },
     {
       "code": "C506.2",
       "state": "withdrawn",
-      "label": "ถอนแล้ว",
+      "label": "อ่านเอกสารหลังถอน",
       "url": "/?screen=consents&state=withdrawn&splash=0"
+    },
+    {
+      "code": "C506.3",
+      "state": "reconsent",
+      "label": "อ่านเอกสารฉบับปัจจุบัน",
+      "url": "/?screen=consents&state=reconsent&splash=0"
+    },
+    {
+      "code": "C506.4",
+      "state": "join",
+      "label": "อ่านเอกสารจากการปรึกษา",
+      "url": "/?screen=consents&state=join&splash=0"
+    },
+    {
+      "code": "C506.5",
+      "state": "unchecked",
+      "label": "อ่านอย่างเดียว ไม่มีช่องติ๊ก",
+      "url": "/?screen=consents&state=unchecked&splash=0"
     }
   ]
 }

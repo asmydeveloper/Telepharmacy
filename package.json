@@ -15,7 +15,9 @@
     "test:intake": "node tests/intake.cjs",
     "test:history": "node tests/history.cjs",
     "test:adr": "node tests/adr.cjs",
-    "test:empty": "node tests/empty-states.cjs"
+    "test:empty": "node tests/empty-states.cjs",
+    "test:login": "node tests/login.cjs",
+    "test:registration": "node tests/registration.cjs"
   },
   "dependencies": {
     "next": "16.4.3",

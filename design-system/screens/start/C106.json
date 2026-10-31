@@ -1,21 +1,15 @@
 {
   "code": "C106",
-  "screen": "noconsent",
-  "title": "ไม่ยินยอม",
+  "screen": "registrationexit",
+  "title": "ออกจากการสมัครสมาชิก?",
   "group": "start",
-  "kind": "screen",
+  "kind": "sheet",
   "cases": [
     {
-      "code": "C106.1",
-      "state": "decline",
-      "label": "ไม่ยินยอมตอนเริ่มใช้",
-      "url": "/?screen=noconsent&state=decline&splash=0"
-    },
-    {
-      "code": "C106.2",
-      "state": "withdrawn",
-      "label": "ถอนความยินยอมแล้ว",
-      "url": "/?screen=noconsent&state=withdrawn&splash=0"
+      "code": "C106",
+      "state": "normal",
+      "label": "ยืนยันก่อนออก",
+      "url": "/?screen=registrationexit&state=normal&splash=0"
     }
   ]
 }

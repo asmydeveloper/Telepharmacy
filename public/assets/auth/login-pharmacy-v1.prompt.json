@@ -1,0 +1,8 @@
+{
+  "mode": "built-in image_gen",
+  "use_case": "photorealistic-natural",
+  "prompt": "Create a premium photorealistic editorial portrait background image for a Thai telepharmacy mobile app login cover, vertical 9:19 aspect ratio. A beautiful modern boutique pharmacy with refined deep teal (#005F69), white marble counter, warm pale oak shelves, soft natural daylight. A friendly professional 25-year-old Thai-Chinese female pharmacist in a pristine white coat over teal scrubs standing naturally BEHIND the pharmacy counter, warm calm expression, upper body fully coherent, hands resting naturally on counter. Subject and pharmacy details in UPPER TWO THIRDS, framing medium wide, quietly luxurious and trustworthy rather than hospital or cosmetics advertising. Bottom third transitions naturally into darker deep teal pharmacy interior with visually quiet negative space suitable for white UI text and two login buttons later. Leave a clean quiet wall area at top left/upper center suitable for an overlaid brand logo. Realistic human anatomy, authentic tidy pharmacy shelves but no legible medicine brand names, no promotional claims, no typography, no letters, no logos, no UI, no borders, no phone mockup. Restrained cinematic depth, beautifully composed, warm welcoming healthcare atmosphere, high resolution.",
+  "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-f0c54f85-6847-406c-bf9d-553a653114c7.png",
+  "asset": "login-pharmacy-v1.png",
+  "logo": "mitraree-plus-user-v1.png — user supplied, copied without editing"
+}

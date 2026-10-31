@@ -14,7 +14,7 @@
     {
       "code": "C413.2",
       "state": "severe",
-      "label": "อาการรุนแรง (ลูก)",
+      "label": "อาการรุนแรง",
       "url": "/?screen=adrsent&state=severe&splash=0"
     },
     {
@@ -49,12 +49,6 @@
     },
     {
       "code": "C413.8",
-      "state": "family-report",
-      "label": "รายงานของคุณแม่",
-      "url": "/?screen=adrsent&state=family-report&splash=0"
-    },
-    {
-      "code": "C413.9",
       "state": "unknown-drug",
       "label": "ไม่ทราบชื่อยา",
       "url": "/?screen=adrsent&state=unknown-drug&splash=0"

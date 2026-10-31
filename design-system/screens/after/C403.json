@@ -25,207 +25,129 @@
     },
     {
       "code": "C403.4",
-      "state": "all-family",
-      "label": "รวมทุกคนในครอบครัว",
-      "url": "/?screen=history&state=all-family&splash=0"
-    },
-    {
-      "code": "C403.5",
       "state": "self",
       "label": "เฉพาะตัวเอง",
       "url": "/?screen=history&state=self&splash=0"
     },
     {
-      "code": "C403.6",
-      "state": "mother",
-      "label": "เฉพาะคุณแม่",
-      "url": "/?screen=history&state=mother&splash=0"
-    },
-    {
-      "code": "C403.7",
-      "state": "child",
-      "label": "เฉพาะลูก",
-      "url": "/?screen=history&state=child&splash=0"
-    },
-    {
-      "code": "C403.8",
-      "state": "family-empty",
-      "label": "สมาชิกยังไม่มีประวัติ",
-      "url": "/?screen=history&state=family-empty&splash=0"
-    },
-    {
-      "code": "C403.9",
+      "code": "C403.5",
       "state": "paid",
       "label": "ซื้อยาแล้ว",
       "url": "/?screen=history&state=paid&splash=0"
     },
     {
-      "code": "C403.10",
+      "code": "C403.6",
       "state": "no-medication",
       "label": "ไม่ได้ซื้อยา",
       "url": "/?screen=history&state=no-medication&splash=0"
     },
     {
-      "code": "C403.11",
+      "code": "C403.7",
       "state": "search",
       "label": "ค้นหาประวัติ",
       "url": "/?screen=history&state=search&splash=0"
     },
     {
-      "code": "C403.12",
+      "code": "C403.8",
       "state": "no-results",
       "label": "ค้นหาไม่พบ",
       "url": "/?screen=history&state=no-results&splash=0"
     },
     {
-      "code": "C403.13",
+      "code": "C403.9",
       "state": "error",
       "label": "โหลดไม่สำเร็จ",
       "url": "/?screen=history&state=error&splash=0"
     },
     {
-      "code": "C403.14",
-      "state": "active-family",
-      "label": "มีการปรึกษาของสมาชิกค้าง",
-      "url": "/?screen=history&state=active-family&splash=0"
-    },
-    {
-      "code": "C403.15",
-      "state": "profile-picker",
-      "label": "เลือกโปรไฟล์ด้วยวงสี CI",
-      "url": "/?screen=history&state=profile-picker&splash=0"
-    },
-    {
-      "code": "C403.16",
+      "code": "C403.10",
       "state": "dark-filters",
       "label": "แท็บประเภทสี CI เข้ม",
       "url": "/?screen=history&state=dark-filters&splash=0"
     },
     {
-      "code": "C403.17",
+      "code": "C403.11",
       "state": "shared-tabs",
       "label": "แท็บกลาง ตัวอักษร 14px",
       "url": "/?screen=history&state=shared-tabs&splash=0"
     },
     {
-      "code": "C403.18",
-      "state": "family-max",
-      "label": "สมาชิกเต็ม 6 คน",
-      "url": "/?screen=history&state=family-max&splash=0"
-    },
-    {
-      "code": "C403.19",
-      "state": "family-max-selected",
-      "label": "เลือกสมาชิกคนสุดท้ายจาก 6 คน",
-      "url": "/?screen=history&state=family-max-selected&splash=0"
-    },
-    {
-      "code": "C403.20",
-      "state": "profile-strip",
-      "label": "แถบโปรไฟล์เต็มขอบ เลื่อนแนวนอน",
-      "url": "/?screen=history&state=profile-strip&splash=0"
-    },
-    {
-      "code": "C403.21",
-      "state": "compact-profile-labels",
-      "label": "ชื่อและความสัมพันธ์ชิดกัน",
-      "url": "/?screen=history&state=compact-profile-labels&splash=0"
-    },
-    {
-      "code": "C403.22",
+      "code": "C403.12",
       "state": "store-recipient-card",
       "label": "หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา",
       "url": "/?screen=history&state=store-recipient-card&splash=0"
     },
     {
-      "code": "C403.23",
+      "code": "C403.13",
       "state": "receipt-inside",
       "label": "ดูใบเสร็จในใบสรุป",
       "url": "/?screen=history&state=receipt-inside&splash=0"
     },
     {
-      "code": "C403.24",
+      "code": "C403.14",
       "state": "detail-rows",
       "label": "รายละเอียดเรียงแถวพร้อมไอคอน",
       "url": "/?screen=history&state=detail-rows&splash=0"
     },
     {
-      "code": "C403.25",
+      "code": "C403.15",
       "state": "purchase-status",
       "label": "ป้ายตามข้อมูลซื้อยา",
       "url": "/?screen=history&state=purchase-status&splash=0"
     },
     {
-      "code": "C403.26",
+      "code": "C403.16",
       "state": "pending-order",
       "label": "รายการยารอชำระ",
       "url": "/?screen=history&state=pending-order&splash=0"
     },
     {
-      "code": "C403.27",
+      "code": "C403.17",
       "state": "expired-order",
       "label": "รายการยาหมดอายุ",
       "url": "/?screen=history&state=expired-order&splash=0"
     },
     {
-      "code": "C403.28",
+      "code": "C403.18",
       "state": "cancelled-order",
       "label": "ยกเลิกรายการยา",
       "url": "/?screen=history&state=cancelled-order&splash=0"
     },
     {
-      "code": "C403.29",
+      "code": "C403.19",
       "state": "tap-card",
       "label": "แตะการ์ด ไม่มีข้อความลิงก์",
       "url": "/?screen=history&state=tap-card&splash=0"
     },
     {
-      "code": "C403.30",
+      "code": "C403.20",
       "state": "search-below-tabs",
       "label": "ช่องค้นหาอยู่ใต้แท็บ",
       "url": "/?screen=history&state=search-below-tabs&splash=0"
     },
     {
-      "code": "C403.31",
+      "code": "C403.21",
       "state": "tab-counts",
       "label": "จำนวนรายการในแต่ละแท็บ",
       "url": "/?screen=history&state=tab-counts&splash=0"
     },
     {
-      "code": "C403.32",
-      "state": "profile-pills",
-      "label": "โปรไฟล์ pill แนวนอน",
-      "url": "/?screen=history&state=profile-pills&splash=0"
+      "code": "C403.22",
+      "state": "search-open",
+      "label": "เปิดช่องค้นหาจากหัวหน้า",
+      "url": "/?screen=history&state=search-open&splash=0"
     },
     {
-      "code": "C403.33",
-      "state": "profile-pills-max",
-      "label": "Pill สมาชิกเต็ม 6 คน",
-      "url": "/?screen=history&state=profile-pills-max&splash=0"
+      "code": "C403.23",
+      "state": "search-cleared",
+      "label": "ช่องค้นหาหลังล้างคำ",
+      "url": "/?screen=history&state=search-cleared&splash=0"
     },
     {
-      "code": "C403.34",
-      "state": "profile-pills-last",
-      "label": "Pill เลือกสมาชิกคนสุดท้าย",
-      "url": "/?screen=history&state=profile-pills-last&splash=0"
-    },
-    {
-      "code": "C403.35",
-      "state": "profile-pill-active",
-      "label": "Pill ที่เลือกสี CI เข้ม ตัวอักษรขาว",
-      "url": "/?screen=history&state=profile-pill-active&splash=0"
-    },
-    {
-      "code": "C403.36",
-      "state": "generated-family",
-      "label": "สมาชิกเพิ่ม 3 คน พร้อมรูปโปรไฟล์",
-      "url": "/?screen=history&state=generated-family&splash=0"
-    },
-    {
-      "code": "C403.37",
-      "state": "pills-no-hint",
-      "label": "แถบโปรไฟล์ไม่มีข้อความเลื่อน",
-      "url": "/?screen=history&state=pills-no-hint&splash=0"
+      "code": "C403.24",
+      "state": "ten-records",
+      "label": "ประวัติ 10 รายการ หลายวันและเดือน",
+      "url": "/?screen=history&state=ten-records&splash=0"
     }
   ]
 }

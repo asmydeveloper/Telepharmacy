@@ -13,42 +13,24 @@
     },
     {
       "code": "C416.2",
-      "state": "mother",
-      "label": "ข้อมูลคุณแม่",
-      "url": "/?screen=adrcare&state=mother&splash=0"
-    },
-    {
-      "code": "C416.3",
-      "state": "child",
-      "label": "ข้อมูลลูก",
-      "url": "/?screen=adrcare&state=child&splash=0"
-    },
-    {
-      "code": "C416.4",
       "state": "empty",
       "label": "ยังไม่มีรายงาน",
       "url": "/?screen=adrcare&state=empty&splash=0"
     },
     {
-      "code": "C416.5",
+      "code": "C416.3",
       "state": "reported",
       "label": "มีรายงานรอประเมิน",
       "url": "/?screen=adrcare&state=reported&splash=0"
     },
     {
-      "code": "C416.6",
-      "state": "multiple",
-      "label": "หลายคนแยกบันทึก",
-      "url": "/?screen=adrcare&state=multiple&splash=0"
-    },
-    {
-      "code": "C416.7",
+      "code": "C416.4",
       "state": "loading",
       "label": "กำลังโหลด",
       "url": "/?screen=adrcare&state=loading&splash=0"
     },
     {
-      "code": "C416.8",
+      "code": "C416.5",
       "state": "error",
       "label": "โหลดไม่สำเร็จ",
       "url": "/?screen=adrcare&state=error&splash=0"

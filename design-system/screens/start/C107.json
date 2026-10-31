@@ -1,21 +1,15 @@
 {
   "code": "C107",
-  "screen": "faceid",
-  "title": "Face ID / ลายนิ้วมือ",
+  "screen": "registrationconsent",
+  "title": "ความยินยอมข้อมูลสุขภาพ",
   "group": "start",
-  "kind": "screen",
+  "kind": "sheet",
   "cases": [
     {
-      "code": "C107.1",
-      "state": "ios",
-      "label": "iPhone (Face ID)",
-      "url": "/?screen=faceid&state=ios&splash=0"
-    },
-    {
-      "code": "C107.2",
-      "state": "android",
-      "label": "Android (ลายนิ้วมือ)",
-      "url": "/?screen=faceid&state=android&splash=0"
+      "code": "C107",
+      "state": "normal",
+      "label": "อ่านความยินยอม ไม่มีช่องติ๊ก",
+      "url": "/?screen=registrationconsent&state=normal&splash=0"
     }
   ]
 }

@@ -1,6 +1,7 @@
 /* Shared customer UI tokens. Used by the app and /design-system. */
 :root {
   --color-canvas-base:#FFFFFF;
+  --semantic-waiting-indicator:#e07816;
   --ground:var(--color-canvas-base);
   --glass:rgba(255,255,255,.86); --glass-strong:rgba(255,255,255,.96);
   --radius-small:8px; --radius-control:12px; --radius-card:16px; --radius-feature:20px; --radius-pill:999px;

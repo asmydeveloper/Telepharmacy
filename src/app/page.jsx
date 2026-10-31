@@ -12,6 +12,7 @@ import '@/styles/components.css';
 import '@/styles/intake.css';
 import '@/styles/history.css';
 import '@/styles/adr.css';
+import '@/styles/registration.css';
 import '@/styles/preview-device.css';
 import Runtime from '@/components/Runtime';
 export const metadata = { title: "MITRAREE ปรึกษาเภสัชกร" };

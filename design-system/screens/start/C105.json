@@ -1,21 +1,237 @@
 {
   "code": "C105",
-  "screen": "consent",
-  "title": "ยินยอมให้ใช้ข้อมูล",
+  "screen": "profile",
+  "title": "ข้อมูลของคุณและความยินยอม",
   "group": "start",
   "kind": "screen",
   "cases": [
     {
       "code": "C105.1",
-      "state": "first",
-      "label": "ยินยอมภายหลัง",
-      "url": "/?screen=consent&state=first&splash=0"
+      "state": "empty",
+      "label": "เบอร์ใหม่: ยังไม่กรอก",
+      "url": "/?screen=profile&state=empty&splash=0"
     },
     {
       "code": "C105.2",
-      "state": "reconsent",
-      "label": "ฉบับใหม่ ขอยินยอมอีกครั้ง",
-      "url": "/?screen=consent&state=reconsent&splash=0"
+      "state": "filled",
+      "label": "เบอร์ใหม่: กรอกแล้ว",
+      "url": "/?screen=profile&state=filled&splash=0"
+    },
+    {
+      "code": "C105.3",
+      "state": "error",
+      "label": "ปีเกิดไม่ถูกต้อง",
+      "url": "/?screen=profile&state=error&splash=0"
+    },
+    {
+      "code": "C105.4",
+      "state": "acct",
+      "label": "มีบัญชีเว็บ: ความยินยอมฉบับใหม่",
+      "url": "/?screen=profile&state=acct&splash=0"
+    },
+    {
+      "code": "C105.5",
+      "state": "email",
+      "label": "สมัครใหม่ด้วยอีเมลที่ยืนยันแล้ว",
+      "url": "/?screen=profile&state=email&splash=0"
+    },
+    {
+      "code": "C105.6",
+      "state": "address",
+      "label": "ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ",
+      "url": "/?screen=profile&state=address&splash=0"
+    },
+    {
+      "code": "C105.7",
+      "state": "address-no-results",
+      "label": "ค้นหาที่อยู่ไม่พบ กรอกเองได้",
+      "url": "/?screen=profile&state=address-no-results&splash=0"
+    },
+    {
+      "code": "C105.8",
+      "state": "address-error",
+      "label": "ตัวช่วยที่อยู่โหลดไม่สำเร็จ",
+      "url": "/?screen=profile&state=address-error&splash=0"
+    },
+    {
+      "code": "C105.9",
+      "state": "health",
+      "label": "ขั้นข้อมูลสุขภาพ ยังไม่ทราบ",
+      "url": "/?screen=profile&state=health&splash=0"
+    },
+    {
+      "code": "C105.10",
+      "state": "health-empty",
+      "label": "ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ",
+      "url": "/?screen=profile&state=health-empty&splash=0"
+    },
+    {
+      "code": "C105.11",
+      "state": "health-filled",
+      "label": "ข้อมูลสุขภาพหลายรายการ",
+      "url": "/?screen=profile&state=health-filled&splash=0"
+    },
+    {
+      "code": "C105.12",
+      "state": "review",
+      "label": "ตรวจทานและความยินยอม ยังไม่ติ๊ก",
+      "url": "/?screen=profile&state=review&splash=0"
+    },
+    {
+      "code": "C105.13",
+      "state": "consent-partial",
+      "label": "ความยินยอมเก่าไม่แทนการเลือกฉบับใหม่",
+      "url": "/?screen=profile&state=consent-partial&splash=0"
+    },
+    {
+      "code": "C105.14",
+      "state": "consent-ready",
+      "label": "เลือกยินยอมแล้ว พร้อมสมัคร",
+      "url": "/?screen=profile&state=consent-ready&splash=0"
+    },
+    {
+      "code": "C105.15",
+      "state": "save-error",
+      "label": "บันทึกไม่สำเร็จ ข้อมูลยังอยู่",
+      "url": "/?screen=profile&state=save-error&splash=0"
+    },
+    {
+      "code": "C105.16",
+      "state": "health-none",
+      "label": "ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง",
+      "url": "/?screen=profile&state=health-none&splash=0"
+    },
+    {
+      "code": "C105.17",
+      "state": "health-no-results",
+      "label": "ยาไม่อยู่ในลิสต์ ใช้อื่น ๆ",
+      "url": "/?screen=profile&state=health-no-results&splash=0"
+    },
+    {
+      "code": "C105.18",
+      "state": "health-documents",
+      "label": "แนบเอกสารแพ้ยาแล้ว",
+      "url": "/?screen=profile&state=health-documents&splash=0"
+    },
+    {
+      "code": "C105.19",
+      "state": "health-doc-error",
+      "label": "ไฟล์แนบไม่ผ่านเงื่อนไข",
+      "url": "/?screen=profile&state=health-doc-error&splash=0"
+    },
+    {
+      "code": "C105.20",
+      "state": "quick-fill",
+      "label": "ปุ่มมอคข้อมูลใต้ป้ายชื่อหน้า",
+      "url": "/?screen=profile&state=quick-fill&splash=0"
+    },
+    {
+      "code": "C105.21",
+      "state": "address-search",
+      "label": "ค้นหาที่อยู่และเติมอัตโนมัติ",
+      "url": "/?screen=profile&state=address-search&splash=0"
+    },
+    {
+      "code": "C105.22",
+      "state": "conditions-multi",
+      "label": "เลือกโรคได้หลายข้อ",
+      "url": "/?screen=profile&state=conditions-multi&splash=0"
+    },
+    {
+      "code": "C105.23",
+      "state": "conditions-other",
+      "label": "ระบุโรคอื่น ๆ",
+      "url": "/?screen=profile&state=conditions-other&splash=0"
+    },
+    {
+      "code": "C105.24",
+      "state": "conditions-other-empty",
+      "label": "เลือกอื่น ๆ แต่ยังไม่กรอก",
+      "url": "/?screen=profile&state=conditions-other-empty&splash=0"
+    },
+    {
+      "code": "C105.25",
+      "state": "conditions-no-results",
+      "label": "โรคที่ไม่มีในลิสต์ ใช้อื่น ๆ",
+      "url": "/?screen=profile&state=conditions-no-results&splash=0"
+    },
+    {
+      "code": "C105.26",
+      "state": "registration-back",
+      "label": "ย้อนกลับเพื่อแก้ไขข้อมูล",
+      "url": "/?screen=profile&state=registration-back&splash=0"
+    },
+    {
+      "code": "C105.27",
+      "state": "health-all-other",
+      "label": "เลือกหลายข้อและอื่น ๆ ทุกกลุ่มสุขภาพ",
+      "url": "/?screen=profile&state=health-all-other&splash=0"
+    },
+    {
+      "code": "C105.28",
+      "state": "health-doc-limit",
+      "label": "แนบเอกสารครบ 5 ไฟล์",
+      "url": "/?screen=profile&state=health-doc-limit&splash=0"
+    },
+    {
+      "code": "C105.29",
+      "state": "review-documents",
+      "label": "ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์",
+      "url": "/?screen=profile&state=review-documents&splash=0"
+    },
+    {
+      "code": "C105.30",
+      "state": "dob-years",
+      "label": "วันเกิด: ล้อหมุน",
+      "url": "/?screen=profile&state=dob-years&splash=0"
+    },
+    {
+      "code": "C105.31",
+      "state": "dob-months",
+      "label": "วันเกิด: เลือกเดือน",
+      "url": "/?screen=profile&state=dob-months&splash=0"
+    },
+    {
+      "code": "C105.32",
+      "state": "dob-days",
+      "label": "วันเกิด: เลือกวัน",
+      "url": "/?screen=profile&state=dob-days&splash=0"
+    },
+    {
+      "code": "C105.33",
+      "state": "dob-selected",
+      "label": "วันเกิด: ค่าเดิม",
+      "url": "/?screen=profile&state=dob-selected&splash=0"
+    },
+    {
+      "code": "C105.34",
+      "state": "dob-leap",
+      "label": "วันเกิด: ปีอธิกสุรทิน",
+      "url": "/?screen=profile&state=dob-leap&splash=0"
+    },
+    {
+      "code": "C105.35",
+      "state": "dob-future",
+      "label": "วันเกิด: จำกัดถึงวันนี้",
+      "url": "/?screen=profile&state=dob-future&splash=0"
+    },
+    {
+      "code": "C105.36",
+      "state": "dob-oldest",
+      "label": "วันเกิด: ปี 1900",
+      "url": "/?screen=profile&state=dob-oldest&splash=0"
+    },
+    {
+      "code": "C105.37",
+      "state": "marketing-opt-in",
+      "label": "ยินยอมรับข่าวสาร",
+      "url": "/?screen=profile&state=marketing-opt-in&splash=0"
+    },
+    {
+      "code": "C105.38",
+      "state": "marketing-opt-out",
+      "label": "ไม่รับข่าวสาร สมัครได้",
+      "url": "/?screen=profile&state=marketing-opt-out&splash=0"
     }
   ]
 }

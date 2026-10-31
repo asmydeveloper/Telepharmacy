@@ -37,3 +37,9 @@ html.bare .stage>.device-real,html.mob .stage>.device-real {position:fixed;inset
 .panel .pn-foot {margin-top:28px;padding-top:20px;border-top:1px solid #DFE8E8;line-height:1.75}
 html.mob .panel {padding:24px 20px 40px}
 html.mob .panel .pn-top {background:#FFFFFF;margin:-24px -20px 0;padding:16px 20px;top:-24px}
+
+/* Quick-fill tools belong to the preview badge, outside the phone. */
+.code-badge.has-mock {display:flex;flex-direction:column;align-items:flex-start;gap:var(--space-1);max-width:180px;border-radius:var(--r-lg)}
+.code-badge .preview-mock-button {pointer-events:auto;display:block;min-height:44px;width:100%;margin-top:var(--space-2);padding:var(--space-2) var(--space-3);border:0;border-radius:var(--r-md);background:var(--brand);color:var(--color-canvas-base);font:600 var(--text-small)/1.5 var(--font);cursor:pointer}
+.code-badge .preview-mock-button:hover {filter:brightness(.95)}
+.code-badge .preview-mock-button:focus-visible {outline:2px solid var(--brand);outline-offset:3px}

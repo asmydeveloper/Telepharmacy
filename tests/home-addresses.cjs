@@ -118,5 +118,30 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   await actions.hmMenuFavorite({dataset:{v:'tw'}});
   assert.ok(!TP.S.favoriteBranches.includes('tw'));
   assert.ok(vm.runInContext('storeListHtml(TP.S,TP.BRANCHES)',context).includes('data-sheet="storeactions"'));
+  // Central consult action: require known zero queue, open status and coverage; never create a case.
+  const savedStores=TP.homeStores,savedAddress=TP.homeAddress;
+  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[{id:'near',name:'ใกล้'},{id:'free',name:'ว่าง'},{id:'far',name:'ไกล'}];
+  Object.assign(TP.S,{loggedIn:true,storeOpen:true,sysOff:false,branchState:{near:'open',free:'open',far:'open'},queueLen:{near:2,free:0,far:0},intake:{},case:null});
+  assert.equal(TP.quickConsultBranch().branch.id,'free');
+  TP.S.branchState.free='pause';assert.equal(TP.quickConsultBranch().branch.id,'far');
+  TP.S.branchState.far='closed';assert.equal(TP.quickConsultBranch().reason,'busy');
+  TP.S.branchState.free='open';TP.S.queueLen={};assert.equal(TP.quickConsultBranch().reason,'busy','unknown is not a zero queue');
+  TP.S.queueLen={near:2,free:0,far:0};let routed=[],sheets=[],started=0;TP.go=(...x)=>routed.push(x);TP.sheet=(...x)=>sheets.push(x);TP.caseOpen=()=>false;TP.ACTS=actions;const previousHmStart=actions.hmStart;actions.hmStart=()=>started++;
+  actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,1);assert.equal(TP.S.case,null);
+  TP.caseOpen=()=>true;TP.S.case={status:'room',branch:'near'};actions.quickConsult();assert.equal(routed.at(-1)[0],'room');assert.equal(TP.S.branch,'free');assert.equal(started,1);
+  TP.caseOpen=()=>false;TP.S.case=null;TP.homeAddress=()=>null;actions.quickConsult();assert.equal(sheets.at(-1)[0],'homeaddress');
+  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];actions.quickConsult();assert.equal(sheets.at(-1)[0],'allbranches');
+  TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(sheets.at(-1)[0],'allbranches');
+  TP.S.sysOff=true;actions.quickConsult();assert.equal(routed.at(-1)[0],'sysoff');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'offline');
+  TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;
+  const shell=fs.readFileSync('src/app/Shell.jsx','utf8'),nav=shell.slice(shell.indexOf('"id": "tabbar"'),shell.indexOf('</nav>',shell.indexOf('"id": "tabbar"')));assert(nav.indexOf('history')<nav.indexOf('quickConsult'));assert(nav.indexOf('quickConsult')<nav.indexOf('inbox'));assert(nav.includes('aria-label="ปรึกษาเภสัชกร"'));
   console.log('PASS: selected address, nearby coverage, primary address, favorites, empty/outside/unknown cases and screen registrations');
 })().catch(e=>{console.error(e);process.exitCode=1});
+
+// Banner CTA uses the existing consultation action and stays above the store list.
+const bannerStart=source.indexOf('function homeConsultBanner(S)'),bannerEnd=source.indexOf("TP.screen('home'",bannerStart);
+vm.runInContext(source.slice(bannerStart,bannerEnd),context);
+context.ui.btn=(label,o)=>`<button data-a="${o.a}">${label}</button>`;
+TP.caseOpen=()=>false;let banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('ปรึกษาเภสัช'));assert(banner.includes('data-a="quickConsult"'));assert(banner.includes('/assets/banners/pharmacy-female-counter-v1.png'));assert(fs.existsSync('public/assets/banners/pharmacy-female-counter-v1.png'));
+TP.caseOpen=()=>true;banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('คุยกับเภสัชต่อ'));
+assert(source.includes('homeConsultBanner(S)+heroHtml(S,st)'));assert(source.includes('heroHtml(S,st)+homeConsultBanner(S)+nearbyStoresHtml'));

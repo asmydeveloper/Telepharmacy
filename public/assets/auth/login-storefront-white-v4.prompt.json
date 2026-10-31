@@ -1,0 +1,8 @@
+{
+  "mode": "built-in image_gen edit",
+  "prompt": "Precise edit of the supplied tall Mitraree pharmacy cover. Preserve the upper photograph exactly: same pharmacy facade, Thai มิตรอารี+ sign, MITRAREE PHARMACY lettering, blue sky, trees, glass doors, planters, architectural composition and dimensions. Change ONLY the lower color treatment. Remove the entire dark teal area at the bottom and replace it with PURE WHITE #FFFFFF. Bake a clean gentle photographic fade into white directly into this image: start the white veil softly around the lower glass entrance, roughly 48-52% down the full image, and reach completely opaque pure white by 68% down. The bottom 32% must be completely plain solid WHITE with no teal, blue, gray, texture, vignette, shadows or objects, so dark UI text and teal login buttons can be overlaid without any CSS gradient. Preserve the pharmacy sign crisp and fully visible above the fade. Do not add text, logos, UI, people or anything else. Output the same tall portrait aspect ratio as input, high resolution. The image itself must contain the white fade and solid white lower region.",
+  "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-e6eaefc6-a9e8-4441-a82b-6a8cadebdfcc.png",
+  "reference": "login-storefront-v3.png",
+  "asset": "login-storefront-white-v4.png",
+  "rendering": "White fade baked into the image. No CSS gradient overlay."
+}

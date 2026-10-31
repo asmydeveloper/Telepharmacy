@@ -20,14 +20,14 @@
 .hm-banner :focus-visible {outline-color:var(--semantic-surface)}
 .phone:has(.scr[data-screen=home])>.sbar {color:var(--semantic-surface);background:linear-gradient(to bottom,rgb(var(--color-primary-deep-rgb) / .98),rgb(var(--color-primary-deep-rgb) / .86) 65%,transparent)}
 .phone:has(.scr[data-screen=home])>.homebar {background:var(--ink)}
-.hm-mini-menu {display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--space-2);padding:0;border:0;background:transparent;box-shadow:none}
+.hm-mini-menu {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2);padding:0;border:0;background:transparent;box-shadow:none}
 .hm-mini-item {display:grid;grid-template-rows:44px auto;justify-items:center;align-content:start;gap:var(--space-2);min-width:0;min-height:72px;text-align:center;border-radius:var(--radius-control)}
 .hm-mini-icon {display:grid;place-items:center;width:44px;height:44px;background:var(--brand-tint);color:var(--brand);border-radius:var(--radius-control)}
 .hm-mini-item>span:last-child {font-size:var(--type-caption-mobile-size);line-height:1.5;font-weight:500;white-space:nowrap}
 .hm-mini-item:active .hm-mini-icon {background:var(--brand);color:var(--semantic-surface)}
 .hm-mini-item:focus-visible {outline:2px solid var(--brand);outline-offset:3px}
 .hm-nearby,.hm-updates,.hm-recent {display:grid;grid-template-columns:minmax(0,1fr);gap:var(--space-3);min-width:0}
-.hm-nearby {container-type:inline-size}
+.hm-nearby {container-type:inline-size;gap:var(--space-1);padding-top:var(--space-2)}
 .hm-section-head,.hm-recent>.sec-h {display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--space-2);margin:0}
 .hm-section-head h2,.hm-section-title {font-size:var(--text-heading);line-height:1.4;font-weight:var(--font-weight-semibold);margin:0}
 .hm-text-action {display:inline-flex;align-items:center;gap:var(--space-1);min-height:44px;color:var(--brand);font-size:var(--text-small);font-weight:500}
@@ -213,3 +213,68 @@
 
 .hm-mini-menu .hm-mini-icon.hm-mini-art {background:var(--color-brand-50);border-radius:var(--radius-md)}
 .hm-mini-menu .hm-mini-art img {width:40px;height:40px}
+
+/* Four health shortcuts use the available width with quiet rounded tiles. */
+.hm-mini-menu .hm-mini-item {grid-template-rows:60px auto}
+.hm-mini-menu .hm-mini-icon.hm-mini-art {width:60px;height:60px}
+.hm-mini-menu .hm-mini-art img {width:44px;height:44px}
+.hm-consult-options>div:not(.bc-action-heading) {grid-template-columns:minmax(0,1fr)}
+
+/* C201: one clear consultation invitation above nearby stores. */
+.hm-consult-banner {position:relative;isolation:isolate;overflow:hidden;border-radius:var(--radius-feature);background:var(--color-brand-50);border:1px solid var(--color-brand-100);padding:var(--space-4);min-height:192px}
+.hm-consult-banner-art {position:absolute;inset:0;z-index:-1;width:100%;height:100%;object-fit:cover;object-position:right center;pointer-events:none}
+.hm-consult-banner-copy {display:grid;justify-items:start;align-content:center;gap:var(--space-2);width:58%;min-width:0}
+.hm-consult-banner h2 {margin:0;color:var(--semantic-primary);font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line);font-weight:var(--weight-semibold)}
+.hm-consult-banner p {margin:0;color:var(--semantic-text-secondary);font-size:var(--type-body-sm-mobile-size);line-height:var(--type-body-sm-mobile-line)}
+.phone .hm-consult-banner .btn {margin-top:var(--space-2);min-height:44px;padding:var(--space-2) var(--space-3);font-size:var(--type-body-sm-mobile-size);white-space:normal}
+@media(max-width:360px){.hm-consult-banner-copy{width:65%}.hm-consult-banner-art{object-position:right bottom;opacity:.7}}
+
+/* C201: one resumable consultation, with status and next action tied to its case. */
+.hm-active-case {display:grid;gap:var(--space-4);padding:var(--space-4);border:1px solid var(--color-brand-100);border-radius:var(--radius-feature);background:var(--semantic-surface);box-shadow:var(--shadow-card);overflow:hidden;min-width:0}
+.hm-active-top {display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);flex-wrap:wrap}
+.hm-active-label {display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-small);font-weight:var(--weight-medium);color:var(--semantic-primary)}
+.hm-active-status {display:inline-flex;align-items:center;gap:var(--space-1);padding:var(--space-1) var(--space-2);border-radius:var(--radius-pill);font-size:var(--text-caption);line-height:var(--type-caption-mobile-line);color:var(--semantic-primary);background:var(--semantic-surface-selected)}
+.hm-active-case h2 {margin:0;font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line);font-weight:var(--weight-semibold);color:var(--semantic-primary)}
+.hm-active-provider {display:flex;align-items:center;gap:var(--space-3);min-width:0}
+.hm-active-provider>.av {flex:none}
+.hm-active-provider>div {display:grid;gap:var(--space-1);min-width:0}
+.hm-active-provider b {font-size:var(--text-body);font-weight:var(--weight-semibold)}
+.hm-active-provider span {font-size:var(--text-caption);line-height:var(--type-caption-mobile-line);color:var(--semantic-text-secondary);overflow-wrap:anywhere}
+.hm-active-topic {display:flex;align-items:flex-start;gap:var(--space-2);padding:var(--space-3);border-radius:var(--radius-md);background:var(--color-brand-50)}
+.hm-active-topic>.ic {flex:none;color:var(--semantic-primary);margin-top:2px}
+.hm-active-topic>div {min-width:0}
+.hm-active-topic span {font-size:var(--text-caption);color:var(--semantic-text-secondary)}
+.hm-active-topic p {margin:var(--space-1) 0 0;font-size:var(--text-body);line-height:var(--type-body-mobile-line);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere}
+.hm-active-help {display:flex;align-items:flex-start;gap:var(--space-2);margin:0;color:var(--semantic-text-secondary);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line)}
+.hm-active-help>.ic {flex:none;margin-top:2px;color:var(--semantic-primary)}
+.phone .hm-active-cta {width:100%;margin:0;min-height:48px}
+
+/* Generated abstract CI background, kept quiet behind live case content. */
+.hm-active-case {background-color:var(--semantic-surface);background-image:linear-gradient(rgb(255 255 255 / .3),rgb(255 255 255 / .7)),url('/assets/banners/active-case-background-v2.png');background-size:100% 100%;background-position:center}
+.hm-active-case .hm-active-topic {background:rgb(255 255 255 / .82);border:1px solid var(--color-brand-100)}
+.hm-active-case .hm-active-help {color:var(--semantic-text)}
+
+/* A quiet live indicator; the status label stays fully visible. */
+.hm-active-status {font-weight:var(--weight-medium)}
+.hm-active-status[data-tone=waiting] {background:color-mix(in srgb,var(--semantic-warning-background) 45%,var(--semantic-surface));color:var(--semantic-warning-text)}
+.hm-active-status[data-tone=active] {background:color-mix(in srgb,var(--semantic-success-background) 45%,var(--semantic-surface));color:var(--semantic-success-text)}
+.hm-active-status[data-tone=muted] {background:var(--semantic-surface-muted);color:var(--semantic-text-secondary)}
+.hm-active-status-dot {display:block;flex:none;width:6px;height:6px;border-radius:var(--radius-pill);background:currentColor;animation:hm-status-pulse 2s ease-in-out infinite}
+.hm-active-status[data-tone=muted] .hm-active-status-dot {animation:none}
+@keyframes hm-status-pulse {0%,100%{opacity:1}50%{opacity:.3}}
+@media(prefers-reduced-motion:reduce){.hm-active-status-dot{animation:none}}
+
+.hm-active-status[data-tone=waiting] .hm-active-status-dot {width:8px;height:8px;background:var(--semantic-waiting-indicator);box-shadow:0 0 0 3px color-mix(in srgb,var(--semantic-waiting-indicator) 16%,transparent);animation:hm-waiting-pulse 2s ease-in-out infinite}
+@keyframes hm-waiting-pulse {0%,100%{opacity:1;box-shadow:0 0 0 2px color-mix(in srgb,var(--semantic-waiting-indicator) 18%,transparent)}50%{opacity:.65;box-shadow:0 0 0 4px color-mix(in srgb,var(--semantic-waiting-indicator) 7%,transparent)}}
+@media(prefers-reduced-motion:reduce){.hm-active-status[data-tone=waiting] .hm-active-status-dot{animation:none}}
+.hm-active-status[data-tone=active] .hm-active-status-dot {background:var(--semantic-success-text);animation:none}
+
+/* Reuse the homepage pharmacist photograph for the consultation invitation. */
+.hm-consult-banner {background:var(--semantic-primary);border-color:var(--semantic-primary)}
+.hm-consult-banner h2,.hm-consult-banner p {color:var(--semantic-on-primary)}
+.hm-consult-banner-art {object-position:center}
+.phone .hm-consult-banner .btn {background:var(--semantic-surface);color:var(--semantic-primary)}
+@media(max-width:360px){.hm-consult-banner-copy{width:58%}.hm-consult-banner-art{opacity:1;object-position:center}}
+
+/* Keep the complete storefront composition visible in the full-bleed cover. */
+.hm-banner-image {object-position:center}

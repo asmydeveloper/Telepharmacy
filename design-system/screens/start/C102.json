@@ -8,13 +8,13 @@
     {
       "code": "C102.1",
       "state": "normal",
-      "label": "ปกติ",
+      "label": "เลือกวิธีเข้าสู่ระบบ",
       "url": "/?screen=login&state=normal&splash=0"
     },
     {
       "code": "C102.2",
       "state": "error",
-      "label": "เบอร์ไม่ถูกต้อง",
+      "label": "ข้อความผิดพลาดการเข้าสู่ระบบ",
       "url": "/?screen=login&state=error&splash=0"
     },
     {
@@ -22,6 +22,60 @@
       "state": "signedout",
       "label": "หลุดจากระบบ 30 วัน",
       "url": "/?screen=login&state=signedout&splash=0"
+    },
+    {
+      "code": "C102.4",
+      "state": "cover",
+      "label": "ภาพปกหน้าร้าน",
+      "url": "/?screen=login&state=cover&splash=0"
+    },
+    {
+      "code": "C102.5",
+      "state": "platform-cover",
+      "label": "ปกแพลตฟอร์มร้านยา ไม่มีคน",
+      "url": "/?screen=login&state=platform-cover&splash=0"
+    },
+    {
+      "code": "C102.6",
+      "state": "storefront-cover",
+      "label": "ปกหน้าร้าน ตัดป้ายร้านข้างเคียง",
+      "url": "/?screen=login&state=storefront-cover&splash=0"
+    },
+    {
+      "code": "C102.7",
+      "state": "no-logo-overlay",
+      "label": "ปกหน้าร้าน ไม่มีโลโก้และกล่องทับ",
+      "url": "/?screen=login&state=no-logo-overlay&splash=0"
+    },
+    {
+      "code": "C102.8",
+      "state": "compact-terms",
+      "label": "ข้อกำหนดและนโยบายระยะกระชับ",
+      "url": "/?screen=login&state=compact-terms&splash=0"
+    },
+    {
+      "code": "C102.9",
+      "state": "white-fade",
+      "label": "เฟดขาว ปุ่มสี Primary",
+      "url": "/?screen=login&state=white-fade&splash=0"
+    },
+    {
+      "code": "C102.10",
+      "state": "white-image",
+      "label": "ภาพปกด้านล่างขาว ไม่มีเฟด CSS",
+      "url": "/?screen=login&state=white-image&splash=0"
+    },
+    {
+      "code": "C102.11",
+      "state": "simple-cover",
+      "label": "ปกไม่มีข้อความรอง",
+      "url": "/?screen=login&state=simple-cover&splash=0"
+    },
+    {
+      "code": "C102.12",
+      "state": "cover-heading",
+      "label": "หัวข้อและคำอธิบายบรรทัดเดียว",
+      "url": "/?screen=login&state=cover-heading&splash=0"
     }
   ]
 }

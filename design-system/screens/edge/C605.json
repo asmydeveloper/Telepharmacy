@@ -13,12 +13,6 @@
     },
     {
       "code": "C605.2",
-      "state": "kid",
-      "label": "ถามแทนลูก มีอาการอันตราย",
-      "url": "/?screen=offline&state=kid&splash=0"
-    },
-    {
-      "code": "C605.3",
       "state": "sent",
       "label": "ส่งแล้ว",
       "url": "/?screen=offline&state=sent&splash=0"

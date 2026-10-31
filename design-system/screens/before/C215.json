@@ -1,0 +1,15 @@
+{
+  "code": "C215",
+  "screen": "serviceterms",
+  "title": "เงื่อนไขเข้ารับบริการ",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C215",
+      "state": "normal",
+      "label": "อ่านเงื่อนไขบริการ",
+      "url": "/?screen=serviceterms&state=normal&splash=0"
+    }
+  ]
+}

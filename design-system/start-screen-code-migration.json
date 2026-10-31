@@ -1,0 +1,136 @@
+{
+  "date": "2026-11-01",
+  "scope": "start",
+  "mapping": [
+    {
+      "screen": "splash",
+      "old": "C101",
+      "code": "C101",
+      "title": "เปิดแอป"
+    },
+    {
+      "screen": "login",
+      "old": "C102",
+      "code": "C102",
+      "title": "เข้าสู่ระบบ"
+    },
+    {
+      "screen": "loginphone",
+      "old": "C110",
+      "code": "C103",
+      "title": "ยืนยันเบอร์โทรศัพท์"
+    },
+    {
+      "screen": "loginemail",
+      "old": "C111",
+      "code": "C104",
+      "title": "ยืนยันอีเมล"
+    },
+    {
+      "screen": "profile",
+      "old": "C104",
+      "code": "C105",
+      "title": "ข้อมูลของคุณและความยินยอม"
+    },
+    {
+      "screen": "registrationexit",
+      "old": "C114",
+      "code": "C106",
+      "title": "ออกจากการสมัครสมาชิก?"
+    },
+    {
+      "screen": "registrationconsent",
+      "old": "C115",
+      "code": "C107",
+      "title": "ความยินยอมข้อมูลสุขภาพ"
+    },
+    {
+      "screen": "registrationsuccess",
+      "old": "C112",
+      "code": "C108",
+      "title": "สมัครสมาชิกสำเร็จ"
+    },
+    {
+      "screen": "consent",
+      "old": "C105",
+      "code": "C109",
+      "title": "ยินยอมให้ใช้ข้อมูล"
+    },
+    {
+      "screen": "noconsent",
+      "old": "C106",
+      "code": "C110",
+      "title": "ไม่ยินยอม"
+    },
+    {
+      "screen": "faceid",
+      "old": "C107",
+      "code": "C111",
+      "title": "Face ID / ลายนิ้วมือ"
+    },
+    {
+      "screen": "doc",
+      "old": "C108",
+      "code": "C112",
+      "title": "ข้อกำหนดการใช้งาน"
+    },
+    {
+      "screen": "onboard",
+      "old": "C109",
+      "code": "C113",
+      "title": "แนะนำแอป"
+    }
+  ],
+  "removed": [
+    {
+      "screen": "otp",
+      "old": "C103",
+      "replacement": [
+        "loginphone",
+        "loginemail"
+      ]
+    },
+    {
+      "screen": "regdob",
+      "old": "C113",
+      "replacement": "internal component of profile; dob-* cases on C105"
+    }
+  ],
+  "followup": {
+    "date": "2026-11-01",
+    "removed": {
+      "screen": "consent",
+      "old": "C109",
+      "replacement": "C506 consents + C507 shared document"
+    },
+    "mapping": [
+      {
+        "screen": "noconsent",
+        "old": "C110",
+        "code": "C109"
+      },
+      {
+        "screen": "faceid",
+        "old": "C111",
+        "code": "C110"
+      },
+      {
+        "screen": "doc",
+        "old": "C112",
+        "code": "C111"
+      },
+      {
+        "screen": "onboard",
+        "old": "C113",
+        "code": "C112"
+      }
+    ]
+  },
+  "accountConsentMove": {
+    "from": "C109",
+    "to": "C516",
+    "screen": "noconsent",
+    "group": "account",
+    "date": "2026-11-01"
+  }
+}

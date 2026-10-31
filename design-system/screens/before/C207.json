@@ -34,6 +34,12 @@
       "state": "notifoff",
       "label": "ปิดการแจ้งเตือนไว้",
       "url": "/?screen=queue&state=notifoff&splash=0"
+    },
+    {
+      "code": "C207.6",
+      "state": "refined",
+      "label": "การ์ดคิวและข้อมูลเป็นส่วน",
+      "url": "/?screen=queue&state=refined&splash=0"
     }
   ]
 }

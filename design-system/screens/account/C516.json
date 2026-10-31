@@ -1,0 +1,21 @@
+{
+  "code": "C516",
+  "screen": "noconsent",
+  "title": "ไม่ยินยอม",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C516.1",
+      "state": "decline",
+      "label": "ยังไม่ยินยอมข้อมูลสุขภาพ",
+      "url": "/?screen=noconsent&state=decline&splash=0"
+    },
+    {
+      "code": "C516.2",
+      "state": "withdrawn",
+      "label": "ถอนความยินยอมแล้ว",
+      "url": "/?screen=noconsent&state=withdrawn&splash=0"
+    }
+  ]
+}

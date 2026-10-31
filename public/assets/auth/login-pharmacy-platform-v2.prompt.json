@@ -1,0 +1,11 @@
+{
+  "mode": "built-in image_gen",
+  "prompt": "Create a premium photorealistic product/editorial cover for a Thai online pharmacy consultation platform, vertical 9:19 aspect ratio, absolutely NO people, NO faces, NO hands, NO human figures. Art direction: quiet luxury healthcare, deep teal #005F69, soft mint, warm ivory, refined pale oak and white marble. In the upper half, an elegant still-life arrangement on a pharmacy counter: a few unbranded white medicine cartons with small teal graphic accents, an amber medicine bottle with white child-resistant lid, one neat blister pack, a folded small white pharmacy paper bag with a simple teal medical cross, and a slim tablet standing subtly in the background showing only abstract teal message bubbles and a medical cross without any text or human portrait. Tidy modern pharmacy shelves softly out of focus behind them. Natural daylight from the left, soft realistic shadows, high quality materials, welcoming trustworthy pharmacy atmosphere. Keep objects clearly recognizable and composed in the UPPER HALF, without clutter. Top center quiet deep teal area for a separate overlaid real brand logo. LOWER HALF is an elegant dark deep teal counter front / clean negative space for white headline and login controls, do not put objects or bright edges in the lower half. No typography, no letters, no brand names, no readable medicine labels, no dosage, no claims, no watermark, no phone mockup, no UI buttons. This should communicate a modern pharmacy service that connects patients with pharmacists, not a cosmetics shop. High resolution, realistic photography, restrained and beautiful.",
+  "source": "/Users/surakiti-asia/.codex/generated_images/01a18e5e-f4b6-7292-90dd-ad6235dd3a50/exec-abf2ed10-9417-4a73-ad69-6f7a06d50abe.png",
+  "asset": "login-pharmacy-platform-v2.png",
+  "constraints": [
+    "No people, faces or hands",
+    "No medicine claims, dosages or readable labels",
+    "Real user-supplied logo remains a separate UI layer"
+  ]
+}

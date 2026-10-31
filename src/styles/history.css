@@ -70,3 +70,17 @@
 .history-card-open::after {content:"";position:absolute;inset:0;z-index:1;border-radius:var(--radius-card);cursor:pointer}
 .history-card-open:focus-visible::after {outline:2px solid var(--semantic-focus);outline-offset:-2px}
 .history-card-extra {position:relative;z-index:2}
+
+/* C403: explicit search disclosure, separate clear and close actions. */
+.history-search-panel {display:flex;align-items:center;gap:var(--space-2);min-width:0}
+.history-search-panel[hidden],.history-search-clear[hidden] {display:none}
+.history-search-panel .history-search {flex:1;min-width:0;padding-inline-end:var(--space-1)}
+.history-search-panel input {font-size:var(--text-small)}
+.history-search-panel input::-webkit-search-cancel-button {-webkit-appearance:none;appearance:none}
+.history-search-clear {display:grid;place-items:center;flex:none;width:44px;height:44px;padding:0;border:0;border-radius:var(--radius-pill);background:transparent;color:var(--semantic-text-secondary)}
+.history-search-close {flex:none;min-width:44px;min-height:44px;padding:var(--space-2);font-size:var(--text-small)}
+.history-search-toggle[aria-expanded=true] {background:var(--semantic-surface-selected);color:var(--semantic-primary)}
+
+.history-card-total {display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-4);border-top:1px solid var(--semantic-border);font-size:var(--text-body)}
+.history-card-total>span {color:var(--semantic-text-secondary)}
+.history-card-total strong {font-weight:var(--weight-semibold);color:var(--semantic-text);font-variant-numeric:tabular-nums}

@@ -6,7 +6,7 @@ const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 /* the main path a new customer walks, from first open to the summary */
 /* lean sign-up (owner 19/10/2026): no onboarding, consent sits on the profile screen, Face ID is offered on home after the first consult */
-const MAIN = ['splash', 'login', 'otp', 'profile', 'intake', 'pushask', 'queue', 'matched', 'room', 'pay', 'paid', 'summary'];
+const MAIN = ['splash', 'login', 'loginphone', 'profile', 'registrationsuccess', 'intake', 'pushask', 'queue', 'matched', 'room', 'pay', 'paid', 'summary'];
 /* the store console's main path: sign in, start the shift, take the case, consult, medicine list, payment, close, packing */
 const MAIN_CON = ['login', 'branch', 'queue', 'preview', 'room', 'order', 'pay', 'close', 'pack'];
 const TXT = {

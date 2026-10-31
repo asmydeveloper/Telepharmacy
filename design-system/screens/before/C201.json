@@ -232,6 +232,72 @@
       "state": "female-pharmacist-banner",
       "label": "ปกเภสัชกรหญิงหลังเคาน์เตอร์",
       "url": "/?screen=home&state=female-pharmacist-banner&splash=0"
+    },
+    {
+      "code": "C201.39",
+      "state": "quick-consult",
+      "label": "ปุ่มกลาง เลือกร้านว่างใกล้สุด",
+      "url": "/?screen=home&state=quick-consult&splash=0"
+    },
+    {
+      "code": "C201.40",
+      "state": "quick-busy",
+      "label": "ไม่มีร้านคิวว่าง",
+      "url": "/?screen=home&state=quick-busy&splash=0"
+    },
+    {
+      "code": "C201.41",
+      "state": "quick-unknown",
+      "label": "ยังไม่ทราบจำนวนคิว",
+      "url": "/?screen=home&state=quick-unknown&splash=0"
+    },
+    {
+      "code": "C201.42",
+      "state": "quick-address",
+      "label": "ปรึกษาโดยยังไม่มีที่อยู่",
+      "url": "/?screen=home&state=quick-address&splash=0"
+    },
+    {
+      "code": "C201.43",
+      "state": "quick-system-off",
+      "label": "ระบบปรึกษาปิด",
+      "url": "/?screen=home&state=quick-system-off&splash=0"
+    },
+    {
+      "code": "C201.44",
+      "state": "consult-banner",
+      "label": "แบนเนอร์ชวนปรึกษาเหนือร้านยา",
+      "url": "/?screen=home&state=consult-banner&splash=0"
+    },
+    {
+      "code": "C201.45",
+      "state": "active-next",
+      "label": "การปรึกษา คิวถัดไป",
+      "url": "/?screen=home&state=active-next&splash=0"
+    },
+    {
+      "code": "C201.46",
+      "state": "active-room",
+      "label": "การปรึกษา ยังไม่จบ",
+      "url": "/?screen=home&state=active-room&splash=0"
+    },
+    {
+      "code": "C201.47",
+      "state": "active-paused",
+      "label": "การปรึกษา พักรับคิว",
+      "url": "/?screen=home&state=active-paused&splash=0"
+    },
+    {
+      "code": "C201.48",
+      "state": "active-payment",
+      "label": "การปรึกษา รอชำระ",
+      "url": "/?screen=home&state=active-payment&splash=0"
+    },
+    {
+      "code": "C201.49",
+      "state": "active-idle",
+      "label": "การปรึกษา รอคำตอบ",
+      "url": "/?screen=home&state=active-idle&splash=0"
     }
   ]
 }

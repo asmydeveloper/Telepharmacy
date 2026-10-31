@@ -45,3 +45,10 @@ C403.32–34 ปรับตามผู้ใช้เป็น pill แนว�
 C403.35 ตามคำขอล่าสุด เอา check ออกจาก pill ใช้พื้น primary และ on-primary ทั้งชื่อ/ความสัมพันธ์สำหรับคนที่เลือก คง aria-pressed, ชื่อเข้าถึงเต็ม และ keyboard focus พร้อม forced-colors
 
 C403.36 / C502.4 เพิ่มสมาชิกสมมติ3คนใน TP.fresh ตามผู้ใช้: สมศักดิ์ (พ่อ71), วิชัย (คู่สมรส39), ข้าวปุ้น (ลูก3) รวมผู้ใช้เป็น6คน รูปสร้างใหม่ด้วย built-in imagegen และผูก id ร่วมทุกหน้าที่ใช้ profileImage ไม่สร้างประวัติแพ้ยาหรือรายการปรึกษาให้คนใหม่โดยอัตโนมัติ ข้อมูลแพ้ยาระบุ unknown เคสเต็มจำนวนใช้ fullFamilyPreview ที่ตัด id ซ้ำก่อนจำกัดสมาชิก6คน
+
+
+## C403 search disclosure (2026-11-01)
+- NHS search input: https://service-manual.nhs.uk/design-system/components/search-input — clear control removes the query; retain an accessible label rather than relying on a placeholder.
+- W3C disclosure: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/ — a button exposes aria-expanded and aria-controls, with native Enter/Space support.
+
+Local design decision: keep a labelled magnifier button in the header, reveal an inline field below the purchase tabs, and focus it. Cross clears only the query and keeps the field open. Explicit “ปิด”, the header toggle, or Escape hide it and clear the query so no invisible search remains; preserve the selected purchase tab. Closing restores focus to the header button, clearing restores focus to input. Enter dismisses keyboard without losing query. Counts announce current results. Do not autofocus on page entry or preview. These choices are not patient-tested findings.

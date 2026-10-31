@@ -2,7 +2,7 @@
 .scr[data-screen=intake] {background:var(--semantic-surface)}
 .scr[data-screen=intake] .app-page {display:flex;flex-direction:column;gap:var(--space-6)}
 .ik-intro {display:grid;gap:var(--space-2)}
-.ik-intro h2 {font-size:var(--type-h2-mobile-size);line-height:var(--type-h2-mobile-line);font-weight:var(--weight-semibold)}
+.ik-intro :is(h1,h2) {font-size:var(--type-h2-mobile-size);line-height:var(--type-h2-mobile-line);font-weight:var(--weight-semibold)}
 .ik-intro p,.ik-help {font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary);margin:0}
 .scr[data-screen=intake] .ik-sec {margin:0;min-width:0}
 .ik-block {display:grid;gap:var(--space-3);padding-top:var(--space-4);border-top:1px solid var(--semantic-border)}
@@ -20,8 +20,8 @@
 .ik-search>div {position:relative}.ik-search>div>.ic {position:absolute;left:var(--space-3);top:14px;color:var(--semantic-text-secondary)}
 .ik-search .input {padding-left:40px}
 .scr[data-screen=intake] .chips {gap:var(--space-2)}
-.scr[data-screen=intake] #ikSymOptions .chip {background:var(--semantic-surface);box-shadow:inset 0 0 0 1px var(--semantic-field-border);color:var(--semantic-text);padding-inline:var(--space-3)}
-.scr[data-screen=intake] #ikSymOptions .chip[aria-pressed=true] {background:var(--semantic-surface-selected);color:var(--semantic-primary);box-shadow:inset 0 0 0 1px var(--semantic-primary)}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip {background:var(--semantic-surface);box-shadow:inset 0 0 0 1px var(--semantic-field-border);color:var(--semantic-text);padding-inline:var(--space-3)}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip[aria-pressed=true] {background:var(--semantic-surface-selected);color:var(--semantic-primary);box-shadow:inset 0 0 0 1px var(--semantic-primary)}
 .ik-selection {display:grid;gap:var(--space-2);padding:var(--space-3);background:var(--semantic-surface-selected);border-radius:var(--radius-md)}
 .ik-selection>p {font-size:var(--text-small);font-weight:var(--weight-medium)}
 #ikSelected {display:flex;gap:var(--space-2);flex-wrap:wrap}
@@ -55,3 +55,151 @@
 .ik-mode-change summary::-webkit-details-marker {display:none}
 .ik-mode-change summary>span:nth-last-child(2) {margin-left:auto;text-decoration:underline;text-underline-offset:3px}
 .ik-mode-change>div {display:grid;gap:var(--space-2);padding-block:var(--space-2)}
+
+/* Symptom choices: aligned multi-select tiles, shared chip behavior. */
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chips {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip {display:flex;align-items:center;justify-content:flex-start;gap:var(--space-2);min-width:0;min-height:48px;padding:var(--space-3);border-radius:var(--radius-md);text-align:left;white-space:normal;font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line)}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip .ck-i {display:block;flex:0 0 20px;width:20px;height:20px;margin:0;opacity:1;transform:none;border:1px solid var(--semantic-field-border);border-radius:var(--radius-xs);background:var(--semantic-surface);color:transparent}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip[aria-pressed=true] .ck-i {background:var(--semantic-primary);border-color:var(--semantic-primary);color:var(--semantic-surface)}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip.add {color:var(--semantic-primary)}
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip.add>.ic {width:20px;height:20px;flex:none}
+.ik-selection[hidden] {display:none}
+
+/* Neutral sections; urgent guidance appears only after a relevant selection. */
+.scr[data-screen=intake] .ik-block {padding-top:var(--space-5);gap:var(--space-3);border-top:1px solid var(--semantic-border)}
+.scr[data-screen=intake] .ik-safety {background:var(--semantic-surface);padding-inline:0;padding-bottom:0;border-radius:0}
+.scr[data-screen=intake] .ik-safety .ik-section-heading>span:first-child {background:var(--semantic-surface-selected);color:var(--semantic-primary)}
+.scr[data-screen=intake] .ik-safety .ik-help {color:var(--semantic-text-secondary)}
+.ik-urgent-message {display:flex;align-items:flex-start;gap:var(--space-2);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-error-text);padding-block:var(--space-2)}
+.ik-urgent-message[hidden] {display:none}
+.ik-urgent-message>.ic {flex:none;margin-top:2px}
+.ik-urgent-message a {color:inherit;text-decoration:underline;text-underline-offset:3px}
+.scr[data-screen=intake] .ik-ack {padding:0;background:transparent;border-radius:0}
+.ik-consent-box {padding:var(--space-4);border:1px solid var(--semantic-border);border-radius:var(--radius-md);background:var(--semantic-surface-selected);display:grid;gap:var(--space-1)}
+.ik-consent-box .ck {margin:0;align-items:center;text-align:left;font-size:var(--text-small)}
+.ik-consent-box .reg-consent-link {justify-self:start;margin-left:32px;text-decoration:underline;text-underline-offset:3px;color:var(--semantic-primary);min-height:44px}
+.ik-ack.err .ik-consent-box {border-color:var(--semantic-error-text)}
+
+.scr[data-screen=intake] .ik-safety .chips {grid-template-columns:minmax(0,1fr)}
+.ik-photo-upload {display:grid;gap:var(--space-2);min-width:0}
+.ik-photo-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2);padding-top:var(--space-1)}
+.ik-photo-grid figure {position:relative;min-width:0;margin:0}
+.ik-photo-grid img {display:block;width:100%;aspect-ratio:1;object-fit:cover;border-radius:var(--radius-md)}
+.ik-photo-remove {position:absolute;top:2px;right:2px;display:grid;place-items:center;width:32px;height:32px;border-radius:var(--radius-pill);background:var(--semantic-surface);color:var(--semantic-text);box-shadow:0 1px 4px #0002}
+.ik-photo-remove:focus-visible {outline:2px solid var(--semantic-primary);outline-offset:2px}
+.scr[data-screen=intake] .ik-photo:disabled {opacity:.55;cursor:default}
+
+.phone .sheet.ik-terms-sheet .sh-f {padding-bottom:calc(var(--space-6) + var(--sb));grid-template-columns:minmax(0,1fr)}
+.phone .sheet.ik-terms-sheet .sh-f .btn {width:100%}
+.phone .sheet.ik-terms-sheet .sh-b {padding-bottom:var(--space-5)}
+
+.scr[data-screen=intake] .ik-urgent-message {background:var(--semantic-error-background);padding:var(--space-3);border-radius:var(--radius-md);color:var(--semantic-error-text)}
+.scr[data-screen=intake] .ik-urgent-message[hidden] {display:none}
+
+/* Compact service acknowledgment with the link flowing in the sentence. */
+.scr[data-screen=intake] .ik-consent-box {display:grid;grid-template-columns:20px minmax(0,1fr);align-items:start;column-gap:var(--space-3);padding:var(--space-4)}
+.ik-consent-box>input {width:20px;height:20px;margin:2px 0 0;accent-color:var(--semantic-primary);cursor:pointer}
+.ik-consent-copy {font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line)}
+.ik-consent-copy label {display:inline;margin:0;font-size:inherit;font-weight:var(--weight-regular);cursor:pointer}
+.scr[data-screen=intake] .ik-consent-copy .reg-consent-link {display:inline;min-height:0;margin:0;padding:0;border:0;background:transparent;font:inherit;text-decoration:underline;text-underline-offset:3px;color:var(--semantic-primary)}
+.scr[data-screen=intake] .ik-photo-upload .ik-photo {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--space-2);padding:var(--space-5) var(--space-3);border:1px dashed var(--semantic-primary);border-radius:var(--radius-md);background:var(--semantic-surface-selected);color:var(--semantic-primary);text-align:center}
+.ik-upload-icon {display:grid;place-items:center;width:44px;height:44px;border-radius:var(--radius-md);background:var(--semantic-surface)}
+.ik-upload-title {font-size:var(--text-small);font-weight:var(--weight-medium)}
+.ik-upload-help {font-size:var(--text-caption);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary)}
+
+.ik-extra-fields {display:grid;gap:var(--space-4);padding-top:var(--space-2);min-width:0}
+.scr[data-screen=intake] #ikUrgentAlert {background:color-mix(in srgb,var(--semantic-error-background) 30%,var(--semantic-surface));color:var(--semantic-error-text)}
+.scr[data-screen=intake] #ikUrgentAlert :is(b,a,span) {color:inherit}
+
+/* C205: selected symptoms, immediate action and separate consultation confirmation. */
+.sheet.rf .rf-content {display:grid;gap:var(--space-5)}
+.sheet.rf .rf-symptoms {padding:var(--space-4);border-radius:var(--radius-md);background:var(--semantic-surface-muted)}
+.sheet.rf .rf-symptoms p {margin:0 0 var(--space-2);font-size:var(--text-small);color:var(--semantic-text-secondary)}
+.sheet.rf .rf-symptoms ul {margin:0;padding:0;list-style:none;font-size:var(--text-body);line-height:var(--type-body-mobile-line);font-weight:var(--weight-medium)}
+.sheet.rf .rf-advice {display:grid;grid-template-columns:24px minmax(0,1fr);align-items:start;gap:var(--space-3);color:var(--semantic-error-text)}
+.sheet.rf .rf-advice>.ic {margin-top:2px}
+.sheet.rf .rf-advice h3 {margin:0 0 var(--space-1);font-size:var(--text-body);color:inherit}
+.sheet.rf .rf-advice p {margin:0;font-size:var(--text-small);line-height:var(--type-body-mobile-line);color:var(--semantic-text)}
+.phone .sheet.rf .sh-b {padding-top:var(--space-3);padding-bottom:var(--space-5)}
+
+.phone .sheet.rf .btn {width:100%}
+
+.sheet.rf .rf-message {display:grid;padding:var(--space-4);gap:var(--space-4);border-radius:var(--radius-md);background:color-mix(in srgb,var(--semantic-error-background) 30%,var(--semantic-surface))}
+.sheet.rf .rf-confirm {margin-top:var(--space-5)}
+.phone .sheet.rf .sh-b {padding-bottom:calc(var(--space-6) + var(--sb))}
+
+/* Readable patient-facing questions and choices, using the shared 16/24 body scale. */
+.scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip,
+.scr[data-screen=intake] :is(.ik-intro p,.ik-help,.ik-consent-copy,.ik-upload-title,.f-l,.input,.note,.row .sub) {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line)}
+.scr[data-screen=intake] .ik-section-heading .ik-h {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line)}
+.scr[data-screen=intake] .ik-upload-help {font-size:var(--type-body-sm-mobile-size);line-height:var(--type-body-sm-mobile-line)}
+.sheet.rf :is(.rf-symptoms p,.rf-advice p) {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line)}
+
+/* C203 shares the sign-in cover/panel composition; the long form owns scrolling. */
+.scr[data-screen=intake] .ik-cover {height:38%;object-position:65% 38%}
+.scr[data-screen=intake] .ik-form-panel {height:80%;overflow:hidden}
+.scr[data-screen=intake] .ik-form-scroll {position:relative;inset:auto;flex:1;min-height:0;padding:var(--space-8) var(--page-gutter) calc(var(--dock-h,96px) + var(--space-4));scroll-padding-block:var(--space-4) calc(var(--dock-h,96px) + var(--space-4))}
+.scr[data-screen=intake] .ik-intro {gap:var(--space-2)}
+.scr[data-screen=intake] .ik-intro h1 {margin:0}
+.scr[data-screen=intake]>.dock {z-index:3;background:var(--semantic-surface)}
+
+
+/* C207: a calm queue card, one gutter owner and natural document flow. */
+.phone .scr.q-scr {background:var(--color-neutral-50);color:var(--semantic-text)}
+.q-scr>.nav {background:var(--semantic-surface);color:var(--semantic-text)}
+.q-scr>.nav .txtbtn {color:var(--semantic-text-secondary);font-size:var(--text-small)}
+.q-scr .scroll.q-scroll {padding:calc(var(--st) + var(--nav-height) + var(--space-4)) var(--page-gutter) calc(var(--sb) + var(--space-6));display:flex;flex-direction:column;gap:var(--space-4)}
+.q-scr .q-stage {padding:var(--space-5) var(--space-4);border:1px solid var(--color-brand-100);border-radius:var(--radius-feature);background:var(--color-brand-50);color:var(--semantic-primary)}
+.q-scr .q-lbl {font-size:var(--text-body);line-height:var(--type-body-mobile-line);color:var(--semantic-primary);letter-spacing:0}
+.q-scr .q-ring {width:104px;height:104px;margin:var(--space-4) 0;border-radius:var(--radius-xl);background:var(--semantic-primary);box-shadow:var(--shadow-card)}
+.q-scr .q-num {font-size:56px;line-height:1;font-weight:var(--weight-semibold);min-height:0;color:var(--semantic-on-primary);font-variant-numeric:tabular-nums}
+.q-scr .q-br {margin:0;font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary)}
+.q-scr .q-st {width:100%;max-width:none;margin-top:var(--space-4);font-size:var(--text-body);line-height:var(--type-body-mobile-line);color:var(--semantic-text)}
+.q-scr .q-st .tag {background:var(--semantic-surface);color:var(--semantic-primary);border:1px solid var(--color-brand-100)}
+.q-scr .q-st .link {color:var(--semantic-primary)}
+.q-scr .q-wait-hint {display:flex;align-items:flex-start;gap:var(--space-2);margin:0;padding:0 var(--space-2);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary)}
+.q-scr .q-wait-hint>.ic {flex:none;margin-top:2px;color:var(--semantic-primary)}
+.q-scr .q-sheet {display:flex;flex-direction:column;gap:var(--space-4);margin:0;padding:0;min-height:0;background:transparent;border-radius:0;box-shadow:none;color:var(--semantic-text)}
+.q-scr .q-sheet>* {min-width:0;margin:0}
+.q-scr .q-sheet>.card {padding:var(--space-4);border:1px solid var(--semantic-border);border-radius:var(--radius-lg);box-shadow:none}
+.q-scr .q-pharmacist {padding:var(--space-4);border:1px solid var(--semantic-border);border-radius:var(--radius-lg);box-shadow:none;transform:none}
+.q-scr .q-pharmacist>svg {display:none}
+.q-scr .q-pharmacist .ps-top {align-items:flex-start;flex-direction:column;gap:var(--space-2)}
+.q-scr .q-pharmacist .ps-top .caps {font-size:var(--text-small);letter-spacing:0}
+.q-scr .q-pharmacist .ps-id>div {min-width:0}
+.q-scr .q-pharmacist :is(.ps-name,.ps-lic,.ps-shot,.ps-br) {overflow-wrap:anywhere}
+.q-scr .q-pharmacist .ps-links {display:grid;gap:var(--space-1)}
+.q-scr .q-pharmacist .ps-links .link {white-space:normal;min-height:44px;line-height:var(--type-body-sm-mobile-line);text-align:left}
+.q-scr .q-dis {margin:0;border:1px solid var(--semantic-border);border-radius:var(--radius-lg);box-shadow:none}
+
+/* Keep the familiar ambient light and orbit motion with the repaired card layout. */
+.phone .scr.q-scr {background:var(--semantic-primary)}
+.q-scr>.nav {background:transparent;color:var(--semantic-on-primary)}
+.q-scr>.nav .txtbtn {color:var(--semantic-on-primary)}
+.q-scr .q-stage {background:transparent;border-color:rgb(255 255 255 / .2);color:var(--semantic-on-primary)}
+.q-scr .q-lbl,.q-scr .q-st {color:var(--semantic-on-primary)}
+.q-scr .q-br,.q-scr .q-wait-hint,.q-scr .q-wait-hint>.ic {color:var(--semantic-on-primary)}
+.q-scr .q-ring {width:160px;height:160px;background:transparent;box-shadow:none;border-radius:var(--radius-pill)}
+.q-scr .q-ring .halo {width:100%;height:100%}
+.q-scr .q-st .link,.q-scr .q-wait-hint .link {color:var(--semantic-on-primary)}
+.q-scr .q-sheet {padding:var(--space-4);background:var(--color-neutral-50);border-radius:var(--radius-feature)}
+@media(prefers-reduced-motion:reduce){.q-scr .q-ring .halo *{animation:none!important}}
+
+/* Refined animated queue: one open hero above a single rounded information panel. */
+.phone .scr.q-scr {background:linear-gradient(160deg,var(--semantic-primary),var(--color-primary-deep))}
+.q-scr .scroll.q-scroll {gap:var(--space-5)}
+.q-scr .q-stage {border:0;border-radius:0;padding:var(--space-2) 0 0}
+.q-scr .q-received {display:flex;align-items:center;justify-content:center;gap:var(--space-2);margin:0 0 var(--space-5);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-on-primary)}
+.q-scr .q-lbl {font-weight:var(--weight-medium);margin:0}
+.q-scr .q-ring {width:176px;height:176px;margin:var(--space-3) 0}
+.q-scr .q-num {font-size:64px;text-shadow:0 2px 20px rgb(255 255 255 / .15)}
+.q-scr .q-br {padding:var(--space-2) var(--space-3);background:rgb(255 255 255 / .1);border:1px solid rgb(255 255 255 / .15);border-radius:var(--radius-pill);gap:var(--space-2)}
+.q-scr .q-joined {border-left:1px solid rgb(255 255 255 / .25);padding-left:var(--space-2)}
+.q-scr .q-st {margin-top:var(--space-3);gap:var(--space-2)}
+.q-scr .q-st .tag {background:rgb(255 255 255 / .14);color:var(--semantic-on-primary);border-color:rgb(255 255 255 / .2)}
+.q-scr .q-wait-hint {justify-content:center;text-align:center;font-size:var(--text-small);padding-inline:var(--space-3)}
+.q-scr .q-sheet {background:var(--semantic-surface);padding:var(--space-4);border-radius:var(--radius-feature);gap:var(--space-5);box-shadow:var(--shadow-card)}
+.q-scr .q-pharmacist {background:var(--color-neutral-50);border:0}
+.q-scr .q-sheet>.ik-h {font-size:var(--text-body);line-height:var(--type-body-mobile-line)}
+.q-scr .q-sheet>.card {background:var(--color-neutral-50);border:0}
+.q-scr .q-dis {background:var(--color-neutral-50);border:0}

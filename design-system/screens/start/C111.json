@@ -1,0 +1,15 @@
+{
+  "code": "C111",
+  "screen": "doc",
+  "title": "ข้อกำหนดการใช้งาน",
+  "group": "start",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C111",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=doc&splash=0"
+    }
+  ]
+}

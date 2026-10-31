@@ -1,15 +1,45 @@
 {
   "code": "C108",
-  "screen": "doc",
-  "title": "ข้อกำหนดการใช้งาน",
+  "screen": "registrationsuccess",
+  "title": "สมัครสมาชิกสำเร็จ",
   "group": "start",
-  "kind": "sheet",
+  "kind": "screen",
   "cases": [
     {
-      "code": "C108",
-      "state": "",
-      "label": "ปกติ",
-      "url": "/?screen=doc&splash=0"
+      "code": "C108.1",
+      "state": "normal",
+      "label": "สมัครสำเร็จด้วยเบอร์โทร",
+      "url": "/?screen=registrationsuccess&state=normal&splash=0"
+    },
+    {
+      "code": "C108.2",
+      "state": "email",
+      "label": "สมัครสำเร็จด้วยอีเมล",
+      "url": "/?screen=registrationsuccess&state=email&splash=0"
+    },
+    {
+      "code": "C108.3",
+      "state": "unavailable",
+      "label": "ยังสมัครไม่เสร็จ",
+      "url": "/?screen=registrationsuccess&state=unavailable&splash=0"
+    },
+    {
+      "code": "C108.4",
+      "state": "long-name",
+      "label": "ชื่อจริงยาว",
+      "url": "/?screen=registrationsuccess&state=long-name&splash=0"
+    },
+    {
+      "code": "C108.5",
+      "state": "no-name",
+      "label": "ไม่มีชื่อแสดง",
+      "url": "/?screen=registrationsuccess&state=no-name&splash=0"
+    },
+    {
+      "code": "C108.6",
+      "state": "full-cover",
+      "label": "ปกเต็มจอและปุ่มใต้คำต้อนรับ",
+      "url": "/?screen=registrationsuccess&state=full-cover&splash=0"
     }
   ]
 }

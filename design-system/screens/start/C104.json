@@ -1,33 +1,111 @@
 {
   "code": "C104",
-  "screen": "profile",
-  "title": "ข้อมูลของคุณและความยินยอม",
+  "screen": "loginemail",
+  "title": "ยืนยันอีเมล",
   "group": "start",
   "kind": "screen",
   "cases": [
     {
       "code": "C104.1",
-      "state": "empty",
-      "label": "เบอร์ใหม่: ยังไม่กรอก",
-      "url": "/?screen=profile&state=empty&splash=0"
+      "state": "normal",
+      "label": "ยังไม่กรอก",
+      "url": "/?screen=loginemail&state=normal&splash=0"
     },
     {
       "code": "C104.2",
       "state": "filled",
-      "label": "เบอร์ใหม่: กรอกแล้ว",
-      "url": "/?screen=profile&state=filled&splash=0"
+      "label": "กรอกอีเมลแล้ว",
+      "url": "/?screen=loginemail&state=filled&splash=0"
     },
     {
       "code": "C104.3",
-      "state": "error",
-      "label": "ปีเกิดไม่ถูกต้อง",
-      "url": "/?screen=profile&state=error&splash=0"
+      "state": "invalid",
+      "label": "รูปแบบอีเมลไม่ถูกต้อง",
+      "url": "/?screen=loginemail&state=invalid&splash=0"
     },
     {
       "code": "C104.4",
-      "state": "acct",
-      "label": "มีบัญชีเว็บ: ความยินยอมฉบับใหม่",
-      "url": "/?screen=profile&state=acct&splash=0"
+      "state": "service-error",
+      "label": "ส่งรหัสไม่สำเร็จ",
+      "url": "/?screen=loginemail&state=service-error&splash=0"
+    },
+    {
+      "code": "C104.5",
+      "state": "panel-layout",
+      "label": "กล่องล็อกอิน 70% พร้อมปก CI",
+      "url": "/?screen=loginemail&state=panel-layout&splash=0"
+    },
+    {
+      "code": "C104.6",
+      "state": "consultation-cover",
+      "label": "ปกเภสัชกร ไม่มีข้อความ",
+      "url": "/?screen=loginemail&state=consultation-cover&splash=0"
+    },
+    {
+      "code": "C104.7",
+      "state": "otp-sent",
+      "label": "กล่องกรอกรหัสในหน้าเดิม",
+      "url": "/?screen=loginemail&state=otp-sent&splash=0"
+    },
+    {
+      "code": "C104.8",
+      "state": "otp-filled",
+      "label": "รหัสครบ พร้อมยืนยัน",
+      "url": "/?screen=loginemail&state=otp-filled&splash=0"
+    },
+    {
+      "code": "C104.9",
+      "state": "otp-wrong",
+      "label": "รหัสไม่ถูกต้อง",
+      "url": "/?screen=loginemail&state=otp-wrong&splash=0"
+    },
+    {
+      "code": "C104.10",
+      "state": "otp-expired",
+      "label": "รหัสหมดอายุ",
+      "url": "/?screen=loginemail&state=otp-expired&splash=0"
+    },
+    {
+      "code": "C104.11",
+      "state": "otp-locked",
+      "label": "ลองผิดครบกำหนด",
+      "url": "/?screen=loginemail&state=otp-locked&splash=0"
+    },
+    {
+      "code": "C104.12",
+      "state": "resend",
+      "label": "ส่งรหัสใหม่ได้",
+      "url": "/?screen=loginemail&state=resend&splash=0"
+    },
+    {
+      "code": "C104.13",
+      "state": "new-account",
+      "label": "ยืนยันแล้วไปสมัครใหม่",
+      "url": "/?screen=loginemail&state=new-account&splash=0"
+    },
+    {
+      "code": "C104.14",
+      "state": "existing-account",
+      "label": "ยืนยันแล้วไปหน้าหลัก",
+      "url": "/?screen=loginemail&state=existing-account&splash=0"
+    },
+    {
+      "code": "C104.15",
+      "state": "plain-panel",
+      "label": "ไม่มีโลโก้และกล่องทับ",
+      "url": "/?screen=loginemail&state=plain-panel&splash=0"
+    },
+    {
+      "code": "C104.16",
+      "state": "otp-c103",
+      "label": "กรอกรหัสในหน้าเดิม กลับแก้ปลายทางได้",
+      "url": "/?screen=loginemail&state=otp-c103&splash=0"
+    },
+    {
+      "code": "C104.17",
+      "state": "masked-target",
+      "label": "ซ่อนปลายทางและแป้นตัวเลขพอดีปุ่ม",
+      "url": "/?screen=loginemail&state=masked-target&splash=0"
     }
   ]
 }

@@ -19,51 +19,75 @@
     },
     {
       "code": "C203.3",
-      "state": "kid",
-      "label": "ปรึกษาให้ลูก",
-      "url": "/?screen=intake&state=kid&splash=0"
-    },
-    {
-      "code": "C203.4",
       "state": "other",
       "label": "พิมพ์อาการเอง",
       "url": "/?screen=intake&state=other&splash=0"
     },
     {
-      "code": "C203.5",
+      "code": "C203.4",
       "state": "noallergy",
       "label": "ยังไม่ระบุแพ้ยา",
       "url": "/?screen=intake&state=noallergy&splash=0"
     },
     {
-      "code": "C203.6",
+      "code": "C203.5",
       "state": "fail",
       "label": "เข้าคิวไม่สำเร็จ",
       "url": "/?screen=intake&state=fail&splash=0"
     },
     {
-      "code": "C203.7",
+      "code": "C203.6",
       "state": "ack",
       "label": "ติ๊กรับทราบแล้ว",
       "url": "/?screen=intake&state=ack&splash=0"
     },
     {
-      "code": "C203.8",
+      "code": "C203.7",
       "state": "outzone",
       "label": "ที่อยู่หลักนอกเขตส่งยา",
       "url": "/?screen=intake&state=outzone&splash=0"
     },
     {
-      "code": "C203.9",
+      "code": "C203.8",
       "state": "search",
-      "label": "ค้นหาและเพิ่มอาการ",
+      "label": "ตัวเลือกอาการ 2 คอลัมน์",
       "url": "/?screen=intake&state=search&splash=0"
     },
     {
-      "code": "C203.10",
+      "code": "C203.9",
       "state": "urgent",
       "label": "แจ้งเตือนอาการอันตราย",
       "url": "/?screen=intake&state=urgent&splash=0"
+    },
+    {
+      "code": "C203.10",
+      "state": "multi",
+      "label": "เลือกหลายอาการ",
+      "url": "/?screen=intake&state=multi&splash=0"
+    },
+    {
+      "code": "C203.11",
+      "state": "custom-error",
+      "label": "ยังไม่ได้เล่ารายละเอียด",
+      "url": "/?screen=intake&state=custom-error&splash=0"
+    },
+    {
+      "code": "C203.12",
+      "state": "photos",
+      "label": "แนบรูป 3 รูป",
+      "url": "/?screen=intake&state=photos&splash=0"
+    },
+    {
+      "code": "C203.13",
+      "state": "photo-error",
+      "label": "แนบไฟล์ไม่รองรับ",
+      "url": "/?screen=intake&state=photo-error&splash=0"
+    },
+    {
+      "code": "C203.14",
+      "state": "cover",
+      "label": "ปกเล่าอาการและฟอร์มซ้อน",
+      "url": "/?screen=intake&state=cover&splash=0"
     }
   ]
 }

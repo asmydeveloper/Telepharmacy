@@ -20,8 +20,8 @@
 .input {min-width:0;max-width:100%;box-sizing:border-box}
 .btn-row {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));gap:var(--space-3)}
 .btn-row>.btn {width:100%;min-width:0}
-.tabbar {left:var(--page-gutter);right:var(--page-gutter);bottom:calc(var(--sb) + var(--tabbar-offset));height:var(--tabbar-height);grid-template-columns:repeat(4,minmax(0,1fr))}
-.tb-pill {width:calc((100% - 8px) / 4)}
+.tabbar {left:var(--page-gutter);right:var(--page-gutter);bottom:calc(var(--sb) + var(--tabbar-offset));height:var(--tabbar-height);grid-template-columns:repeat(5,minmax(0,1fr))}
+.tb-pill {width:calc((100% - 8px) / 5)}
 .minibar {left:var(--page-gutter);right:var(--page-gutter);height:var(--minibar-height);bottom:calc(var(--sb) + var(--tabbar-offset) + var(--tabbar-height) + var(--minibar-gap))}
 .scr.has-tab>.app-page {--pb:calc(var(--tabbar-height) + var(--tabbar-offset) + var(--minibar-height) + var(--minibar-gap) + var(--space-4))}
 .scr.has-tab.no-mini>.app-page {--pb:calc(var(--tabbar-height) + var(--tabbar-offset) + var(--space-4))}
