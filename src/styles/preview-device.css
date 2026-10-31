@@ -7,9 +7,9 @@ html.bare .device-frame-image,html.mob .device-frame-image {display:none}
 html.bare .device-real,html.mob .device-real {width:auto;height:auto}
 html.bare .device-real>.phone,html.mob .device-real>.phone {inset:0;width:auto;height:auto;border-radius:0;box-shadow:none}
 html.bare.chrome .device-real>.phone>.island {display:flex}
-/* Center using the stage viewport, independent of the frame's unscaled layout size. */
-.stage>.device-real {position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(var(--k,1));transform-origin:center}
-html.bare .stage>.device-real,html.mob .stage>.device-real {position:fixed;inset:0;transform:none}
+/* Layout zoom redraws text and vectors at the target size instead of scaling a composited phone layer. */
+.stage>.device-real {position:relative;left:auto;top:auto;transform:none;zoom:var(--k,1)}
+html.bare .stage>.device-real,html.mob .stage>.device-real {position:fixed;inset:0;transform:none;zoom:1}
 
 /* Reviewer workspace: separate from the portable app canvas. */
 .stage {background:#F0F7F7}

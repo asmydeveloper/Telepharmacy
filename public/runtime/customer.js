@@ -6806,7 +6806,10 @@ function mode() {
 function fit() {
   const dv = TP.$('#device'), st = TP.$('#stage');
   if (R.classList.contains('mob') || bare) { dv.style.removeProperty('--k'); return; }
-  const k = Math.max(0, Math.min((st.clientHeight - 24) / dv.offsetHeight, (st.clientWidth - 24) / dv.offsetWidth));
+  const frame = TP.$('.device-frame-image', dv);
+  const density = Math.max(1, window.devicePixelRatio || 1);
+  const rasterLimit = (frame?.naturalWidth || 1520) / (dv.offsetWidth * density);
+  const k = Math.max(0, Math.min(rasterLimit, (st.clientHeight - 24) / dv.offsetHeight, (st.clientWidth - 24) / dv.offsetWidth));
   dv.style.setProperty('--k', k.toFixed(4));
 }
 mode();
