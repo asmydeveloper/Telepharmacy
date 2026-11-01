@@ -609,45 +609,29 @@ function chrome(entry, animate, via) {
   TP.mini(animate);
 }
 /* mini bar = the open case, visible above the tab bar (like a now-playing bar) */
-let miniAnimation = null, miniMotionCleanup = null, miniRenderToken = 0, miniPlayerPromise;
-function clearMiniAnimation() {
-  miniRenderToken++;
-  miniMotionCleanup?.(); miniMotionCleanup = null;
-  miniAnimation?.destroy(); miniAnimation = null;
-}
-function mountMiniAnimation(kind) {
-  const token = miniRenderToken, host = mini.querySelector('.mb-motion');
-  if (!host) return;
-  if (!miniPlayerPromise) miniPlayerPromise = window.lottie ? Promise.resolve(window.lottie) : new Promise((resolve,reject) => {
-    const script = document.createElement('script');script.src='/vendor/lottie/lottie_light.min.js';
-    script.onload=()=>resolve(window.lottie);script.onerror=()=>{script.remove();miniPlayerPromise=null;reject(new Error('Lottie unavailable'));};
-    document.head.appendChild(script);
-  });
-  miniPlayerPromise.then(player => {
-    if(token!==miniRenderToken||mini.hidden||!host.isConnected)return;
-    const motion=window.matchMedia('(prefers-reduced-motion: reduce)');
-    const animation=player.loadAnimation({container:host,renderer:'svg',loop:kind!=='paused',autoplay:false,path:'/assets/lottie/'+kind+'-white.json',rendererSettings:{preserveAspectRatio:'xMidYMid meet'}});
-    miniAnimation=animation;
-    const update=()=>{if(kind==='paused')animation.goToAndStop(45,true);else if(motion.matches)animation.goToAndStop(0,true);else animation.play();};
-    animation.addEventListener('DOMLoaded',()=>{if(token!==miniRenderToken)return;mini.querySelector('.mb-icon')?.classList.add('is-ready');animation.setSpeed(.8);update();});
-    animation.addEventListener('data_failed',()=>mini.querySelector('.mb-icon')?.classList.remove('is-ready'));
-    motion.addEventListener('change',update);miniMotionCleanup=()=>motion.removeEventListener('change',update);
-  }).catch(()=>{}); // Keep the static icon visible if loading fails.
-}
+/* Original vector artwork; portable to Flutter as SVG assets. */
+TP.miniStatusIcon = kind => {
+  const artwork = {
+    waiting: '<circle cx="16" cy="16" r="11"/><path d="M16 9v7l4 3"/><path d="M7 5 4 8M25 5l3 3"/>',
+    paused: '<path d="M5 12h17v8a6 6 0 0 1-6 6h-5a6 6 0 0 1-6-6Z"/><path d="M22 13h2a4 4 0 0 1 0 8h-2M4 29h21M10 8V4M17 8V3"/>',
+    chat: '<path d="M7 6h18a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3H13l-7 4v-4a3 3 0 0 1-3-3V10a4 4 0 0 1 4-4Z"/><circle cx="10" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1" fill="currentColor" stroke="none"/><circle cx="22" cy="15" r="1" fill="currentColor" stroke="none"/>',
+    reply: '<path d="M10 8H6a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h3v4l6-4h10a3 3 0 0 0 3-3v-5"/><path d="m21 3-6 6 6 6M15 9h7a6 6 0 0 1 6 6"/>',
+    payment: '<rect x="3" y="7" width="26" height="19" rx="4"/><path d="M3 13h26M8 20h5"/><circle cx="24" cy="7" r="5" fill="var(--semantic-primary)"/><path d="M24 4v6M22 5h3M23 9h3"/>'
+  };
+  return `<svg class="mb-status-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">${artwork[kind] || artwork.chat}</svg>`;
+};
 function miniWanted() { const c = TP.S.case; return !!(c && (!c.who||c.who==='me') && !['closed', 'cancelled', 'declined', 'expired'].includes(c.status)); }
 TP.miniInfo = () => null; /* 60-main replaces this: () => ({title, sub, go}) */
 TP.mini = (animate = true) => {
   const def = cur && SCREENS[cur.id], info = miniWanted() && def?.tab ? TP.miniInfo() : null, was = !mini.hidden;
   cur?.el.classList.toggle('no-mini', !info);
-  clearMiniAnimation();
   if (info) {
     const kind = info.icon || 'chat';
-    mini.innerHTML = `<span class="mb-icon" aria-hidden="true"><span class="mb-icon-fallback">${TP.ic(({waiting:'clock',paused:'pause',reply:'bell',payment:'credit-card'})[kind]||'message-circle',28,1.8)}</span><span class="mb-motion"></span></span><span class="mb-t"><b>${TP.esc(info.title)}</b><span>${TP.esc(info.sub)}</span></span><span class="mb-go">${TP.esc(info.cta || 'เปิด')}</span>`;
+    mini.innerHTML = `<span class="mb-icon" aria-hidden="true">${TP.miniStatusIcon(kind)}</span><span class="mb-t"><b>${TP.esc(info.title)}</b><span>${TP.esc(info.sub)}</span></span><span class="mb-go">${TP.esc(info.cta || 'เปิด')}</span>`;
     mini.dataset.go = info.go; mini.dataset.via = 'cover';
     mini.dataset.statusIcon = kind;
     mini.setAttribute('aria-label', info.title + ' ' + info.sub);
     if (!was) { mini.hidden = false; if (animate) A(mini, [{ transform: 'translateY(30px) scale(.94)', opacity: 0 }, { transform: 'none', opacity: 1 }], { d: SP.spring.d, e: SP.spring.e, delay: 160 }); }
-    mountMiniAnimation(kind);
   } else if (was) {
     if (animate) { const a = A(mini, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(30px) scale(.94)' }], { d: 260, e: E.apple, fill: 'forwards' }); fin(a).then(() => { mini.hidden = true; kill(mini); }); }
     else mini.hidden = true;
@@ -1158,6 +1142,8 @@ const byCode = (a, b) => (TP.def(a).code || '').localeCompare(TP.def(b).code || 
 const badge = $('#codeBadge'), fabCode = $('#fabCode');
 badge?.addEventListener('click', e => {
   if (e.target.closest('.preview-mock-button')) TP.registrationPreview?.fillCurrent();
+  const simulation=e.target.closest('[data-preview-case]');
+  if(simulation) TP.casePreview?.apply(simulation.dataset.previewCase);
 });
 /* the panel never moves under the reviewer (owner 19/10/2026: "ถ้ากดดูอันไหนอย่าขยับจอสิ"):
    a redraw keeps the item just tapped, else the first item in view, at the same height */
@@ -1180,9 +1166,10 @@ function render() {
   const total = TP.ORDER.filter(id => !TP.def(id).hidden).length;
   const code = id ? TP.codeOf(id) : '', ttl = def ? (typeof def.title === 'function' ? def.title({ S: TP.S, params: s ? s.ctx.params : c?.ctx?.params || {} }) : def.title) : '';
   const canMock = !s && TP.registrationPreview?.canFill(c);
+  const canSimulate = !s && !!TP.SCREENS[c?.id]?.tab && TP.casePreview;
   if (badge) {
-    badge.classList.toggle('has-mock', !!canMock);
-    badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>${canMock ? '<button type="button" class="preview-mock-button">มอคข้อมูล</button>' : ''}` : '';
+    badge.classList.toggle('has-mock', !!(canMock || canSimulate));
+    badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>${canMock ? '<button type="button" class="preview-mock-button">มอคข้อมูล</button>' : ''}${canSimulate ? `<div class="preview-case-controls" role="group" aria-label="จำลองสถานะการปรึกษา">${TP.casePreview.states.map(([key,label])=>`<button type="button" data-preview-case="${key}" aria-pressed="${TP.S._casePreview===key}">${esc(label)}</button>`).join('')}</div>` : ''}` : '';
   }
   if (fabCode) fabCode.textContent = code;
   panel.innerHTML = `
@@ -2119,6 +2106,27 @@ TP.newCase = () => {
   TP.emit('state');
   return S.case;
 };
+/* Preview-only fixture controls: never submitted or stored in preferences. */
+TP.casePreview = {
+  states: [['queue3','รออีก 3 คิว'],['queue2','รออีก 2 คิว'],['queue1','รออีก 1 คิว'],['next','คิวถัดไป'],['paused','เภสัชกรพัก'],['matched','รับคิวแล้ว'],['chat','กำลังสนทนา'],['reply','รอคำตอบจากคุณ'],['payment','รอชำระเงิน'],['finished','จบการปรึกษา'],['cancelled','ยกเลิกคิว'],['expired','หมดเวลารอคำตอบ']],
+  seed(key) {
+    if(!this.states.some(([k])=>k===key))return false;
+    const S=TP.S,c=TP.newCase();
+    Object.assign(c,{status:'queue',pos:1,idle:false,order:null,msgs:[]});
+    if(key.startsWith('queue'))c.pos=Number(key.slice(5))+1;
+    if(key==='paused')c.status='paused';
+    if(['matched','chat','reply','payment'].includes(key))c.status=key==='matched'?'matched':'room';
+    if(key==='reply')c.idle=true;
+    if(key==='payment')c.order={status:'pending',items:[],total:180};
+    if(['finished','cancelled','expired'].includes(key))c.status=key==='finished'?'closed':key;
+    S._casePreview=key;return true;
+  },
+  apply(key) {
+    if(!this.seed(key))return;
+    TP.S.st.home='';
+    TP.refresh({anim:false});TP.emit('state');
+  }
+};
 TP.caseOpen = () => { const c = TP.S.case; return !!(c && (!c.who || c.who==='me') && !['closed', 'cancelled', 'declined', 'expired', 'branchclosed'].includes(c.status)); };
 const stateTag = st => st === 'open' ? ui.tag('เปิดรับ', 'ok', { dot: true, live: true }) : st === 'pause' ? ui.tag('พักชั่วคราว', 'warn', { dot: true }) : ui.tag('ปิดรับวันนี้', 'muted', { dot: true });
 /* C03: nearest open branch picked for the customer; paused/closed nearest -> next one, with the reason */
@@ -2449,10 +2457,11 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่'], ['outarea', 'ไม่พบร้านในพื้นที่'], ['unknownarea', 'พื้นที่ยังตรวจสอบไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ'], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน'], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ'], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์'], ['compact-store', 'การ์ดสาขาแบบกระชับ'], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์'], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ'], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา'], ['white-canvas', 'พื้นหลังสีขาว'], ['layout-system', 'กริดและระยะกลางทั้งแอป'], ['store-list', 'ลิสต์ร้านยา 6 ร้าน'], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู'], ['figma-system', 'Figma tokens และ component กลาง'], ['real-photos', 'ภาพถ่ายและรูปมุมมน'], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล'], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge'], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่'], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน'], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน'], ['store-more', 'เมนูจุดสามจุดของร้าน'], ['bear-banner', 'ปกหมีเภสัชกร 3D'], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง'], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน'], ['tritone-icons', 'ไอคอน Flat 3 สี CI'], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม'], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ'], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่'], ['glass-tabs', 'เมนูล่าง Liquid Glass'], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์'],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด'],['quick-busy','ไม่มีร้านคิวว่าง'],['quick-unknown','ยังไม่ทราบจำนวนคิว'],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่'],['quick-system-off','ระบบปรึกษาปิด'],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา'],['active-next','การปรึกษา คิวถัดไป'],['active-room','การปรึกษา ยังไม่จบ'],['active-paused','การปรึกษา พักรับคิว'],['active-payment','การปรึกษา รอชำระ'],['active-idle','การปรึกษา รอคำตอบ']],
+  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่'], ['outarea', 'ไม่พบร้านในพื้นที่'], ['unknownarea', 'พื้นที่ยังตรวจสอบไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ'], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน'], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ'], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์'], ['compact-store', 'การ์ดสาขาแบบกระชับ'], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์'], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ'], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา'], ['white-canvas', 'พื้นหลังสีขาว'], ['layout-system', 'กริดและระยะกลางทั้งแอป'], ['store-list', 'ลิสต์ร้านยา 6 ร้าน'], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู'], ['figma-system', 'Figma tokens และ component กลาง'], ['real-photos', 'ภาพถ่ายและรูปมุมมน'], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล'], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge'], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่'], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน'], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน'], ['store-more', 'เมนูจุดสามจุดของร้าน'], ['bear-banner', 'ปกหมีเภสัชกร 3D'], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง'], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน'], ['tritone-icons', 'ไอคอน Flat 3 สี CI'], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม'], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ'], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่'], ['glass-tabs', 'เมนูล่าง Liquid Glass'], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์'],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด'],['quick-busy','ไม่มีร้านคิวว่าง'],['quick-unknown','ยังไม่ทราบจำนวนคิว'],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่'],['quick-system-off','ระบบปรึกษาปิด'],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา'],['active-next','การปรึกษา คิวถัดไป'],['active-room','การปรึกษา ยังไม่จบ'],['active-paused','การปรึกษา พักรับคิว'],['active-payment','การปรึกษา รอชำระ'],['active-idle','การปรึกษา รอคำตอบ'],["case-queue3", "จำลอง รออีก 3 คิว"],["case-queue2", "จำลอง รออีก 2 คิว"],["case-queue1", "จำลอง รออีก 1 คิว"],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "จำลอง กำลังสนทนา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา"],["case-cancelled", "จำลอง ยกเลิกคิว"],["case-expired", "จำลอง หมดเวลารอคำตอบ"]],
   notes: ['C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; TP.homeScenario(S, st || 'normal'); if (!st) return;
+    if(st.startsWith('case-')){TP.casePreview.seed(st.slice(5));return;}
     if (st === 'active' || st.startsWith('active-')) { TP.newCase(); const c=S.case;if(st==='active-next'){c.status='queue';c.pos=1;}if(st==='active-paused')c.status='paused';if(st==='active-room'||st==='active-payment'||st==='active-idle'){c.status='room';c.idle=st==='active-idle';if(st==='active-payment')c.order={...(c.order||{}),status:'pending'};} } else if (TP.caseOpen()) S.case = null;
     S.branchState.tw = st === 'busy' ? 'pause' : 'open'; S.branchState.on = 'pause';
     S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); S.branchPicked = false;
@@ -2817,7 +2826,8 @@ TP.miniInfo = () => {
   const b = TP.branch(c.branch);
   if (c.idle && c.status !== 'closed') return { icon:'reply', title: 'เภสัชกรรอคำตอบอยู่', sub: 'ไม่ตอบใน 2 นาที การปรึกษาจะปิด', go: 'room', cta: 'กลับไปตอบ' };
   if (c.order?.status === 'pending') return { icon:'payment', title: 'รายการยารอชำระ', sub: `${ph().short} · ${b.short}`, go: 'room', cta: 'ชำระเงิน' };
-  if (c.status === 'queue') return { icon:'waiting', title: c.pos <= 1 ? 'คุณเป็นคิวถัดไป' : `อยู่ในคิว ลำดับที่ ${c.pos}`, sub: b.name, go: 'queue', cta: 'ดูคิว' };
+  if (c.status === 'matched') return {icon:'chat',title:'เภสัชกรรับคิวแล้ว',sub:`${ph().short} · ${b.short}`,go:'room',cta:'เข้าห้องปรึกษา'};
+  if (c.status === 'queue') return { icon:'waiting', title: c.pos <= 1 ? 'คุณเป็นคิวถัดไป' : `รออีก ${c.pos-1} คิว`, sub: b.name, go: 'queue', cta: 'ดูคิว' };
   if (c.status === 'paused') return { icon:'paused', title: 'เภสัชกรพักชั่วคราว', sub: 'คิวของคุณยังอยู่ ไม่เสียคิว', go: 'queue', cta: 'ดูคิว' };
   return { icon:'chat', title: 'กำลังปรึกษา', sub: `${ph().short} · ${b.short}`, go: 'room', cta: 'กลับเข้าห้อง' };
 };
@@ -2890,7 +2900,7 @@ TP.screen('queue', {
     const f = brand.field($('canvas', el), {color:'#FFFFFF',base:.09,amp:.5,every:c.status==='paused'?0:2600,origin:[.5,.25],sigma:30,speed:.28});
     ctx.onLeave(f.stop);el._field=f;
     /* the queue moves on its own so the flow can be felt; panel sims can jump ahead */
-    if (c.status === 'queue' && !TP.S.st.queue) {
+    if (c.status === 'queue' && !TP.S.st.queue && !TP.S._casePreview) {
       ctx.every(() => { const k = C(); if (k?.status !== 'queue') return; if (k.pos > 1) TP.sim.next(); }, 9000);
     }
   }

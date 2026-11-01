@@ -298,6 +298,78 @@
       "state": "active-idle",
       "label": "การปรึกษา รอคำตอบ",
       "url": "/?screen=home&state=active-idle&splash=0"
+    },
+    {
+      "code": "C201.50",
+      "state": "case-queue3",
+      "label": "จำลอง รออีก 3 คิว",
+      "url": "/?screen=home&state=case-queue3&splash=0"
+    },
+    {
+      "code": "C201.51",
+      "state": "case-queue2",
+      "label": "จำลอง รออีก 2 คิว",
+      "url": "/?screen=home&state=case-queue2&splash=0"
+    },
+    {
+      "code": "C201.52",
+      "state": "case-queue1",
+      "label": "จำลอง รออีก 1 คิว",
+      "url": "/?screen=home&state=case-queue1&splash=0"
+    },
+    {
+      "code": "C201.53",
+      "state": "case-next",
+      "label": "จำลอง คิวถัดไป",
+      "url": "/?screen=home&state=case-next&splash=0"
+    },
+    {
+      "code": "C201.54",
+      "state": "case-paused",
+      "label": "จำลอง เภสัชกรพัก",
+      "url": "/?screen=home&state=case-paused&splash=0"
+    },
+    {
+      "code": "C201.55",
+      "state": "case-matched",
+      "label": "จำลอง รับคิวแล้ว",
+      "url": "/?screen=home&state=case-matched&splash=0"
+    },
+    {
+      "code": "C201.56",
+      "state": "case-chat",
+      "label": "จำลอง กำลังสนทนา",
+      "url": "/?screen=home&state=case-chat&splash=0"
+    },
+    {
+      "code": "C201.57",
+      "state": "case-reply",
+      "label": "จำลอง รอคำตอบจากคุณ",
+      "url": "/?screen=home&state=case-reply&splash=0"
+    },
+    {
+      "code": "C201.58",
+      "state": "case-payment",
+      "label": "จำลอง รอชำระเงิน",
+      "url": "/?screen=home&state=case-payment&splash=0"
+    },
+    {
+      "code": "C201.59",
+      "state": "case-finished",
+      "label": "จำลอง จบการปรึกษา",
+      "url": "/?screen=home&state=case-finished&splash=0"
+    },
+    {
+      "code": "C201.60",
+      "state": "case-cancelled",
+      "label": "จำลอง ยกเลิกคิว",
+      "url": "/?screen=home&state=case-cancelled&splash=0"
+    },
+    {
+      "code": "C201.61",
+      "state": "case-expired",
+      "label": "จำลอง หมดเวลารอคำตอบ",
+      "url": "/?screen=home&state=case-expired&splash=0"
     }
   ]
 }

@@ -43,3 +43,9 @@ html.mob .panel .pn-top {background:#FFFFFF;margin:-24px -20px 0;padding:16px 20
 .code-badge .preview-mock-button {pointer-events:auto;display:block;min-height:44px;width:100%;margin-top:var(--space-2);padding:var(--space-2) var(--space-3);border:0;border-radius:var(--r-md);background:var(--brand);color:var(--color-canvas-base);font:600 var(--text-small)/1.5 var(--font);cursor:pointer}
 .code-badge .preview-mock-button:hover {filter:brightness(.95)}
 .code-badge .preview-mock-button:focus-visible {outline:2px solid var(--brand);outline-offset:3px}
+
+/* Session-only case simulator, outside the mobile app boundary. */
+.code-badge .preview-case-controls {display:grid;gap:var(--space-1);width:160px;max-height:60vh;overflow:auto;pointer-events:auto;margin-top:var(--space-2)}
+.preview-case-controls button {min-height:36px;padding:var(--space-1) var(--space-2);border:1px solid var(--hair);border-radius:var(--r-md);background:var(--semantic-surface);color:var(--ink);font:500 var(--text-small)/1.4 var(--font);text-align:left;cursor:pointer}
+.preview-case-controls button[aria-pressed=true] {background:var(--brand);color:var(--semantic-on-primary);border-color:var(--brand)}
+.preview-case-controls button:focus-visible {outline:2px solid var(--brand);outline-offset:2px}
