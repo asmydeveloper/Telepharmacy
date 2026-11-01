@@ -2189,7 +2189,6 @@ TP.act('quickConsult',()=>{
     return TP.sheet('allbranches');
   }
   S.branch=result.branch.id;S.branchPicked=true;S.autoReason='';
-  TP.notify('เลือก'+result.branch.name+'ให้แล้ว',{icon:'store'});
   return TP.ACTS.hmStart({dataset:{mode:'chat'}});
 });
 TP.saveHomePreferences = () => {
@@ -4838,7 +4837,7 @@ function docHtml(S, h) {
     <section class="af-sec"><h3><i>1</i>อาการที่แจ้ง</h3><p>${esc(sm.sym)}</p></section>
     <section class="af-sec"><h3><i>2</i>คำแนะนำ</h3><ul class="af-ul">${sm.advice.map(a => `<li>${esc(a)}</li>`).join('')}</ul></section>
     <section class="af-sec"><h3><i>3</i>ยาที่ได้รับ</h3>${meds}</section>
-    <section class="af-sec af-warn"><h3><i>4</i>ไปพบแพทย์ทันทีถ้า</h3><ul class="af-ul">${sm.warn.map(a => `<li>${esc(a)}</li>`).join('')}</ul></section>
+    <section class="af-summary-alert" aria-label="อาการที่ควรพบแพทย์">${ui.note(`<b>ไปพบแพทย์ทันทีถ้า</b><ul class="af-ul">${sm.warn.map(a => `<li>${esc(a)}</li>`).join('')}</ul>`, {tone:'danger'})}</section>
     ${(f => f ? `<p class="af-follow">${ic('rotate-ccw', 15, 2)}<span>${esc(f)}</span></p>` : '')(TP.followDocLine?.(h) || sm.follow)}
     <footer class="af-doc-f"><div class="grow"><span class="af-sig">${esc(P.name)}</span><small>ลงชื่อเภสัชกร · ${esc(P.lic)}</small><small>เก็บไว้ถึง ${plusYear(h.date)}</small></div>${brand.halo(64, { cls: 'af-seal', draw: true, still: true, check: true })}</footer>
     <div class="af-band b">${band()}</div>

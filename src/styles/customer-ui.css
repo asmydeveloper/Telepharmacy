@@ -95,3 +95,9 @@ button,input,textarea,select {font-family:var(--font-family-ui)}
 .hm-hero .hr-s,.r-t>span {font-size:var(--text-small);line-height:var(--leading-thai)}
 .st-pf-cn,.st-pf-cnl {line-height:var(--leading-thai)}
 
+
+/* Summary uses the shared Message Alert component. */
+.af-summary-alert {margin:var(--space-3) var(--space-4)}
+.af-summary-alert .note {margin:0}
+.af-summary-alert .af-ul {margin-top:var(--space-2)}
+.af-summary-alert .af-ul li {color:inherit}
