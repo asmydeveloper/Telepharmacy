@@ -1,7 +1,8 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync('public/runtime/customer.js','utf8'),actions={},sim={},calls=[];
+let refreshCount=0;
 let current={id:'room',el:{querySelector:()=>null}};
-const TP={S:{case:{status:'room',msgs:[],draft:'draft to preserve'},call:null,st:{}},ACTS:actions,hist:[],act:(id,fn)=>actions[id]=fn,simAction:d=>sim[d.id]=d,cur:()=>current,emit(){},refresh:()=>Promise.resolve(),banner(){},closeSheet:()=>Promise.resolve(),go:(id)=>{calls.push(id);current.id=id;return Promise.resolve();},demoProfiles:{},branch:()=>({name:'Branch'})};
+const TP={S:{case:{status:'room',msgs:[],draft:'draft to preserve'},call:null,st:{}},ACTS:actions,hist:[],act:(id,fn)=>actions[id]=fn,simAction:d=>sim[d.id]=d,cur:()=>current,emit(){},refresh:()=>{refreshCount++;return Promise.resolve();},banner(){},closeSheet:()=>Promise.resolve(),go:(id)=>{calls.push(id);current.id=id;return Promise.resolve();},demoProfiles:{},branch:()=>({name:'Branch'})};
 const C=()=>TP.S.case;
 const ctx=vm.createContext({TP,C,P:()=>({name:'Provider',short:'Provider',lic:'123',ini:'P'}),now:()=> '14:12',esc:s=>String(s??''),ic:()=>'<svg></svg>',ui:{av:()=>'<avatar>',btn:(label,o)=>`<button data-a="${o.a}">${label}</button>`},Date,fmt:s=>String(s)});
 const run=s=>vm.runInContext(s,ctx);
@@ -22,6 +23,7 @@ await actions.toChat();assert.equal(current.id,'room');assert.equal(TP.S.call,se
 await actions.startVideo();assert.equal(TP.S.call,session,'returning keeps the same media session');assert.equal(calls.at(-1),'video');
 await actions.hangUp();assert.equal(TP.S.call,null);assert.equal(current.id,'room');assert.equal(C().msgs.find(m=>m.id==='three').status,'ended');
 const n=calls.length;await actions.acceptVideoRequest({dataset:{request:'three'}});await actions.startVideo();assert.equal(calls.length,n,'ended invitation cannot restart call');
+current.id='queue';C().status='room';const beforeRefresh=refreshCount;await TP.receiveVideoRequest({id:'queue-chat'});assert.equal(refreshCount,beforeRefresh+1,'shared waiting-chat route must render invitation in place');assert(C().msgs.some(m=>m.id==='queue-chat'));C().msgs.find(m=>m.id==='queue-chat').status='withdrawn';
 C().status='queue';TP.receiveVideoRequest({id:'waiting'});assert(!C().msgs.some(m=>m.id==='waiting'));
 C().status='closed';TP.receiveVideoRequest({id:'closed'});assert(!C().msgs.some(m=>m.id==='closed'));
 console.log('PASS: invitation acceptance, decline/withdraw guards, camera permission retry, minimize retains session/draft, resume and hangup');
