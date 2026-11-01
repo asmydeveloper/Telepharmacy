@@ -370,6 +370,30 @@
       "state": "case-expired",
       "label": "จำลอง หมดเวลารอคำตอบ",
       "url": "/?screen=home&state=case-expired&splash=0"
+    },
+    {
+      "code": "C201.62",
+      "state": "case-closed-unpaid",
+      "label": "จบแชท รอชำระค่ายา",
+      "url": "/?screen=home&state=case-closed-unpaid&splash=0"
+    },
+    {
+      "code": "C201.63",
+      "state": "case-payment-soon",
+      "label": "เหลือชำระ 1 นาที",
+      "url": "/?screen=home&state=case-payment-soon&splash=0"
+    },
+    {
+      "code": "C201.64",
+      "state": "case-closed-payexpired",
+      "label": "จบแชท หมดเวลาชำระ",
+      "url": "/?screen=home&state=case-closed-payexpired&splash=0"
+    },
+    {
+      "code": "C201.65",
+      "state": "case-video-request",
+      "label": "เภสัชกรขอวิดีโอคอล",
+      "url": "/?screen=home&state=case-video-request&splash=0"
     }
   ]
 }

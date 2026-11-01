@@ -14,7 +14,7 @@
     {
       "code": "C308.2",
       "state": "parcel",
-      "label": "ส่งพัสดุ",
+      "label": "ส่งด่วน (แทนตัวเลือกเดิม)",
       "url": "/?screen=pay&state=parcel&splash=0"
     },
     {
@@ -128,7 +128,7 @@
     {
       "code": "C308.21",
       "state": "unlock",
-      "label": "ปลดล็อกเขต ส่งพัสดุได้",
+      "label": "ส่งด่วนเกินระยะ รับที่ร้านแทน",
       "url": "/?screen=pay&state=unlock&splash=0"
     }
   ]

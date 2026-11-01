@@ -32,13 +32,13 @@
     {
       "code": "C403.5",
       "state": "paid",
-      "label": "ซื้อยาแล้ว",
+      "label": "ปรึกษาสำเร็จ",
       "url": "/?screen=history&state=paid&splash=0"
     },
     {
       "code": "C403.6",
       "state": "no-medication",
-      "label": "ไม่ได้ซื้อยา",
+      "label": "สิ้นสุดก่อนสรุป",
       "url": "/?screen=history&state=no-medication&splash=0"
     },
     {
@@ -148,6 +148,30 @@
       "state": "ten-records",
       "label": "ประวัติ 10 รายการ หลายวันและเดือน",
       "url": "/?screen=history&state=ten-records&splash=0"
+    },
+    {
+      "code": "C403.25",
+      "state": "completed",
+      "label": "ปรึกษาสำเร็จ",
+      "url": "/?screen=history&state=completed&splash=0"
+    },
+    {
+      "code": "C403.26",
+      "state": "ended",
+      "label": "สิ้นสุดก่อนสรุป",
+      "url": "/?screen=history&state=ended&splash=0"
+    },
+    {
+      "code": "C403.27",
+      "state": "customer-ended",
+      "label": "คุณจบการสนทนา",
+      "url": "/?screen=history&state=customer-ended&splash=0"
+    },
+    {
+      "code": "C403.28",
+      "state": "no-response",
+      "label": "ไม่มีการตอบกลับ 5 นาที",
+      "url": "/?screen=history&state=no-response&splash=0"
     }
   ]
 }

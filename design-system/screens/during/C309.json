@@ -14,7 +14,7 @@
     {
       "code": "C309.2",
       "state": "parcel",
-      "label": "ส่งพัสดุ",
+      "label": "ส่งด่วน (แทนตัวเลือกเดิม)",
       "url": "/?screen=paid&state=parcel&splash=0"
     },
     {

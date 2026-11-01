@@ -50,13 +50,13 @@
     {
       "code": "C303.8",
       "state": "idle",
-      "label": "เงียบ 13 นาที ใกล้ปิดเอง",
+      "label": "เงียบ 3 นาที ใกล้ปิดเอง",
       "url": "/?screen=room&state=idle&splash=0"
     },
     {
       "code": "C303.9",
       "state": "idleclosed",
-      "label": "ปิดเองเพราะเงียบ 15 นาที",
+      "label": "ปิดเองเพราะเงียบ 5 นาที",
       "url": "/?screen=room&state=idleclosed&splash=0"
     },
     {
@@ -64,6 +64,66 @@
       "state": "moved",
       "label": "เภสัชกรย้ายไปสาขาอื่น",
       "url": "/?screen=room&state=moved&splash=0"
+    },
+    {
+      "code": "C303.11",
+      "state": "waiting",
+      "label": "รอในแชท อีก 3 คิว",
+      "url": "/?screen=room&state=waiting&splash=0"
+    },
+    {
+      "code": "C303.12",
+      "state": "waiting-message",
+      "label": "ส่งอาการไว้ระหว่างรอ",
+      "url": "/?screen=room&state=waiting-message&splash=0"
+    },
+    {
+      "code": "C303.13",
+      "state": "waiting-paused",
+      "label": "พักชั่วคราวในห้องแชท",
+      "url": "/?screen=room&state=waiting-paused&splash=0"
+    },
+    {
+      "code": "C303.14",
+      "state": "provider-joined",
+      "label": "เภสัชกรเข้าห้องแล้ว",
+      "url": "/?screen=room&state=provider-joined&splash=0"
+    },
+    {
+      "code": "C303.15",
+      "state": "video-request",
+      "label": "เภสัชกรขอวิดีโอคอล",
+      "url": "/?screen=room&state=video-request&splash=0"
+    },
+    {
+      "code": "C303.16",
+      "state": "video-declined",
+      "label": "เลือกคุยแชทต่อ",
+      "url": "/?screen=room&state=video-declined&splash=0"
+    },
+    {
+      "code": "C303.17",
+      "state": "video-withdrawn",
+      "label": "เภสัชกรถอนคำขอวิดีโอ",
+      "url": "/?screen=room&state=video-withdrawn&splash=0"
+    },
+    {
+      "code": "C303.18",
+      "state": "closed-unpaid",
+      "label": "จบแชท รอชำระค่ายา",
+      "url": "/?screen=room&state=closed-unpaid&splash=0"
+    },
+    {
+      "code": "C303.19",
+      "state": "payment-soon",
+      "label": "จบแชท เหลือชำระ 1 นาที",
+      "url": "/?screen=room&state=payment-soon&splash=0"
+    },
+    {
+      "code": "C303.20",
+      "state": "closed-payexpired",
+      "label": "จบแชท หมดเวลาชำระ",
+      "url": "/?screen=room&state=closed-payexpired&splash=0"
     }
   ]
 }

@@ -140,3 +140,12 @@ C506 เปิดเอกสารคอนเซนต์เต็มให้
 - เมื่อทำหน้า/component/animation ใหม่ ให้พิจารณาความเป็นไปได้บน Flutter ไปด้วย แยก UI, state, data/service adapters และ preview fixtures ให้ชัด ใช้ design tokens และ assets ที่ส่งต่อได้
 - หากพฤติกรรมพึ่ง DOM/CSS/browser API หรือเอฟเฟกต์ที่ Flutter ต้องใช้วิธีอื่น ให้บันทึกแนวทางเทียบและแจ้งข้อจำกัดที่มีผลต่อหน้าตาหรือการใช้งาน ไม่อ้างว่าแปลงอัตโนมัติหรือทำได้เหมือนทั้งหมดโดยยังไม่ตรวจสอบ
 - ไม่ลดคุณภาพหน้าปัจจุบันหรือเพิ่ม dependency Flutter ล่วงหน้าเพียงเพื่อเตรียมย้าย ดู APP-HANDOFF.md
+
+# Updated payment flow: 1 November 2026
+The user's current rule supersedes older cancellation-on-chat-close guidance: medicine orders have 15 minutes to pay from pharmacist issuance. Closing consultation (by pharmacist, customer or inactivity) must preserve a pending order and its original deadline. Keep consultation outcome independent from pending/paid/expired order status. Never reopen a closed consultation to pay, silently extend an expired order, or create a new consultation merely by opening checkout. See `design-system/post-consult-payment-research.md` for entry points, expiry and production reconciliation requirements.
+
+# Consultation history outcome: latest user policy
+History C403 shows consultation outcomes, not medicine purchase or money totals. Keep completed, customer-ended and no-response separate; customer-ended is not labelled a failed consultation. The current no-response threshold is 5 minutes (prototype warning after 3 minutes, then 2 minutes to respond), superseding older 15-minute inactivity wording. Medicine payment still has its separate 15-minute deadline.
+
+# Checkout scope: latest user policy 1 November 2026
+Checkout C308 offers store pickup and express delivery only. Parcel and cold-chain courier choices are not available. History C403 currently has no visible outcome filters; show all records, newest first. Its pending-order cards use the regular history layout with a live countdown and open the exact order checkout.
