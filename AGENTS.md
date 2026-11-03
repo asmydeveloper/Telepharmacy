@@ -142,10 +142,35 @@ C506 เปิดเอกสารคอนเซนต์เต็มให้
 - ไม่ลดคุณภาพหน้าปัจจุบันหรือเพิ่ม dependency Flutter ล่วงหน้าเพียงเพื่อเตรียมย้าย ดู APP-HANDOFF.md
 
 # Updated payment flow: 1 November 2026
-The user's current rule supersedes older cancellation-on-chat-close guidance: medicine orders have 15 minutes to pay from pharmacist issuance. Closing consultation (by pharmacist, customer or inactivity) must preserve a pending order and its original deadline. Keep consultation outcome independent from pending/paid/expired order status. Never reopen a closed consultation to pay, silently extend an expired order, or create a new consultation merely by opening checkout. See `design-system/post-consult-payment-research.md` for entry points, expiry and production reconciliation requirements.
+The user's current rule supersedes older cancellation-on-chat-close guidance: medicine orders have 15 minutes to pay from the first checkout opening for chat consultations (video retains its existing timing). Closing consultation (by pharmacist, customer or inactivity) must preserve a pending order and its original deadline. Keep consultation outcome independent from pending/paid/expired order status. Never reopen a closed consultation to pay, silently extend an expired order, or create a new consultation merely by opening checkout. See `design-system/post-consult-payment-research.md` for entry points, expiry and production reconciliation requirements.
 
 # Consultation history outcome: latest user policy
 History C403 shows consultation outcomes, not medicine purchase or money totals. Keep completed, customer-ended and no-response separate; customer-ended is not labelled a failed consultation. The current no-response threshold is 5 minutes (prototype warning after 3 minutes, then 2 minutes to respond), superseding older 15-minute inactivity wording. Medicine payment still has its separate 15-minute deadline.
 
 # Checkout scope: latest user policy 1 November 2026
 Checkout C308 offers store pickup and express delivery only. Parcel and cold-chain courier choices are not available. History C403 currently has no visible outcome filters; show all records, newest first. Its pending-order cards use the regular history layout with a live countdown and open the exact order checkout.
+
+# คู่มือเหตุการณ์ทดสอบ — 2 พฤศจิกายน 2569
+เมื่อเพิ่มหน้าหรือ state ให้รัน `npm run screens:sync` ซึ่งสร้างคู่มือรายหน้าและทะเบียนเหตุการณ์ที่ `public/preview/events/` อัตโนมัติ และรัน `npm run screens:check` เพื่อตรวจความตรงกัน รหัสเหตุการณ์ `EV-Cxxx-state` ใช้ state key คงที่ ห้ามเปลี่ยน key หรือใช้รหัสซ้ำ แยก `EV-GLOBAL-xxx` สำหรับเหตุการณ์กลาง เพิ่ม acceptance เฉพาะกรณีใน `TP.previewEventPolicy.describe` และทดสอบ fixture/action จริง คู่มือเป็น checklist ไม่ใช่ผล QA ผ่านแล้ว ดู `docs/testing-events.md`
+
+- โฟลว์สนทนา C303: เภสัชกรส่งรายการยา ถามเพิ่มเติม แล้วปิดเคสจึงเปิด C308 ของรายการเดิม ห้ามกลับเข้าห้องแชทที่ปิดแล้ว เวลา 15 นาทีเริ่มเมื่อเปิดหน้าชำระครั้งแรก ไม่ต่ออายุเมื่อปิดเคส ส่งด่วนหลังจ่ายใช้ C414 เดิม (เตรียมยา → เรียกไรเดอร์ → จัดส่ง → เสร็จสิ้น) โหมดวิดีโอคอลคงโฟลว์เดิม ดู docs/chat-order-lifecycle.md
+
+# ตำแหน่งที่อยู่ส่งยา
+กรอกข้อมูลที่อยู่ครบก่อนแสดง map ใช้ shared address-map adapter ใน C105/C515/C308; ต้องยืนยันหมุดใน polygon ตำบลที่เลือกก่อนบันทึก ไม่ใช้วงกลมแทนเขต และโหลดขอบเขตไม่ได้ต้องบล็อกยืนยันพร้อม retry
+Checkout เปลี่ยนข้อความที่อยู่จากหน้าแรกไม่ได้ ขยับได้เฉพาะหมุด snapshot เคส ผู้ใช้เลือกขยับหมุดเองก่อน ยังไม่ส่งบ้านเลขที่ไป geocoder ภายนอก ดู design-system/address-map-research.md
+
+- ฟอร์มที่อยู่ใช้ house (จำเป็น) + building (หมู่บ้าน/อาคาร/ห้อง/ชั้น ไม่บังคับ) + alley + road (ไม่บังคับ) ทั้ง C105/C515 และการแสดงผลที่อยู่ทุกจุด คงข้อความ house เก่าโดยไม่เดาแยกเอง หมุดต้อง invalidate เมื่อรายละเอียดส่วนใดเปลี่ยน รวม building
+
+- ล่าสุดผู้ใช้ให้พักแผนที่ก่อน (2 พ.ย. 2569): ไม่แสดงแผนที่ใน C105/C515/C308 และไม่บังคับยืนยันหมุดเพื่อสมัคร บันทึกที่อยู่ หรือชำระ ใช้ฟอร์มแยกส่วนและ validation ตามเดิม เก็บ adapter ไว้สำหรับกลับมาพัฒนาภายหลัง ห้ามนำกลับมาเอง
+
+# ปุ่มย้อนกลับ — ข้อกำหนดผู้ใช้ 2 พฤศจิกายน 2569
+- ปุ่มกลับต้องย้อนตามหน้าที่ผู้ใช้กดเข้ามาจริง โดยใช้ประวัติการนำทางก่อนเสมอ ไม่ส่งไป parent ที่กำหนดตายตัวเมื่อมีต้นทางจริง
+- ใช้หน้าสำรองจาก parent เฉพาะกรณีเปิดหน้าตรงจากลิงก์ทดสอบและไม่มีประวัติหน้าก่อนหน้า ปุ่มย่อห้องสนทนายังคงเป็นการย่อ ไม่ใช่ย้อนกลับ
+
+- ผู้ใช้ยืนยัน 2 พ.ย. 2569: ไม่มีเคสเภสัชกรย้ายการปรึกษาไปสาขาอื่นในแอปลูกค้า ไม่แสดงปุ่มจำลองหรือเหตุการณ์ moved เก็บ suffix C303.10 เป็นรหัสที่เลิกใช้ ไม่เลื่อนรหัสเคสถัดไป
+- ช่องโค้ดส่วนลด C308 ใช้ adapter ตรวจโค้ด ตัวอย่าง TEST50/EXPIRED50 เป็น fixtures สำหรับเทสเท่านั้น ยังไม่มีโปรโมชันจริง ต้องยืนยันกติกาและตรวจส่วนลด/ยอดชำระฝั่งเซิร์ฟเวอร์ก่อนใช้งานจริง
+
+# C505 ข้อกำหนดล่าสุด 2 พฤศจิกายน 2569
+ประวัติแพ้ยาในข้อมูลสุขภาพของฉันเป็นข้อความที่คนไข้กรอกและแก้เองได้ ใช้ยังไม่ทราบ/ไม่มี/ระบุข้อมูลและ textarea เหมือนหมวดอื่น ไม่แสดงกล่องยืนยันเปลี่ยนข้อมูลเภสัชกรใน C505 ไม่เปลี่ยนผลข้างเคียงเป็นแพ้ยาอัตโนมัติและไม่ถือเป็นการยืนยันทางคลินิก ซ่อนผู้บันทึกในหน้าดูข้อมูล เพิ่มส่วนสูงคู่กับน้ำหนัก
+
+C505 ล่าสุด: ไม่มีกล่องชื่อเจ้าของข้อมูลด้านบน และไม่แสดงการ์ดบันทึกของเภสัชกร แต่ละ textarea เป็นข้อความเดียว ต้องคงการขึ้นบรรทัดและไม่แทรก divider ระหว่างบรรทัด

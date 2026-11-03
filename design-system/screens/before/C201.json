@@ -338,7 +338,7 @@
     {
       "code": "C201.56",
       "state": "case-chat",
-      "label": "จำลอง กำลังสนทนา",
+      "label": "สนทนา-จ่ายยา",
       "url": "/?screen=home&state=case-chat&splash=0"
     },
     {
@@ -394,6 +394,36 @@
       "state": "case-video-request",
       "label": "เภสัชกรขอวิดีโอคอล",
       "url": "/?screen=home&state=case-video-request&splash=0"
+    },
+    {
+      "code": "C201.66",
+      "state": "case-none",
+      "label": "ไม่มีปรึกษา",
+      "url": "/?screen=home&state=case-none&splash=0"
+    },
+    {
+      "code": "C201.67",
+      "state": "case-delivery-preparing",
+      "label": "ชำระแล้ว · เตรียมยา",
+      "url": "/?screen=home&state=case-delivery-preparing&splash=0"
+    },
+    {
+      "code": "C201.68",
+      "state": "case-delivery-calling",
+      "label": "กำลังเรียกไรเดอร์",
+      "url": "/?screen=home&state=case-delivery-calling&splash=0"
+    },
+    {
+      "code": "C201.69",
+      "state": "case-delivery-delivering",
+      "label": "ไรเดอร์กำลังส่งยา",
+      "url": "/?screen=home&state=case-delivery-delivering&splash=0"
+    },
+    {
+      "code": "C201.70",
+      "state": "case-delivery-delivered",
+      "label": "จัดส่งเสร็จสิ้น",
+      "url": "/?screen=home&state=case-delivery-delivered&splash=0"
     }
   ]
 }

@@ -133,13 +133,26 @@
 .phone .st-otp.bad .st-cell {background:var(--semantic-surface);color:var(--semantic-text);box-shadow:inset 0 0 0 1px var(--semantic-error-text)}
 .phone .st-otp.lock .st-cell {background:var(--semantic-disabled-bg);color:var(--semantic-text-disabled)}
 .phone .hm-mini-icon {border-radius:var(--radius-md)}
-.phone .sw {width:44px;height:24px;border-radius:var(--radius-pill);background:transparent url('/assets/design-system/9-792-imgControl.svg') center no-repeat;box-shadow:none}
-.phone .sw::before {inset:-10px 0}.phone .sw::after {display:none}
-.phone .sw[aria-checked=true] {background:transparent url('/assets/design-system/9-792-imgControl3.svg') center no-repeat}
-.phone .sw:focus-visible {background-image:url('/assets/design-system/9-792-imgControl1.svg')}
-.phone .sw[aria-checked=true]:focus-visible {background-image:url('/assets/design-system/9-792-imgControl4.svg')}
-.phone .sw:disabled {background-image:url('/assets/design-system/9-792-imgControl2.svg')}
-.phone .sw[aria-checked=true]:disabled {background-image:url('/assets/design-system/9-792-imgControl5.svg')}
+.phone .sw, .panel .pn-autofill input {
+  appearance:none;position:relative;flex-shrink:0;width:48px;height:22px;
+  border:0;border-radius:var(--radius-pill);background:var(--semantic-field-border);box-shadow:none;cursor:pointer;
+}
+.phone .sw::before {inset:-11px 0}
+.phone .sw::after, .panel .pn-autofill input::after {
+  content:'';display:block;position:absolute;top:2px;left:2px;width:28px;height:18px;
+  border-radius:var(--radius-pill);background:var(--semantic-surface);box-shadow:none;
+  transition:transform var(--motion-default) ease-out;
+}
+.phone .sw[aria-checked=true], .panel .pn-autofill input:checked {background:var(--semantic-primary)}
+.phone .sw[aria-checked=true]::after, .panel .pn-autofill input:checked::after {transform:translateX(16px)}
+.phone .sw:disabled {opacity:.5;cursor:default}
+.sheet:has(.account-delete-info) .sh-h {position:relative}
+.sheet:has(.account-delete-info) .sh-h h2 {width:100%;padding-inline:44px;text-align:center}
+.sheet:has(.account-delete-info) .sh-x {position:absolute;inset-inline-end:var(--page-gutter);top:50%;translate:0 -50%}
+.account-delete-info {display:grid;justify-items:center;gap:var(--space-2);text-align:center;margin-bottom:var(--space-4)}
+.account-delete-info>.ic {color:var(--semantic-error-text)}
+.account-delete-info p {margin:0}
+
 .phone .rd {position:relative;border-radius:var(--radius-pill);background:var(--semantic-surface);box-shadow:inset 0 0 0 1px var(--semantic-border-control)}
 .phone .rd>* {visibility:hidden}
 .phone [aria-checked=true]>.rd {background:transparent url('/assets/design-system/9-736-imgControl.svg') center no-repeat;box-shadow:none}
@@ -198,7 +211,23 @@
 /* Floating glass navigation: shared by the tab roots and central consult action. */
 .phone .tabbar {padding:var(--space-1);border:1px solid var(--tabbar-glass-border);border-radius:var(--radius-pill);background:var(--tabbar-glass-background);box-shadow:var(--tabbar-glass-shadow);-webkit-backdrop-filter:blur(24px) saturate(1.5);backdrop-filter:blur(24px) saturate(1.5);isolation:isolate}
 .phone .tabbar .tb {border-radius:var(--radius-pill);background:transparent;color:var(--ink-2);font-weight:var(--weight-medium);gap:var(--space-1);min-height:44px}
+.phone .tabbar .tb.tb-consult {
+  place-self:center;
+  width:56px;
+  max-width:100%;
+  height:auto;
+  aspect-ratio:1;
+  padding:0;
+  background:var(--semantic-primary);
+  color:var(--semantic-on-primary);
+  transform:translateY(calc(-1 * var(--space-2)));
+}
+.phone .tabbar .tb.tb-consult:focus-visible {outline-offset:2px}
 .phone .tabbar .tb[aria-current=page] {background:transparent;color:var(--brand);font-weight:var(--weight-semibold)}
+.phone .tabbar .tb-icon {display:grid;place-items:center;width:22px;height:22px}
+.phone .tabbar .tb-icon-solid,
+.phone .tabbar .tb[aria-current=page] .tb-icon .ic {display:none}
+.phone .tabbar .tb[aria-current=page] .tb-icon-solid {display:block}
 .phone .tabbar .tb:focus-visible {outline:2px solid var(--brand);outline-offset:-3px}
 .phone .tabbar .tb-pill {display:block;top:var(--space-1);bottom:var(--space-1);left:var(--space-1);width:calc((100% - 8px) / 5);border-radius:var(--radius-pill);background:var(--tabbar-active-background);box-shadow:inset 0 1px 1px rgba(255,255,255,.9),0 1px 3px rgb(var(--color-primary-deep-rgb) / .06);transition:transform var(--motion-default) var(--ease)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))) {.phone .tabbar {background:var(--semantic-surface)}}
@@ -282,11 +311,30 @@
 .auth-code-keyboard .st-key {height:44px;}
 .auth-code-step .auth-form-panel>.scroll.auth-form-scroll {padding-top:var(--space-4);padding-bottom:var(--space-2);}
 
-.phone .tabbar .tb-consult{border-radius:var(--radius-lg);background:var(--semantic-primary);color:var(--semantic-on-primary);font-weight:var(--weight-semibold)}
-.phone .tabbar .tb-consult:hover{filter:brightness(.96)}
 
 /* Original white status icons with gentle breathing motion. */
 .minibar .mb-icon {display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;color:var(--semantic-on-primary);pointer-events:none}
 .minibar .mb-status-art {display:block;width:32px;height:32px;transform-origin:center;animation:mb-status-breathe 2.6s ease-in-out infinite}
 @keyframes mb-status-breathe {0%,100%{transform:scale(.96)}50%{transform:scale(1.04)}}
 @media (prefers-reduced-motion:reduce) {.minibar .mb-status-art {animation:none;transform:none}}
+
+/* Shared floating select: options use the same control tokens as fields. */
+.ds-select {position:relative;min-width:0}
+.phone .ds-select-trigger {display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);width:100%;text-align:start;padding-inline:var(--space-3) var(--space-4)}
+.ds-select-trigger>span {min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ds-select-trigger>.ic {flex-shrink:0;color:var(--semantic-primary)}
+.ds-select-trigger[aria-expanded=true]>.ic {transform:rotate(180deg)}
+.ds-select:has([aria-expanded=true]) {z-index:20}
+.ds-select-menu {position:absolute;z-index:21;inset-inline:0;top:calc(100% + var(--space-1));overflow:auto;overscroll-behavior:contain;padding:var(--space-1);background:var(--semantic-surface);border:1px solid var(--semantic-field-border);border-radius:var(--radius-md);box-shadow:0 4px 16px rgb(var(--color-primary-deep-rgb) / .12)}
+.ds-select.opens-up>.ds-select-menu {top:auto;bottom:calc(100% + var(--space-1))}
+.ds-select-menu>[role=option] {display:flex;align-items:center;min-height:var(--component-control-md);padding:var(--space-2) var(--space-3);border-radius:var(--radius-md);color:var(--semantic-text);font-size:var(--type-body-mobile-size);cursor:pointer}
+.ds-select-menu>[role=option]:is(:hover,.is-active) {background:var(--brand-soft)}
+.ds-select-menu>[aria-selected=true] {color:var(--semantic-primary);font-weight:var(--font-weight-semibold);background:var(--brand-soft)}
+.ds-select-trigger:disabled {opacity:.5;cursor:not-allowed}
+
+.auth-form-scroll>.auth-cover-terms {margin:var(--space-6) 0 0;padding-bottom:var(--space-4);text-align:center}
+
+.phone .sheet.full-page {top:0;bottom:0;height:100%;max-height:100%;border-radius:0;box-shadow:none;padding-top:var(--st);background:var(--semantic-surface)}
+.phone .sheet.full-page .sh-h {position:relative;flex-shrink:0;min-height:56px;border-bottom:1px solid var(--semantic-border)}
+.phone .sheet.full-page .sh-h h2 {width:100%;text-align:center;font-size:var(--type-body-mobile-size);padding-inline:44px}
+.phone .sheet.full-page .sh-back {position:absolute;left:var(--page-gutter);top:50%;transform:translateY(-50%);color:var(--brand-deep)}

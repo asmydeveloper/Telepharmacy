@@ -68,13 +68,13 @@
     {
       "code": "C308.11",
       "state": "bankon",
-      "label": "เลือกแอปธนาคาร",
+      "label": "พร้อมเพย์ (แทนแอปธนาคารเดิม)",
       "url": "/?screen=pay&state=bankon&splash=0"
     },
     {
       "code": "C308.12",
       "state": "bankapp",
-      "label": "หน้าแอปธนาคาร",
+      "label": "QR พร้อมเพย์ (แทนแอปธนาคารเดิม)",
       "url": "/?screen=pay&state=bankapp&splash=0"
     },
     {
@@ -130,6 +130,48 @@
       "state": "unlock",
       "label": "ส่งด่วนเกินระยะ รับที่ร้านแทน",
       "url": "/?screen=pay&state=unlock&splash=0"
+    },
+    {
+      "code": "C308.22",
+      "state": "map-ready",
+      "label": "ยืนยันหมุดตำบล",
+      "url": "/?screen=pay&state=map-ready&splash=0"
+    },
+    {
+      "code": "C308.23",
+      "state": "map-outside",
+      "label": "หมุดนอกตำบล",
+      "url": "/?screen=pay&state=map-outside&splash=0"
+    },
+    {
+      "code": "C308.24",
+      "state": "map-error",
+      "label": "โหลดขอบเขตตำบลไม่ได้",
+      "url": "/?screen=pay&state=map-error&splash=0"
+    },
+    {
+      "code": "C308.25",
+      "state": "map-saved",
+      "label": "บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ",
+      "url": "/?screen=pay&state=map-saved&splash=0"
+    },
+    {
+      "code": "C308.26",
+      "state": "coupon-valid",
+      "label": "โค้ดส่วนลดใช้ได้",
+      "url": "/?screen=pay&state=coupon-valid&splash=0"
+    },
+    {
+      "code": "C308.27",
+      "state": "coupon-invalid",
+      "label": "โค้ดส่วนลดไม่ถูกต้อง",
+      "url": "/?screen=pay&state=coupon-invalid&splash=0"
+    },
+    {
+      "code": "C308.28",
+      "state": "coupon-expired",
+      "label": "โค้ดส่วนลดหมดอายุ",
+      "url": "/?screen=pay&state=coupon-expired&splash=0"
     }
   ]
 }

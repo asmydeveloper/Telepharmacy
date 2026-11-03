@@ -1,0 +1,22 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('public/runtime/customer.js','utf8'),routes=[];
+const TP={S:{},closedChatRoute:()=>false,closeSheet:async()=>{vm.runInContext('sheet=null',ctx);}};
+const ctx=vm.createContext({TP,console,$:()=>null,routeCapture:(id)=>routes.push(id)});
+vm.runInContext(`let chain=Promise.resolve(),pending=null,cur=null,sheet=null,hist=[],running=[];
+ const SCREENS={home:{},account:{},addressbook:{parent:'account'},addressedit:{parent:'addressbook'}};
+ const INVERSE={push:'back',back:'push',fade:'fade'};
+ const mkEntry=(id,params,via)=>({id,params:params||{},via,el:{}});
+ const build=()=>{};const swap=async(from,entry)=>routeCapture(entry.id);`,ctx);
+const a=source.indexOf('TP.go = (id, o = {}) => {'),b=source.indexOf('TP.canBack =',a);
+vm.runInContext(source.slice(a,b),ctx);
+(async()=>{
+ vm.runInContext("cur=mkEntry('addressedit',{},'fade');hist=[]",ctx);
+ await TP.back();assert.equal(routes.at(-1),'addressbook');assert.equal(vm.runInContext('hist.length',ctx),0);
+ await TP.back();assert.equal(routes.at(-1),'account');assert.equal(vm.runInContext('hist.length',ctx),0);
+ vm.runInContext("cur=mkEntry('home',{},'tab');hist=[]",ctx);
+ await TP.go('addressbook');await TP.go('addressedit');await TP.back();assert.equal(routes.at(-1),'addressbook');await TP.back();assert.equal(routes.at(-1),'home','actual entry screen wins over declared parent');
+ const count=routes.length;await TP.back();assert.equal(routes.length,count,'root does not invent a fallback');
+ vm.runInContext("cur=mkEntry('addressbook',{},'fade');sheet={id:'test'};hist=[]",ctx);
+ await TP.back();assert.equal(routes.length,count,'back closes an open sheet first');await TP.back();assert.equal(routes.at(-1),'account');
+ console.log('PASS: direct address edit → address book → account; normal navigation preserves actual origin; root and sheet back stay correct');
+})().catch(e=>{console.error(e);process.exitCode=1;});

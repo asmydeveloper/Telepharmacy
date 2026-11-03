@@ -153,3 +153,13 @@
 .registration-welcome .reg-welcome-message{transform:translateY(-50%)}
 
 .reg-consent-choices{display:grid;gap:var(--space-4);min-width:0}
+/* Required indicators and address entry share the registration form rhythm. */
+.reg-required {color:var(--danger);font-weight:var(--weight-semibold)}
+.hm-address-form.registration-page {grid-template-columns:minmax(0,1fr);gap:var(--space-6)}
+.hm-address-form.registration-page>.reg-name-fields,.hm-address-form.registration-page>[data-address-map] {grid-column:1/-1;min-width:0}
+.hm-address-form.registration-page>.field:has(#home-address-first),.hm-address-form.registration-page>.field:has(#home-address-last) {grid-column:1/-1}
+.hm-address-form [aria-invalid=true] {border-color:var(--danger)}
+
+/* Personal editing has no registration progress bar to reserve space for. */
+.scroll.app-page.profile-edit-scroll{top:calc(var(--st) + var(--nav-height));padding-top:var(--space-4);scroll-padding-top:var(--space-4)}
+.profile-edit-scroll .field>.hint{margin:0}

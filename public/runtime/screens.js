@@ -47,7 +47,7 @@ function card(it, st, n) {
   const states = it.states || [], cur = st || (states[0] && states[0][0]) || '';
   const kind = it.kind === 'sheet' ? '<span class="tag">แผ่นเลื่อนขึ้น</span>' : '';
   const wait = it.wait ? `<span class="tag w">รอเคาะ ${it.wait}</span>` : '';
-  const chips = mode === 'one' && states.length > 1 ? `<div class="chips" role="group" aria-label="สถานะของจอ ${esc(it.title)}">${states.map(([k, l]) => `<button type="button" data-st="${esc(k)}" aria-pressed="${k === cur}">${esc(l)}</button>`).join('')}</div>` : '';
+  const chips = mode === 'one' && states.length > 1 ? `<div class="chips" role="group" aria-label="สถานะของจอ ${esc(it.title)}">${states.filter(x=>x[2]!==false).map(([k, l]) => `<button type="button" data-st="${esc(k)}" aria-pressed="${k === cur}">${esc(l)}</button>`).join('')}</div>` : '';
   const label = mode === 'all' && st ? ' · ' + esc((states.find(s => s[0] === st) || [, st])[1]) : '';
   const code = codeFor(it, cur);
   return `<div class="card" data-id="${esc(it.id)}">
@@ -68,9 +68,9 @@ function render() {
   for (const [g, gl] of REG.groups) {
     const items = REG.items.filter(i => i.group === g).sort((a, b) => a.code.localeCompare(b.code)); if (!items.length) continue;
     const cards = mode === 'all'
-      ? items.flatMap(it => (it.states.length ? it.states.map(s => card(it, s[0])) : [card(it, '')])).join('')
+      ? items.flatMap(it => (it.states.length ? it.states.filter(s=>s[2]!==false).map(s => card(it, s[0])) : [card(it, '')])).join('')
       : items.map(it => card(it, '')).join('');
-    const nState = items.reduce((a, i) => a + Math.max(1, i.states.length), 0);
+    const nState = items.reduce((a, i) => a + Math.max(1, i.states.filter(s=>s[2]!==false).length), 0);
     html += `<section class="lane"><div class="lh"><h2>${esc(gl)}</h2><small>${items.length} จอ · ${nState} สถานะ</small></div><div class="row">${cards}</div></section>`;
   }
   $('#lanes').innerHTML = html;
@@ -104,7 +104,7 @@ function show(k) {
   try { history.replaceState(null, '', k === 'con' ? '#console' : location.pathname + location.search); } catch (e) { /* file:// may refuse */ }
   if (!REG) { $('#sub').textContent = 'กำลังโหลดรายการจอ'; $('#lanes').innerHTML = ''; return; }
   const nS = REG.items.filter(i => i.kind === 'screen').length, nSh = REG.items.length - nS;
-  const nSt = REG.items.reduce((a, i) => a + Math.max(1, i.states.length), 0);
+  const nSt = REG.items.reduce((a, i) => a + Math.max(1, i.states.filter(s=>s[2]!==false).length), 0);
   $('#sub').textContent = `${nS} จอ${nSh ? ` + ${nSh} แผ่นเลื่อนขึ้น` : ''} · ${nSt} สถานะ${REG.version ? ' · ' + REG.version : ''}`;
   $('#foot').textContent = 'ผังนี้อ่านรายการจอจากไฟล์ต้นแบบ ' + FILE[k] + ' · หน้ากากอย่างเดียว ยังไม่ต่อระบบจริง · ข้อมูลในจอเป็นข้อมูลสมมติ';
   render();

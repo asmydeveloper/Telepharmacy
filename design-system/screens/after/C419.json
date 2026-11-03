@@ -1,0 +1,21 @@
+{
+  "code": "C419",
+  "screen": "adrreport",
+  "title": "รายละเอียดรายงานอาการ",
+  "group": "after",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C419.1",
+      "state": "pending",
+      "label": "รอเภสัชกรประเมิน",
+      "url": "/?screen=adrreport&state=pending&splash=0"
+    },
+    {
+      "code": "C419.2",
+      "state": "replied",
+      "label": "ประเมินแล้ว",
+      "url": "/?screen=adrreport&state=replied&splash=0"
+    }
+  ]
+}

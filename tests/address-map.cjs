@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict'),fs=require('node:fs');
+const M=require('../public/runtime/address-map.js');
+const square={type:'Polygon',coordinates:[[[0,0],[10,0],[10,10],[0,10],[0,0]],[[4,4],[6,4],[6,6],[4,6],[4,4]]]};
+assert(M.contains(square,[1,1]));assert(M.contains(square,[0,5]));assert(!M.contains(square,[5,5]));assert(!M.contains(square,[11,1]));assert(!M.contains(square,[NaN,1]));
+assert(M.contains({type:'MultiPolygon',coordinates:[square.coordinates,[[[20,20],[21,20],[21,21],[20,21],[20,20]]]]},[20.5,20.5]));
+const a={first:'สมใจ',last:'ใจดี',phone:'0812345678',house:'88/12',dist:'ทวีวัฒนา',amp:'ทวีวัฒนา',prov:'กรุงเทพมหานคร',zip:'10170'};
+assert(M.complete(a));for(const k of ['first','last','phone','house','dist','amp','prov','zip'])assert(!M.complete({...a,[k]:''}),k);
+assert(!M.complete({...a,phone:'0212345678'}));assert(!M.complete({...a,zip:'1017'}));assert(!M.valid({...a,pin:true}));
+const saved={...a,pin:true,location:{lat:13.76,lng:100.36,code:'104801',verified:true,addressKey:M.key(a)}};
+assert(M.valid(saved));assert(!M.valid({...saved,house:'89/12'}));assert(!M.valid({...saved,dist:'ศาลาธรรมสพน์'}));assert(!M.valid({...saved,pin:false}));
+const g=JSON.parse(fs.readFileSync('tests/fixtures/tambon-104801.geojson')).features[0].geometry;
+assert(M.contains(g,M.interior(g,[100.5,13.7])));assert(M.contains(square,M.interior(square,[5,5])));assert(!M.valid({...saved,phone:''}));assert(!M.contains(g,[100.5,13.7]));assert(g.coordinates[0].some(p=>M.contains(g,p)));
+const source=fs.readFileSync('public/runtime/customer.js','utf8');
+const methods=source.slice(source.indexOf('function methodOpts()'),source.indexOf('const bankRow'));
+assert(!methods.includes("v: 'bank'"));assert(!source.includes('<p class="pay-safe">'));
+assert(!source.includes('data-address-map="registration"'));assert(!source.includes('data-address-map="addressbook"'));assert(!source.includes('data-address-map="checkout"'));
+assert(source.includes("TP.act('payGeoOk', () => goTo('#payPinC'))"));
+console.log('PASS: exact polygon/holes/multipolygon/edge, address completeness, stale pin invalidation, no fake pin bypass, shared address map and reduced payment options');
+
+const withBuilding={...a,building:'อาคารบี ห้อง 12'};assert.notEqual(M.key(withBuilding),M.key(a));assert(!M.valid({...saved,building:'อาคารบี'}));assert.equal(M.key({...a,building:''}),M.key(a),'empty optional detail keeps old saved address key');

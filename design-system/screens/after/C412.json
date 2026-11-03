@@ -8,13 +8,13 @@
     {
       "code": "C412.1",
       "state": "normal",
-      "label": "เลือกยา",
+      "label": "เลือกยาที่ใช้อยู่",
       "url": "/?screen=adr&state=normal&splash=0"
     },
     {
       "code": "C412.2",
       "state": "filled",
-      "label": "ตรวจทานก่อนส่ง",
+      "label": "กรอกครบหลายรายการ",
       "url": "/?screen=adr&state=filled&splash=0"
     },
     {
@@ -37,27 +37,21 @@
     },
     {
       "code": "C412.6",
-      "state": "manual",
-      "label": "ระบุยาจากที่อื่น",
-      "url": "/?screen=adr&state=manual&splash=0"
-    },
-    {
-      "code": "C412.7",
-      "state": "unknown",
-      "label": "ไม่ทราบชื่อยา",
-      "url": "/?screen=adr&state=unknown&splash=0"
-    },
-    {
-      "code": "C412.8",
       "state": "symptoms",
-      "label": "ระบุอาการ",
+      "label": "กรอกอาการในกล่องยา",
       "url": "/?screen=adr&state=symptoms&splash=0"
     },
     {
-      "code": "C412.9",
+      "code": "C412.7",
       "state": "submit-error",
       "label": "ส่งไม่สำเร็จ ข้อมูลยังอยู่",
       "url": "/?screen=adr&state=submit-error&splash=0"
+    },
+    {
+      "code": "C412.8",
+      "state": "no-active",
+      "label": "ไม่มียาที่ใช้อยู่",
+      "url": "/?screen=adr&state=no-active&splash=0"
     }
   ]
 }

@@ -64,6 +64,18 @@
       "state": "offline",
       "label": "อินเทอร์เน็ตขาดระหว่างรอ",
       "url": "/?screen=queue&state=offline&splash=0"
+    },
+    {
+      "code": "C207.11",
+      "state": "video-wait",
+      "label": "รอเภสัชกรวิดีโอคอล",
+      "url": "/?screen=queue&state=video-wait&splash=0"
+    },
+    {
+      "code": "C207.12",
+      "state": "video-next",
+      "label": "วิดีโอคอล · คิวถัดไป",
+      "url": "/?screen=queue&state=video-next&splash=0"
     }
   ]
 }

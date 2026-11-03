@@ -60,12 +60,6 @@
       "url": "/?screen=room&state=idleclosed&splash=0"
     },
     {
-      "code": "C303.10",
-      "state": "moved",
-      "label": "เภสัชกรย้ายไปสาขาอื่น",
-      "url": "/?screen=room&state=moved&splash=0"
-    },
-    {
       "code": "C303.11",
       "state": "waiting",
       "label": "รอในแชท อีก 3 คิว",

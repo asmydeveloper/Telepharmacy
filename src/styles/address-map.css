@@ -1,0 +1,26 @@
+[data-address-map]{margin-block:var(--space-6);font-size:var(--text-body)}
+[data-address-map][hidden]{display:none}
+.address-map-heading{display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);color:var(--brand)}
+.address-map-heading span{font-size:var(--text-caption);color:var(--ink-3)}
+.address-map-help{color:var(--ink-3);font-size:var(--text-small);margin:var(--space-2) 0 var(--space-3);line-height:var(--leading-body)}
+.address-map-canvas{height:280px;isolation:isolate;border:1px solid var(--line-soft);border-radius:var(--radius-card);overflow:hidden;background:var(--cream);font-family:inherit}
+.address-map-canvas:focus-visible{outline:2px solid var(--brand);outline-offset:3px}
+.address-map-canvas .leaflet-tile-pane{filter:saturate(.55)}
+.address-map-canvas .leaflet-control-attribution{font-size:10px;background:var(--ground);max-width:100%}
+.address-map-canvas .leaflet-control-zoom{border:1px solid var(--line-soft);border-radius:var(--radius-control);overflow:hidden;box-shadow:none}
+.address-map-canvas .leaflet-control-zoom a{width:40px;height:40px;line-height:40px;color:var(--brand);background:var(--ground)}
+.address-marker{background:none;border:0}
+.address-marker span{display:block;width:32px;height:32px;border:3px solid var(--ground);border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:var(--brand);box-shadow:0 3px 9px #0003}
+.address-marker span:after{content:'';display:block;width:9px;height:9px;background:var(--ground);border-radius:50%;margin:8px}
+.address-marker.is-outside span{background:var(--danger)}
+.address-map-status{font-size:var(--text-small);line-height:var(--leading-body);color:var(--brand);margin:var(--space-3) 0}
+.address-map-status.is-error{color:var(--danger);background:var(--danger-tint);padding:var(--space-3);border-radius:var(--radius-control)}
+.address-map-status.is-success{color:var(--success)}
+[data-address-map]>.btn{width:100%;margin-top:var(--space-2)}
+/* MapLibre delivery map: quiet controls, clear marker, visible attribution. */
+.address-map-canvas .maplibregl-ctrl-group{border:1px solid var(--line-soft);border-radius:var(--radius-control);box-shadow:none;overflow:hidden}
+.address-map-canvas .maplibregl-ctrl-group button{width:40px;height:40px;background:var(--ground)}
+.address-map-canvas .maplibregl-ctrl-attrib{font-size:10px;background:var(--ground)}
+.address-map-canvas .maplibregl-ctrl-attrib-button{width:24px;height:24px}
+.address-map-canvas .maplibregl-canvas:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+[data-address-map]>.btn[hidden]{display:none}

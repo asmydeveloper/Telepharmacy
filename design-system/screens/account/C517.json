@@ -1,0 +1,63 @@
+{
+  "code": "C517",
+  "screen": "healthfield",
+  "title": "แก้ไขข้อมูลสุขภาพ",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C517.1",
+      "state": "allergies",
+      "label": "แก้ไขประวัติแพ้ยา",
+      "url": "/?screen=healthfield&state=allergies&splash=0"
+    },
+    {
+      "code": "C517.2",
+      "state": "meds",
+      "label": "แก้ไขยาที่ใช้ประจำ",
+      "url": "/?screen=healthfield&state=meds&splash=0"
+    },
+    {
+      "code": "C517.3",
+      "state": "conditions",
+      "label": "แก้ไขโรคประจำตัว",
+      "url": "/?screen=healthfield&state=conditions&splash=0"
+    },
+    {
+      "code": "C517.4",
+      "state": "food",
+      "label": "แก้ไขประวัติแพ้อาหาร",
+      "url": "/?screen=healthfield&state=food&splash=0"
+    },
+    {
+      "code": "C517.5",
+      "state": "weight",
+      "label": "แก้ไขน้ำหนัก",
+      "url": "/?screen=healthfield&state=weight&splash=0"
+    },
+    {
+      "code": "C517.6",
+      "state": "height",
+      "label": "แก้ไขส่วนสูง",
+      "url": "/?screen=healthfield&state=height&splash=0"
+    },
+    {
+      "code": "C517.7",
+      "state": "unknown",
+      "label": "ยังไม่ทราบ",
+      "url": "/?screen=healthfield&state=unknown&splash=0"
+    },
+    {
+      "code": "C517.8",
+      "state": "none",
+      "label": "ระบุว่าไม่มี",
+      "url": "/?screen=healthfield&state=none&splash=0"
+    },
+    {
+      "code": "C517.9",
+      "state": "invalid",
+      "label": "กรอกข้อมูลไม่ครบ",
+      "url": "/?screen=healthfield&state=invalid&splash=0"
+    }
+  ]
+}

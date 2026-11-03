@@ -3,7 +3,7 @@
 .hm-content {display:grid;grid-template-columns:[full-start] var(--page-gutter) [content-start] minmax(0,1fr) [content-end] var(--page-gutter) [full-end];column-gap:0;row-gap:var(--section-gap);align-content:start;min-width:0}
 .hm-content>* {grid-column:content-start / content-end;min-width:0;max-width:100%;width:auto;margin:0}
 .hm-content>.hm-banner {grid-column:full-start / full-end}
-.hm-banner {position:relative;isolation:isolate;overflow:hidden;display:grid;gap:var(--space-5);padding:calc(var(--st) + var(--space-3)) var(--page-gutter) var(--space-6);border-radius:0 0 var(--radius-feature) var(--radius-feature);color:var(--semantic-surface);background:linear-gradient(130deg,var(--semantic-primary-hover),var(--semantic-primary) 65%,var(--semantic-primary))}
+.hm-banner {position:relative;isolation:isolate;overflow:hidden;display:grid;gap:var(--space-5);padding:calc((var(--st) + var(--space-4) + 2 * var(--space-2) + 26px + var(--space-3)) / 2) var(--page-gutter);border-radius:0 0 var(--radius-feature) var(--radius-feature);color:var(--semantic-surface);background:linear-gradient(130deg,var(--semantic-primary-hover),var(--semantic-primary) 65%,var(--semantic-primary))}
 .hm-banner-image {position:absolute;inset:var(--st) 0 0;z-index:-1;display:block;width:100%;height:calc(100% - var(--st));object-fit:cover;object-position:78% 45%;pointer-events:none}
 .hm-banner::after {content:'';position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,rgb(var(--color-primary-deep-rgb) / .93),rgb(var(--color-primary-deep-rgb) / .68) 25%,transparent 57%),linear-gradient(90deg,rgb(var(--color-primary-deep-rgb) / .98),rgb(var(--color-primary-rgb) / .95) 36%,rgb(var(--color-primary-rgb) / .84) 57%,rgb(var(--color-primary-rgb) / .32) 77%,rgb(var(--color-primary-rgb) / .12))}
 .hm-banner-tools {position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) 56px;gap:var(--space-3);align-items:center}
@@ -65,7 +65,7 @@
 .hm-address-form {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-4)}
 .hm-address-form>.field,.hm-address-form>.hm-primary-check,.hm-address-form>p,.hm-address-form>.btn {grid-column:1/-1;margin:0}
 .hm-address-form>.field:has(#home-address-first),.hm-address-form>.field:has(#home-address-last){grid-column:auto}
-.hm-primary-check {display:flex;align-items:center;gap:var(--space-3);min-height:44px;font-size:var(--type-body-sm-mobile-size)}.hm-primary-check input {width:20px;height:20px;accent-color:var(--brand)}
+.hm-primary-check {min-height:56px;cursor:pointer}.hm-primary-check>span {font-size:var(--text-small);line-height:1.7;font-weight:500}
 .hm-empty {display:grid;justify-items:center;gap:var(--space-3);padding:var(--space-6) var(--space-4);border:1px solid var(--line-soft);border-radius:var(--card-radius);text-align:center;background:var(--semantic-surface)}.hm-empty>.ic {color:var(--brand)}.hm-empty h3 {font-size:var(--type-h3-mobile-size);line-height:1.4}.hm-empty p {margin:0;font-size:var(--type-body-sm-mobile-size);line-height:1.65;color:var(--ink-3)}.hm-empty>.btn {margin-top:var(--space-2)}
 .all-branch-head {display:flex;align-items:center;justify-content:space-between;gap:var(--space-3)}.all-branch-note {color:var(--ink-3)}
 .bc-detail {display:grid;gap:var(--space-4);font-size:var(--type-body-sm-mobile-size);line-height:1.65;min-width:0}.bc-detail-photo {display:block;width:100%;height:160px;object-fit:cover;border-radius:var(--card-radius)}
@@ -178,24 +178,20 @@
 /* C501: quiet identity header and one rounded menu surface. */
 .scr[data-screen=account] {background:var(--color-neutral-50)}
 .scr[data-screen=account]>.app-page {background:var(--color-neutral-50)}
-.account-profile-clean {margin-bottom:0;padding-top:calc(var(--st) + var(--nav-height) + var(--space-4))}
+.account-profile-clean {margin-bottom:0;padding-top:var(--space-4)}
 .account-profile-clean .account-profile-body {background:transparent;border-radius:0;padding-bottom:var(--space-6);gap:var(--space-2)}
 .account-avatar-wrap {position:relative;width:96px;height:96px}
 .account-profile-clean .account-avatar {margin-top:0;box-shadow:none}
-.account-edit-avatar {position:absolute;right:-6px;bottom:-6px;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;color:var(--semantic-surface);background:var(--brand);border:4px solid var(--color-neutral-50)}
-.account-edit-avatar:focus-visible {outline:2px solid var(--brand);outline-offset:3px}
 .account-profile-clean .account-profile-body h2 {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line)}
 .account-profile-clean .account-phone {font-size:var(--text-small);color:var(--ink-3)}
-.account-menu {margin-inline:calc(-1 * var(--page-gutter));width:calc(100% + 2 * var(--page-gutter));max-width:none;padding:var(--space-6) var(--page-gutter) var(--space-4);background:var(--semantic-surface);border-radius:var(--radius-xl) var(--radius-xl) 0 0}
-.phone .account-menu>.group {border:0;border-radius:0;box-shadow:none;background:transparent}
-.phone .account-menu>.group-h {margin-left:0;margin-right:0;font-size:var(--text-caption)}
-.phone .account-menu>.group-h:first-child {margin-top:0}
-.phone .account-menu .row {padding-inline:0;gap:var(--space-3)}
+.account-menu {display:grid;gap:var(--space-4);padding-block:var(--space-2) var(--space-4)}
+.phone .account-menu>.group {border:1px solid var(--semantic-border);border-radius:var(--radius-xl);background:var(--semantic-surface);overflow:hidden}
+.phone .account-menu .row {padding-inline:var(--space-3);gap:var(--space-3)}
 .phone .account-menu .row>.r-ic {background:transparent;width:32px;height:32px;border-radius:0}
 .phone .account-menu .row>.r-ic.danger {color:var(--danger)}
-.phone .account-menu .group .row::after {left:44px;right:0}
+.phone .account-menu .group .row::after {left:0;right:0}
 .phone:has(.scr[data-screen=account])>.sbar {color:var(--ink);background:linear-gradient(to bottom,var(--color-neutral-50),transparent)}
-.scr[data-screen=account]>.nav::before {background:var(--color-neutral-50)}
+.scr[data-screen=account]>.app-page>.nav {position:relative}
 
 /* C201: retain full-color mascot; only system/control area receives a top fade. */
 .hm-banner::after {background:linear-gradient(180deg,rgb(var(--color-primary-deep-rgb) / .75) 0%,rgb(var(--color-primary-deep-rgb) / .25) 20%,transparent 42%)}
@@ -205,7 +201,7 @@
 .hm-mini-menu .hm-mini-icon.hm-mini-art {background:transparent}
 .hm-mini-menu .hm-mini-art img {width:52px;height:52px}
 
-.hm-banner-copy .hm-greeting {margin:0 0 var(--space-2);font-size:var(--type-h1-mobile-size);line-height:1.35;overflow-wrap:anywhere}
+.hm-banner-copy .hm-greeting {margin:0 0 var(--space-2);font-size:calc(var(--type-h1-mobile-size) - 2px);line-height:1.35;overflow-wrap:anywhere}
 .hm-banner-copy .hm-brand-message {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line);font-weight:var(--weight-medium);color:var(--semantic-surface)}
 .phone .hm-banner .hm-banner-heart>.ic {fill:var(--semantic-surface);stroke:var(--semantic-surface);filter:drop-shadow(0 1px 2px rgb(var(--color-primary-deep-rgb) / .4))}
 
@@ -214,10 +210,10 @@
 .hm-mini-menu .hm-mini-icon.hm-mini-art {background:var(--color-brand-50);border-radius:var(--radius-md)}
 .hm-mini-menu .hm-mini-art img {width:40px;height:40px}
 
-/* Four health shortcuts use the available width with quiet rounded tiles. */
-.hm-mini-menu .hm-mini-item {grid-template-rows:60px auto}
-.hm-mini-menu .hm-mini-icon.hm-mini-art {width:60px;height:60px}
-.hm-mini-menu .hm-mini-art img {width:44px;height:44px}
+/* Five shortcuts fit one row with consistent rounded tiles. */
+.hm-mini-menu .hm-mini-item {grid-template-rows:52px auto;gap:var(--space-2)}
+.hm-mini-menu .hm-mini-icon.hm-mini-art {width:52px;height:52px}
+.hm-mini-menu .hm-mini-art img {width:36px;height:36px}
 .hm-consult-options>div:not(.bc-action-heading) {grid-template-columns:minmax(0,1fr)}
 
 /* C201: one clear consultation invitation above nearby stores. */
@@ -278,3 +274,41 @@
 
 /* Keep the complete storefront composition visible in the full-bleed cover. */
 .hm-banner-image {object-position:center}
+
+/* Selected delivery address sits above health shortcuts as one horizontal control. */
+.hm-banner-tools>.hm-banner-heart {grid-column:2}
+.hm-delivery-bar {display:flex;align-items:center;gap:var(--space-2);min-width:0;min-height:52px;padding:var(--space-3);border:1px solid var(--hair);border-radius:var(--radius-md);background:var(--semantic-surface);color:var(--brand-deep);text-align:left}
+.hm-delivery-bar>span {font-size:var(--text-small);color:var(--ink-2);flex-shrink:0}
+.hm-delivery-bar>b {flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:var(--type-body-mobile-size)}
+.hm-delivery-bar>.ic {flex-shrink:0}
+.hm-delivery-bar:hover,.hm-delivery-bar:active {background:var(--brand-soft)}
+
+/* Address selector bridges the cover and white content surface. */
+.hm-content>.hm-delivery-bar {position:relative;z-index:2;margin-top:calc(-1 * var(--section-gap) - 26px);background:var(--semantic-surface);box-shadow:0 4px 16px rgb(var(--color-primary-deep-rgb) / .08)}
+
+.chat-delivery {display:grid;gap:var(--space-4);padding:var(--space-4)}
+.chat-delivery .fulfillment-card {margin:0}
+.chat-delivery-section {padding:var(--space-4);background:var(--semantic-surface);border:1px solid var(--semantic-field-border);border-radius:var(--radius-md)}
+.chat-delivery-section h3 {display:flex;align-items:center;gap:var(--space-2);font-size:var(--type-body-mobile-size);margin:0 0 var(--space-3)}
+.chat-delivery-section p {line-height:1.6;margin:var(--space-2) 0}
+.chat-delivery-section .tl {margin:0}
+.fulfillment-card h2 {font-size:22px;line-height:1.5}
+
+/* C501: generated quiet cover; the center stays clear for account identity. */
+.scr[data-screen=account]>.app-page {
+  background:
+    linear-gradient(to bottom, transparent 18%, var(--semantic-surface) 94%) center top / 100% calc(var(--st) + 200px) no-repeat,
+    radial-gradient(ellipse at 105% -35%, transparent 56%, rgb(var(--color-primary-deep-rgb) / .12) 57%, transparent 72%) center top / 100% 230px no-repeat,
+    radial-gradient(ellipse at -10% -25%, rgb(var(--color-primary-deep-rgb) / .24), transparent 72%) center top / 100% 230px no-repeat,
+    var(--semantic-surface);
+  background-attachment:local;
+}
+.account-profile-clean,.account-menu {background:transparent}
+
+.medhub-banners {display:grid;gap:var(--space-3)}
+.medhub-banner {position:relative;isolation:isolate;display:flex;align-items:center;min-height:120px;aspect-ratio:3/1;width:100%;overflow:hidden;border:0;border-radius:var(--radius-card);padding:var(--space-3) var(--space-4);background:var(--brand);color:var(--brand-white);font:inherit;text-align:start}
+.medhub-banner img {position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1}
+.medhub-copy {display:grid;justify-items:start;gap:var(--space-1);max-width:52%}
+.medhub-copy strong {font-size:var(--text-heading);line-height:var(--leading-body)}
+.medhub-copy span {font-size:var(--text-small);line-height:var(--leading-body)}
+.medhub-banner:focus-visible {outline:2px solid var(--brand);outline-offset:2px}

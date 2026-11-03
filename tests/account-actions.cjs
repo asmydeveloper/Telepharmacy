@@ -1,0 +1,21 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),{harness,source}=require('./health-harness.cjs');
+function setup(){
+ const h=harness();h.sheets={};h.TP.sheetDef=(id,d)=>h.sheets[id]=d;h.TP.sheet=(...a)=>h.calls.push(['sheet',...a]);h.TP.sheetOpen=()=>null;h.TP.closeSheet=async()=>{};h.TP.ACTS=h.actions;
+ h.run("const maskPhone=s=>String(s||''); const algText=p=>(p.allergies||[]).join(', ');");
+ h.run(source.slice(source.indexOf("TP.screen('account',"),source.indexOf('/* =====================================================================\n   Household members')));
+ h.run(source.slice(source.indexOf('TP.deleteAccountBlocked='),source.indexOf("TP.screen('deleted',")));
+ return h;
+}
+(async()=>{
+ const h=setup();h.S.loggedIn=true;h.S._authFlows={phone:{}};const history=JSON.stringify(h.S.history);await h.actions.afLogout();assert.equal(h.S.loggedIn,false);assert.equal(JSON.stringify(h.S.history),history);assert.equal(h.calls.at(-1)[0],'login');assert(h.calls.at(-1)[1].root);
+ const html=h.screens.account.render({S:h.S});assert(html.includes('account-actions'));assert(!html.includes('account-edit-avatar'));assert(html.includes('afEditProf'));assert(source.includes('/assets/profiles/default-profile-2d-v1.png'));assert(fs.existsSync('public/assets/profiles/account-cover-abstract-v1.png'));const css=fs.readFileSync('src/styles/home.css','utf8');assert.match(css, /\.scr\[data-screen=account\]>\.app-page \{\s*background:\s*linear-gradient/);assert(css.includes('.account-profile-clean,.account-menu {background:transparent}'));
+ const deleteButton={disabled:true},hint={textContent:''};h.elements['#afDelGo']=deleteButton;h.elements['#afDelHint']=hint;h.actions.afDelType({value:'ยืนยัน',closest:()=>({})});assert.equal(deleteButton.disabled,false);h.actions.afDelType({value:'ยืน',closest:()=>({})});assert.equal(deleteButton.disabled,true);assert(source.includes('entry, el:sheetEl, prevFocus:'));
+ const d=h.sheets.deleteacc;h.S.case=null;h.S._delTxt='';const body=d.render({S:h.S});assert(body.indexOf('การลบบัญชีจะทำให้')<body.indexOf('id="afDelTxt"'));assert(body.includes('data-no-preview-fill'));assert(d.foot({S:h.S}).includes('disabled'));await h.actions.afDelGo();assert.equal(h.S.history.length,4);h.S._delTxt='ลบบัญชี';await h.actions.afDelGo();assert.equal(h.S.history.length,4);
+ h.S.case={id:'case1',status:'room'};h.S._delTxt='ยืนยัน';await h.actions.afDelGo();assert.equal(h.S.history.length,4);assert.equal(h.TP.deleteAccountBlocked(h.S),'open');await h.actions.afDeleteOpen();assert(h.S.case);assert.equal(h.S._delTxt,'');assert.equal(h.calls.at(-1)[1],'deleteacc');
+ h.S.case={id:'order1',status:'closed',order:{status:'pending'}};let routed;h.actions.openOrderPayment=(t,ctx)=>routed=ctx;await h.actions.afDeleteResolve();assert.equal(routed.params.caseId,'order1');h.S._delTxt='ยืนยัน';await h.actions.afDelGo();assert.equal(h.S.history.length,4);
+ h.S.case=null;h.S._delTxt='ยืนยัน';h.S.st.deleteacc='save-error';await h.actions.afDelGo();assert(h.S._delError);assert.equal(h.S.history.length,4);assert.equal(h.S._delBusy,false);
+ let release;h.TP.accountService.remove=()=>new Promise(r=>release=r);const pending=h.actions.afDelGo();await h.actions.afDelGo();assert(h.S._delBusy);d.close();release();await pending;assert.equal(h.S.history.length,4,'dismissal cancels pending prototype deletion');
+ h.TP.accountService.remove=async()=>{};h.S._delTxt='ยืนยัน';await h.actions.afDelGo();assert.equal(h.S.history.length,0);assert.equal(h.S.user.full,'');assert.equal(h.S.addrs.length,0);assert.equal(h.calls.at(-1)[0],'deleted');assert(h.calls.at(-1)[1].root);
+ for(const [state]of d.states){const x=setup();x.S.st.deleteacc=state;x.TP.newCase=()=>x.S.case={status:'room'};x.sheets.deleteacc.prep(x.S);assert(x.sheets.deleteacc.render({S:x.S}).length);assert(x.sheets.deleteacc.foot({S:x.S}).length);if(state==='typed')assert(!x.sheets.deleteacc.foot({S:x.S}).includes('disabled'));}
+ console.log('PASS: account buttons, direct logout, default avatar/cover, exact typed confirmation, active/pending guards, retry, duplicate/cancel protection and local deletion');
+})().catch(e=>{console.error(e);process.exitCode=1});

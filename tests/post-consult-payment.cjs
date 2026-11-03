@@ -10,8 +10,9 @@ run(source.indexOf('TP.ORDER_PAYMENT_MS='),source.indexOf('/* ---------- message
 run(source.indexOf('TP.sim.closeCase ='),source.indexOf('TP.sim.idleWarn ='));
 for(const by of ['ph','me','auto']){
  S.case={id:by,status:'room',msgs:[],symptoms:[],joinedAt:'14:12'};
- TP.makeOrder();const order=S.case.order,deadline=order.expiresAt;assert.equal(deadline-clock,900000);
- clock+=60000;TP.sim.closeCase(by);assert.equal(S.case.status,'closed');assert.equal(S.case.order,order);assert.equal(order.status,'pending');assert.equal(order.expiresAt,deadline);
+ TP.makeOrder();const order=S.case.order;assert.equal(order.expiresAt,null);assert(order.awaitingCheckout);clock+=1200000;assert.equal(TP.expireOrder(S.case),false);assert.equal(TP.orderDeadline(order),0);assert.equal(order.expiresAt,null);
+ clock+=60000;TP.sim.closeCase(by);assert.equal(S.case.status,'closed');assert.equal(S.case.order,order);assert.equal(order.status,'pending');assert.equal(order.expiresAt,null);
+ TP.startOrderPayment(order);const deadline=order.expiresAt;assert.equal(deadline-clock,900000);clock+=60000;assert.equal(TP.startOrderPayment(order),false);assert.equal(order.expiresAt,deadline);
  TP.sim.closeCase(by);assert.equal(S.history.filter(h=>h.id===by).length,1);
  actions.openOrderPayment(null,{params:{caseId:by}});assert.equal(S._paymentCase,S.case);assert.equal(order.expiresAt,deadline);
 }

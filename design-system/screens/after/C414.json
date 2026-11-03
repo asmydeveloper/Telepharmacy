@@ -1,7 +1,7 @@
 {
   "code": "C414",
   "screen": "track",
-  "title": "ติดตามพัสดุ",
+  "title": "สถานะการจัดส่งยา",
   "group": "after",
   "kind": "screen",
   "cases": [
@@ -46,6 +46,30 @@
       "state": "coldlink",
       "label": "ส่งเย็น ร้านแปะลิงก์ติดตาม",
       "url": "/?screen=track&state=coldlink&splash=0"
+    },
+    {
+      "code": "C414.8",
+      "state": "chat-preparing",
+      "label": "สนทนา: กำลังเตรียมยา",
+      "url": "/?screen=track&state=chat-preparing&splash=0"
+    },
+    {
+      "code": "C414.9",
+      "state": "chat-calling",
+      "label": "สนทนา: กำลังเรียกไรเดอร์",
+      "url": "/?screen=track&state=chat-calling&splash=0"
+    },
+    {
+      "code": "C414.10",
+      "state": "chat-delivering",
+      "label": "สนทนา: ไรเดอร์กำลังส่งยา",
+      "url": "/?screen=track&state=chat-delivering&splash=0"
+    },
+    {
+      "code": "C414.11",
+      "state": "chat-delivered",
+      "label": "สนทนา: จัดส่งเสร็จสิ้น",
+      "url": "/?screen=track&state=chat-delivered&splash=0"
     }
   ]
 }

@@ -1199,7 +1199,8 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 .pay-ad-e:hover{background:var(--brand-soft)}
 .btn.pay-add{width:100%;margin-top:var(--space-2)}
 .btn.pay-add[hidden]{display:none}
-.pay-none{padding:var(--space-1) 0 0;font-size:var(--type-body-sm-mobile-size);color:var(--ink-3)}
+.pay-none .empty-illustration{width:48px;height:40px;margin:0}
+.pay-none{display:flex;align-items:center;gap:var(--space-2);padding:var(--space-1) 0 0;font-size:var(--type-body-sm-mobile-size);color:var(--ink-3)}
 /* PL address form */
 .pay-form{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4);border-radius:var(--r-xl);background:var(--semantic-surface);box-shadow:inset 0 0 0 1px var(--line)}
 .pay-form h4{font:700 var(--type-body-mobile-size)/var(--type-body-mobile-line) var(--font);color:var(--brand)}
@@ -1426,10 +1427,10 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 
 /* receipt: a white paper card, teal rule under the title like the website PDF */
 .rc-doc{display:flex;flex-direction:column;gap:var(--space-3);padding:var(--space-4) var(--space-4);border-radius:var(--r-xl);background:var(--semantic-surface);box-shadow:var(--shadow-card);font-size:var(--type-body-sm-mobile-size);line-height:1.55;color:var(--ink)}
-.rc-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--space-3);padding-bottom:var(--space-2);border-bottom:4px solid var(--brand)}
-.rc-hd h2{font:700 var(--type-h3-mobile-size)/var(--type-h3-mobile-line) var(--font)}
-.rc-hd p{font:600 var(--type-caption-mobile-size)/var(--type-caption-mobile-line) var(--font);letter-spacing:.12em;color:var(--ink-3)}
-.rc-logo{width:150px;flex:none;color:var(--brand)}
+.rc-hd{display:grid;justify-items:center;gap:var(--space-1);padding:var(--space-3) 0 var(--space-4);border-bottom:1px dashed var(--line);text-align:center}
+.rc-hd h2{margin:var(--space-2) 0 0;font:700 var(--type-h2-mobile-size)/var(--type-h2-mobile-line) var(--font)}
+.rc-hd p{margin:0;color:var(--ink-3)}
+.rc-logo{width:128px;color:var(--brand)}
 .rc-logo svg{display:block;width:100%;height:auto}
 .rc-seller{display:flex;flex-direction:column;gap:0;color:var(--ink-2)}
 .rc-seller b{color:var(--ink);font-weight:600}
@@ -1491,21 +1492,19 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 .pd-ok.late{background:var(--warn-tint);color:var(--warn);box-shadow:inset 0 0 0 2px rgba(154,98,0,.35)}
 .pd-late{display:flex;gap:var(--space-2);align-items:flex-start;margin:0;font-size:var(--type-body-sm-mobile-size);line-height:1.55;color:var(--ink-2)}.pd-late>.ic{flex:none;margin-top:var(--space-1);color:var(--warn)}.pd-late>span>b:first-child{display:block;font-weight:var(--font-weight-semibold);color:var(--ink);margin-bottom:0}.pd-late b.num{font-weight:600;color:var(--ink)}
 
-/* abbreviated receipt, owner 21/10 "ย่อมากๆ" */
-.rc-short{gap:var(--space-2);padding:var(--space-4)}
-.rc-short .rc-hd{align-items:center;padding-bottom:var(--space-2);border-bottom-width:3px}
-.rc-short .rc-hd h2{font:700 var(--type-body-mobile-size)/var(--type-body-mobile-line) var(--font)}
-.rc-short .rc-logo{width:96px}
-.rc-sl{margin:0;color:var(--ink-2);font-size:var(--type-caption-mobile-size);line-height:1.5}
-.rc-ln{display:flex;flex-direction:column;gap:var(--space-1);padding:var(--space-2) 0;border-top:1px solid var(--hair);border-bottom:1px solid var(--hair)}
-.rc-ln p,.rc-tt{display:flex;justify-content:space-between;gap:var(--space-3);margin:0}
-.rc-ln b{font-weight:500;white-space:nowrap}
-.rc-tt{align-items:baseline;font-size:var(--type-body-sm-mobile-size);font-weight:600}
-.rc-tt b{font:700 var(--type-body-lg-mobile-size)/var(--type-body-lg-mobile-line) var(--font)}
+/* Abbreviated receipt */
+.rc-short .rc-seller{font-size:var(--type-caption-mobile-size)}
+.rc-meta{display:grid;gap:var(--space-1);margin:0;padding:var(--space-2) 0;border-block:1px dashed var(--line)}
+.rc-meta>div{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--space-2)}
+.rc-meta dt{color:var(--ink-3)}
+.rc-meta dd{margin:0;text-align:end;overflow-wrap:anywhere}
+.rc-short-items{font-size:inherit}
+.rc-short-items td:first-child{color:var(--ink);overflow-wrap:anywhere}
+.rc-short-items td:last-child{white-space:nowrap}
+.rc-tt{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:var(--space-2);margin:0;padding:var(--space-3);border-radius:var(--radius-md);background:var(--brand-soft);color:var(--brand-deep);font-weight:600}
+.rc-tt b{font:700 var(--type-h2-mobile-size)/var(--type-h2-mobile-line) var(--font)}
 .rc-tt small{display:block;font-size:var(--type-caption-mobile-size);color:var(--ink-3);font-weight:400}
 .rc-ft{margin:0;font-size:var(--type-caption-mobile-size);color:var(--ink-3)}
-.rc-short .rc-nw{display:inline-block}
-
 /* =====================================================================
    70 · After the consult + account (helper B). Every class is prefixed af-
    ===================================================================== */

@@ -2454,7 +2454,7 @@ function results(o, p, act = 'addItem') {
     const po = SC.prodOff?.(i.sku), off = i.rx || !i.stock || !!po, inList = o.items.some(x => x.sku === i.sku);
     return `<div class="sr-i${off ? ' off' : ''}" role="option" aria-disabled="${off}"><div class="grow"><b>${esc(i.name)}</b><div class="hrow wrap mt4">${ui.cls(i.type)}<span class="small mono">${esc(i.sku)}</span>${i.rx ? '<span class="small danger-t">ต้องมีใบสั่งแพทย์ สั่งผ่านช่องทางนี้ไม่ได้</span>' : po ? `<span class="small warn-t">ร้านพักขาย: ${esc(po.why)} (${esc(po.by)} ${esc(po.at)})</span>` : !i.stock ? '<span class="small warn-t">หมดที่สาขานี้</span>' : `<span class="small">คงเหลือ ${i.stock}</span>`}</div></div>
       ${i.price ? `<span class="num">${SC.money(i.price)}</span>` : ''}${ui.btn(inList ? 'อยู่ในรายการแล้ว' : 'เพิ่ม', { kind: 'secondary', sm: true, a: act, v: i.sku, disabled: off || inList, icon: inList ? 'check' : 'plus' })}</div>`;
-  }).join('') : `<p class="small sr-none">ไม่พบ "${esc(q)}" ในสต๊อก${esc(SC.branch().name)} ลองค้นด้วยชื่อสามัญหรือรหัสสินค้า</p>`}</div>`;
+  }).join('') : `<p class="small sr-none">${ui.emptyArt('search')}<span>ไม่พบ "${esc(q)}" ในสต๊อก${esc(SC.branch().name)} ลองค้นด้วยชื่อสามัญหรือรหัสสินค้า</span></p>`}</div>`;
 }
 /* QA 20/10: under 12 = only medicines with a weight dose box or no dose strength (gel, saline, ORS, lotion).
    A tablet or capsule with a strength in มก. is an adult dose and blocks the send (owner 20/10, item 57) */

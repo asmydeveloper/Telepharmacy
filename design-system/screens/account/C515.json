@@ -28,6 +28,72 @@
       "state": "named",
       "label": "แก้ไขชื่อที่อยู่",
       "url": "/?screen=addressedit&state=named&splash=0"
+    },
+    {
+      "code": "C515.5",
+      "state": "map-ready",
+      "label": "ที่อยู่ครบ พร้อมยืนยันหมุด",
+      "url": "/?screen=addressedit&state=map-ready&splash=0"
+    },
+    {
+      "code": "C515.6",
+      "state": "map-outside",
+      "label": "หมุดนอกตำบล บันทึกไม่ได้",
+      "url": "/?screen=addressedit&state=map-outside&splash=0"
+    },
+    {
+      "code": "C515.7",
+      "state": "map-error",
+      "label": "โหลดขอบเขตตำบลไม่ได้",
+      "url": "/?screen=addressedit&state=map-error&splash=0"
+    },
+    {
+      "code": "C515.8",
+      "state": "form-required",
+      "label": "ไม่กรอกข้อมูลบังคับ",
+      "url": "/?screen=addressedit&state=form-required&splash=0"
+    },
+    {
+      "code": "C515.9",
+      "state": "form-phone",
+      "label": "เบอร์มือถือผิดรูปแบบ",
+      "url": "/?screen=addressedit&state=form-phone&splash=0"
+    },
+    {
+      "code": "C515.10",
+      "state": "form-name",
+      "label": "ชื่อมีตัวเลข",
+      "url": "/?screen=addressedit&state=form-name&splash=0"
+    },
+    {
+      "code": "C515.11",
+      "state": "form-area",
+      "label": "พื้นที่ยังเลือกไม่ครบ",
+      "url": "/?screen=addressedit&state=form-area&splash=0"
+    },
+    {
+      "code": "C515.12",
+      "state": "map-saved",
+      "label": "บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ",
+      "url": "/?screen=addressedit&state=map-saved&splash=0"
+    },
+    {
+      "code": "C515.13",
+      "state": "form-split",
+      "label": "ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน",
+      "url": "/?screen=addressedit&state=form-split&splash=0"
+    },
+    {
+      "code": "C515.14",
+      "state": "form-legacy",
+      "label": "ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ",
+      "url": "/?screen=addressedit&state=form-legacy&splash=0"
+    },
+    {
+      "code": "C515.15",
+      "state": "form-details",
+      "label": "รายละเอียดอาคารยาวเกินกำหนด",
+      "url": "/?screen=addressedit&state=form-details&splash=0"
     }
   ]
 }

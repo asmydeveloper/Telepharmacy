@@ -1,3 +1,5 @@
+> ปรับข้อกำหนด 2026-11-02: โหมดสนทนาปิดเคสแล้วเปิดชำระรายการเดิมทันทีและกลับเข้าห้องเดิมไม่ได้ ดู [โฟลว์ปัจจุบัน](../docs/chat-order-lifecycle.md) ข้อความด้านล่างที่กล่าวถึง closed chat แบบอ่านย้อนหลังถูกแทนที่สำหรับโหมดสนทนา เวลา 15 นาทีเริ่มเมื่อเปิดหน้าชำระครั้งแรก รายการในแชทยังไม่เริ่มนับ
+
 # Consultation ended with an unpaid medicine order
 
 Decision: 1 November 2026. The user specified a **15-minute payment window from the time the pharmacist sends the order**. This is a product rule, not a statutory or industry-wide deadline.
@@ -29,3 +31,19 @@ The current implementation is a prototype, with in-memory case/order state and a
 Flutter should consume the same separate consultation and order states through a service adapter. The phone frame, preview controls and fixtures are excluded from the app handoff.
 
 Validation: `tests/post-consult-payment.cjs` covers the 15-minute clock, closure by pharmacist/customer/inactivity, archived-case payment, no consultation recreation, duplicate success and expired-payment rejection. Browser visual QA remains unavailable when the Codex browser host cannot connect.
+
+## Checkout coupon prototype · 2 November 2026
+
+The coupon field replaces the obsolete instruction to ask the pharmacist before paying. Use a persistent label, explicit Apply/Remove buttons and inline feedback, following the project's [W3C form notification guidance](https://www.w3.org/WAI/tutorials/forms/notifications/). Keep medicine list prices unchanged; show the discount separately in the final summary, QR breakdown and receipt.
+
+`TP.checkoutCouponAdapter.validate` currently uses **preview fixtures only**: TEST50 discounts medicine subtotal by 50 baht when subtotal is at least 100; EXPIRED50 exercises expiry; other codes are invalid. These amounts and conditions are test assumptions, not approved promotions. Discount does not reduce delivery cost; the prototype recalculates the card fee after discount. Applying twice does not stack, removal restores totals, another order does not inherit the discount, and an expired order rejects application.
+
+Production must replace the adapter with server validation tied to order/user identity, enforce eligibility, redemption limits, expiry and atomic redemption, and return the authoritative amount and fee policy before creating a payment. No coupon service or real discount is connected. Test cases: EV-C308-coupon-valid, EV-C308-coupon-invalid, EV-C308-coupon-expired.
+
+## Payment method cards · 2 November 2026
+
+- [Evonet Payment Logo Centre](https://developer.evonetonline.com/docs/acceptance-marks) recommends the horizontal mark when a payment option contains one payment brand. Use the original PromptPay SVG on a white surface without recolouring; keep the Thai name and description alongside it. Card payment retains a generic card icon because accepted card schemes have not been confirmed.
+- [W3C Radio Group Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/radio/) specifies one selected option, labelled radios, aria-checked and arrow-key navigation. Keep the radio indicator on the right and CI selected border/background, so selection is conveyed by both shape and colour. Tab enters the selected option; arrows switch payment methods.
+- Layout inference: full-width rows with a consistent artwork area, title, explanatory line and visible fee underneath reduce alignment noise and preserve Thai readability. All fees continue using the existing discounted totals calculation; no payment gateway or fee policy changed.
+
+Latest visual choice: user supplied a Thai QR symbol and requested compact 1:1 rounded icons. Checkout now uses 48px tiles for both methods; credit/debit uses a filled CI illustration of two cards instead of the outline icon. Existing radio semantics and fee calculation remain unchanged.

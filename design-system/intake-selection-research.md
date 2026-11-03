@@ -19,3 +19,9 @@ Application decision: neutral selected-symptom list, immediate-care instruction 
 
 ## C203 cover and form panel
 Reuses the established C103/C104 cover and rounded panel. Decorative photo is hidden from assistive technology; all form labels, urgent advice and acknowledgement stay live HTML inside the scroll area. Fixed CTA remains outside scrolling with reserved space to avoid obscuring final fields. Existing NHS checkbox and W3C target guidance above retained; no new clinical claim. Photo does not represent an assigned pharmacist. This layout has not been patient-tested.
+
+## Consultation mode · 2026-11-01
+User adds a single-choice preference before symptom entry. Reuse native radio inputs with one shared name and a labelled group, with icon and text for both options. Selection is stored in intake.mode and transferred to the case; it does not grant camera access or start a call. The existing pharmacist video invitation flow remains the entry to an actual call.
+
+## ข้อมูลก่อนปรึกษาตรงกับสมุดสุขภาพ (2 พ.ย. 2569)
+C203 ใช้ TP.healthRecord ร่วมกับ C505 แสดงประวัติแพ้ยา ยาประจำ โรคประจำตัว แพ้อาหาร น้ำหนัก และส่วนสูงจากข้อมูลที่ผู้ใช้บันทึก ไม่แสดงผู้บันทึกเดิม แยกยังไม่ทราบกับไม่มีและคงข้อความหลายบรรทัด ใช้รายการเส้นแบ่งบางพร้อมดินสอเปิด C517 แก้เฉพาะหมวด บันทึกแล้ว refresh หน้าปัจจุบัน ไม่เปลี่ยนวิธีปรึกษาหรือข้อความอาการ ช่องพิมพ์อาการใช้พื้นขาว semantic-surface

@@ -3,12 +3,12 @@
   "screen": "deleteacc",
   "title": "ลบบัญชี",
   "group": "account",
-  "kind": "screen",
+  "kind": "sheet",
   "cases": [
     {
       "code": "C511.1",
       "state": "normal",
-      "label": "ลบได้",
+      "label": "พิมพ์ยืนยันก่อนลบ",
       "url": "/?screen=deleteacc&state=normal&splash=0"
     },
     {
@@ -22,6 +22,24 @@
       "state": "unpaid",
       "label": "มีรายการรอชำระ",
       "url": "/?screen=deleteacc&state=unpaid&splash=0"
+    },
+    {
+      "code": "C511.4",
+      "state": "typed",
+      "label": "พิมพ์ยืนยันครบ",
+      "url": "/?screen=deleteacc&state=typed&splash=0"
+    },
+    {
+      "code": "C511.5",
+      "state": "wrong-text",
+      "label": "พิมพ์ไม่ตรง",
+      "url": "/?screen=deleteacc&state=wrong-text&splash=0"
+    },
+    {
+      "code": "C511.6",
+      "state": "save-error",
+      "label": "ลบไม่สำเร็จ",
+      "url": "/?screen=deleteacc&state=save-error&splash=0"
     }
   ]
 }

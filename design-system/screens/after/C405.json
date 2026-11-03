@@ -106,6 +106,12 @@
       "state": "talked",
       "label": "แจ้งว่าแย่ลง คุยในการปรึกษาใหม่แล้ว",
       "url": "/?screen=follow&state=talked&splash=0"
+    },
+    {
+      "code": "C405.18",
+      "state": "multi-plan",
+      "label": "3 แผนยา ระยะเวลาแตกต่างกัน",
+      "url": "/?screen=follow&state=multi-plan&splash=0"
     }
   ]
 }

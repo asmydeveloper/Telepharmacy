@@ -58,7 +58,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.homeScenario(TP.S,'noaddress');assert.equal(TP.homeAddress(),null);
   TP.homeScenario(TP.S,'normal');assert.equal(TP.homeAddress().id,'a2');
   const inputs = {};
-  for (const [key, value] of Object.entries({label:'บ้านแม่',first:'ทดสอบ',last:'ผู้รับ',phone:'0812345678',house:'15/2',alley:'',road:'สุขุมวิท',dist:'อ่อนนุช',amp:'สวนหลวง',prov:'กรุงเทพมหานคร',zip:'10250'})) {
+  for (const [key, value] of Object.entries({label:'บ้านแม่',first:'ทดสอบ',last:'ผู้รับ',phone:'0812345678',house:'15/2',building:'อาคารบี ห้อง 12',alley:'สุขุมวิท 1',road:'สุขุมวิท',dist:'อ่อนนุช',amp:'สวนหลวง',prov:'กรุงเทพมหานคร',zip:'10250'})) {
     inputs['home-address-'+key] = {value,checkValidity:()=>true,focus:()=>{},reportValidity:()=>{}};
   }
   inputs['home-address-main']={checked:true}; inputs['home-address-error']={textContent:''};
@@ -71,9 +71,16 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   inputs['home-address-phone'].checkValidity=()=>true;
   actions.hmSaveAddress();
   assert.equal(TP.S.addrs.length,before+1);
+  assert.equal(TP.homeAddress().house,'15/2');
   assert.equal(TP.homeAddress().road,'สุขุมวิท');
   assert.equal(TP.addressName(TP.homeAddress()),'บ้านแม่');
   assert.equal(JSON.parse(storage.get('mitraree.home.preferences.v1')).addrs.find(a=>a.main).label,'บ้านแม่');
+  const savedParts=TP.S.addrs.find(a=>a.label==='บ้านแม่');assert(savedParts);for(const k of ['house','building','alley','road'])assert.equal(savedParts[k],inputs['home-address-'+k].value,'persist '+k);
+  context.ui.nav=()=>'';context.ui.page=s=>s;context.ui.btn=s=>s;
+  TP.S._homeEditAddress=savedParts.id;const editHtml=registrations.addressedit.render({S:TP.S});for(const k of ['house','building','alley','road'])assert(editHtml.includes('id="home-address-'+k+'"'));assert(editHtml.includes('value="อาคารบี ห้อง 12"'));assert(editHtml.includes('value="สุขุมวิท 1"'));
+  savedParts.house='15/2 อาคารเก่า ซอยสุขุมวิท 1';savedParts.building='';savedParts.alley='';savedParts.road='';const oldHtml=registrations.addressedit.render({S:TP.S});assert(oldHtml.includes('value="15/2 อาคารเก่า ซอยสุขุมวิท 1"'));assert(oldHtml.includes('ข้อมูลเดิมยังอยู่ครบ'));
+  Object.assign(savedParts,{house:'15/2',building:'อาคารบี ห้อง 12',alley:'สุขุมวิท 1',road:'สุขุมวิท'});
+
   TP.S._homeEditAddress=TP.homeAddress().id;
   inputs['home-address-label'].value='ที่ทำงาน';
   actions.hmSaveAddress();
@@ -130,11 +137,12 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,1);assert.equal(TP.S.case,null);
   TP.caseOpen=()=>true;TP.S.case={status:'room',branch:'near'};actions.quickConsult();assert.equal(routed.at(-1)[0],'room');assert.equal(TP.S.branch,'free');assert.equal(started,1);
   TP.caseOpen=()=>false;TP.S.case=null;TP.homeAddress=()=>null;actions.quickConsult();assert.equal(sheets.at(-1)[0],'homeaddress');
-  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];actions.quickConsult();assert.equal(sheets.at(-1)[0],'allbranches');
-  TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(sheets.at(-1)[0],'allbranches');
+  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
+  TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.S.sysOff=true;actions.quickConsult();assert.equal(routed.at(-1)[0],'sysoff');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'offline');
   TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;
   const shell=fs.readFileSync('src/app/Shell.jsx','utf8'),nav=shell.slice(shell.indexOf('"id": "tabbar"'),shell.indexOf('</nav>',shell.indexOf('"id": "tabbar"')));assert(nav.indexOf('history')<nav.indexOf('quickConsult'));assert(nav.indexOf('quickConsult')<nav.indexOf('inbox'));assert(nav.includes('aria-label="ปรึกษาเภสัชกร"'));
+  const originalBranches=TP.BRANCHES;vm.runInContext(source.slice(source.indexOf('TP.BRANCHES = ['),source.indexOf('/* store-level facts')),context);TP.S.addrs=structuredClone(addresses);TP.S.deliveryAddressId='a1';TP.S.st.favorites='normal';registrations.favorites.prep(TP.S);let fourFavorites=registrations.favorites.render({S:TP.S});assert.equal((fourFavorites.match(/class="hm-branch-tile"/g)||[]).length,4);assert(fourFavorites.includes('22.8 กม.'));assert(fourFavorites.includes('อยู่นอกระยะให้บริการ'));assert(fourFavorites.indexOf('สาขาตลาดเวิลด์')<fourFavorites.indexOf('ร้านยาร่มเย็น'));assert(!fourFavorites.includes('class="h1"'));TP.BRANCHES=originalBranches;
   console.log('PASS: selected address, nearby coverage, primary address, favorites, empty/outside/unknown cases and screen registrations');
 })().catch(e=>{console.error(e);process.exitCode=1});
 

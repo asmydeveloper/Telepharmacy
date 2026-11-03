@@ -40,6 +40,24 @@
       "state": "paused",
       "label": "เภสัชกรพัก",
       "url": "/?screen=favorites&state=paused&splash=0"
+    },
+    {
+      "code": "C211.7",
+      "state": "outside",
+      "label": "มีร้านไกลเกิน 15 กม.",
+      "url": "/?screen=favorites&state=outside&splash=0"
+    },
+    {
+      "code": "C211.8",
+      "state": "loading",
+      "label": "กำลังโหลดร้านโปรด",
+      "url": "/?screen=favorites&state=loading&splash=0"
+    },
+    {
+      "code": "C211.9",
+      "state": "error",
+      "label": "โหลดร้านโปรดไม่สำเร็จ",
+      "url": "/?screen=favorites&state=error&splash=0"
     }
   ]
 }

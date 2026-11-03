@@ -574,7 +574,8 @@ select.input{appearance:none;background-image:linear-gradient(45deg,transparent 
 .sr-i:hover{background:var(--brand-soft)}
 .sr-i b{font:600 13.5px/1.4 var(--font)}
 .sr-i.off b{color:var(--ink-3)}
-.sr-none{padding:10px}
+.sr-none{display:flex;align-items:center;gap:10px;padding:10px}
+.sr-none .empty-illustration{width:48px;height:40px;margin:0}
 .ord-list{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding:12px;scrollbar-width:thin}
 .oi{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:var(--r-lg);background:#fff;box-shadow:inset 0 0 0 1px var(--line)}
 .oi.clash{box-shadow:inset 0 0 0 2px var(--danger)}

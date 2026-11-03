@@ -33,6 +33,7 @@
 .sheet .sh-x {width:44px;height:44px;flex-shrink:0}
 .sheet .sh-x::after {inset:0}
 .sheet .sh-b {padding:var(--space-3) var(--page-gutter) var(--space-5);min-height:0;min-width:0}
+.sheet>.sh-b:last-child {padding-bottom:calc(var(--space-5) + var(--sb))}
 .sheet .sh-b>* {min-width:0;max-width:100%}
 .sheet .sh-f {padding:var(--space-3) var(--page-gutter) calc(var(--space-3) + var(--sb));gap:var(--space-3)}
 .sheet .sh-f>* {min-width:0;max-width:100%}

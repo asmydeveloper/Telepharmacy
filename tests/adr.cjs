@@ -1,16 +1,33 @@
 const assert=require('node:assert/strict'),{harness}=require('./health-harness.cjs');
 (async()=>{const h=harness(),{S,run,actions,screens,simulations}=h;
-const self=run("adrDraft(TP.S,{who:'me'})");self.note='อาการของตัวเอง';self.drug='self-old:0';self.sym=['ผื่น คัน'];
-run("adrDraft(TP.S,{who:'me'})");S._adr.query='พารา';assert.equal(run('adrMedicineResults(TP.S,TP.S._adr).length'),1);S._adr.query='ไม่พบ';assert.equal(run('adrMedicineResults(TP.S,TP.S._adr).length'),0);assert.equal(S._adr.drug,'self-old:0');
 assert.equal(run("medsFor(TP.S,'kid').length"),0);assert(!run("medsFor(TP.S,'mom')").some(m=>m.name.includes('พารา')));
-Object.assign(self,{since:'today',level:'mild'});assert(run('adrReady(TP.S._adr)'));self.drug='store';self.other='';assert(!run('adrReady(TP.S._adr)'));self.unknown=true;assert(run('adrReady(TP.S._adr)'));self.unknown=false;self.other='ชื่อยาจากฉลาก';
+const self=run("adrDraft(TP.S,{who:'me'})");Object.assign(self,{drug:'self-old:0',sym:['ผื่น คัน'],since:'today',level:'mild'});assert(run('adrReady(TP.S._adr)'));self.drug='store';self.other='';assert(!run('adrReady(TP.S._adr)'));self.unknown=true;assert(run('adrReady(TP.S._adr)'));self.unknown=false;self.other='ชื่อยาจากฉลาก';
 const allergies=JSON.stringify([S.user.allergies,...S.family.map(f=>f.allergies)]);const report=run('adrStoreReport(TP.S,TP.S._adr)');assert.equal(report.who,'me');assert(report.id);assert.equal(report.replied,false);assert.equal(report.drug,'ชื่อยาจากฉลาก');assert.equal(run("adrReports(TP.S,'mom').length"),0);assert.equal(run("adrReports(TP.S,'me').length"),1);assert.equal(S._adrDrafts.me,undefined);
 const html=screens.adrsent.render({S,state:'sent',params:{id:report.id}});assert(html.includes('สมใจ ใจดี'));assert(!html.includes('ยาของแม่'));assert.equal(S._adrSent.id,report.id);simulations.afAdrReply.run();assert.equal(JSON.stringify([S.user.allergies,...S.family.map(f=>f.allergies)]),allergies,'report and reply must never auto-confirm an allergy');assert(S.inbox[0].p.id===report.id);
 const foreign={...report,id:'foreign-report',who:'mom',drug:'PRIVATE FAMILY MEDICINE'};S.adrReports.push(foreign);S._adrSent=foreign;assert(!screens.adrsent.render({S,state:'sent',params:{id:foreign.id}}).includes(foreign.drug));assert.equal(foreign.who,'mom');S._adrSent=report;assert.equal(run("adrDraft(TP.S,{who:'mom'}).who"),'me');assert.equal(run("adrReports(TP.S,'mom').length"),0);
-const snapshot=JSON.stringify(S);for(const id of ['adrcare','adr'])for(const [state] of screens[id].states){Object.assign(S,JSON.parse(snapshot));S.st[id]=state;screens[id].prep(S);const html=screens[id].render({S,state,params:{}});assert(html.length>0,id+':'+state);}
-const submit=harness();submit.run("adrDraft(TP.S,{who:'me'})");Object.assign(submit.S._adr,{step:3,drug:'store',other:'ยาจากฉลาก',sym:['เวียนหัว'],since:'today',level:'mild'});const button={disabled:false,classList:{add(){}}};await Promise.all([submit.actions.afAdrSend(button),submit.actions.afAdrSend(button)]);assert.equal(submit.S.adrReports.length,1);assert.equal(submit.S.adrReports[0].who,'me');assert.equal(submit.calls[0][1].params.id,submit.S.adrReports[0].id);assert.equal(button.disabled,true);
+h.TP.adrActiveMedicines=()=>[{v:'med-a',name:'ยาที่ยังใช้ A'},{v:'med-b',name:'ยาที่ยังใช้ B'}];
+const snapshot=JSON.stringify(S);for(const id of ['adrcare','adr'])for(const [state] of screens[id].states){Object.assign(S,JSON.parse(snapshot));S.st[id]=state;screens[id].prep(S);const html=screens[id].render({S,state,params:{}});assert(html.length>0,id+':'+state);if(id==='adr'){assert(!html.includes('adr-steps'));if(state==='filled'){assert(html.includes('adr-note-0'));assert(html.includes('adr-note-1'));}if(state==='no-active')assert(!html.includes('ยาที่ยังใช้ A'));}}
+const submit=harness();
+const draft=submit.run("adrDraft(TP.S,{who:'me'})");
+const entry=(drug,name,note)=>({...submit.run("adrNewDraft('me')"),drug,medicine:{name},selected:true,since:'today',level:'mild',note});
+draft.entries.a=entry('a','ยาตัวแรก','อาการแรก');
+draft.entries.b=entry('b','ยาตัวที่สอง','');
+const button={disabled:false,classList:{add(){}}};
+await submit.actions.afAdrSend(button);
+assert(!submit.S.adrReports?.length,'every selected medicine needs its own symptom details');
+draft.entries.b.note='อาการที่สอง';
+await Promise.all([submit.actions.afAdrSend(button),submit.actions.afAdrSend(button)]);
+assert.equal(submit.S.adrReports.length,2);
+assert.deepEqual(Array.from(submit.S.adrReports,r=>[r.drug,r.note]),[['ยาตัวที่สอง','อาการที่สอง'],['ยาตัวแรก','อาการแรก']]);
+assert.equal(submit.S.adrReports[0].batchId,submit.S.adrReports[1].batchId);
+const batchHtml=submit.screens.adrsent.render({S:submit.S,state:'sent',params:submit.calls[0][1].params});
+assert(batchHtml.includes('2 รายการ'));
+assert.equal(batchHtml.match(/adr-result-drug/g).length,2);
+assert(batchHtml.indexOf('ยาตัวแรก')<batchHtml.indexOf('อาการแรก'));
+assert(batchHtml.indexOf('อาการแรก')<batchHtml.indexOf('ยาตัวที่สอง'));
+assert(batchHtml.indexOf('ยาตัวที่สอง')<batchHtml.indexOf('อาการที่สอง'));
+assert.equal(button.disabled,true);
 const custom=harness();custom.run("adrDraft(TP.S,{who:'me'})");Object.assign(custom.S._adr,{drug:'store',unknown:true,sym:['อื่น ๆ'],since:'today',level:'mild'});assert(!custom.run('adrReady(TP.S._adr)'));custom.S._adr.note='ระบุอาการที่เป็น';assert(custom.run('adrReady(TP.S._adr)'));
-custom.S.history[0].meds[0].genericName='Paracetamol';custom.S._adr.query='PARACETAMOL';assert.equal(custom.run('adrMedicineResults(TP.S,TP.S._adr).length'),1);custom.run("adrSelectDrug(TP.S,TP.S._adr,'self-old:0')");assert.equal(custom.S._adr.generic,'Paracetamol');custom.run("adrSelectDrug(TP.S,TP.S._adr,'store')");assert.equal(custom.S._adr.generic,'');
 for(const state of ['patient-report','patient-reply','unknown-drug']){S.st.adrsent=state;screens.adrsent.prep(S);assert(screens.adrsent.render({S,state,params:{}}).includes('ข้อมูลที่ส่ง'));}
-console.log('PASS: owner-only drafts/reports with legacy family isolation, scoped medication search, unknown medicine validation, review/urgent cases, exact report reopening, no automatic allergy confirmation duplicate-submit protection, medical-name metadata and all 24 new flow cases');
+console.log('PASS: owner-only drafts/reports with legacy family isolation, scoped medication search, unknown medicine validation, single-page and urgent cases, exact report reopening, no automatic allergy confirmation duplicate-submit protection, independent medication details and case rendering');
 })().catch(e=>{console.error(e);process.exitCode=1});

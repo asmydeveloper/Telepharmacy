@@ -1,0 +1,15 @@
+{
+  "code": "C418",
+  "screen": "medhub",
+  "title": "เมนูยา",
+  "group": "after",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C418",
+      "state": "normal",
+      "label": "เมนูยา 3 รายการ",
+      "url": "/?screen=medhub&state=normal&splash=0"
+    }
+  ]
+}

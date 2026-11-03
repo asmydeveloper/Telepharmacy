@@ -14,9 +14,10 @@ import '@/styles/history.css';
 import '@/styles/adr.css';
 import '@/styles/registration.css';
 import '@/styles/preview-device.css';
+import '@/styles/address-map.css';
 import Runtime from '@/components/Runtime';
 export const metadata = { title: "MITRAREE ปรึกษาเภสัชกร" };
 export default function Page() {
-  const version = createHash('sha256').update(readFileSync(join(process.cwd(), 'public/runtime/customer.js'))).digest('hex').slice(0,12);
-  return <><Shell /><Runtime src={`/runtime/customer.js?v=${version}`} /></>;
+  const version = createHash('sha256').update(readFileSync(join(process.cwd(), 'public/runtime/customer.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/address-map.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/address-map-engine.js'))).update(readFileSync(join(process.cwd(), 'public/assets/data/thailand/delivery-map-style.json'))).digest('hex').slice(0,12);
+  return <><Shell /><Runtime prelude={`/runtime/address-map.js?v=${version}`} src={`/runtime/customer.js?v=${version}`} /></>;
 }

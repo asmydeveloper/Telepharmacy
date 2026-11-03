@@ -25,6 +25,14 @@ TP.sim.next();assert.equal(C().pos,3);assert.equal(elements['#rmQueueLabel'].tex
 const waitingCase=C();await actions.queueMin();assert.equal(current.id,'home');assert.equal(C(),waitingCase);assert.equal(C().draft,'ร่างอาการ');current.id='queue';
 await TP.sim.accept();assert.equal(C().status,'room');assert.equal(current.id,'room');html=screens.room.render(ctx);assert(html.includes('provider-ready'));assert(!html.includes('rmQueueLabel'));assert(C().msgs.some(m=>m.text==='เจ็บคอมาสองวัน'));assert(html.includes('ร่างอาการ'));screens.room.render(ctx);assert.equal(C().msgs.filter(m=>m.kind==='provider-ready').length,1);assert.equal(C().msgs.findIndex(m=>m.kind==='intake'),C().msgs.findIndex(m=>m.kind==='provider-ready')+1,'intake directly follows provider card');
 S.case=fresh();S.case.status='paused';html=screens.queue.render(ctx);assert(html.includes('คิวของคุณยังอยู่'));await run('sendText("เพิ่มเติมระหว่างพัก")');assert.equal(C().status,'paused');assert(!C().msgs.some(m=>m.who==='ph'));
+for(const state of ['video-wait','video-next']){
+  S.case=fresh();S.st.queue=state;screens.queue.prep(S);
+  html=screens.queue.render(ctx);
+  assert.match(html,/video-queue-cover-v1.jpg/);
+  assert.match(html,/รอเภสัชกรพร้อมวิดีโอคอล/);
+  assert.match(html,state==='video-next'?/คุณเป็นคิวถัดไป/:/รออีก 1 คิว/);
+  assert.doesNotMatch(html,/class="rm-queue-bar"|data-a="startVideo"/);
+}
 S.case=fresh();S.case.status='closed';html=screens.room.render(ctx);assert(!html.includes('id="rmIn"'));
 console.log('PASS: waiting/paused chat, pre-service messages, draft/reopen, queue updates without scroll jump, acceptance preserves messages, single provider card and closed composer');
 })().catch(e=>{console.error(e);process.exitCode=1});

@@ -8,7 +8,7 @@
     {
       "code": "C505.1",
       "state": "normal",
-      "label": "มีข้อมูล",
+      "label": "ดูข้อมูลสุขภาพ",
       "url": "/?screen=health&state=normal&splash=0"
     },
     {
@@ -20,8 +20,32 @@
     {
       "code": "C505.3",
       "state": "sfx",
-      "label": "มีผลข้างเคียงที่เคยมี",
+      "label": "ข้อมูลเดิมที่ผู้ใช้ระบุ",
       "url": "/?screen=health&state=sfx&splash=0"
+    },
+    {
+      "code": "C505.4",
+      "state": "edit",
+      "label": "แก้ไขข้อมูล",
+      "url": "/?screen=health&state=edit&splash=0"
+    },
+    {
+      "code": "C505.5",
+      "state": "none",
+      "label": "ระบุว่าไม่มี",
+      "url": "/?screen=health&state=none&splash=0"
+    },
+    {
+      "code": "C505.6",
+      "state": "invalid",
+      "label": "แก้ไขข้อมูลไม่ครบ",
+      "url": "/?screen=health&state=invalid&splash=0"
+    },
+    {
+      "code": "C505.7",
+      "state": "long-text",
+      "label": "ข้อมูลหลายรายการ",
+      "url": "/?screen=health&state=long-text&splash=0"
     }
   ]
 }

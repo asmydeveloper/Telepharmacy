@@ -8,13 +8,13 @@
     {
       "code": "C404.1",
       "state": "normal",
-      "label": "มีรายการใหม่",
+      "label": "หลายรายการ แบ่งตามวัน",
       "url": "/?screen=inbox&state=normal&splash=0"
     },
     {
       "code": "C404.2",
       "state": "read",
-      "label": "อ่านหมดแล้ว",
+      "label": "รายการเดิม",
       "url": "/?screen=inbox&state=read&splash=0"
     },
     {
@@ -22,6 +22,30 @@
       "state": "empty",
       "label": "ยังไม่มี",
       "url": "/?screen=inbox&state=empty&splash=0"
+    },
+    {
+      "code": "C404.4",
+      "state": "many",
+      "label": "แจ้งเตือนหลายวัน",
+      "url": "/?screen=inbox&state=many&splash=0"
+    },
+    {
+      "code": "C404.5",
+      "state": "same-day",
+      "label": "หลายรายการในวันเดียว",
+      "url": "/?screen=inbox&state=same-day&splash=0"
+    },
+    {
+      "code": "C404.6",
+      "state": "loading",
+      "label": "กำลังโหลดแจ้งเตือน",
+      "url": "/?screen=inbox&state=loading&splash=0"
+    },
+    {
+      "code": "C404.7",
+      "state": "error",
+      "label": "โหลดแจ้งเตือนไม่สำเร็จ",
+      "url": "/?screen=inbox&state=error&splash=0"
     }
   ]
 }
