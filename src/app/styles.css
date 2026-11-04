@@ -2020,3 +2020,7 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 /* Shared OTP keypad: keep both labels inside the key. */
 .st-key{padding:2px 0;gap:2px;flex-shrink:0}
 .st-key small:empty{display:none}
+
+/* Receipt content uses the full available page width. */
+.rc-doc.rc-short{padding:0;border-radius:0;box-shadow:none;background:transparent}
+.rc-med{display:flex;align-items:center;gap:12px;min-width:0}.rc-med .medicine-photo,.rc-med-placeholder{width:48px;height:48px;object-fit:contain;flex:none}.rc-med-placeholder{display:grid;place-items:center;color:var(--ink)}.rc-med span{min-width:0}

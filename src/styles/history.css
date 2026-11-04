@@ -48,6 +48,8 @@
 .history-detail-label>span:last-child {padding-block:var(--space-1)}
 .history-detail-icon {display:grid;place-items:center;flex:none;width:var(--size-badge);height:var(--size-badge);border-radius:var(--radius-small);background:var(--color-brand-50);color:var(--brand)}
 .history-detail-value {display:block;min-width:0;align-self:center;text-align:right;overflow-wrap:anywhere;color:var(--ink);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);font-weight:var(--weight-medium)}
+.history-detail-note {position:relative;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;text-overflow:ellipsis;white-space:normal}
+.history-detail-note.is-truncated::after {content:"…";position:absolute;right:0;bottom:0;padding-inline-start:var(--space-1);background:var(--surface);color:inherit}
 .history-detail-topic {font-size:var(--text-body);line-height:var(--type-body-mobile-line);font-weight:var(--weight-semibold)}
 .history-detail-value .tag {max-width:100%;white-space:normal;text-align:right;justify-content:flex-end}
 .history-card-extra {border-top:1px solid var(--line-soft);display:flex;flex-wrap:wrap;gap:var(--space-2);padding:var(--space-2) var(--space-4)}

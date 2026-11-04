@@ -4,6 +4,7 @@ let clock=1800000000000,created=0,saved=0;
 class Clock extends Date {static now(){return clock;}}
 const actions={},S={history:[],inbox:[],case:{id:'one',status:'room',msgs:[],symptoms:['cough'],joinedAt:'14:12'}};
 const TP={S,sim:{},NOW:{date:'2026-11-01',time:'14:12'},casePlan:()=>({items:[{price:180}]}),emit(){},act:(k,f)=>actions[k]=f,branch:()=>({name:'Branch'}),cur:()=>({id:'history'}),refresh(){},banner(){},sheet:()=> 'checkout',notify(){},sheetOpen:()=>null,ensureCase(){created++;throw Error('Must not create a consultation during payment');},closeSheet:async()=>{},go(){},saveReceipt(){saved++;},paidMsg:()=> 'Paid'};
+require('./consultation-harness.cjs')(TP);
 const context=vm.createContext({TP,C:()=>S.case,Date:Clock,Intl,setInterval(){},document:{querySelectorAll:()=>[]},ui:{},ic:()=>'',esc:String,now:()=> '14:12',console});
 const run=(a,b)=>{assert(a>=0&&b>a);vm.runInContext(source.slice(a,b),context);};
 run(source.indexOf('TP.ORDER_PAYMENT_MS='),source.indexOf('/* ---------- message html ---------- */',source.indexOf('TP.ORDER_PAYMENT_MS=')));

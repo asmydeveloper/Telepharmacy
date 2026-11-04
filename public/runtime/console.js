@@ -6,6 +6,7 @@
    66-pay.js, 70-after.js, 72-follow.js): same people, case ids, prices and times. Sanitised, no real customers.
    ===================================================================== */
 const SC = window.SC = {};
+SC.caseCode = record => { const id=typeof record==='string'?record:record?.id; return /^(TC-|MR[0-9])/.test(id||'') ? window.MitrareeConsultations.codeFor(record) : id || ''; };
 SC.$ = (s, r = document) => r.querySelector(s);
 SC.$$ = (s, r = document) => [...r.querySelectorAll(s)];
 SC.esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -1304,7 +1305,7 @@ function board(S, st, o = {}) {
       : `<table class="tbl qb-t"><thead><tr><th>#</th><th>ลูกค้า / ผู้มีอาการ</th><th>อาการที่แจ้ง</th><th>แพ้ยา</th><th class="r">รอ</th><th class="r"><span class="sr">ทำรายการ</span></th></tr></thead><tbody>${body}</tbody></table>`}</section>`;
   const ur = SC.unpaidRows(), nSent = ur.filter(r => r.status === 'sent').length;
   const unpaid = ur.length ? `<section class="card qb-card" aria-label="รอชำระและรอรับที่ร้าน"><div class="card-h"><h3>ปิดเคสแล้ว รอชำระ / รอรับที่ร้าน (${ur.length})</h3><span class="sp"></span><span class="small">รอลูกค้าชำระ ${nSent} · รอรับที่ร้าน ${ur.length - nSent}</span></div>
-    ${ur.map(r => `<div class="qb-unp mt12">${r.status === 'paid' ? ui.tag('ชำระแล้ว รอรับ', 'ok', { icon: 'store' }) : ui.tag('รอชำระ', 'warn', { icon: 'clock' })}<div class="grow"><b>${esc(r.name)} · ${SC.money(r.amt)}</b><span class="small"> · รายการ <span class="mono">${esc(r.no)}</span> · เคส <span class="mono">${esc(r.id)}</span>${r.status === 'paid' ? ' · รหัสรับยา 4 ตัวท้ายของเลขรายการ' : ` · ชำระได้ถึง ${esc(r.until)}`}</span></div>
+    ${ur.map(r => `<div class="qb-unp mt12">${r.status === 'paid' ? ui.tag('ชำระแล้ว รอรับ', 'ok', { icon: 'store' }) : ui.tag('รอชำระ', 'warn', { icon: 'clock' })}<div class="grow"><b>${esc(r.name)} · ${SC.money(r.amt)}</b><span class="small"> · รายการ <span class="mono">${esc(r.no)}</span> · เคส <span class="mono">${esc(SC.caseCode(r))}</span>${r.status === 'paid' ? ' · รหัสรับยา 4 ตัวท้ายของเลขรายการ' : ` · ชำระได้ถึง ${esc(r.until)}`}</span></div>
       ${r.status === 'paid' ? `${r.ready ? `<span class="small ok-t">แจ้งลูกค้าแล้ว ${esc(r.ready)}</span>` : ui.btn('ยาพร้อมรับแล้ว แจ้งลูกค้า', { a: 'readyRow', v: r.key, icon: 'bell' })}${ui.btn('ลูกค้ามารับยา', { kind: r.ready ? 'primary' : 'secondary', a: 'pickupOv', v: r.key, icon: 'store' })}` : ui.btn('ส่งข้อความเตือนในแชท', { kind: 'ghost', a: 'remindPay' })}</div>`).join('')}</section>` : '';
   return `${slot}${table}${unpaid}`;
 }
@@ -1528,7 +1529,7 @@ const drawer = (c, ctx) => {
     ? `${SC.isAdmin() ? '' : ui.btn('ดูเบอร์ลูกค้า', { kind: 'danger', a: 'callCust', v: c.key, icon: 'phone', lg: true })}${acc}<span class="sp"></span>${ui.btn('ไม่รับเคส แนะนำโรงพยาบาล', { kind: 'danger-line', st: 'decline', p: { k: c.key }, icon: 'ban', lg: true, disabled: adm, title: adm ? ADM_NO : '' })}`
     : `${acc}${ui.btn('ย้ายสาขา', { kind: 'secondary', st: 'move', p: { k: c.key }, icon: 'arrow-right-left', disabled: off })}<span class="sp"></span>${ui.btn('ไม่รับเคส', { kind: 'danger-line', st: 'decline', p: { k: c.key }, icon: 'ban', disabled: adm, title: adm ? ADM_NO : '' })}`;
   const notes = `${off ? `<p class="small danger-t pv-off">${ic('power', 13, 2)} ปิดระบบอยู่ ดูเคสได้ รับเคสได้เมื่อเปิดระบบอีกครั้ง</p>` : adm ? `<p class="small pv-off">${ic('lock', 13, 2)} ผู้ดูแลระบบดูเคสได้ รับหรือไม่รับเคสได้เฉพาะเภสัชกรประจำวันของสาขา${d ? ` (${esc(d.short)})` : ''}</p>` : ''}${urg && called ? `<p class="small ok-t pv-off">${ic('phone-call', 13, 2)} โทรแล้ว ${esc(called.at)} โดย ${esc((SC.PHARM[called.by] || SC.me()).short)}</p>` : ''}`;
-  return ui.drawer({ back: 'board', title: SC.casePerson(c).name, sub: `เคส ${c.id} · เข้าคิว ${SC.S.joined?.[c.key] || c.joined} · รอ ${Math.floor(SC.waitS(c) / 60)} นาที`,
+  return ui.drawer({ back: 'board', title: SC.casePerson(c).name, sub: `เคส ${SC.caseCode(c)} · เข้าคิว ${SC.S.joined?.[c.key] || c.joined} · รอ ${Math.floor(SC.waitS(c) / 60)} นาที`,
     head: `<div class="pv-hd">${ui.urgent(c)}${ui.mode(c.mode, { lg: true })}</div>`, body: preview(c),
     foot: `<div class="pv-foot">${notes}${foot}</div>` });
 };
@@ -1561,7 +1562,7 @@ SC.screen('preview', {
     const base = drawer(c, ctx), back = drawerSt(c);
     if (st === 'decline') {
       const pre = c.urgent.length ? 'er' : '';
-      return base + ui.modal({ title: 'ไม่รับเคสนี้', sub: `${p.name} · เคส ${c.id}`, icon: 'ban', tone: 'danger', back,
+      return base + ui.modal({ title: 'ไม่รับเคสนี้', sub: `${p.name} · เคส ${SC.caseCode(c)}`, icon: 'ban', tone: 'danger', back,
         body: `<p class="label">เหตุผล (บันทึกในประวัติเคส)</p><div class="opts mt8" data-radio-scope id="drOpts">${DR.map(([v, l]) => ui.opt({ group: 'dr', v, title: l, on: v === pre, a: 'drPick' })).join('')}</div>
           <p class="err-t mt8" id="drErr" hidden>${ic('circle-x', 14, 2)}<span>เลือกเหตุผลก่อน</span></p>
           <div class="dr-ref mt16" id="drRef"${['doctor', 'er'].includes(pre) ? '' : ' hidden'}><p class="label">ส่งต่อสถานพยาบาล (บันทึกในประวัติเคส)</p>
@@ -1573,7 +1574,7 @@ SC.screen('preview', {
     }
     if (st === 'move') {
       const o = branchOther(), v = SC.duty(o.id) ? SC.S.intake[o.id] : 'closed', can = !SC.S.sysOff && v !== 'closed';
-      return base + ui.modal({ title: 'ย้ายเคสไปสาขาอื่น', sub: `${p.name} · เคส ${c.id}`, icon: 'arrow-right-left', back,
+      return base + ui.modal({ title: 'ย้ายเคสไปสาขาอื่น', sub: `${p.name} · เคส ${SC.caseCode(c)}`, icon: 'arrow-right-left', back,
         body: `<div class="opts" data-radio-scope>${ui.opt({ group: 'mv', v: o.id, title: o.name, sub: `${v === 'open' ? 'เปิดรับ' : v === 'pause' ? 'พักชั่วคราว รอได้' : 'ปิดรับวันนี้ ย้ายไม่ได้'} · รอ ${SC.qlen(o.id)} คน · ${SC.duty(o.id)?.short || 'ไม่มีเภสัชกรประจำ'}`, on: can, disabled: !can })}</div>
           <div class="mt16">${ui.field({ id: 'mvWhy', label: 'เหตุผล (บันทึกในระบบ)', req: true, max: 120, ph: 'เช่น ลูกค้าอยากรับยาที่' + o.short })}</div>
           <p class="small mt8">ข้อมูลอาการย้ายไปด้วย ลูกค้าไม่ต้องกรอกใหม่ · ลำดับคิวที่สาขาใหม่นับต่อท้าย</p>
@@ -1583,7 +1584,7 @@ SC.screen('preview', {
     if (st === 'busy') {
       const ac = SC.CASES[SC.S.activeCase] || SC.CASES.psr;
       return base + ui.modal({ title: 'รับเคสนี้ไม่ได้ตอนนี้', icon: 'triangle-alert', tone: 'warn', back,
-        body: `<p>ระหว่างที่คุณเปิดดูเคสนี้ ${esc(SC.branch().name)}เพิ่งรับเคส <b class="mono">${esc(ac.id)}</b> (${esc(SC.casePerson(ac).name)}) ไป · สาขารับได้ครั้งละ 1 เคส</p><p class="mt8">ปิดเคสนั้นก่อน แล้วกลับมารับได้ทันที ไม่ต้องรอลูกค้าชำระเงิน · ${esc(p.name)} ยังรอในคิว ไม่หาย</p>`,
+        body: `<p>ระหว่างที่คุณเปิดดูเคสนี้ ${esc(SC.branch().name)}เพิ่งรับเคส <b class="mono">${esc(SC.caseCode(ac))}</b> (${esc(SC.casePerson(ac).name)}) ไป · สาขารับได้ครั้งละ 1 เคส</p><p class="mt8">ปิดเคสนั้นก่อน แล้วกลับมารับได้ทันที ไม่ต้องรอลูกค้าชำระเงิน · ${esc(p.name)} ยังรอในคิว ไม่หาย</p>`,
         foot: `${ui.btn('กลับไปหน้าคิว', { kind: 'secondary', go: 'queue', st: 'live' })}${ui.btn('ไปที่เคสที่เปิดอยู่', { go: 'room', st: 'talk', p: { k: ac.key }, icon: 'arrow-right' })}` });
     }
     return base;
@@ -1764,7 +1765,7 @@ SC.seedChat = (st, key) => {
   if (c.night) {
     sys(`ลูกค้าฝากคำถามไว้ ${c.night.at}`); m.push({ who: 'cu', kind: 'intake', night: c.night.q, time: c.joined }); sys(`วันนี้ ${SC.clockStr()}`);
   } else {
-    sys(`${SC.me().short} รับเคสแล้ว ${SC.S.accAt || '14:16'} · เลขเคส ${c.id}`); m.push({ who: 'cu', kind: 'intake', time: c.joined });
+    sys(`${SC.me().short} รับเคสแล้ว ${SC.S.accAt || '14:16'} · เลขเคส ${SC.caseCode(c)}`); m.push({ who: 'cu', kind: 'intake', time: c.joined });
     if (st !== 'start') {
       m.push({ who: 'ph', text: greet(c), time: '14:17' }, { who: 'ph', text: SC.say(k.q), time: '14:17' });
       if (a.temp) m.push({ who: 'cu', text: a.temp, time: '14:18' });
@@ -1900,7 +1901,7 @@ SC.caseBar = (c, o = {}) => {
     <div class="cb-r">${ui.btn('กลับไปรายการคำถาม', { kind: 'secondary', go: 'night', st: 'list', icon: 'moon' })}${ui.btn('ปิดเรื่อง', { kind: 'secondary', a: 'nqClose', v: c.key, icon: 'check' })}</div></div>`;
   const acc = SC.S.activeCase === c.key && SC.S.accAt ? SC.S.accAt : '14:16';
   const aw = `${fam ? '' : `${p.age} ปี · `}${p.weight ? p.weight + ' กก.' : 'ไม่ได้ระบุน้ำหนัก'}`;
-  const meta = o.closed ? `${aw} · เคส ${esc(c.id.slice(-4))}` : `${aw} · เคส ${esc(c.id.slice(-4))} · รับ ${esc(acc)} · คุยมาแล้ว <span class="num" id="elapsed">${fmtEl(elapsed0(o.start || 0))}</span>`;
+  const meta = o.closed ? `${aw} · เคส ${esc(SC.caseCode(c))}` : `${aw} · เคส ${esc(SC.caseCode(c))} · รับ ${esc(acc)} · คุยมาแล้ว <span class="num" id="elapsed">${fmtEl(elapsed0(o.start || 0))}</span>`;
   const nNew = !o.closed && o.step && o.step !== 'talk' ? SC.unread(c.key) : 0, last = nNew ? SC.S.chats[c.key].msgs.filter(m => m.who === 'cu').pop() : null;
   const fresh = nNew ? SC.caseNote('new', 'message-circle', `<b>ลูกค้าพิมพ์มาใหม่${nNew > 1 ? ` ${nNew} ข้อความ` : ''}:</b> "${esc(last.text || 'ส่งรูปหรือข้อมูลอาการ')}" <span class="small">${esc(last.time || '')}</span>`, ui.btn('ไปตอบในแชท', { sm: true, go: 'room', st: c.key === 'kid' ? 'kid' : 'talk', p: { k: c.key }, icon: 'message-circle' })) : '';
   const vdNote = !o.closed && o.step && o.step !== 'talk' && SC.onVideo(c.key) ? SC.caseNote('new', 'video', '<b>วิดีโอคอลยังต่ออยู่</b> ลูกค้ายังเห็นและได้ยินคุณ', ui.btn('กลับไปวิดีโอคอล', { sm: true, go: 'video', st: 'on', p: { k: c.key }, icon: 'video' })) : '';
@@ -2637,7 +2638,7 @@ SC.screen('order', {
   overlay(ctx) {
     if (ctx.st !== 'confirm') return '';
     const o = order(ctx), c = SC.CASES[o.key], p = SC.casePerson(c), t = total(o), pk = SC.pkey(c), rep = SC.adrOpen(pk), sfx = SC.sfxOf(pk);
-    return ui.modal({ title: 'ส่งรายการยาให้ลูกค้า', sub: `${p.name} · เคส ${c.id}`, icon: 'send', back: 'plan',
+    return ui.modal({ title: 'ส่งรายการยาให้ลูกค้า', sub: `${p.name} · เคส ${SC.caseCode(c)}`, icon: 'send', back: 'plan',
       body: `<table class="tbl"><thead><tr><th>ยา</th><th>จำนวน</th><th class="r">ราคา</th></tr></thead><tbody>${o.items.map(i => `<tr><td><b>${esc(i.name)}</b><span class="sub">${esc(i.how)}</span></td><td class="nowrap">${i.qty} ${esc(i.unit)}</td><td class="r num">${SC.money(i.price * i.qty)}</td></tr>`).join('')}<tr><td colspan="2"><b>รวมค่ายา</b></td><td class="r"><b class="num">${SC.money(t)}</b></td></tr></tbody></table>
         <div class="cf-chk mt16"><p class="label">ตรวจกับข้อมูลของ${esc(p.name)}</p>${ui.kv([['แพ้ยา', ui.allergy(p)], ['ผลข้างเคียง', sfx.length ? esc(sfx.map(x => `${x.sym} จาก${x.ing}`).join(', ')) : 'ไม่มีบันทึก'], ['รายงานอาการ', rep ? esc(`${rep.sym.join(', ')} หลังใช้${rep.drug} · ยังไม่ได้ตอบ`) : 'ไม่มีที่ค้างตอบ'], ['ยาประจำ', esc(SC.medsTxt(p))], ['น้ำหนัก', p.weight ? p.weight + ' กก.' : 'ไม่ได้ระบุ']], { left: true })}
           <p class="small mt8">${ic('info', 13, 2)} เภสัชกรตรวจเองก่อนสั่งยา ระบบไม่เทียบยาในรายการกับประวัตินี้</p></div>
@@ -3248,7 +3249,7 @@ SC.screen('pay', {
           <table class="tbl mt8"><thead><tr><th>ยา</th><th>กลุ่ม</th><th>จำนวน</th><th class="r">ราคา</th></tr></thead><tbody>${o.items.map(i => `<tr><td><b>${esc(i.name)}</b><span class="sub">${esc(i.how)}</span></td><td>${ui.cls(i.type)}</td><td class="nowrap">${i.qty} ${esc(i.unit)}</td><td class="r num">${SC.money(i.price * i.qty)}</td></tr>`).join('')}</tbody></table>
           <div class="pay-tot mt12">${ui.kv([['ยอดค่ายา', SC.money(t.items)], [pd?.courier ? `ค่าจัดส่ง (${pd.courier})` : 'ค่าจัดส่ง', paid ? (t.ship ? SC.money(t.ship) : 'ไม่มีค่าจัดส่ง') : 'ลูกค้าเลือกตอนชำระ'], [paid ? 'ยอดชำระ' : 'ยอดค่ายา (ยังไม่รวมค่าส่ง)', `<span class="num">${SC.money(t.total)}</span>`, 'tot']])}</div>
           ${paid ? `<div class="mt12">${ui.kv([['วิธีชำระ', esc(pd.method)], ['เวลาชำระ', `${SC.NOW.date} ${pd.at}`], ['การรับยา', esc(recvName(pd.recv))], ['เลขอ้างอิงการชำระ (Omise)', '<span class="mono">chrg_61kq9xr4a7m3p8w5z</span>']])}</div>` : ''}
-          <p class="osum-by mt12">${ic('badge-check', 15, 2)}<span>จ่ายยาโดย ${esc(me.name)} · ${esc(me.lic)} · ${esc(c.id)}</span></p></section>
+          <p class="osum-by mt12">${ic('badge-check', 15, 2)}<span>จ่ายยาโดย ${esc(me.name)} · ${esc(me.lic)} · ${esc(SC.caseCode(c))}</span></p></section>
       </div>
       <div>${fulfil(st, o)}</div></div>`;
   },
@@ -3376,7 +3377,7 @@ function medsNote(o) {
 function sumDoc(f, c, meds, o) {
   const p = SC.casePerson(c), me = SC.me(), lines = s => String(s || '').split('\n').map(x => x.trim()).filter(Boolean);
   return `<article class="doc" aria-label="ตัวอย่างใบสรุปที่ลูกค้าเห็น">
-    <div class="doc-h"><div><b>ใบสรุปการปรึกษา</b><span>${esc(me.name)} · ${esc(me.lic)}</span><span>${esc(SC.branch().name)} · ${SC.NOW.date} 14:16 · <span class="mono">${esc(c.id)}</span></span></div>${ic('badge-check', 26, 1.8)}</div>
+    <div class="doc-h"><div><b>ใบสรุปการปรึกษา</b><span>${esc(me.name)} · ${esc(me.lic)}</span><span>${esc(SC.branch().name)} · ${SC.NOW.date} 14:16 · <span class="mono">${esc(SC.caseCode(c))}</span></span></div>${ic('badge-check', 26, 1.8)}</div>
     <p class="doc-for">สำหรับ ${esc(p.name)}${SC.isFam(c) ? ` (${esc(p.rel)})` : ''}</p>
     <h4>1 อาการที่แจ้ง</h4><p id="pvSym">${esc(f.sym) || '<i class="muted">ยังไม่ได้กรอก</i>'}</p>
     <h4>2 คำแนะนำ</h4><ul id="pvAdv">${lines(f.adv).map(x => `<li>${esc(x)}</li>`).join('') || '<li class="muted">ยังไม่ได้กรอก</li>'}</ul>
@@ -4080,7 +4081,7 @@ function fuDetail(r) {
   if (!r) return ui.empty({ icon: 'heart-pulse', title: 'ไม่มีลูกค้าที่ต้องติดต่อกลับตอนนี้', body: 'เมื่อลูกค้าแจ้งว่าอาการแย่ลงหรือมีอาการรุนแรง จะขึ้นที่นี่พร้อมเวลาที่ต้องติดต่อกลับ และมีเสียงเตือน' });
   const S = S_(), me = SC.me(), danger = r.last === 'danger', called = r.f?.st === 'called', sumOk = !!SUM[r.id];
   if (!r.act) return `<div class="fu-d"><div class="hrow"><h3 class="h3">${esc(r.name)}</h3><span class="sp"></span>${lastTag(r)}</div>
-    <p class="small mt4"><span class="mono">${esc(r.id)}</span> · ${esc(r.topic)} · ${esc(r.day)}</p>
+    <p class="small mt4"><span class="mono">${esc(SC.caseCode(r))}</span> · ${esc(r.topic)} · ${esc(r.day)}</p>
     <div class="mt12">${ui.note(`<b>ไม่ต้องติดต่อตอนนี้</b><p>${esc(r.at)}${r.note ? ` · ${esc(r.note)}` : ''}</p>`)}</div>
     ${r.last === 'missed' ? `<div class="btn-row mt16">${ui.btn('ส่งข้อความถามอาการในแอป', { kind: 'secondary', icon: 'message-circle', a: 'fuMsg', v: r.k })}</div>` : ''}</div>`;
   const p = r.k === 'smj' ? SC.withAlg('me', ME) : MNP;
@@ -4090,7 +4091,7 @@ function fuDetail(r) {
     ...(r.f ? [[r.f.st === 'called' ? 'done' : 'bad', `${me.short} ${r.f.st === 'called' ? 'โทรติดต่อได้' : r.f.res === 'bad' ? 'ติดต่อไม่ได้ เบอร์ใช้ไม่ได้' : 'โทรแล้วไม่รับสาย'}`, `${r.f.at}${r.f.note ? ' · ' + r.f.note : ''}${r.f.adv?.length ? ` · แนะนำ: ${r.f.adv.join(', ')}${r.f.refU ? ` (${uTxt(r.f.refU)})` : ''}` : ''}`]] : [])];
   return `<div class="fu-d">
     <div class="hrow"><h3 class="h3">${esc(r.name)}</h3><span class="sp"></span>${lastTag(r)}</div>
-    <p class="small mt4"><span class="mono">${esc(r.id)}</span> · ${esc(r.topic)} · ${esc(r.when)} · ${esc(r.day)}</p>
+    <p class="small mt4"><span class="mono">${esc(SC.caseCode(r))}</span> · ${esc(r.topic)} · ${esc(r.when)} · ${esc(r.day)}</p>
     ${called ? '' : danger ? `<div class="fu-ban red mt12" role="alert">${ic('octagon-alert', 20, 2)}<div class="grow"><b>ลูกค้าเลือก "มีอาการรุนแรง" 14:05</b><span>แอปบอกลูกค้าให้ไปโรงพยาบาลทันทีหรือโทร 1669 แล้ว ไม่ต้องรอเภสัชกร · โทรตามเพื่อยืนยันว่าลูกค้าได้รับความช่วยเหลือ</span></div></div>`
       : `<div class="fu-ban${S.fuSoon ? ' red' : ''} mt12" role="status">${ic('timer', 20, 2)}<div class="grow"><b>ต้องติดต่อกลับ${S.fuNext ? 'ภายใน 11:00 วันนี้' : dueTxt(r)}${r.f?.st === 'retry' ? ' · โทรครั้งแรกไม่ติด' : ''}</b><span>${S.fuNext ? 'ลูกค้าแจ้งตอนร้านปิด 17/10/2026 22:05 · แอปบอกลูกค้าแล้วว่าเภสัชกรจะเห็นเมื่อร้านเปิด 09:00 และถ้าอาการรุนแรงให้ไปโรงพยาบาลหรือโทร 1669' : S.fuLate ? esc(lateTxt(r)) : `ลูกค้าแจ้งว่าแย่ลง ${esc(r.at)} · แอปบอกลูกค้าว่าร้านจะติดต่อกลับ${dueTxt(r)} (2 ชั่วโมงในเวลาทำการ ${SC.branch().hours})${S.fuSoon ? ` · เหลือ 30 นาทีเมื่อ ${adminAt(r)} ระบบแจ้งผู้ดูแลระบบแล้ว` : ''}`}</span></div></div>`}
     <p class="label mt16">คำตอบของลูกค้าและการติดต่อ</p>
@@ -4281,7 +4282,7 @@ function adrDetail(ctx) {
   if (S.adrEmpty) return `<section class="card">${ui.empty({ icon: 'circle-check', title: 'ตอบครบทุกรายงานแล้ว', body: 'รายงานที่ตอบแล้วดูได้ในประวัติเคส' })}</section>`;
   const r = repNow(), p = repPerson(r), done = S.adr.st === 'done', fam = r.pk !== 'me', cl = calls(), lock = r.severe && !cl.length;
   return `<section class="card adr-d" aria-label="รายละเอียดรายงาน">
-    <div class="hrow"><h3 class="h3">${esc(p.name)}${fam ? ` <span class="muted">(${esc(p.rel)} ${p.age} ปี · บัญชี ${esc(ME.name)})</span>` : ''}</h3><span class="sp"></span><span class="small mono">${esc(r.id)}</span></div>
+    <div class="hrow"><h3 class="h3">${esc(p.name)}${fam ? ` <span class="muted">(${esc(p.rel)} ${p.age} ปี · บัญชี ${esc(ME.name)})</span>` : ''}</h3><span class="sp"></span><span class="small mono">${esc(SC.caseCode(r))}</span></div>
     ${r.severe && !done ? `<div class="fu-ban red mt12" role="alert">${ic('octagon-alert', 20, 2)}<div class="grow"><b>อาการรุนแรง: ${esc(r.sym.join(', '))}</b><span>แอปบอก${callee(p)}ให้ไปโรงพยาบาลทันทีหรือโทร 1669 แล้ว และบอกว่าร้านจะโทรหาโดยเร็วที่สุด · โทรตามทันทีแล้วบันทึกผลการโทร ก่อนส่งคำตอบ</span></div></div>` : ''}
     <div class="mt12">${ui.kv([['ยาที่สงสัย', `<b>${esc(r.drug)}</b>`], ['จากเคส', `<span class="mono">${esc(r.from)}</span>`], ['อาการ', esc(r.sym.join(', '))], ['เริ่มเป็น', esc(r.since)], ['ลูกค้าบอกว่ารุนแรง', esc(r.level)], ['อยากให้ติดต่อ', esc(r.want)], ['แพ้ยาที่บันทึกไว้', ui.allergy(p)]])}</div>
     ${cl.length ? `<p class="label mt16">การโทร</p><ol class="tl mt8">${cl.map(c => `<li class="${c.res === 'noans' ? 'bad' : 'done'}"><b>${esc(me.short)} โทรหา${callee(p)}</b><span>${esc(callTxt(c))}</span></li>`).join('')}</ol>` : ''}
@@ -4352,7 +4353,7 @@ function openCall() {
   const r = repNow(), p = repPerson(r), m = $('#adrMsg'), g = $('#adrIng');
   if (m) S_().adr.draft = { msg: m.value, ing: g?.value ?? (S_().adr.draft?.ing ?? r.ing) };
   SC.openOv(() => `<div class="scrim" data-a="ovClose"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="acT">
-    <div class="modal-h"><span class="danger-t">${ic('phone-call', 24, 2)}</span><div class="grow"><h2 id="acT">บันทึกผลการโทร</h2><p>${esc(ME.name)} (${callee(p)}${p.child ? 'ของ' + esc(p.name) : ''}) · ${esc(r.id)}</p></div>${ui.ib('x', 'ปิด', { a: 'ovClose' })}</div>
+    <div class="modal-h"><span class="danger-t">${ic('phone-call', 24, 2)}</span><div class="grow"><h2 id="acT">บันทึกผลการโทร</h2><p>${esc(ME.name)} (${callee(p)}${p.child ? 'ของ' + esc(p.name) : ''}) · ${esc(SC.caseCode(r))}</p></div>${ui.ib('x', 'ปิด', { a: 'ovClose' })}</div>
     <div class="modal-b"><p class="label">ผลการโทร</p><div class="opts mt8" data-radio-scope id="acOpts">${CALL_RES.map(([v, title, sub]) => ui.opt({ group: 'ac', v, title, sub })).join('')}</div>
       <p class="err-t mt8" id="acErr" hidden>${ic('circle-x', 14, 2)}<span>เลือกผลการโทรก่อน</span></p>
       <div class="mt16">${ui.field({ id: 'acNote', label: 'บันทึกสั้น ๆ (ลูกค้าไม่เห็น)', textarea: true, rows: 2, ph: 'เช่น แม่กำลังพาน้องไปโรงพยาบาลใกล้บ้าน' })}</div></div>
@@ -4388,7 +4389,7 @@ SC.act('adrSend', async t => {
 /* ---------- S403 case history of this branch ---------- */
 const LOG = bb => {
   const S = S_(), b = bb || S.branch, ac = b === S.branch && S.activeCase && SC.CASES[S.activeCase];
-  const live = ac ? [{ id: ac.id, d: SC.NOW.date, t: '14:16', who: SC.casePerson(ac).name, topic: ac.symptoms.join(' '), mode: ac.mode === 'video' ? 'วิดีโอ' : 'แชท', ph: S.me, res: 'กำลังปรึกษา', tone: 'warn', amt: 0, dur: '' }] : [];
+  const live = ac ? [{ id: ac.id, d: SC.NOW.date, t: '14:16', who: SC.casePerson(ac).name, note: ac.note, topic: ac.symptoms.join(' '), mode: ac.mode === 'video' ? 'วิดีโอ' : 'แชท', ph: S.me, res: 'กำลังปรึกษา', tone: 'warn', amt: 0, dur: '' }] : [];
   const closed = S.closed.filter(x => x.branch === b).slice().reverse().map(SC.closedView).map(x => ({ ...x, d: SC.NOW.date, t: x.start || x.t }));
   const base = b === 'tw' ? [
     { id: 'TC-261018-0138', d: SC.NOW.date, t: '13:40', who: 'ธนวัฒน์ พ.', topic: 'ปวดหัว', mode: 'วิดีโอ', ph: 'kj', res: 'ให้คำแนะนำ ไม่ต้องจ่ายยา', tone: 'muted', amt: 0, dur: '12 นาที' },
@@ -4406,7 +4407,7 @@ const SUM = SC.SUM = {
   'TC-261002-0087': { sym: 'ไข้ต่ำ ๆ ไอ เจ็บคอ เป็นมา 2 วัน · กลืนแล้วเจ็บ · ไม่มีหอบเหนื่อย', adv: ['ดื่มน้ำอุ่นบ่อย ๆ พักผ่อนให้เพียงพอ', 'กลั้วคอด้วยน้ำเกลืออุ่น วันละ 3-4 ครั้ง', 'เลี่ยงอาหารทอด ของเย็น และการใช้เสียงมาก'], meds: ['พาราเซตามอล 500 มก. 1 แผง', 'อะม็อกซีซิลลิน 500 มก. 2 แผง'], warn: ['หายใจลำบาก หรือเจ็บแน่นหน้าอก', 'ไข้สูงเกิน 39 องศา หรือไข้ไม่ลดภายใน 3 วัน', 'กลืนน้ำลายไม่ได้ หรืออ้าปากได้น้อย', 'มีผื่นขึ้น ปาก หน้า หรือตาบวมหลังใช้ยา'], follow: 'ไม่ได้ติดตามอาการ · ลูกค้าแจ้งอาการหลังใช้ยา AR-261018-0007' },
   'TC-261017-0121': { sym: 'ไอมีเสมหะ เป็นมา 3 วัน · ไม่มีไข้ · ไม่มีหอบเหนื่อย', adv: ['ดื่มน้ำอุ่นบ่อย ๆ ช่วยให้เสมหะออกง่ายขึ้น', 'เลี่ยงควันบุหรี่และอากาศเย็น', 'เภสัชกรจะถามอาการในแอปวันที่ 1 และวันที่ 3'], meds: ['บรอมเฮกซีน 8 มก. 1 แผง', 'ยาแก้ไอ ชนิดน้ำ 1 ขวด'], warn: ['หายใจลำบาก หรือเจ็บแน่นหน้าอก', 'ไอเป็นเลือด', 'ไข้สูงเกิน 39 องศา หรือไข้ไม่ลดภายใน 3 วัน'], follow: 'ติดตามอาการ วันที่ 1 จาก 5 · แจ้งว่าแย่ลง 17/10/2026 22:05' }
 };
-const match = (r, q) => r.id.includes(q) || r.who.includes(q) || (r.code && r.code.toUpperCase() === q.toUpperCase());
+const match = (r, q) => SC.caseCode(r).toUpperCase().includes(q.toUpperCase()) || r.id.includes(q) || r.who.includes(q) || (r.code && r.code.toUpperCase() === q.toUpperCase());
 function logDetail(id) {
   const rows = LOG(), r = rows.find(x => x.id === id) || rows.find(x => x.id === 'TC-261016-0058') || rows[0];
   const s = r.doc ? { sym: r.doc.sym, adv: r.doc.adv, meds: r.doc.meds, warn: r.doc.warn, medsNote: r.doc.medsNote } : SUM[r.id];
@@ -4418,7 +4419,7 @@ function logDetail(id) {
       ...(r.pay === 'paid' && r.paidAt ? [['การชำระ', `ชำระแล้ว ${SC.money(r.amt)} · พร้อมเพย์ ${esc(r.paidAt)}${r.late ? ' (หลังปิดเคส)' : ''}`]] : []),
       ...(r.recv === 'pickup' ? [['การรับยา', r.handed ? `รับที่ร้านแล้ว ${esc(r.handed)} · ตรวจรหัสรับยาแล้ว` : r.ready ? `ยาพร้อมรับ แจ้งลูกค้าแล้ว ${esc(r.ready)}` : 'รอรับที่ร้าน']] : []),
       ...(r.code ? [['รหัสรับยา', `<span class="mono">${esc(r.code)}</span>`]] : []), ...(SC.recOf(r)?.ack ? [['รับทราบขั้นตอน', esc(SC.recOf(r).ack)]] : []), ...(SUM[r.id]?.follow ? [['ติดตามอาการ', esc(SUM[r.id].follow)]] : r.follow ? [['ติดตามอาการ', r.late ? `เปิด · เริ่มเมื่อชำระ ${esc(r.paidAt)} · ถามวันที่ 1 และวันที่ 3` : 'เปิด · ถามวันที่ 1 และวันที่ 3']] : [])])}
-    <article class="doc sm" aria-label="ใบสรุปที่ลูกค้าได้รับ"><div class="doc-h"><div><b>ใบสรุปการปรึกษา</b><span class="mono">${esc(r.id)}</span></div></div>${doc}</article>
+    <article class="doc sm" aria-label="ใบสรุปที่ลูกค้าได้รับ"><div class="doc-h"><div><b>ใบสรุปการปรึกษา</b><span class="mono">${esc(SC.caseCode(r))}</span></div></div>${doc}</article>
     <div class="card tint"><p class="label">บทสนทนา</p><p class="small mt4">อ่านอย่างเดียว · เก็บ 1 ปีนับจากวันปิดเคส · ไม่มีการบันทึกวิดีโอ</p>${ui.btn('เปิดดูบทสนทนา', { kind: 'secondary', sm: true, icon: 'message-circle', a: 'logChat', cls: 'mt8' })}</div>
     ${r.res === 'กำลังปรึกษา' ? '' : `<details class="rec-snap"><summary>${ic('file-text', 15, 2)} สำเนาบันทึก ณ วันปิดเคส (อ่านอย่างเดียว)</summary>${SC.recSnap(r)}</details>`}
     ${SC.recFixes(r)}${SC.recAccess(r)}</div>` };
@@ -4438,7 +4439,7 @@ SC.screen('log', {
     const st = ctx.st === 'detail' || ctx.st === 'fix' ? 'all' : ctx.st, q = st === 'search' ? (SC.S.logQ || '0058') : st === 'none' ? (SC.S.logQ || 'TC-261099') : '';
     const rows = LOG().filter(r => !q || match(r, q));
     const body = st === 'loading' ? Array.from({ length: 5 }, () => `<tr><td>${ui.skel('70%')}</td><td>${ui.skel('80%')}</td><td>${ui.skel('60%')}</td><td>${ui.skel('50%')}</td><td>${ui.skel('70%')}</td><td>${ui.skel('40%')}</td></tr>`).join('')
-      : rows.map(r => `<tr class="click" data-go="log" data-st="detail" data-p='{"id":"${r.id}"}' tabindex="0" aria-label="ดูเคส ${esc(r.id)} ${esc(r.who)}"${ctx.st === 'detail' && ctx.p.id === r.id ? ' aria-selected="true"' : ''}><td><span class="mono">${esc(r.id)}</span><span class="sub">${esc(r.d)} ${esc(r.t)}</span></td><td><b>${esc(r.who)}</b></td><td>${esc(r.topic)}<span class="sub log-m">${ui.mode(/วิดีโอ|video/.test(r.mode) ? 'video' : 'chat')}${r.dur ? ' ' + esc(r.dur) : ''}</span></td><td>${esc(SC.PHARM[r.ph].short)}</td><td>${ui.tag(r.res, r.tone)}</td><td class="r"><span class="num">${r.amt ? SC.money(r.amt) : '-'}</span>${r.pay === 'sent' ? '<span class="sub warn-t">ยังไม่ชำระ</span>' : ''}</td></tr>`).join('');
+      : rows.map(r => `<tr class="click" data-go="log" data-st="detail" data-p='{"id":"${r.id}"}' tabindex="0" aria-label="ดูเคส ${esc(SC.caseCode(r))} ${esc(r.who)}"${ctx.st === 'detail' && ctx.p.id === r.id ? ' aria-selected="true"' : ''}><td><span class="mono">${esc(SC.caseCode(r))}</span><span class="sub">${esc(r.d)} ${esc(r.t)}</span></td><td><b>${esc(r.who)}</b></td><td>${esc(r.topic)}<span class="sub log-m">${ui.mode(/วิดีโอ|video/.test(r.mode) ? 'video' : 'chat')}${r.dur ? ' ' + esc(r.dur) : ''}</span></td><td>${esc(SC.PHARM[r.ph].short)}</td><td>${ui.tag(r.res, r.tone)}</td><td class="r"><span class="num">${r.amt ? SC.money(r.amt) : '-'}</span>${r.pay === 'sent' ? '<span class="sub warn-t">ยังไม่ชำระ</span>' : ''}</td></tr>`).join('');
     return `<div class="log-f">
         <div class="search grow">${ic('search', 18, 2)}<label class="sr" for="logQ">ค้นหาเคส</label><input id="logQ" class="input" type="search" placeholder="ค้นด้วยเลขเคส ชื่อ หรือรหัสรับยา 4 ตัว" value="${esc(q)}" autocomplete="off"></div>
         ${ui.seg([['today', 'วันนี้'], ['7d', '7 วัน'], ['30d', '30 วัน']], '30d', { a: 'logRange', label: 'ช่วงเวลา' })}
@@ -4527,7 +4528,7 @@ const FIX_SUBJ = ['บันทึกอาการ', 'คำแนะนำ', 
 const fixesOf = id => (SC.S.fixes || {})[id] || [];
 SC.recFixes = r => { const l = fixesOf(r.id); return l.length ? `<section class="rec-fix"><p class="label">${ic('pencil', 13, 2)} บันทึกแก้ไข (${l.length})</p><ul class="mt8">${l.map(x => `<li><b>${esc(x.subj)}</b> · ${esc(SC.PHARM[x.by].short)} ${esc(x.at)}<span class="sub">ที่ถูกต้อง: ${esc(x.txt)}</span><span class="sub">เหตุผล: ${esc(x.why)}</span></li>`).join('')}</ul><p class="small mt8">ของเดิมยังอยู่ในสำเนา ณ วันปิดเคส · ใบสรุปที่ลูกค้าได้ไม่เปลี่ยน</p></section>` : ''; };
 SC.fixModal = r => `<div class="scrim" ${ui.attrs({ st: 'detail', p: { id: r.id } })}></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="fxT">
-  <div class="modal-h"><span class="brand-t">${ic('pencil', 24, 2)}</span><div class="grow"><h2 id="fxT">เพิ่มบันทึกแก้ไข</h2><p>${esc(r.id)} · ปิดเคสแล้ว แก้ทับไม่ได้ ของเดิมยังอยู่</p></div>${ui.ib('x', 'ปิด', { st: 'detail', p: { id: r.id } })}</div>
+  <div class="modal-h"><span class="brand-t">${ic('pencil', 24, 2)}</span><div class="grow"><h2 id="fxT">เพิ่มบันทึกแก้ไข</h2><p>${esc(SC.caseCode(r))} · ปิดเคสแล้ว แก้ทับไม่ได้ ของเดิมยังอยู่</p></div>${ui.ib('x', 'ปิด', { st: 'detail', p: { id: r.id } })}</div>
   <div class="modal-b">${ui.field({ id: 'fxS', label: 'แก้เรื่องอะไร', select: FIX_SUBJ, value: FIX_SUBJ[0], req: true })}
     <div class="mt12">${ui.field({ id: 'fxT2', label: 'ข้อความที่ถูกต้อง', textarea: true, rows: 3, req: true, max: 500, focus: true })}</div>
     <div class="mt12">${ui.field({ id: 'fxW', label: 'เหตุผลที่แก้', req: true, max: 200, ph: 'เช่น พิมพ์ความแรงผิด' })}</div>
@@ -4573,7 +4574,7 @@ SC.recChat = r => {
 };
 SC.recView = r => {
   const b = SC.branch(r.br || SC.S.branch), s = sumOf(r);
-  return `<div class="gap16">${ui.kv([['เคส', `<span class="mono">${esc(r.id)}</span>`], ['วันที่', `${esc(r.d)} ${esc(r.t)}${r.dur ? ' · ' + esc(r.dur) : ''}`], ['ช่องทาง', ui.mode(/วิดีโอ|video/.test(r.mode) ? 'video' : 'chat')],
+  return `<div class="gap16">${ui.kv([['เคส', `<span class="mono">${esc(SC.caseCode(r))}</span>`], ['วันที่', `${esc(r.d)} ${esc(r.t)}${r.dur ? ' · ' + esc(r.dur) : ''}`], ['ช่องทาง', ui.mode(/วิดีโอ|video/.test(r.mode) ? 'video' : 'chat')],
       ['สาขา', `${esc(b.name)} · ใบอนุญาต ${esc(b.lic)}`], ['เภสัชกร', `${esc(SC.PHARM[r.ph].name)} · ${esc(SC.PHARM[r.ph].lic)}`], ['ผล', esc(r.res)]])}
     <section><p class="label">สำเนาบันทึก ณ วันปิดเคส</p>${SC.recSnap(r)}</section>
     ${s ? `<section><p class="label">ใบสรุปที่ลูกค้าได้รับ</p><article class="doc sm mt8"><h4>อาการที่แจ้ง</h4><p>${esc(s.sym)}</p><h4>คำแนะนำ</h4><ul>${s.adv.map(x => `<li>${esc(x)}</li>`).join('')}</ul><div class="doc-warn"><h4>${ic('octagon-alert', 15, 2)}ไปพบแพทย์ทันทีถ้า</h4><ul>${s.warn.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div></article></section>` : ''}
@@ -4609,7 +4610,7 @@ SC.screen('audit', {
     if (tooOld()) return bar + zn + `<div class="mt16">${ui.note(`<b>${esc(S.auFrom)} เกิน 1 ปีแล้ว</b><p>บันทึกเคสเก็บ 1 ปีนับจากวันปิดเคส ข้อมูลก่อน ${esc(SC.NOW.date.slice(0, 6) + (+SC.NOW.date.slice(6) - 1))} ลบตามระยะเก็บแล้ว · เลือกช่วงวันที่ใหม่</p>`, { icon: 'history' })}</div>`;
     if (!list.length) return bar + zn + `<section class="card mt16">${ui.empty({ icon: 'search', title: 'ไม่มีเคสในช่วงนี้', body: 'ลองขยายช่วงวันที่ หรือเลือกเภสัชกรทุกคน', btn: ui.btn('ดู 30 วันล่าสุด', { kind: 'secondary', sm: true, a: 'auR', v: '30d' }) })}</section>`;
     return bar + zn + `<section class="card pad0 mt16"><table class="tbl"><thead><tr><th>เคส</th>${SC.isAdmin() ? '<th>สาขา</th>' : ''}<th>ผู้มีอาการ</th><th>เภสัชกร</th><th>ผล</th><th>สำเนา ณ วันปิด</th></tr></thead><tbody>
-      ${list.map(r => { const s = SC.recOf(r); return `<tr class="click" data-st="detail" data-p='{"id":"${r.id}"}' tabindex="0" aria-label="ดูบันทึกเต็ม ${esc(r.id)}"${ctx.p.id === r.id && ctx.st !== 'list' ? ' aria-selected="true"' : ''}><td><span class="mono">${esc(r.id)}</span><span class="sub">${esc(r.d)} ${esc(r.t)}</span></td>${SC.isAdmin() ? `<td>${esc(SC.branch(r.br).short)}</td>` : ''}<td><b>${esc(r.who)}</b></td><td>${esc(SC.PHARM[r.ph].short)}</td><td>${ui.tag(r.res, r.tone)}</td><td>${s ? ui.tag(`ครบ · ยา ${s.items.length} รายการ`, 'ok', { icon: 'check' }) : ui.tag('ย่อ (ต้นแบบ)', 'muted')}</td></tr>`; }).join('')}</tbody></table></section>
+      ${list.map(r => { const s = SC.recOf(r); return `<tr class="click" data-st="detail" data-p='{"id":"${r.id}"}' tabindex="0" aria-label="ดูบันทึกเต็ม ${esc(SC.caseCode(r))}"${ctx.p.id === r.id && ctx.st !== 'list' ? ' aria-selected="true"' : ''}><td><span class="mono">${esc(SC.caseCode(r))}</span><span class="sub">${esc(r.d)} ${esc(r.t)}</span></td>${SC.isAdmin() ? `<td>${esc(SC.branch(r.br).short)}</td>` : ''}<td><b>${esc(r.who)}</b></td><td>${esc(SC.PHARM[r.ph].short)}</td><td>${ui.tag(r.res, r.tone)}</td><td>${s ? ui.tag(`ครบ · ยา ${s.items.length} รายการ`, 'ok', { icon: 'check' }) : ui.tag('ย่อ (ต้นแบบ)', 'muted')}</td></tr>`; }).join('')}</tbody></table></section>
       <p class="small mt8">${ic('lock', 13, 2)} อ่านอย่างเดียว · การเปิดดู พิมพ์ และส่งออก ถูกบันทึกทุกครั้ง</p>`;
   },
   overlay(ctx) {
@@ -4619,7 +4620,7 @@ SC.screen('audit', {
       foot: `${ui.btn('ส่งออกไฟล์', { kind: 'secondary', sm: true, a: 'auExp', v: r.id, icon: 'download' })}<span class="sp"></span>${ui.btn('ดูก่อนพิมพ์', { sm: true, st: 'print', p: { id: r.id }, icon: 'printer' })}` });
     if (ctx.st !== 'print') return dr;
     return dr + `<div class="scrim" ${ui.attrs({ st: 'detail', p: { id: r.id } })}></div><div class="modal wide" role="dialog" aria-modal="true" aria-labelledby="auPT">
-      <div class="modal-h"><span class="brand-t">${ic('printer', 24, 2)}</span><div class="grow"><h2 id="auPT">ดูก่อนพิมพ์ บันทึกเต็ม ${esc(r.id)}</h2><p>กระดาษ A4 · มีข้อมูลส่วนตัวของลูกค้า เก็บในที่ปลอดภัย</p></div>${ui.ib('x', 'ปิด', { st: 'detail', p: { id: r.id } })}</div>
+      <div class="modal-h"><span class="brand-t">${ic('printer', 24, 2)}</span><div class="grow"><h2 id="auPT">ดูก่อนพิมพ์ บันทึกเต็ม ${esc(SC.caseCode(r))}</h2><p>กระดาษ A4 · มีข้อมูลส่วนตัวของลูกค้า เก็บในที่ปลอดภัย</p></div>${ui.ib('x', 'ปิด', { st: 'detail', p: { id: r.id } })}</div>
       <div class="modal-b"><article class="au-paper"><div class="hrow">${SC.logo({ cls: 'au-logo' })}<span class="sp"></span><span class="small">พิมพ์ ${esc(SC.NOW.date)} ${esc(SC.clockStr())} โดย ${esc(SC.me().short)}</span></div>${SC.recView(r)}</article></div>
       <div class="modal-f">${ui.btn('ปิด', { kind: 'secondary', st: 'detail', p: { id: r.id } })}${ui.btn('พิมพ์', { a: 'auPrint', v: r.id, icon: 'printer' })}</div></div>`;
   },
@@ -5081,7 +5082,7 @@ SC.screen('denied', {
     return `<div class="solo inset"><div class="solo-card wide">
       <div class="hrow"><span class="muted">${ic('lock', 24, 1.8)}</span><h2 class="h2">เคสนี้อยู่ที่${esc(SC.branch(h.branch).name)}</h2></div>
       <p class="mt8">ดูได้เฉพาะสรุปสั้น แชทและใบสรุปเต็มเปิดได้เฉพาะสาขาที่ดูแลเคส</p>
-      <div class="mt16">${ui.kv([['เลขเคส', `<span class="mono">${esc(h.id)}</span>`], ['วันที่', `${esc(h.date)} ${esc(h.time)}`], ['ผู้มีอาการ', `${esc(SC.person(h.who).name)} (${esc(SC.person(h.who).rel)})`], ['หัวข้อ', esc(h.topic)], ['เภสัชกร', `${esc(SC.PHARM[h.pharm].short)} · ${esc(SC.branch(h.branch).short)}`], ['ผล', esc(h.close)]])}</div>
+      <div class="mt16">${ui.kv([['เลขเคส', `<span class="mono">${esc(SC.caseCode(h))}</span>`], ['วันที่', `${esc(h.date)} ${esc(h.time)}`], ['ผู้มีอาการ', `${esc(SC.person(h.who).name)} (${esc(SC.person(h.who).rel)})`], ['หัวข้อ', esc(h.topic)], ['เภสัชกร', `${esc(SC.PHARM[h.pharm].short)} · ${esc(SC.branch(h.branch).short)}`], ['ผล', esc(h.close)]])}</div>
       <p class="small mt12">ถ้าต้องการรายละเอียดเพื่อดูแลลูกค้า ติดต่อ${esc(SC.branch(h.branch).name)} ${esc(SC.branch(h.branch).phone)}</p>
       <div class="btn-row mt16">${ui.btn('กลับ', { kind: 'secondary', icon: 'arrow-left', go: SC.S.activeCase ? 'room' : 'log', st: SC.S.activeCase ? 'talk' : 'all' })}</div></div></div>`;
   }

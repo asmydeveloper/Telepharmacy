@@ -18,6 +18,6 @@ import '@/styles/address-map.css';
 import Runtime from '@/components/Runtime';
 export const metadata = { title: "MITRAREE ปรึกษาเภสัชกร" };
 export default function Page() {
-  const version = createHash('sha256').update(readFileSync(join(process.cwd(), 'public/runtime/customer.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/address-map.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/address-map-engine.js'))).update(readFileSync(join(process.cwd(), 'public/assets/data/thailand/delivery-map-style.json'))).digest('hex').slice(0,12);
+  const version = createHash('sha256').update(readFileSync(join(process.cwd(), 'public/runtime/consultation-data.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/customer.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/address-map.js'))).update(readFileSync(join(process.cwd(), 'public/runtime/address-map-engine.js'))).update(readFileSync(join(process.cwd(), 'public/assets/data/thailand/delivery-map-style.json'))).digest('hex').slice(0,12);
   return <><Shell /><Runtime prelude={`/runtime/address-map.js?v=${version}`} src={`/runtime/customer.js?v=${version}`} /></>;
 }

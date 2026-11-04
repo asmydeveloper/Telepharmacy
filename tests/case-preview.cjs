@@ -2,6 +2,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const source=fs.readFileSync('public/runtime/customer.js','utf8');
 const TP={S:{st:{home:'active-next'}},newCase(){return this.S.case={branch:'tw',pharm:'kj',symptoms:[],msgs:[]};},refresh(){},go(id){this.destination=id;},emit(){},cur:()=>({id:'notifications'}),branch:()=>({name:'ร้านตัวอย่าง',short:'ร้านตัวอย่าง'}),PHARM:{kj:{short:'เภสัชตัวอย่าง'}}};
 TP.startOrderPayment=()=>false;TP.NOW={time:'14:12'};TP.makeOrder=()=>{TP.S.case.order={status:'pending',items:[],total:180,expiresAt:Date.now()+900000};};TP.expireOrder=c=>{if(c.order.expiresAt<=Date.now())c.order.status='expired';};
+require('./consultation-harness.cjs')(TP);
 const context=vm.createContext({TP,C:()=>TP.S.case,ph:()=>TP.PHARM.kj});
 TP.ORDER_ITEMS=[{name:'A',price:120},{name:'B',price:40},{name:'C',price:225}];TP.ORDER_PAYMENT_MS=900000;TP.act=()=>{};TP.esc=String;TP.ic=()=>'';TP.fmtAddr=()=> 'Address';TP.orderCases=S=>S.case?[S.case]:[];
 vm.runInContext(source.slice(source.indexOf('TP.chatConsult ='),source.indexOf('/* End chat order lifecycle */')),context);

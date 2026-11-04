@@ -52,3 +52,9 @@ C403.36 / C502.4 เพิ่มสมาชิกสมมติ3คนใน T
 - W3C disclosure: https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/ — a button exposes aria-expanded and aria-controls, with native Enter/Space support.
 
 Local design decision: keep a labelled magnifier button in the header, reveal an inline field below the purchase tabs, and focus it. Cross clears only the query and keeps the field open. Explicit “ปิด”, the header toggle, or Escape hide it and clear the query so no invisible search remains; preserve the selected purchase tab. Closing restores focus to the header button, clearing restores focus to input. Enter dismisses keyboard without losing query. Counts announce current results. Do not autofocus on page entry or preview. These choices are not patient-tested findings.
+
+## 4 พ.ย. 2026 — รายละเอียดในการ์ดแบบเดียวกัน
+ใช้หลักฐาน GOV.UK summary list ที่บันทึกไว้ด้านบน: จับคู่หัวข้อกับค่าให้สแกนแนวเดิมได้ รหัสเคส ข้อมูลปรึกษา เภสัชกร และผลการปรึกษาใช้แถว shared เดียวกัน หัวข้อซ้าย ค่าขวา ข้อความอาการคงการขึ้นบรรทัดและไม่ตัดทิ้ง การจัดชิดขวาเป็นข้อกำหนดผู้ใช้ ไม่ใช่ผลการทดสอบกับคนไข้
+
+## C401 — 4 พ.ย. 2026
+อ่าน GOV.UK Summary list อีกครั้ง https://design-system.service.gov.uk/components/summary-list/ : ใช้คู่หัวข้อและค่ากับข้อมูลรับบริการ และแบ่งหลายชุดด้วยหัวข้อหรือการ์ด ใช้รายการธรรมดากับคำแนะนำแทนการบังคับเป็นตาราง ข้อเสนอ UI: แยก case identity จากข้อความยาว ใช้หัวการ์ดขนาดเดียวกัน ลดกรอบซ้อนของยา รวมติดตามกับคำแนะนำ คงรายละเอียดทั้งหมดและการให้ดาวเดิม ยังไม่ได้ทดสอบกับคนไข้

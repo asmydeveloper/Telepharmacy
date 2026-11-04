@@ -34,6 +34,12 @@
       "state": "error",
       "label": "โหลดไม่สำเร็จ",
       "url": "/?screen=adrcare&state=error&splash=0"
+    },
+    {
+      "code": "C416.6",
+      "state": "grouped-days",
+      "label": "หลายรายงาน แบ่งตามวัน",
+      "url": "/?screen=adrcare&state=grouped-days&splash=0"
     }
   ]
 }

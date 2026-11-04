@@ -16,6 +16,18 @@
       "state": "replied",
       "label": "ประเมินแล้ว",
       "url": "/?screen=adrreport&state=replied&splash=0"
+    },
+    {
+      "code": "C419.3",
+      "state": "reply-long",
+      "label": "คำตอบหลายบรรทัด",
+      "url": "/?screen=adrreport&state=reply-long&splash=0"
+    },
+    {
+      "code": "C419.4",
+      "state": "source-missing",
+      "label": "ไม่มีข้อมูลการปรึกษาต้นทาง",
+      "url": "/?screen=adrreport&state=source-missing&splash=0"
     }
   ]
 }

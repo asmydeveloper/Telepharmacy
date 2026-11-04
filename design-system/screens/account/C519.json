@@ -1,0 +1,21 @@
+{
+  "code": "C519",
+  "screen": "taxprofileedit",
+  "title": "แก้ไขข้อมูลออกใบกำกับภาษี",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C519.1",
+      "state": "person",
+      "label": "แก้ไขบุคคลธรรมดา",
+      "url": "/?screen=taxprofileedit&state=person&splash=0"
+    },
+    {
+      "code": "C519.2",
+      "state": "company",
+      "label": "แก้ไขนิติบุคคล",
+      "url": "/?screen=taxprofileedit&state=company&splash=0"
+    }
+  ]
+}

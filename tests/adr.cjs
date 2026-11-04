@@ -27,6 +27,63 @@ assert(batchHtml.indexOf('ยาตัวแรก')<batchHtml.indexOf('อา�
 assert(batchHtml.indexOf('อาการแรก')<batchHtml.indexOf('ยาตัวที่สอง'));
 assert(batchHtml.indexOf('ยาตัวที่สอง')<batchHtml.indexOf('อาการที่สอง'));
 assert.equal(button.disabled,true);
+const grouped=harness();
+grouped.S.adrReports=[
+ {id:'r-old',who:'me',date:'17/10/2026',at:'18:00',drug:'ยาเก่า',sym:[]},
+ {id:'r-early',who:'me',date:'18/10/2026',at:'10:00',drug:'ยารายงานเช้า',sym:[]},
+ {id:'r-late',who:'me',date:'18/10/2026',at:'14:00',drug:'ยารายงานบ่าย',sym:[]}
+];
+const daily=grouped.run('adrCaseCards(TP.S,TP.S.adrReports)');
+assert.equal(daily.match(/class="adr-report-day"/g).length,2);
+assert.equal(daily.match(/class="adr-report"/g).length,3);
+assert(daily.indexOf('ยารายงานบ่าย')<daily.indexOf('ยารายงานเช้า'));
+assert(daily.indexOf('ยารายงานเช้า')<daily.indexOf('ยาเก่า'));
+grouped.S.adrReports[1].batchId='same-send';grouped.S.adrReports[2].batchId='same-send';
+assert.equal(grouped.run('adrCaseCards(TP.S,TP.S.adrReports)').match(/class="adr-report"/g).length,2,'one batch remains one report card');
+
+const firstReport=submit.S.adrReports.find(r=>r.drug==='ยาตัวแรก');
+Object.assign(firstReport,{replied:true,reply:'ข้อความจากเภสัชกร\nบรรทัดที่สอง <ตรวจฉลาก>',replyPharm:'kj'});
+const originalPage=submit.run('adrCaseDetails(TP.S,TP.S.adrReports[0])');
+assert(!originalPage.includes('adr-report-details'));
+assert(!originalPage.includes('adr-reply-card'));
+assert(originalPage.includes('adr-result-reply'));
+const answered=submit.run('adrCaseDetails(TP.S,TP.S.adrReports[0],true)');
+assert.equal(answered.match(/class="[^"]*\badr-reply-card\b[^"]*"/g).length,1,'only the answered medicine has a reply card');
+assert(answered.includes('ขวัญใจ'));
+assert(answered.includes('ข้อความจากเภสัชกร\nบรรทัดที่สอง &lt;ตรวจฉลาก'));assert(!answered.includes('<ตรวจฉลาก>'));
+assert(answered.indexOf('อาการแรก')<answered.indexOf('คำตอบจากเภสัชกร'));
+assert(answered.indexOf('คำตอบจากเภสัชกร')<answered.indexOf('ยาตัวที่สอง'));
+
+const provenance=harness();
+const knownDraft=provenance.run("adrNewDraft('me')");
+Object.assign(knownDraft,{drug:'self-old:0',sym:['ผื่น คัน'],since:'today',level:'mild'});
+provenance.S._knownDraft=knownDraft;
+const knownReport=provenance.run('adrStoreReport(TP.S,TP.S._knownDraft)');
+assert.equal(knownReport.consultationId,'self-old','persist the dispensing consultation at submission');
+const sourceHtml=provenance.run('adrCaseDetails(TP.S,TP.S.adrReports[0],true)');
+assert(sourceHtml.includes('ดูใบสรุปการปรึกษา'));
+assert(sourceHtml.includes(provenance.TP.caseCode({id:'self-old'})));
+assert(sourceHtml.includes('02/10/2026'));
+provenance.actions.adrOpenSource({dataset:{v:knownReport.id}});
+assert.equal(provenance.calls.at(-1)[0],'summary');
+assert.equal(provenance.calls.at(-1)[1].params.id,'self-old');
+assert.equal(provenance.calls.at(-1)[1].params.adrReportId,knownReport.id);
+provenance.TP.back=async()=>provenance.calls.push(['back']);
+await provenance.actions.adrSummaryBack(null,{params:{adrReportId:knownReport.id}});
+assert.equal(provenance.calls.at(-1)[0],'adrreport');
+assert.equal(provenance.calls.at(-1)[1].id,knownReport.id);
+knownReport.consultationId='mom-visit';
+assert.equal(provenance.run('adrReportConsultation(TP.S,TP.S.adrReports[0])'),null,'do not expose another patient consultation');
+knownReport.consultationId='expired';
+const missing=provenance.run('adrCaseDetails(TP.S,TP.S.adrReports[0],true)');
+assert(missing.includes('ไม่มีข้อมูลการปรึกษาต้นทางของยานี้'));
+assert(!missing.includes('data-a="adrOpenSource"'));
+knownReport.consultationId='preview-follow-2';knownReport.consultationPreview=true;
+provenance.TP.followPreviewPlan=id=>id==='preview-follow-2'?{id,date:'17/10/2026',topic:'เจ็บคอ'}:null;
+provenance.actions.adrOpenSource({dataset:{v:knownReport.id}});
+assert.equal(provenance.calls.at(-1)[1].params.id,'preview-follow-2');
+assert.equal(provenance.calls.at(-1)[1].params.followPreview,true,'preview origin opens its own summary rather than unrelated history');
+
 const custom=harness();custom.run("adrDraft(TP.S,{who:'me'})");Object.assign(custom.S._adr,{drug:'store',unknown:true,sym:['อื่น ๆ'],since:'today',level:'mild'});assert(!custom.run('adrReady(TP.S._adr)'));custom.S._adr.note='ระบุอาการที่เป็น';assert(custom.run('adrReady(TP.S._adr)'));
 for(const state of ['patient-report','patient-reply','unknown-drug']){S.st.adrsent=state;screens.adrsent.prep(S);assert(screens.adrsent.render({S,state,params:{}}).includes('ข้อมูลที่ส่ง'));}
 console.log('PASS: owner-only drafts/reports with legacy family isolation, scoped medication search, unknown medicine validation, single-page and urgent cases, exact report reopening, no automatic allergy confirmation duplicate-submit protection, independent medication details and case rendering');

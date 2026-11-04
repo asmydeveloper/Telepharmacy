@@ -1,0 +1,45 @@
+{
+  "code": "C518",
+  "screen": "taxprofile",
+  "title": "ข้อมูลออกใบกำกับภาษี",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C518.1",
+      "state": "normal",
+      "label": "บุคคลธรรมดา",
+      "url": "/?screen=taxprofile&state=normal&splash=0"
+    },
+    {
+      "code": "C518.2",
+      "state": "company",
+      "label": "นิติบุคคล",
+      "url": "/?screen=taxprofile&state=company&splash=0"
+    },
+    {
+      "code": "C518.3",
+      "state": "empty",
+      "label": "ยังไม่มีข้อมูล",
+      "url": "/?screen=taxprofile&state=empty&splash=0"
+    },
+    {
+      "code": "C518.4",
+      "state": "address-error",
+      "label": "โหลดข้อมูลที่อยู่ไม่สำเร็จ",
+      "url": "/?screen=taxprofile&state=address-error&splash=0"
+    },
+    {
+      "code": "C518.5",
+      "state": "saved-person",
+      "label": "บันทึกบุคคลธรรมดาแล้ว",
+      "url": "/?screen=taxprofile&state=saved-person&splash=0"
+    },
+    {
+      "code": "C518.6",
+      "state": "saved-company",
+      "label": "บันทึกนิติบุคคลแล้ว",
+      "url": "/?screen=taxprofile&state=saved-company&splash=0"
+    }
+  ]
+}

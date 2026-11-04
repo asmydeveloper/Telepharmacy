@@ -95,3 +95,66 @@
 .adr-result-drug .medicine-photo {flex:none;object-fit:contain;border-radius:var(--radius-control);background:var(--surface)}
 .adr-result-drug .tag {justify-self:start;margin-top:var(--space-1)}
 .adr-result-reply {padding:0 var(--space-4) var(--space-3)}
+
+.adr-report-details .adr-result-status {display:flex;align-items:center;justify-content:space-between;gap:var(--space-3);background:var(--surface)}
+.adr-report-details .adr-result-status .tag {flex:none;margin-top:0}
+.adr-report-details .adr-result-drug {background:var(--surface);color:var(--ink)}
+.adr-report-details .adr-result-drug>div>span {color:var(--ink-3)}
+.adr-report-details .adr-result-facts>div {align-items:baseline}
+.adr-report-details .adr-result-facts dd {text-align:right}
+/* Report assessments use a separate author card in the report details sheet. */
+.adr-reply-card {padding:0;overflow:hidden;background:var(--surface)}
+.adr-reply-author {display:flex;align-items:center;gap:var(--space-3);padding:var(--space-4);border-bottom:1px solid var(--line-soft)}
+.adr-reply-author .av {flex:none;width:var(--size-touch);height:var(--size-touch)}
+.adr-reply-author>div {display:grid;gap:var(--space-1);min-width:0}
+.adr-reply-author h3 {margin:0;font-size:var(--text-body);font-weight:var(--weight-semibold);line-height:var(--leading-body);overflow-wrap:anywhere}
+.adr-reply-author span,.adr-reply-author small,.adr-reply-sample {font-size:var(--text-small);color:var(--ink-3)}
+.adr-reply-body {padding:var(--space-4)}
+.adr-reply-body p {margin:0;line-height:var(--leading-body);white-space:pre-wrap;overflow-wrap:anywhere}
+.adr-reply-sample {display:block;margin-top:var(--space-3)}
+
+.adr-report-day,.adr-day-cards {display:grid;gap:var(--space-3);min-width:0}
+.adr-report-day+.adr-report-day {margin-top:var(--space-2)}
+.adr-report-day h3 {margin:0;font-size:var(--text-small);font-weight:var(--weight-medium);line-height:var(--leading-body);color:var(--ink-3)}
+
+.adr-consultation {padding:var(--space-4);border-top:1px solid var(--line-soft)}
+.adr-consultation-link {display:flex;align-items:center;gap:var(--space-3);width:100%;padding:var(--space-3);border:1px solid var(--line-soft);border-radius:var(--radius-control);background:var(--color-brand-50);color:var(--brand);text-align:left;cursor:pointer;font:inherit}
+.adr-consultation-link>svg,.adr-consultation-missing>svg {flex:none}
+.adr-consultation-link>span {display:grid;gap:var(--space-1);min-width:0;flex:1;overflow-wrap:anywhere}
+.adr-consultation-link small,.adr-consultation-missing {font-size:var(--text-small);line-height:var(--leading-body);color:var(--ink-3)}
+.adr-consultation-link b {font-weight:var(--weight-semibold);color:var(--ink)}
+.adr-consultation-link>span>span {font-size:var(--text-small);font-weight:var(--weight-medium)}
+.adr-consultation-link:focus-visible {outline:2px solid var(--brand);outline-offset:2px}
+.adr-consultation-missing {display:flex;align-items:center;gap:var(--space-2)}
+
+.adr-consultation-link .consultation-note {font-size:var(--text-small);color:var(--ink);font-weight:var(--weight-regular)}
+
+/* Report detail cards share the consultation summary hierarchy. */
+.adr-report-details .adr-result-section,.adr-report-details .adr-reply-card {box-shadow:none;background:var(--surface)}
+.adr-report-details .adr-result-status,.adr-report-details .adr-result-drug,.adr-report-details .adr-reply-author {background:var(--color-neutral-50);border-bottom:1px solid var(--hair);padding:var(--space-3) var(--space-4)}
+.adr-report-details .adr-result-status h2 {display:flex;align-items:center;gap:var(--space-2);font-size:var(--text-body);font-weight:var(--weight-semibold);color:var(--brand-deep)}
+.adr-report-details .adr-result-heading {font-size:var(--text-body);color:var(--brand-deep);margin-top:var(--space-2)}
+.adr-report-details .adr-result-facts {padding-block:var(--space-1)}
+.adr-report-details .adr-result-facts dd {font-size:var(--text-small);line-height:var(--type-body-mobile-line)}
+.adr-report-details .adr-result-drug {gap:var(--space-3)}
+.adr-report-details .adr-result-drug .medicine-photo {width:var(--size-touch);height:var(--size-touch)}
+.adr-report-details .adr-result-drug h3 {color:var(--brand-deep)}
+.adr-report-details .adr-reply-author h3 {color:var(--brand-deep)}
+.adr-report-details .adr-reply-body {padding:var(--space-4);font-size:var(--text-small)}
+.adr-report-details .adr-reply-body p {line-height:var(--type-body-mobile-line)}
+.adr-report-details .adr-consultation-link {border:0;padding:0;border-radius:0;background:transparent}
+.adr-report-details .adr-consultation-link .consultation-note {font-size:var(--text-small);color:var(--ink-3)}
+
+.phone .adr-report-details :is(.adr-result-section,.adr-reply-card) {padding:0}
+
+.phone .adr-report-details :is(.adr-result-section,.adr-reply-card) {border:1px solid var(--hair);border-radius:var(--radius-card);overflow:hidden}
+
+/* Report cards: clear medicine identity and a quieter status footer. */
+.adr-report-day .adr-report {gap:0;padding:0;overflow:hidden;box-shadow:none}
+.adr-report-day .adr-report-main {padding:var(--space-4);gap:var(--space-3)}
+.adr-report-day .adr-report-icon {width:var(--size-touch);height:var(--size-touch);background:var(--color-brand-50)}
+.adr-report-day .adr-report-copy b {font-weight:var(--weight-semibold);line-height:var(--leading-body)}
+.adr-report-day .adr-report-meta {padding:var(--space-2) var(--space-4);background:var(--color-neutral-50)}
+.adr-report-day .adr-report:focus-visible {outline:2px solid var(--brand);outline-offset:2px}
+
+.phone .adr-report-details .adr-consultation {padding:var(--space-4);border:1px solid var(--hair);border-radius:var(--radius-card);background:var(--surface)}

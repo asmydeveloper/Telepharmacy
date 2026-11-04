@@ -172,6 +172,12 @@
       "state": "no-response",
       "label": "ไม่มีการตอบกลับ 5 นาที",
       "url": "/?screen=history&state=no-response&splash=0"
+    },
+    {
+      "code": "C403.29",
+      "state": "long-note",
+      "label": "ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด",
+      "url": "/?screen=history&state=long-note&splash=0"
     }
   ]
 }

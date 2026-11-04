@@ -1,6 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const source=fs.readFileSync('public/runtime/customer.js','utf8');const S={notif:true,case:{status:'queue',pos:1,branch:'tw',pharm:'kj',symptoms:['ไอ','เจ็บคอ']}};
-const TP={S,branch:()=>({name:'ร้านตัวอย่าง',pharm:'kj'}),PHARM:{kj:{short:'ภญ.ขวัญใจ',ini:'ข'}}};const ctx=vm.createContext({TP,esc:String,ic:()=>'',ui:{av:()=>'',btn:(text,o)=>`<button data-go="${o.go}">${text}</button>`}});
+const TP={S,branch:()=>({name:'ร้านตัวอย่าง',pharm:'kj'}),PHARM:{kj:{short:'ภญ.ขวัญใจ',ini:'ข'}}};require('./consultation-harness.cjs')(TP);
+const ctx=vm.createContext({TP,esc:String,ic:()=>'',ui:{av:()=>'',btn:(text,o)=>`<button data-go="${o.go}">${text}</button>`}});
 const a=source.indexOf('function homeActiveCaseCard(S)'),b=source.indexOf('function heroHtml(S, st)',a);vm.runInContext(source.slice(a,b),ctx);
 const render=()=>vm.runInContext('homeActiveCaseCard(TP.S)',ctx);
 let html=render();assert(html.includes('คุณเป็นคิวถัดไป'));assert(html.includes('data-tone="waiting"'));assert(!html.includes('ออกจากหน้านี้ได้'));assert(!html.includes('0 คิว'));assert(html.includes('data-go="queue"'));assert(!html.includes('hm-active-topic'));assert(!html.includes('เรื่องที่ปรึกษา'));assert(html.includes('เภสัชกรประจำสาขา'));

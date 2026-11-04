@@ -3,6 +3,7 @@ const source=fs.readFileSync('public/runtime/customer.js','utf8'),actions={},rou
 const S={st:{},user:{full:'Test User'},history:[],inbox:[],case:{id:'chat-one',mode:'chat',status:'room',symptoms:['อาการตัวอย่าง'],msgs:[],joinedAt:'14:12',branch:'tw'}};
 const ui={nav:()=>'',page:s=>s,dock:s=>s,btn:(label,o)=>`<button data-go="${o?.go||''}">${label}</button>`,tag:s=>s};
 const TP={S,ui,sim:{},ORDER_ITEMS:[{name:'A',price:120},{name:'B',price:40},{name:'C',price:225}],ORDER_PAYMENT_MS:900000,NOW:{date:'02/11/2026',time:'00:30'},medicineImage:()=>'',money:n=>'฿'+n,esc:String,ic:()=>'',fmtAddr:()=> 'Address',branch:()=>({name:'Branch'}),emit(){},act:(k,f)=>actions[k]=f,cur:()=>current,refresh(){},banner(){},notify(){},sheet:async(id,p)=>{if(id==='pay')TP.startOrderPayment(S._paymentCase.order);sheets.push({id,p});},closeSheet:async()=>{},saveReceipt(){},casePlan:()=>({items:TP.ORDER_ITEMS,adv:['คำแนะนำเพิ่มเติมจากเภสัชกร']}),paidMsg:()=> 'Payment received',RED:()=>true};
+require('./consultation-harness.cjs')(TP);
 const context=vm.createContext({TP,C:()=>S._paymentCase||S.case,esc:String,ic:()=>'',ui,now:()=> '00:30',setInterval(){},clearInterval(){},clearTimeout(){},document:{querySelectorAll:()=>[]},$:()=>({innerHTML:''}),push:(_,m)=>S.case.msgs.push(m),typing:async()=>{},wake(){},waitingForPharmacist:()=>false,console});
 const run=(a,b)=>vm.runInContext(source.slice(source.indexOf(a),source.indexOf(b,source.indexOf(a))),context);
 run('TP.ORDER_PAYMENT_MS=','/* ---------- message html ---------- */');
