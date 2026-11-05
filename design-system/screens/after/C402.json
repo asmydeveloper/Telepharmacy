@@ -20,23 +20,29 @@
     {
       "code": "C402.3",
       "state": "notax",
-      "label": "บัญชียังไม่มีที่อยู่",
+      "label": "ยังไม่มีข้อมูลใบกำกับภาษี",
       "url": "/?screen=receipt&state=notax&splash=0"
     },
     {
       "code": "C402.4",
-      "state": "taxdone",
-      "label": "ดาวน์โหลดตัวเต็มแล้ว",
-      "url": "/?screen=receipt&state=taxdone&splash=0"
+      "state": "taxpending",
+      "label": "ส่งคำขอแล้ว · รอร้านตรวจสอบ",
+      "url": "/?screen=receipt&state=taxpending&splash=0"
     },
     {
       "code": "C402.5",
-      "state": "late",
-      "label": "เลยกำหนดออกตัวเต็ม",
-      "url": "/?screen=receipt&state=late&splash=0"
+      "state": "taxdone",
+      "label": "ออกใบกำกับภาษีแล้ว",
+      "url": "/?screen=receipt&state=taxdone&splash=0"
     },
     {
       "code": "C402.6",
+      "state": "late",
+      "label": "เลยกำหนดขอใบกำกับภาษี",
+      "url": "/?screen=receipt&state=late&splash=0"
+    },
+    {
+      "code": "C402.7",
       "state": "missing",
       "label": "ไม่พบใบเสร็จ",
       "url": "/?screen=receipt&state=missing&splash=0"

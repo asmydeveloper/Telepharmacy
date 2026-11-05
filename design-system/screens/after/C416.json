@@ -40,6 +40,12 @@
       "state": "grouped-days",
       "label": "หลายรายงาน แบ่งตามวัน",
       "url": "/?screen=adrcare&state=grouped-days&splash=0"
+    },
+    {
+      "code": "C416.7",
+      "state": "report-statuses",
+      "label": "ตัวอย่างสถานะรายงาน",
+      "url": "/?screen=adrcare&state=report-statuses&splash=0"
     }
   ]
 }

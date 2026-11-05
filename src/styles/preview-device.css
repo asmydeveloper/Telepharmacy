@@ -109,3 +109,12 @@ html:not(.mob):not(.bare) .code-badge .preview-case-controls button {min-height:
 .preview-pharmacist h2 {font-size:var(--text-small);font-weight:600;margin:0 0 var(--space-2);color:var(--brand-deep)}
 .panel .pn-page-events {border:0;border-radius:0;padding:0;background:transparent;box-shadow:none}
 .panel .pn-page-events .pn-event-list {max-height:none;overflow:visible}
+
+/* Grouped preview controls, outside the customer application. */
+.panel .pn-event-group {margin-top:8px;padding:0 12px;border:1px solid var(--semantic-field-border);border-radius:var(--radius-md);background:var(--semantic-surface)}
+.panel .pn-event-group summary {display:flex;justify-content:space-between;align-items:center;gap:8px}
+.panel .pn-event-group summary span {color:var(--ink-2);font-weight:400}
+.panel .pn-event-group .pn-event-list {margin:0 0 12px}
+.preview-pharmacist>p {font-size:12px;line-height:1.5;color:var(--ink-2);margin:0 0 8px}
+.preview-sim-group {border-top:1px solid var(--semantic-field-border);padding:4px 0 8px}
+.preview-sim-group summary {min-height:36px;align-content:center;cursor:pointer;font-size:13px;font-weight:600;color:var(--semantic-primary)}

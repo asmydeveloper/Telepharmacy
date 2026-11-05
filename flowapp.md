@@ -1,0 +1,816 @@
+# Flow แอปลูกค้าและรายการตรวจระบบจริง
+
+ปรับปรุง 5 พฤศจิกายน 2569 · สถานะ: เอกสารวิเคราะห์จากต้นแบบ ไม่ใช่ผลทดสอบผ่านหรือระบบที่เชื่อมต่อจริง
+
+## วิธีใช้และขอบเขต
+- ทะเบียนท้ายเอกสารดึงจาก `public/preview/events/catalog.json` ในต้นแบบ ณ วันที่ระบุ เป็นรายการที่มี fixture ไม่ได้ยืนยันว่า API หรือทุกสถานการณ์จริงทำงานแล้ว ตรวจคู่กับ [ทะเบียนเหตุการณ์](public/preview/events/README.md), [APP-HANDOFF](APP-HANDOFF.md) และหน้าพรีวิว
+- `[มีต้นแบบ]` หมายถึงมีหน้า/เหตุการณ์จำลอง; `[ต้องทำ]` หมายถึงข้อเสนอที่ยังต้องออกแบบ พัฒนาและทดสอบ; `[ต้องยืนยัน]` คือกติกาธุรกิจหรือข้อมูลจริงที่ยังไม่ตกลง อย่าตีความข้อความจำลองเป็นข้อกำหนดกฎหมายหรือคำแนะนำทางยา
+- เมื่อเพิ่ม ลด หรือเปลี่ยนหน้า/สถานะ ให้อัปเดตทั้งสามเอกสารนี้ ตรวจผลกระทบข้ามฝั่ง ใช้รหัสเหตุการณ์เดิม และอัปเดตทะเบียนด้วย `npm run screens:sync`; ตรวจด้วย `npm run screens:check` แล้วทดสอบ action จริง
+- ขอบเขตปัจจุบัน: ผู้สมัครคนเดียว; พักฟีเจอร์ครอบครัวและแผนที่; ต้องปรึกษาเภสัชกรก่อนซื้อยา; ลูกค้าเลือกแชทหรือวิดีโอ; วิธีรับยาปัจจุบันคือรับที่ร้านหรือส่งด่วน
+
+## Flow และรายการตรวจตามจุดเปลี่ยน
+1. **เริ่มใช้/บัญชี** — เปิดแอป → เข้าสู่ระบบเบอร์หรืออีเมล → ยืนยัน OTP → สมัคร → ยินยอมข้อมูลสุขภาพอย่างชัดแจ้ง → หน้าแรก. ตรวจ OTP ผิด/หมดอายุ/ขอใหม่/จำกัดครั้ง, บัญชีเดิม/ใหม่, อายุ, ข้อมูลบังคับ, ยกเลิกกลับมาแล้วร่างไม่หาย, ความยินยอมแยกข่าวสาร, ระบบล่ม/เน็ตหลุด/กดซ้ำ. `[ต้องทำ]` บันทึก consent version เวลา ผู้รับผิดชอบและช่องทางด้วย backend จริง
+2. **หน้าแรกและค้นหาร้าน** — ไม่มีเคสเริ่มต้น; ที่อยู่หลัก/ไม่มีที่อยู่/แก้ที่อยู่, ร้านเปิด/ปิด/พักคิว, ระยะบริการ/ไม่ทราบตำแหน่ง, ร้านโปรด, โหลด/ว่าง/ล้มเหลว. เคสกำลังดำเนินอยู่แสดงการ์ดที่เหมาะกับสถานะ ไม่แสดงรหัสเคสในห้องคุยหรือการ์ดที่กำลังดำเนินการ
+3. **เริ่มปรึกษา** — เลือกสาขาและโหมด → อาการ/รูป/ข้อมูลสุขภาพ → เตือนอาการเร่งด่วน → ยืนยัน → เข้าคิว. ตรวจไม่กรอก/อัปโหลดผิด/ยกเลิก/รับคิวซ้ำ/สาขาหยุดรับ/ปิด/ผู้ใช้หมดสิทธิ์, คงโหมดและข้อมูลเดียวกันทั้งสองฝั่ง. `[ต้องทำ]` กำหนดกติกาคัดกรองและการส่งต่อให้ผู้ประกอบวิชาชีพอนุมัติ
+4. **คิวและแชท/วิดีโอ** — รอหลายคิว/คิวถัดไป/เภสัชกรพัก → รับคิว → คุย → ขอวิดีโอ/ยอมรับ/ปฏิเสธ/ถอนคำขอ → ส่งข้อความและรายการยา → สรุป/จบ. ตรวจพร้อมกันสองอุปกรณ์, เงียบเตือน 3 นาทีและปิด 5 นาทีตามต้นแบบ, การส่งไม่สำเร็จ/เน็ตหลุด/กล้องไมค์ไม่ได้รับอนุญาต/กลับมาต่อ, ป้องกันจ่ายยาหรือรับคิวซ้ำ. `[ต้องยืนยัน]` เวลารอและ SLA จริง
+5. **รายการยาและจ่ายเงิน** — เภสัชกรเสนอยาและราคาในแชท; หลังจบคุยลูกค้าเปิดชำระคำสั่งซื้อเดิม. เลือกรับที่ร้าน/ส่งด่วนและที่อยู่ → ส่วนลด → ใบกำกับ (ไม่ขอ/ขอ บุคคล/นิติบุคคล) → เลือกช่องทาง → ยืนยัน. ตรวจราคาที่เซิร์ฟเวอร์/ค่าส่ง/ส่วนลด, ที่อยู่หลุดระยะ, ร้านปิด, สินค้าหมด, ใบกำกับไม่มีข้อมูล/แก้ไข/ยกเลิก, ชำระสำเร็จ/ล้มเหลว/ค้าง/timeout/webhook ซ้ำ. โหมดแชทเริ่มนับ 15 นาทีเมื่อเปิดชำระครั้งแรก ไม่ต่อเวลาเองและไม่เปิดแชทที่จบใหม่; วิดีโอใช้กติกาที่ตกลงแยก. `[ต้องทำ]` payment reconciliation และ idempotency; ห้ามถือว่าจ่ายแล้วจาก UI เพียงอย่างเดียว
+6. **จัดเตรียม/รับยา** — จ่ายแล้ว → เตรียมยา → รับที่ร้าน: พร้อมรับ → รับสำเร็จ; ส่งด่วน: เรียกไรเดอร์ → รับยา → กำลังส่ง → ส่งสำเร็จ. ไม่แสดงเป็นประวัติที่เสร็จจนรับ/ส่งสำเร็จ; หน้ารวมสรุปแสดงรายละเอียดที่เกี่ยวข้องและสถานะจากคำสั่งซื้อเดียวกัน. ตรวจไรเดอร์ไม่พบ/ปฏิเสธ/ลิงก์ติดตามไม่มี/ส่งไม่สำเร็จ/รับไม่ทัน/ยกเลิก/คืนเงิน `[ต้องออกแบบ]`; ลิงก์ third party ต้องใช้ URL ที่ได้รับจริง ไม่สร้างลิงก์ติดตามปลอม
+7. **ประวัติ/สรุป/ใบเสร็จ** — รายการกำลังดำเนินการไว้ก่อน ตามด้วยประวัติ; แยกผลปรึกษาออกจากสถานะจ่ายและส่ง. สรุปข้อมูลผู้รับ เรื่องที่ปรึกษา ยา วิธีใช้ และคำแนะนำจากข้อมูลเคสเดียวกัน; ใบเสร็จจากคำสั่งซื้อเดียวกัน; ให้คะแนนครั้งเดียว. ตรวจไม่มีการจ่ายยา/ยกเลิก/หมดเวลา/ไม่ตอบ/ไม่ซื้อยา/ชำระแล้วและจัดส่งสำเร็จ, สรุป/ใบเสร็จไม่มีหรือโหลดไม่สำเร็จ, เข้าจากแจ้งเตือนหรือย้อนกลับ
+8. **ใบกำกับภาษี** — ใช้ข้อมูลผู้รับที่บันทึกในบัญชีร่วมกันกับ checkout/ใบเสร็จ; แบบบุคคล/นิติบุคคลแยกหนึ่งชุด; ยังไม่มีให้เพิ่มข้อมูล, แก้ไข, ส่งคำขอ, รอตรวจ, ออกแล้วดาวน์โหลดเอกสารจริง, ส่งไม่สำเร็จ/ถูกปฏิเสธ/เลยกำหนด `[ต้องออกแบบ]`. ต้นแบบระบุ 7 วันเป็นกติกาธุรกิจที่ต้องยืนยัน ไม่อ้างว่าเป็นระยะตามกฎหมาย; เอกสารที่ออกแล้วต้องเป็น snapshot ป้องกันข้อมูลแก้ย้อนหลัง
+9. **ติดตามยา/แจ้งอาการ** — แยกยาตามมื้อและตามแผนที่เริ่ม/จบต่างกัน; แสดงยาที่ใช้อยู่และประวัติ; ยาใช้เมื่อจำเป็นบันทึกแยก. ตรวจบันทึก/ยกเลิก/ลืม/จบคอร์ส/ปิดเตือน/หลายแผน/ไม่มีแผน/ออฟไลน์/เปลี่ยนวัน. แจ้งอาการเลือกหลายยา, ข้อมูลอาการต่อยา, เร่งด่วนต้องเห็นคำแนะนำทันที; รายงานที่ส่งไม่ใช่การยืนยันแพ้ยา ต้องรอเภสัชกรประเมิน; แสดงรายงานตามวัน ต้นทางและคำตอบ. `[ต้องทำ]` ทบทวนสิทธิ์ข้อมูลและการส่งต่อทางคลินิก
+10. **แจ้งเตือน/บัญชี** — แจ้งเตือนเข้าแอป/OS ปิดสิทธิ์/ซ้ำ/เปิดลิงก์รายการที่หาย/อ่านแล้ว; ที่อยู่ ข้อมูลสุขภาพ ประวัติแพ้ยาที่ผู้ใช้กรอก ใบกำกับ ความยินยอม ลบบัญชี; ตรวจสิทธิ์ แก้ไข/ยกเลิก/บันทึก/โหลดผิดพลาดและข้อมูลคงอยู่
+
+## สัญญาข้อมูลและการทดสอบข้ามระบบ
+- ใช้ `userId`, `consultationId`, `orderId`, `paymentId`, `fulfillmentId`, `reportId` เป็นตัวเชื่อม; รหัสแสดงผลเป็นคนละเรื่องกับ ID ภายใน ห้ามสร้างเลขใหม่เมื่อเปิดหน้า; รหัสคำสั่งซื้อเดียวกันตลอด lifecycle
+- แยก state machine: consultation, order, payment, fulfillment, prescription/dispense, adverse report, tax request, notification; เก็บ timestamp, actor, version และเหตุผลการเปลี่ยน ไม่อนุมานสถานะข้ามกันโดยไม่มี event ยืนยัน
+- ตรวจ `[ ]` transition ที่อนุญาตและสถานะย้อนกลับ `[ ]` concurrent updates `[ ]` retry/idempotency `[ ]` webhook out-of-order `[ ]` โหลดซ้ำและกู้คืน `[ ]` ผูกข้อมูลคน/สาขา/เคสถูกต้อง `[ ]` duplicate event `[ ]` timezone `[ ]` permission `[ ]` accessibility `[ ]` หน้าจอ loading/empty/error ทุกทางเข้า
+- `[ต้องทำ]` API authorization แบบรายคน/สาขา, audit, logging ไม่ใส่ข้อมูลสุขภาพเกินจำเป็น, backup/restore, retention และการจัดการความยินยอมร่วมกับผู้รับผิดชอบข้อมูล
+
+## แหล่งอ้างอิงและข้อจำกัด
+- [แนวทางมาตรฐานบริการเภสัชกรรมทางไกล สภาเภสัชกรรม 62/2565](https://pharmacycouncil.org/index.php/share/file/index.php?catid=0&itemid=2966&menuid=68&option=content_detail) และ [แนวทางและขั้นตอนบริการเภสัชกรรมทางไกล อย.](https://drug.fda.moph.go.th/press-release/telepharmacy_2/) ใช้เป็นจุดเริ่มตรวจบทบาทและข้อกำหนดจริง ต้องตรวจฉบับล่าสุดกับผู้เชี่ยวชาญก่อนเปิดบริการ
+- [HL7 FHIR MedicationRequest](https://hl7.org/fhir/medicationrequest.html) เป็นแนวทางพิจารณาการแยกคำสั่งยาและวงจรข้อมูล ไม่ได้หมายความว่าต้นแบบเชื่อม FHIR แล้ว
+
+## ทะเบียนหน้าจอและเหตุการณ์ที่มี fixture
+รหัสด้านล่างเป็น snapshot จากทะเบียนที่สร้างอัตโนมัติ โปรดเปิดคู่มือรายหน้าเพื่อดูวิธีกดและเงื่อนไข; การมีรายการไม่เท่ากับผ่าน QA. รวมหน้าที่ซ่อนหรือพักใช้ตามทะเบียนเดิม ต้องตรวจขอบเขตปัจจุบันก่อนพัฒนา
+
+### C101 · splash (1 เหตุการณ์)
+
+- `EV-C101-default` — ปกติ · [เปิดเคส](/?screen=splash&splash=0)
+
+### C102 · login (12 เหตุการณ์)
+
+- `EV-C102-normal` — เลือกวิธีเข้าสู่ระบบ · [เปิดเคส](/?screen=login&state=normal&splash=0)
+- `EV-C102-error` — ข้อความผิดพลาดการเข้าสู่ระบบ · [เปิดเคส](/?screen=login&state=error&splash=0)
+- `EV-C102-signedout` — หลุดจากระบบ 30 วัน · [เปิดเคส](/?screen=login&state=signedout&splash=0)
+- `EV-C102-cover` — ภาพปกหน้าร้าน · [เปิดเคส](/?screen=login&state=cover&splash=0)
+- `EV-C102-platform-cover` — ปกแพลตฟอร์มร้านยา ไม่มีคน · [เปิดเคส](/?screen=login&state=platform-cover&splash=0)
+- `EV-C102-storefront-cover` — ปกหน้าร้าน ตัดป้ายร้านข้างเคียง · [เปิดเคส](/?screen=login&state=storefront-cover&splash=0)
+- `EV-C102-no-logo-overlay` — ปกหน้าร้าน ไม่มีโลโก้และกล่องทับ · [เปิดเคส](/?screen=login&state=no-logo-overlay&splash=0)
+- `EV-C102-compact-terms` — ข้อกำหนดและนโยบายระยะกระชับ · [เปิดเคส](/?screen=login&state=compact-terms&splash=0)
+- `EV-C102-white-fade` — เฟดขาว ปุ่มสี Primary · [เปิดเคส](/?screen=login&state=white-fade&splash=0)
+- `EV-C102-white-image` — ภาพปกด้านล่างขาว ไม่มีเฟด CSS · [เปิดเคส](/?screen=login&state=white-image&splash=0)
+- `EV-C102-simple-cover` — ปกไม่มีข้อความรอง · [เปิดเคส](/?screen=login&state=simple-cover&splash=0)
+- `EV-C102-cover-heading` — หัวข้อและคำอธิบายบรรทัดเดียว · [เปิดเคส](/?screen=login&state=cover-heading&splash=0)
+
+### C103 · loginphone (17 เหตุการณ์)
+
+- `EV-C103-normal` — ปกติ · [เปิดเคส](/?screen=loginphone&state=normal&splash=0)
+- `EV-C103-error` — เบอร์ไม่ถูกต้อง · [เปิดเคส](/?screen=loginphone&state=error&splash=0)
+- `EV-C103-signedout` — หลุดจากระบบ 30 วัน · [เปิดเคส](/?screen=loginphone&state=signedout&splash=0)
+- `EV-C103-filled` — กรอกเบอร์แล้ว · [เปิดเคส](/?screen=loginphone&state=filled&splash=0)
+- `EV-C103-panel-layout` — กล่องล็อกอิน 70% พร้อมปก CI · [เปิดเคส](/?screen=loginphone&state=panel-layout&splash=0)
+- `EV-C103-consultation-cover` — ปกเภสัชกร ไม่มีข้อความ · [เปิดเคส](/?screen=loginphone&state=consultation-cover&splash=0)
+- `EV-C103-otp-sent` — กล่องกรอกรหัสในหน้าเดิม · [เปิดเคส](/?screen=loginphone&state=otp-sent&splash=0)
+- `EV-C103-otp-filled` — รหัสครบ พร้อมยืนยัน · [เปิดเคส](/?screen=loginphone&state=otp-filled&splash=0)
+- `EV-C103-otp-wrong` — รหัสไม่ถูกต้อง · [เปิดเคส](/?screen=loginphone&state=otp-wrong&splash=0)
+- `EV-C103-otp-expired` — รหัสหมดอายุ · [เปิดเคส](/?screen=loginphone&state=otp-expired&splash=0)
+- `EV-C103-otp-locked` — ลองผิดครบกำหนด · [เปิดเคส](/?screen=loginphone&state=otp-locked&splash=0)
+- `EV-C103-resend` — ส่งรหัสใหม่ได้ · [เปิดเคส](/?screen=loginphone&state=resend&splash=0)
+- `EV-C103-new-account` — ยืนยันแล้วไปสมัครใหม่ · [เปิดเคส](/?screen=loginphone&state=new-account&splash=0)
+- `EV-C103-existing-account` — ยืนยันแล้วไปหน้าหลัก · [เปิดเคส](/?screen=loginphone&state=existing-account&splash=0)
+- `EV-C103-plain-panel` — ไม่มีโลโก้และกล่องทับ · [เปิดเคส](/?screen=loginphone&state=plain-panel&splash=0)
+- `EV-C103-otp-c103` — กรอกรหัสในหน้าเดิม กลับแก้ปลายทางได้ · [เปิดเคส](/?screen=loginphone&state=otp-c103&splash=0)
+- `EV-C103-masked-target` — ซ่อนปลายทางและแป้นตัวเลขพอดีปุ่ม · [เปิดเคส](/?screen=loginphone&state=masked-target&splash=0)
+
+### C104 · loginemail (17 เหตุการณ์)
+
+- `EV-C104-normal` — ยังไม่กรอก · [เปิดเคส](/?screen=loginemail&state=normal&splash=0)
+- `EV-C104-filled` — กรอกอีเมลแล้ว · [เปิดเคส](/?screen=loginemail&state=filled&splash=0)
+- `EV-C104-invalid` — รูปแบบอีเมลไม่ถูกต้อง · [เปิดเคส](/?screen=loginemail&state=invalid&splash=0)
+- `EV-C104-service-error` — ส่งรหัสไม่สำเร็จ · [เปิดเคส](/?screen=loginemail&state=service-error&splash=0)
+- `EV-C104-panel-layout` — กล่องล็อกอิน 70% พร้อมปก CI · [เปิดเคส](/?screen=loginemail&state=panel-layout&splash=0)
+- `EV-C104-consultation-cover` — ปกเภสัชกร ไม่มีข้อความ · [เปิดเคส](/?screen=loginemail&state=consultation-cover&splash=0)
+- `EV-C104-otp-sent` — กล่องกรอกรหัสในหน้าเดิม · [เปิดเคส](/?screen=loginemail&state=otp-sent&splash=0)
+- `EV-C104-otp-filled` — รหัสครบ พร้อมยืนยัน · [เปิดเคส](/?screen=loginemail&state=otp-filled&splash=0)
+- `EV-C104-otp-wrong` — รหัสไม่ถูกต้อง · [เปิดเคส](/?screen=loginemail&state=otp-wrong&splash=0)
+- `EV-C104-otp-expired` — รหัสหมดอายุ · [เปิดเคส](/?screen=loginemail&state=otp-expired&splash=0)
+- `EV-C104-otp-locked` — ลองผิดครบกำหนด · [เปิดเคส](/?screen=loginemail&state=otp-locked&splash=0)
+- `EV-C104-resend` — ส่งรหัสใหม่ได้ · [เปิดเคส](/?screen=loginemail&state=resend&splash=0)
+- `EV-C104-new-account` — ยืนยันแล้วไปสมัครใหม่ · [เปิดเคส](/?screen=loginemail&state=new-account&splash=0)
+- `EV-C104-existing-account` — ยืนยันแล้วไปหน้าหลัก · [เปิดเคส](/?screen=loginemail&state=existing-account&splash=0)
+- `EV-C104-plain-panel` — ไม่มีโลโก้และกล่องทับ · [เปิดเคส](/?screen=loginemail&state=plain-panel&splash=0)
+- `EV-C104-otp-c103` — กรอกรหัสในหน้าเดิม กลับแก้ปลายทางได้ · [เปิดเคส](/?screen=loginemail&state=otp-c103&splash=0)
+- `EV-C104-masked-target` — ซ่อนปลายทางและแป้นตัวเลขพอดีปุ่ม · [เปิดเคส](/?screen=loginemail&state=masked-target&splash=0)
+
+### C105 · profile (54 เหตุการณ์)
+
+- `EV-C105-empty` — เบอร์ใหม่: ยังไม่กรอก · [เปิดเคส](/?screen=profile&state=empty&splash=0)
+- `EV-C105-filled` — เบอร์ใหม่: กรอกแล้ว · [เปิดเคส](/?screen=profile&state=filled&splash=0)
+- `EV-C105-error` — ปีเกิดไม่ถูกต้อง · [เปิดเคส](/?screen=profile&state=error&splash=0)
+- `EV-C105-acct` — มีบัญชีเว็บ: ความยินยอมฉบับใหม่ · [เปิดเคส](/?screen=profile&state=acct&splash=0)
+- `EV-C105-email` — สมัครใหม่ด้วยอีเมลที่ยืนยันแล้ว · [เปิดเคส](/?screen=profile&state=email&splash=0)
+- `EV-C105-address` — ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ · [เปิดเคส](/?screen=profile&state=address&splash=0)
+- `EV-C105-address-no-results` — ค้นหาที่อยู่ไม่พบ กรอกเองได้ · [เปิดเคส](/?screen=profile&state=address-no-results&splash=0)
+- `EV-C105-address-error` — ตัวช่วยที่อยู่โหลดไม่สำเร็จ · [เปิดเคส](/?screen=profile&state=address-error&splash=0)
+- `EV-C105-health` — ขั้นข้อมูลสุขภาพ ยังไม่ทราบ · [เปิดเคส](/?screen=profile&state=health&splash=0)
+- `EV-C105-health-empty` — ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ · [เปิดเคส](/?screen=profile&state=health-empty&splash=0)
+- `EV-C105-health-filled` — ข้อมูลสุขภาพหลายรายการ · [เปิดเคส](/?screen=profile&state=health-filled&splash=0)
+- `EV-C105-review` — ตรวจทานและความยินยอม ยังไม่ติ๊ก · [เปิดเคส](/?screen=profile&state=review&splash=0)
+- `EV-C105-consent-partial` — ความยินยอมเก่าไม่แทนการเลือกฉบับใหม่ · [เปิดเคส](/?screen=profile&state=consent-partial&splash=0)
+- `EV-C105-consent-ready` — เลือกยินยอมแล้ว พร้อมสมัคร · [เปิดเคส](/?screen=profile&state=consent-ready&splash=0)
+- `EV-C105-save-error` — บันทึกไม่สำเร็จ ข้อมูลยังอยู่ · [เปิดเคส](/?screen=profile&state=save-error&splash=0)
+- `EV-C105-health-none` — ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง · [เปิดเคส](/?screen=profile&state=health-none&splash=0)
+- `EV-C105-health-no-results` — ยาไม่อยู่ในลิสต์ ใช้อื่น ๆ · [เปิดเคส](/?screen=profile&state=health-no-results&splash=0)
+- `EV-C105-health-documents` — แนบเอกสารแพ้ยาแล้ว · [เปิดเคส](/?screen=profile&state=health-documents&splash=0)
+- `EV-C105-health-doc-error` — ไฟล์แนบไม่ผ่านเงื่อนไข · [เปิดเคส](/?screen=profile&state=health-doc-error&splash=0)
+- `EV-C105-quick-fill` — ปุ่มมอคข้อมูลใต้ป้ายชื่อหน้า · [เปิดเคส](/?screen=profile&state=quick-fill&splash=0)
+- `EV-C105-address-search` — ค้นหาที่อยู่และเติมอัตโนมัติ · [เปิดเคส](/?screen=profile&state=address-search&splash=0)
+- `EV-C105-conditions-multi` — เลือกโรคได้หลายข้อ · [เปิดเคส](/?screen=profile&state=conditions-multi&splash=0)
+- `EV-C105-conditions-other` — ระบุโรคอื่น ๆ · [เปิดเคส](/?screen=profile&state=conditions-other&splash=0)
+- `EV-C105-conditions-other-empty` — เลือกอื่น ๆ แต่ยังไม่กรอก · [เปิดเคส](/?screen=profile&state=conditions-other-empty&splash=0)
+- `EV-C105-conditions-no-results` — โรคที่ไม่มีในลิสต์ ใช้อื่น ๆ · [เปิดเคส](/?screen=profile&state=conditions-no-results&splash=0)
+- `EV-C105-registration-back` — ย้อนกลับเพื่อแก้ไขข้อมูล · [เปิดเคส](/?screen=profile&state=registration-back&splash=0)
+- `EV-C105-health-all-other` — เลือกหลายข้อและอื่น ๆ ทุกกลุ่มสุขภาพ · [เปิดเคส](/?screen=profile&state=health-all-other&splash=0)
+- `EV-C105-health-doc-limit` — แนบเอกสารครบ 5 ไฟล์ · [เปิดเคส](/?screen=profile&state=health-doc-limit&splash=0)
+- `EV-C105-review-documents` — ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์ · [เปิดเคส](/?screen=profile&state=review-documents&splash=0)
+- `EV-C105-dob-years` — วันเกิด: ล้อหมุน · [เปิดเคส](/?screen=profile&state=dob-years&splash=0)
+- `EV-C105-dob-months` — วันเกิด: เลือกเดือน · [เปิดเคส](/?screen=profile&state=dob-months&splash=0)
+- `EV-C105-dob-days` — วันเกิด: เลือกวัน · [เปิดเคส](/?screen=profile&state=dob-days&splash=0)
+- `EV-C105-dob-selected` — วันเกิด: ค่าเดิม · [เปิดเคส](/?screen=profile&state=dob-selected&splash=0)
+- `EV-C105-dob-leap` — วันเกิด: ปีอธิกสุรทิน · [เปิดเคส](/?screen=profile&state=dob-leap&splash=0)
+- `EV-C105-dob-future` — วันเกิด: จำกัดถึงวันนี้ · [เปิดเคส](/?screen=profile&state=dob-future&splash=0)
+- `EV-C105-dob-oldest` — วันเกิด: ปี 1900 · [เปิดเคส](/?screen=profile&state=dob-oldest&splash=0)
+- `EV-C105-marketing-opt-in` — ยินยอมรับข่าวสาร · [เปิดเคส](/?screen=profile&state=marketing-opt-in&splash=0)
+- `EV-C105-marketing-opt-out` — ไม่รับข่าวสาร สมัครได้ · [เปิดเคส](/?screen=profile&state=marketing-opt-out&splash=0)
+- `EV-C105-address-select` — เลือกจังหวัด อำเภอ ตำบล · [เปิดเคส](/?screen=profile&state=address-select&splash=0)
+- `EV-C105-address-missing-phone` — ที่อยู่ยังไม่กรอกเบอร์ · [เปิดเคส](/?screen=profile&state=address-missing-phone&splash=0)
+- `EV-C105-address-invalid-phone` — รูปแบบเบอร์ติดต่อไม่ถูกต้อง · [เปิดเคส](/?screen=profile&state=address-invalid-phone&splash=0)
+- `EV-C105-health-text` — ระบุสุขภาพด้วยข้อความ · [เปิดเคส](/?screen=profile&state=health-text&splash=0)
+- `EV-C105-national-id-short` — เลขประชาชนไม่ครบ 13 หลัก · [เปิดเคส](/?screen=profile&state=national-id-short&splash=0)
+- `EV-C105-national-id-format` — เลขประชาชนมีตัวอักษร · [เปิดเคส](/?screen=profile&state=national-id-format&splash=0)
+- `EV-C105-national-id-checksum` — เลขประชาชนครบแต่เลขตรวจสอบผิด · [เปิดเคส](/?screen=profile&state=national-id-checksum&splash=0)
+- `EV-C105-map-ready` — ที่อยู่ครบ พร้อมยืนยันหมุด · [เปิดเคส](/?screen=profile&state=map-ready&splash=0)
+- `EV-C105-map-outside` — หมุดอยู่นอกตำบล บันทึกไม่ได้ · [เปิดเคส](/?screen=profile&state=map-outside&splash=0)
+- `EV-C105-map-error` — โหลดขอบเขตตำบลไม่ได้ · [เปิดเคส](/?screen=profile&state=map-error&splash=0)
+- `EV-C105-map-saved` — บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ · [เปิดเคส](/?screen=profile&state=map-saved&splash=0)
+- `EV-C105-address-split` — ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน · [เปิดเคส](/?screen=profile&state=address-split&splash=0)
+- `EV-C105-address-legacy` — ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ · [เปิดเคส](/?screen=profile&state=address-legacy&splash=0)
+- `EV-C105-address-details-invalid` — รายละเอียดอาคารยาวเกินกำหนด · [เปิดเคส](/?screen=profile&state=address-details-invalid&splash=0)
+- `EV-C105-personal-edit` — แก้ไขข้อมูลส่วนตัว · [เปิดเคส](/?screen=profile&state=personal-edit&splash=0)
+- `EV-C105-personal-edit-invalid` — แก้ไขข้อมูลส่วนตัวไม่ครบ · [เปิดเคส](/?screen=profile&state=personal-edit-invalid&splash=0)
+
+### C106 · registrationexit (1 เหตุการณ์)
+
+- `EV-C106-normal` — ยืนยันก่อนออก · [เปิดเคส](/?screen=registrationexit&state=normal&splash=0)
+
+### C107 · registrationconsent (1 เหตุการณ์)
+
+- `EV-C107-normal` — อ่านความยินยอม ไม่มีช่องติ๊ก · [เปิดเคส](/?screen=registrationconsent&state=normal&splash=0)
+
+### C108 · registrationsuccess (6 เหตุการณ์)
+
+- `EV-C108-normal` — สมัครสำเร็จด้วยเบอร์โทร · [เปิดเคส](/?screen=registrationsuccess&state=normal&splash=0)
+- `EV-C108-email` — สมัครสำเร็จด้วยอีเมล · [เปิดเคส](/?screen=registrationsuccess&state=email&splash=0)
+- `EV-C108-unavailable` — ยังสมัครไม่เสร็จ · [เปิดเคส](/?screen=registrationsuccess&state=unavailable&splash=0)
+- `EV-C108-long-name` — ชื่อจริงยาว · [เปิดเคส](/?screen=registrationsuccess&state=long-name&splash=0)
+- `EV-C108-no-name` — ไม่มีชื่อแสดง · [เปิดเคส](/?screen=registrationsuccess&state=no-name&splash=0)
+- `EV-C108-full-cover` — ปกเต็มจอและปุ่มใต้คำต้อนรับ · [เปิดเคส](/?screen=registrationsuccess&state=full-cover&splash=0)
+
+### C110 · faceid (2 เหตุการณ์)
+
+- `EV-C110-ios` — iPhone (Face ID) · [เปิดเคส](/?screen=faceid&state=ios&splash=0)
+- `EV-C110-android` — Android (ลายนิ้วมือ) · [เปิดเคส](/?screen=faceid&state=android&splash=0)
+
+### C111 · doc (1 เหตุการณ์)
+
+- `EV-C111-default` — ปกติ · [เปิดเคส](/?screen=doc&splash=0)
+
+### C112 · onboard (3 เหตุการณ์)
+
+- `EV-C112-p1` — หน้า 1 เภสัชกรตัวจริง · [เปิดเคส](/?screen=onboard&state=p1&splash=0)
+- `EV-C112-p2` — หน้า 2 เวลาให้บริการ · [เปิดเคส](/?screen=onboard&state=p2&splash=0)
+- `EV-C112-p3` — หน้า 3 ขั้นตอนและความเสี่ยง · [เปิดเคส](/?screen=onboard&state=p3&splash=0)
+
+### C113 · marketingconsent (1 เหตุการณ์)
+
+- `EV-C113-normal` — อ่านรายละเอียด ไม่เปลี่ยนการเลือก · [เปิดเคส](/?screen=marketingconsent&state=normal&splash=0)
+
+### C201 · home (70 เหตุการณ์)
+
+- `EV-C201-normal` — ปกติ · [เปิดเคส](/?screen=home&state=normal&splash=0)
+- `EV-C201-loading` — กำลังโหลด · [เปิดเคส](/?screen=home&state=loading&splash=0)
+- `EV-C201-active` — มีเคสค้าง · [เปิดเคส](/?screen=home&state=active&splash=0)
+- `EV-C201-busy` — สาขาใกล้สุดพัก · [เปิดเคส](/?screen=home&state=busy&splash=0)
+- `EV-C201-closed` — ร้านปิด · [เปิดเคส](/?screen=home&state=closed&splash=0)
+- `EV-C201-address-alt` — เลือกที่อยู่คลองเตย · [เปิดเคส](/?screen=home&state=address-alt&splash=0)
+- `EV-C201-noaddress` — ไม่มีที่อยู่ · [เปิดเคส](/?screen=home&state=noaddress&splash=0)
+- `EV-C201-outarea` — ไม่พบร้านในพื้นที่ · [เปิดเคส](/?screen=home&state=outarea&splash=0)
+- `EV-C201-unknownarea` — พื้นที่ยังตรวจสอบไม่ได้ · [เปิดเคส](/?screen=home&state=unknownarea&splash=0)
+- `EV-C201-banner-edge` — แบนเนอร์เต็มขอบ · [เปิดเคส](/?screen=home&state=banner-edge&splash=0)
+- `EV-C201-blue-canvas` — พื้นหลังเทาอมฟ้าอ่อน · [เปิดเคส](/?screen=home&state=blue-canvas&splash=0)
+- `EV-C201-pharmacy-banner` — ภาพร้านยาและเฟดข้อความ · [เปิดเคส](/?screen=home&state=pharmacy-banner&splash=0)
+- `EV-C201-mini-menu` — มินิเมนูสุขภาพใต้แบนเนอร์ · [เปิดเคส](/?screen=home&state=mini-menu&splash=0)
+- `EV-C201-compact-store` — การ์ดสาขาแบบกระชับ · [เปิดเคส](/?screen=home&state=compact-store&splash=0)
+- `EV-C201-named-address` — ชื่อที่อยู่และดรอปดาวน์ · [เปิดเคส](/?screen=home&state=named-address&splash=0)
+- `EV-C201-plain-mini-menu` — มินิเมนูไม่มีกรอบ · [เปิดเคส](/?screen=home&state=plain-mini-menu&splash=0)
+- `EV-C201-branch-tile` — การ์ดรูปซ้ายและเลือกวิธีปรึกษา · [เปิดเคส](/?screen=home&state=branch-tile&splash=0)
+- `EV-C201-white-canvas` — พื้นหลังสีขาว · [เปิดเคส](/?screen=home&state=white-canvas&splash=0)
+- `EV-C201-layout-system` — กริดและระยะกลางทั้งแอป · [เปิดเคส](/?screen=home&state=layout-system&splash=0)
+- `EV-C201-store-list` — ลิสต์ร้านยา 6 ร้าน · [เปิดเคส](/?screen=home&state=store-list&splash=0)
+- `EV-C201-care-shortcuts` — ติดตามยาและประวัติในมินิเมนู · [เปิดเคส](/?screen=home&state=care-shortcuts&splash=0)
+- `EV-C201-figma-system` — Figma tokens และ component กลาง · [เปิดเคส](/?screen=home&state=figma-system&splash=0)
+- `EV-C201-real-photos` — ภาพถ่ายและรูปมุมมน · [เปิดเคส](/?screen=home&state=real-photos&splash=0)
+- `EV-C201-pastel-icons` — ไอคอนภาพประกอบพาสเทล · [เปิดเคส](/?screen=home&state=pastel-icons&splash=0)
+- `EV-C201-banner-actions` — ปุ่มแบนเนอร์เสมอกัน ไม่มี badge · [เปิดเคส](/?screen=home&state=banner-actions&splash=0)
+- `EV-C201-refined-store-list` — ลิสต์ร้านจัดลำดับข้อมูลใหม่ · [เปิดเคส](/?screen=home&state=refined-store-list&splash=0)
+- `EV-C201-distinct-store-photos` — ภาพจำลองแต่ละร้านต่างกัน · [เปิดเคส](/?screen=home&state=distinct-store-photos&splash=0)
+- `EV-C201-soft-status` — แท็กเปิดรับปรึกษาพื้นเขียวอ่อน · [เปิดเคส](/?screen=home&state=soft-status&splash=0)
+- `EV-C201-store-more` — เมนูจุดสามจุดของร้าน · [เปิดเคส](/?screen=home&state=store-more&splash=0)
+- `EV-C201-bear-banner` — ปกหมีเภสัชกร 3D · [เปิดเคส](/?screen=home&state=bear-banner&splash=0)
+- `EV-C201-banner-safe-area` — ภาพปกเต็ม safe area เฟดต่อเนื่อง · [เปิดเคส](/?screen=home&state=banner-safe-area&splash=0)
+- `EV-C201-bright-bear` — หมีสดใส เฟดเฉพาะด้านบน · [เปิดเคส](/?screen=home&state=bright-bear&splash=0)
+- `EV-C201-tritone-icons` — ไอคอน Flat 3 สี CI · [เปิดเคส](/?screen=home&state=tritone-icons&splash=0)
+- `EV-C201-personal-greeting` — ทักทายชื่อจริงและหัวใจขาวเต็ม · [เปิดเคส](/?screen=home&state=personal-greeting&splash=0)
+- `EV-C201-counter-bear` — หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ · [เปิดเคส](/?screen=home&state=counter-bear&splash=0)
+- `EV-C201-soft-rounded-icons` — ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่ · [เปิดเคส](/?screen=home&state=soft-rounded-icons&splash=0)
+- `EV-C201-glass-tabs` — เมนูล่าง Liquid Glass · [เปิดเคส](/?screen=home&state=glass-tabs&splash=0)
+- `EV-C201-female-pharmacist-banner` — ปกเภสัชกรหญิงหลังเคาน์เตอร์ · [เปิดเคส](/?screen=home&state=female-pharmacist-banner&splash=0)
+- `EV-C201-quick-consult` — ปุ่มกลาง เลือกร้านว่างใกล้สุด · [เปิดเคส](/?screen=home&state=quick-consult&splash=0)
+- `EV-C201-quick-busy` — ไม่มีร้านคิวว่าง · [เปิดเคส](/?screen=home&state=quick-busy&splash=0)
+- `EV-C201-quick-unknown` — ยังไม่ทราบจำนวนคิว · [เปิดเคส](/?screen=home&state=quick-unknown&splash=0)
+- `EV-C201-quick-address` — ปรึกษาโดยยังไม่มีที่อยู่ · [เปิดเคส](/?screen=home&state=quick-address&splash=0)
+- `EV-C201-quick-system-off` — ระบบปรึกษาปิด · [เปิดเคส](/?screen=home&state=quick-system-off&splash=0)
+- `EV-C201-consult-banner` — แบนเนอร์ชวนปรึกษาเหนือร้านยา · [เปิดเคส](/?screen=home&state=consult-banner&splash=0)
+- `EV-C201-active-next` — การปรึกษา คิวถัดไป · [เปิดเคส](/?screen=home&state=active-next&splash=0)
+- `EV-C201-active-room` — การปรึกษา ยังไม่จบ · [เปิดเคส](/?screen=home&state=active-room&splash=0)
+- `EV-C201-active-paused` — การปรึกษา พักรับคิว · [เปิดเคส](/?screen=home&state=active-paused&splash=0)
+- `EV-C201-active-payment` — การปรึกษา รอชำระ · [เปิดเคส](/?screen=home&state=active-payment&splash=0)
+- `EV-C201-active-idle` — การปรึกษา รอคำตอบ · [เปิดเคส](/?screen=home&state=active-idle&splash=0)
+- `EV-C201-case-queue3` — จำลอง รออีก 3 คิว · [เปิดเคส](/?screen=home&state=case-queue3&splash=0)
+- `EV-C201-case-queue2` — จำลอง รออีก 2 คิว · [เปิดเคส](/?screen=home&state=case-queue2&splash=0)
+- `EV-C201-case-queue1` — จำลอง รออีก 1 คิว · [เปิดเคส](/?screen=home&state=case-queue1&splash=0)
+- `EV-C201-case-next` — จำลอง คิวถัดไป · [เปิดเคส](/?screen=home&state=case-next&splash=0)
+- `EV-C201-case-paused` — จำลอง เภสัชกรพัก · [เปิดเคส](/?screen=home&state=case-paused&splash=0)
+- `EV-C201-case-matched` — จำลอง รับคิวแล้ว · [เปิดเคส](/?screen=home&state=case-matched&splash=0)
+- `EV-C201-case-chat` — สนทนา-จ่ายยา · [เปิดเคส](/?screen=home&state=case-chat&splash=0)
+- `EV-C201-case-reply` — จำลอง รอคำตอบจากคุณ · [เปิดเคส](/?screen=home&state=case-reply&splash=0)
+- `EV-C201-case-payment` — จำลอง รอชำระเงิน · [เปิดเคส](/?screen=home&state=case-payment&splash=0)
+- `EV-C201-case-finished` — จำลอง จบการปรึกษา · [เปิดเคส](/?screen=home&state=case-finished&splash=0)
+- `EV-C201-case-cancelled` — จำลอง ยกเลิกคิว · [เปิดเคส](/?screen=home&state=case-cancelled&splash=0)
+- `EV-C201-case-expired` — จำลอง หมดเวลารอคำตอบ · [เปิดเคส](/?screen=home&state=case-expired&splash=0)
+- `EV-C201-case-closed-unpaid` — จบแชท รอชำระค่ายา · [เปิดเคส](/?screen=home&state=case-closed-unpaid&splash=0)
+- `EV-C201-case-payment-soon` — เหลือชำระ 1 นาที · [เปิดเคส](/?screen=home&state=case-payment-soon&splash=0)
+- `EV-C201-case-closed-payexpired` — จบแชท หมดเวลาชำระ · [เปิดเคส](/?screen=home&state=case-closed-payexpired&splash=0)
+- `EV-C201-case-video-request` — เภสัชกรขอวิดีโอคอล · [เปิดเคส](/?screen=home&state=case-video-request&splash=0)
+- `EV-C201-case-none` — ไม่มีปรึกษา · [เปิดเคส](/?screen=home&state=case-none&splash=0)
+- `EV-C201-case-delivery-preparing` — ชำระแล้ว · เตรียมยา · [เปิดเคส](/?screen=home&state=case-delivery-preparing&splash=0)
+- `EV-C201-case-delivery-calling` — กำลังเรียกไรเดอร์ · [เปิดเคส](/?screen=home&state=case-delivery-calling&splash=0)
+- `EV-C201-case-delivery-delivering` — ไรเดอร์กำลังส่งยา · [เปิดเคส](/?screen=home&state=case-delivery-delivering&splash=0)
+- `EV-C201-case-delivery-delivered` — จัดส่งเสร็จสิ้น · [เปิดเคส](/?screen=home&state=case-delivery-delivered&splash=0)
+
+### C203 · intake (14 เหตุการณ์)
+
+- `EV-C203-normal` — ว่าง · [เปิดเคส](/?screen=intake&state=normal&splash=0)
+- `EV-C203-filled` — กรอกแล้ว · [เปิดเคส](/?screen=intake&state=filled&splash=0)
+- `EV-C203-other` — พิมพ์อาการเอง · [เปิดเคส](/?screen=intake&state=other&splash=0)
+- `EV-C203-noallergy` — ยังไม่ระบุแพ้ยา · [เปิดเคส](/?screen=intake&state=noallergy&splash=0)
+- `EV-C203-fail` — เข้าคิวไม่สำเร็จ · [เปิดเคส](/?screen=intake&state=fail&splash=0)
+- `EV-C203-ack` — ติ๊กรับทราบแล้ว · [เปิดเคส](/?screen=intake&state=ack&splash=0)
+- `EV-C203-outzone` — ที่อยู่หลักนอกเขตส่งยา · [เปิดเคส](/?screen=intake&state=outzone&splash=0)
+- `EV-C203-search` — ตัวเลือกอาการ 2 คอลัมน์ · [เปิดเคส](/?screen=intake&state=search&splash=0)
+- `EV-C203-urgent` — แจ้งเตือนอาการอันตราย · [เปิดเคส](/?screen=intake&state=urgent&splash=0)
+- `EV-C203-multi` — เลือกหลายอาการ · [เปิดเคส](/?screen=intake&state=multi&splash=0)
+- `EV-C203-custom-error` — ยังไม่ได้เล่ารายละเอียด · [เปิดเคส](/?screen=intake&state=custom-error&splash=0)
+- `EV-C203-photos` — แนบรูป 3 รูป · [เปิดเคส](/?screen=intake&state=photos&splash=0)
+- `EV-C203-photo-error` — แนบไฟล์ไม่รองรับ · [เปิดเคส](/?screen=intake&state=photo-error&splash=0)
+- `EV-C203-cover` — ปกเล่าอาการและฟอร์มซ้อน · [เปิดเคส](/?screen=intake&state=cover&splash=0)
+
+### C204 · allergy (1 เหตุการณ์)
+
+- `EV-C204-default` — ปกติ · [เปิดเคส](/?screen=allergy&splash=0)
+
+### C205 · redflag (1 เหตุการณ์)
+
+- `EV-C205-default` — ปกติ · [เปิดเคส](/?screen=redflag&splash=0)
+
+### C206 · pushask (1 เหตุการณ์)
+
+- `EV-C206-default` — ปกติ · [เปิดเคส](/?screen=pushask&splash=0)
+
+### C207 · queue (12 เหตุการณ์)
+
+- `EV-C207-q2` — รออีก 1 คิว · [เปิดเคส](/?screen=queue&state=q2&splash=0)
+- `EV-C207-q1` — คิวถัดไป · [เปิดเคส](/?screen=queue&state=q1&splash=0)
+- `EV-C207-paused` — เภสัชกรพัก · [เปิดเคส](/?screen=queue&state=paused&splash=0)
+- `EV-C207-urgent` — มีธงด่วน · [เปิดเคส](/?screen=queue&state=urgent&splash=0)
+- `EV-C207-notifoff` — ปิดการแจ้งเตือนไว้ · [เปิดเคส](/?screen=queue&state=notifoff&splash=0)
+- `EV-C207-refined` — รอในห้องแชท · [เปิดเคส](/?screen=queue&state=refined&splash=0)
+- `EV-C207-q4` — รออีก 3 คิว · [เปิดเคส](/?screen=queue&state=q4&splash=0)
+- `EV-C207-message` — พิมพ์ข้อมูลระหว่างรอ · [เปิดเคส](/?screen=queue&state=message&splash=0)
+- `EV-C207-joined` — เภสัชกรพร้อมให้บริการ · [เปิดเคส](/?screen=queue&state=joined&splash=0)
+- `EV-C207-offline` — อินเทอร์เน็ตขาดระหว่างรอ · [เปิดเคส](/?screen=queue&state=offline&splash=0)
+- `EV-C207-video-wait` — รอเภสัชกรวิดีโอคอล · [เปิดเคส](/?screen=queue&state=video-wait&splash=0)
+- `EV-C207-video-next` — วิดีโอคอล · คิวถัดไป · [เปิดเคส](/?screen=queue&state=video-next&splash=0)
+
+### C208 · cancelq (1 เหตุการณ์)
+
+- `EV-C208-default` — ปกติ · [เปิดเคส](/?screen=cancelq&splash=0)
+
+### C209 · area (4 เหตุการณ์)
+
+- `EV-C209-ask` — ขอใช้ตำแหน่ง · [เปิดเคส](/?screen=area&state=ask&splash=0)
+- `EV-C209-out` — นอกพื้นที่ให้บริการ · [เปิดเคส](/?screen=area&state=out&splash=0)
+- `EV-C209-deny` — ไม่ให้ตำแหน่ง · [เปิดเคส](/?screen=area&state=deny&splash=0)
+- `EV-C209-warn` — ปลดล็อกเขต เกิน 15 กม. · [เปิดเคส](/?screen=area&state=warn&splash=0)
+
+### C210 · homeaddress (3 เหตุการณ์)
+
+- `EV-C210-normal` — มีที่อยู่ · [เปิดเคส](/?screen=homeaddress&state=normal&splash=0)
+- `EV-C210-empty` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=homeaddress&state=empty&splash=0)
+- `EV-C210-named` — ที่อยู่ตั้งชื่อเอง · [เปิดเคส](/?screen=homeaddress&state=named&splash=0)
+
+### C211 · favorites (9 เหตุการณ์)
+
+- `EV-C211-normal` — มีร้านโปรด · [เปิดเคส](/?screen=favorites&state=normal&splash=0)
+- `EV-C211-empty` — ยังไม่มีร้านโปรด · [เปิดเคส](/?screen=favorites&state=empty&splash=0)
+- `EV-C211-many` — ร้านโปรดหลายร้าน · [เปิดเคส](/?screen=favorites&state=many&splash=0)
+- `EV-C211-noaddress` — ยังไม่มีที่อยู่จัดส่ง · [เปิดเคส](/?screen=favorites&state=noaddress&splash=0)
+- `EV-C211-closed` — ร้านโปรดปิด · [เปิดเคส](/?screen=favorites&state=closed&splash=0)
+- `EV-C211-paused` — เภสัชกรพัก · [เปิดเคส](/?screen=favorites&state=paused&splash=0)
+- `EV-C211-outside` — มีร้านไกลเกิน 15 กม. · [เปิดเคส](/?screen=favorites&state=outside&splash=0)
+- `EV-C211-loading` — กำลังโหลดร้านโปรด · [เปิดเคส](/?screen=favorites&state=loading&splash=0)
+- `EV-C211-error` — โหลดร้านโปรดไม่สำเร็จ · [เปิดเคส](/?screen=favorites&state=error&splash=0)
+
+### C212 · storeinfo (10 เหตุการณ์)
+
+- `EV-C212-normal` — เปิดรับปรึกษา · [เปิดเคส](/?screen=storeinfo&state=normal&splash=0)
+- `EV-C212-paused` — เภสัชกรพัก · [เปิดเคส](/?screen=storeinfo&state=paused&splash=0)
+- `EV-C212-closed` — ร้านปิด · [เปิดเคส](/?screen=storeinfo&state=closed&splash=0)
+- `EV-C212-choose-mode` — เลือกสนทนาหรือวิดีโอ · [เปิดเคส](/?screen=storeinfo&state=choose-mode&splash=0)
+- `EV-C212-system-off` — ระบบปรึกษาปิด · [เปิดเคส](/?screen=storeinfo&state=system-off&splash=0)
+- `EV-C212-grouped` — รายละเอียดแบ่งหมวด · [เปิดเคส](/?screen=storeinfo&state=grouped&splash=0)
+- `EV-C212-license` — ตรวจใบอนุญาตร้านยา · [เปิดเคส](/?screen=storeinfo&state=license&splash=0)
+- `EV-C212-favorite` — บันทึกร้านโปรดแล้ว · [เปิดเคส](/?screen=storeinfo&state=favorite&splash=0)
+- `EV-C212-unfavorite` — ยังไม่บันทึกร้านโปรด · [เปิดเคส](/?screen=storeinfo&state=unfavorite&splash=0)
+- `EV-C212-neutral-sections` — หมวดข้อมูลพื้นเทาอ่อน · [เปิดเคส](/?screen=storeinfo&state=neutral-sections&splash=0)
+
+### C214 · storeactions (2 เหตุการณ์)
+
+- `EV-C214-normal` — เพิ่มร้านโปรด · [เปิดเคส](/?screen=storeactions&state=normal&splash=0)
+- `EV-C214-saved` — นำออกจากร้านโปรด · [เปิดเคส](/?screen=storeactions&state=saved&splash=0)
+
+### C215 · serviceterms (1 เหตุการณ์)
+
+- `EV-C215-normal` — อ่านเงื่อนไขบริการ · [เปิดเคส](/?screen=serviceterms&state=normal&splash=0)
+
+### C301 · lock (9 เหตุการณ์)
+
+- `EV-C301-accept` — รับคิว · [เปิดเคส](/?screen=lock&state=accept&splash=0)
+- `EV-C301-msg` — ข้อความใหม่ · [เปิดเคส](/?screen=lock&state=msg&splash=0)
+- `EV-C301-order` — รายการยา · [เปิดเคส](/?screen=lock&state=order&splash=0)
+- `EV-C301-payexp` — รายการใกล้หมดเวลา · [เปิดเคส](/?screen=lock&state=payexp&splash=0)
+- `EV-C301-paused` — เภสัชกรพัก · [เปิดเคส](/?screen=lock&state=paused&splash=0)
+- `EV-C301-summary` — ใบสรุป · [เปิดเคส](/?screen=lock&state=summary&splash=0)
+- `EV-C301-adr` — ตอบเรื่องอาการหลังใช้ยา · [เปิดเคส](/?screen=lock&state=adr&splash=0)
+- `EV-C301-fudose` — เตือนกินยา · [เปิดเคส](/?screen=lock&state=fudose&splash=0)
+- `EV-C301-fucheck` — ถามอาการระหว่างใช้ยา · [เปิดเคส](/?screen=lock&state=fucheck&splash=0)
+
+### C302 · matched (2 เหตุการณ์)
+
+- `EV-C302-chat` — ขอแชท · [เปิดเคส](/?screen=matched&state=chat&splash=0)
+- `EV-C302-video` — ขอวิดีโอ · [เปิดเคส](/?screen=matched&state=video&splash=0)
+
+### C303 · room (19 เหตุการณ์)
+
+- `EV-C303-live` — เล่นบทสนทนา · [เปิดเคส](/?screen=room&state=live&splash=0)
+- `EV-C303-order` — มีรายการยารอชำระ · [เปิดเคส](/?screen=room&state=order&splash=0)
+- `EV-C303-paid` — ชำระแล้ว · [เปิดเคส](/?screen=room&state=paid&splash=0)
+- `EV-C303-expired` — รายการหมดอายุ · [เปิดเคส](/?screen=room&state=expired&splash=0)
+- `EV-C303-offline` — ไม่มีอินเทอร์เน็ต · [เปิดเคส](/?screen=room&state=offline&splash=0)
+- `EV-C303-closed` — ปิดเคส + ใบสรุป · [เปิดเคส](/?screen=room&state=closed&splash=0)
+- `EV-C303-call` — คุยวิดีโออยู่ · [เปิดเคส](/?screen=room&state=call&splash=0)
+- `EV-C303-idle` — เงียบ 3 นาที ใกล้ปิดเอง · [เปิดเคส](/?screen=room&state=idle&splash=0)
+- `EV-C303-idleclosed` — ปิดเองเพราะเงียบ 5 นาที · [เปิดเคส](/?screen=room&state=idleclosed&splash=0)
+- `EV-C303-waiting` — รอในแชท อีก 3 คิว · [เปิดเคส](/?screen=room&state=waiting&splash=0)
+- `EV-C303-waiting-message` — ส่งอาการไว้ระหว่างรอ · [เปิดเคส](/?screen=room&state=waiting-message&splash=0)
+- `EV-C303-waiting-paused` — พักชั่วคราวในห้องแชท · [เปิดเคส](/?screen=room&state=waiting-paused&splash=0)
+- `EV-C303-provider-joined` — เภสัชกรเข้าห้องแล้ว · [เปิดเคส](/?screen=room&state=provider-joined&splash=0)
+- `EV-C303-video-request` — เภสัชกรขอวิดีโอคอล · [เปิดเคส](/?screen=room&state=video-request&splash=0)
+- `EV-C303-video-declined` — เลือกคุยแชทต่อ · [เปิดเคส](/?screen=room&state=video-declined&splash=0)
+- `EV-C303-video-withdrawn` — เภสัชกรถอนคำขอวิดีโอ · [เปิดเคส](/?screen=room&state=video-withdrawn&splash=0)
+- `EV-C303-closed-unpaid` — จบแชท รอชำระค่ายา · [เปิดเคส](/?screen=room&state=closed-unpaid&splash=0)
+- `EV-C303-payment-soon` — จบแชท เหลือชำระ 1 นาที · [เปิดเคส](/?screen=room&state=payment-soon&splash=0)
+- `EV-C303-closed-payexpired` — จบแชท หมดเวลาชำระ · [เปิดเคส](/?screen=room&state=closed-payexpired&splash=0)
+
+### C304 · roommenu (1 เหตุการณ์)
+
+- `EV-C304-default` — ปกติ · [เปิดเคส](/?screen=roommenu&splash=0)
+
+### C305 · endcase (1 เหตุการณ์)
+
+- `EV-C305-default` — ปกติ · [เปิดเคส](/?screen=endcase&splash=0)
+
+### C306 · video (5 เหตุการณ์)
+
+- `EV-C306-on` — คุยอยู่ · [เปิดเคส](/?screen=video&state=on&splash=0)
+- `EV-C306-connecting` — กำลังเชื่อมต่อ · [เปิดเคส](/?screen=video&state=connecting&splash=0)
+- `EV-C306-camoff` — ปิดกล้องตัวเอง · [เปิดเคส](/?screen=video&state=camoff&splash=0)
+- `EV-C306-weak` — สัญญาณอ่อน · [เปิดเคส](/?screen=video&state=weak&splash=0)
+- `EV-C306-pcam` — กล้องเภสัชกรใช้ไม่ได้ · [เปิดเคส](/?screen=video&state=pcam&splash=0)
+
+### C307 · hangup (1 เหตุการณ์)
+
+- `EV-C307-default` — ปกติ · [เปิดเคส](/?screen=hangup&splash=0)
+
+### C308 · pay (28 เหตุการณ์)
+
+- `EV-C308-normal` — รับที่ร้าน (ค่าเริ่มต้น) · [เปิดเคส](/?screen=pay&state=normal&splash=0)
+- `EV-C308-parcel` — ส่งด่วน (แทนตัวเลือกเดิม) · [เปิดเคส](/?screen=pay&state=parcel&splash=0)
+- `EV-C308-express` — ส่งด่วน ยังไม่ปักหมุด · [เปิดเคส](/?screen=pay&state=express&splash=0)
+- `EV-C308-noaddr` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=pay&state=noaddr&splash=0)
+- `EV-C308-form` — กำลังเพิ่มที่อยู่ · [เปิดเคส](/?screen=pay&state=form&splash=0)
+- `EV-C308-closed` — ร้านปิด · [เปิดเคส](/?screen=pay&state=closed&splash=0)
+- `EV-C308-card` — จ่ายด้วยบัตร · [เปิดเคส](/?screen=pay&state=card&splash=0)
+- `EV-C308-otp` — บัตร: หน้ายืนยันของธนาคาร · [เปิดเคส](/?screen=pay&state=otp&splash=0)
+- `EV-C308-qr` — หน้า QR พร้อมเพย์ · [เปิดเคส](/?screen=pay&state=qr&splash=0)
+- `EV-C308-qrexp` — QR หมดอายุ · [เปิดเคส](/?screen=pay&state=qrexp&splash=0)
+- `EV-C308-bankon` — พร้อมเพย์ (แทนแอปธนาคารเดิม) · [เปิดเคส](/?screen=pay&state=bankon&splash=0)
+- `EV-C308-bankapp` — QR พร้อมเพย์ (แทนแอปธนาคารเดิม) · [เปิดเคส](/?screen=pay&state=bankapp&splash=0)
+- `EV-C308-checking` — กำลังตรวจสอบการชำระ · [เปิดเคส](/?screen=pay&state=checking&splash=0)
+- `EV-C308-expmap` — ส่งด่วน ปักหมุดเองบนแผนที่ · [เปิดเคส](/?screen=pay&state=expmap&splash=0)
+- `EV-C308-exppin` — ส่งด่วน ยืนยันตำแหน่งแล้ว · [เปิดเคส](/?screen=pay&state=exppin&splash=0)
+- `EV-C308-locdeny` — ส่งด่วน ไม่ให้สิทธิ์ตำแหน่ง · [เปิดเคส](/?screen=pay&state=locdeny&splash=0)
+- `EV-C308-far` — กรุงเทพแต่เกิน 15 กม. · [เปิดเคส](/?screen=pay&state=far&splash=0)
+- `EV-C308-outzone` — ที่อยู่นอกเขตส่งยา · [เปิดเคส](/?screen=pay&state=outzone&splash=0)
+- `EV-C308-recvoff` — เภสัชกรปิดบางทาง · [เปิดเคส](/?screen=pay&state=recvoff&splash=0)
+- `EV-C308-cold` — มียาเก็บเย็น · [เปิดเคส](/?screen=pay&state=cold&splash=0)
+- `EV-C308-unlock` — ส่งด่วนเกินระยะ รับที่ร้านแทน · [เปิดเคส](/?screen=pay&state=unlock&splash=0)
+- `EV-C308-map-ready` — ยืนยันหมุดตำบล · [เปิดเคส](/?screen=pay&state=map-ready&splash=0)
+- `EV-C308-map-outside` — หมุดนอกตำบล · [เปิดเคส](/?screen=pay&state=map-outside&splash=0)
+- `EV-C308-map-error` — โหลดขอบเขตตำบลไม่ได้ · [เปิดเคส](/?screen=pay&state=map-error&splash=0)
+- `EV-C308-map-saved` — บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ · [เปิดเคส](/?screen=pay&state=map-saved&splash=0)
+- `EV-C308-coupon-valid` — โค้ดส่วนลดใช้ได้ · [เปิดเคส](/?screen=pay&state=coupon-valid&splash=0)
+- `EV-C308-coupon-invalid` — โค้ดส่วนลดไม่ถูกต้อง · [เปิดเคส](/?screen=pay&state=coupon-invalid&splash=0)
+- `EV-C308-coupon-expired` — โค้ดส่วนลดหมดอายุ · [เปิดเคส](/?screen=pay&state=coupon-expired&splash=0)
+
+### C309 · paid (9 เหตุการณ์)
+
+- `EV-C309-pickup` — รับที่ร้าน · [เปิดเคส](/?screen=paid&state=pickup&splash=0)
+- `EV-C309-parcel` — ส่งด่วน (แทนตัวเลือกเดิม) · [เปิดเคส](/?screen=paid&state=parcel&splash=0)
+- `EV-C309-express` — ส่งด่วน · [เปิดเคส](/?screen=paid&state=express&splash=0)
+- `EV-C309-night` — จ่ายตอนร้านปิด · [เปิดเคส](/?screen=paid&state=night&splash=0)
+- `EV-C309-ready` — ยาพร้อมรับแล้ว · [เปิดเคส](/?screen=paid&state=ready&splash=0)
+- `EV-C309-sent` — ส่งพัสดุแล้ว มีเลขพัสดุ · [เปิดเคส](/?screen=paid&state=sent&splash=0)
+- `EV-C309-rider` — ไรเดอร์รับยาแล้ว · [เปิดเคส](/?screen=paid&state=rider&splash=0)
+- `EV-C309-cold` — ส่งเย็น Inter Express มีเลขพัสดุ · [เปิดเคส](/?screen=paid&state=cold&splash=0)
+- `EV-C309-overdue` — เลยกำหนดรับยา · [เปิดเคส](/?screen=paid&state=overdue&splash=0)
+
+### C401 · summary (5 เหตุการณ์)
+
+- `EV-C401-normal` — มียา · [เปิดเคส](/?screen=summary&state=normal&splash=0)
+- `EV-C401-nomeds` — ไม่ได้ซื้อยา · [เปิดเคส](/?screen=summary&state=nomeds&splash=0)
+- `EV-C401-closed` — เพิ่งจบเคส · [เปิดเคส](/?screen=summary&state=closed&splash=0)
+- `EV-C401-rated` — ให้คะแนนแล้ว · [เปิดเคส](/?screen=summary&state=rated&splash=0)
+- `EV-C401-missing` — ไม่พบใบสรุป · [เปิดเคส](/?screen=summary&state=missing&splash=0)
+
+### C402 · receipt (7 เหตุการณ์)
+
+- `EV-C402-normal` — รับที่ร้าน พร้อมเพย์ · [เปิดเคส](/?screen=receipt&state=normal&splash=0)
+- `EV-C402-parcel` — ส่งพัสดุ จ่ายบัตร · [เปิดเคส](/?screen=receipt&state=parcel&splash=0)
+- `EV-C402-notax` — ยังไม่มีข้อมูลใบกำกับภาษี · [เปิดเคส](/?screen=receipt&state=notax&splash=0)
+- `EV-C402-taxpending` — ส่งคำขอแล้ว · รอร้านตรวจสอบ · [เปิดเคส](/?screen=receipt&state=taxpending&splash=0)
+- `EV-C402-taxdone` — ออกใบกำกับภาษีแล้ว · [เปิดเคส](/?screen=receipt&state=taxdone&splash=0)
+- `EV-C402-late` — เลยกำหนดขอใบกำกับภาษี · [เปิดเคส](/?screen=receipt&state=late&splash=0)
+- `EV-C402-missing` — ไม่พบใบเสร็จ · [เปิดเคส](/?screen=receipt&state=missing&splash=0)
+
+### C403 · history (29 เหตุการณ์)
+
+- `EV-C403-normal` — มีรายการ · [เปิดเคส](/?screen=history&state=normal&splash=0)
+- `EV-C403-empty` — ยังไม่มี · [เปิดเคส](/?screen=history&state=empty&splash=0)
+- `EV-C403-loading` — กำลังโหลด · [เปิดเคส](/?screen=history&state=loading&splash=0)
+- `EV-C403-self` — เฉพาะตัวเอง · [เปิดเคส](/?screen=history&state=self&splash=0)
+- `EV-C403-paid` — ปรึกษาสำเร็จ · [เปิดเคส](/?screen=history&state=paid&splash=0)
+- `EV-C403-no-medication` — สิ้นสุดก่อนสรุป · [เปิดเคส](/?screen=history&state=no-medication&splash=0)
+- `EV-C403-search` — ค้นหาประวัติ · [เปิดเคส](/?screen=history&state=search&splash=0)
+- `EV-C403-no-results` — ค้นหาไม่พบ · [เปิดเคส](/?screen=history&state=no-results&splash=0)
+- `EV-C403-error` — โหลดไม่สำเร็จ · [เปิดเคส](/?screen=history&state=error&splash=0)
+- `EV-C403-dark-filters` — แท็บประเภทสี CI เข้ม · [เปิดเคส](/?screen=history&state=dark-filters&splash=0)
+- `EV-C403-shared-tabs` — แท็บกลาง ตัวอักษร 14px · [เปิดเคส](/?screen=history&state=shared-tabs&splash=0)
+- `EV-C403-store-recipient-card` — หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา · [เปิดเคส](/?screen=history&state=store-recipient-card&splash=0)
+- `EV-C403-receipt-inside` — ดูใบเสร็จในใบสรุป · [เปิดเคส](/?screen=history&state=receipt-inside&splash=0)
+- `EV-C403-detail-rows` — รายละเอียดเรียงแถวพร้อมไอคอน · [เปิดเคส](/?screen=history&state=detail-rows&splash=0)
+- `EV-C403-purchase-status` — ป้ายตามข้อมูลซื้อยา · [เปิดเคส](/?screen=history&state=purchase-status&splash=0)
+- `EV-C403-pending-order` — รายการยารอชำระ · [เปิดเคส](/?screen=history&state=pending-order&splash=0)
+- `EV-C403-expired-order` — รายการยาหมดอายุ · [เปิดเคส](/?screen=history&state=expired-order&splash=0)
+- `EV-C403-cancelled-order` — ยกเลิกรายการยา · [เปิดเคส](/?screen=history&state=cancelled-order&splash=0)
+- `EV-C403-tap-card` — แตะการ์ด ไม่มีข้อความลิงก์ · [เปิดเคส](/?screen=history&state=tap-card&splash=0)
+- `EV-C403-search-below-tabs` — ช่องค้นหาอยู่ใต้แท็บ · [เปิดเคส](/?screen=history&state=search-below-tabs&splash=0)
+- `EV-C403-tab-counts` — จำนวนรายการในแต่ละแท็บ · [เปิดเคส](/?screen=history&state=tab-counts&splash=0)
+- `EV-C403-search-open` — เปิดช่องค้นหาจากหัวหน้า · [เปิดเคส](/?screen=history&state=search-open&splash=0)
+- `EV-C403-search-cleared` — ช่องค้นหาหลังล้างคำ · [เปิดเคส](/?screen=history&state=search-cleared&splash=0)
+- `EV-C403-ten-records` — ประวัติ 10 รายการ หลายวันและเดือน · [เปิดเคส](/?screen=history&state=ten-records&splash=0)
+- `EV-C403-completed` — ปรึกษาสำเร็จ · [เปิดเคส](/?screen=history&state=completed&splash=0)
+- `EV-C403-ended` — สิ้นสุดก่อนสรุป · [เปิดเคส](/?screen=history&state=ended&splash=0)
+- `EV-C403-customer-ended` — คุณจบการสนทนา · [เปิดเคส](/?screen=history&state=customer-ended&splash=0)
+- `EV-C403-no-response` — ไม่มีการตอบกลับ 5 นาที · [เปิดเคส](/?screen=history&state=no-response&splash=0)
+- `EV-C403-long-note` — ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด · [เปิดเคส](/?screen=history&state=long-note&splash=0)
+
+### C404 · inbox (7 เหตุการณ์)
+
+- `EV-C404-normal` — หลายรายการ แบ่งตามวัน · [เปิดเคส](/?screen=inbox&state=normal&splash=0)
+- `EV-C404-read` — รายการเดิม · [เปิดเคส](/?screen=inbox&state=read&splash=0)
+- `EV-C404-empty` — ยังไม่มี · [เปิดเคส](/?screen=inbox&state=empty&splash=0)
+- `EV-C404-many` — แจ้งเตือนหลายวัน · [เปิดเคส](/?screen=inbox&state=many&splash=0)
+- `EV-C404-same-day` — หลายรายการในวันเดียว · [เปิดเคส](/?screen=inbox&state=same-day&splash=0)
+- `EV-C404-loading` — กำลังโหลดแจ้งเตือน · [เปิดเคส](/?screen=inbox&state=loading&splash=0)
+- `EV-C404-error` — โหลดแจ้งเตือนไม่สำเร็จ · [เปิดเคส](/?screen=inbox&state=error&splash=0)
+
+### C405 · follow (18 เหตุการณ์)
+
+- `EV-C405-normal` — วันที่ 3 ปกติ · [เปิดเคส](/?screen=follow&state=normal&splash=0)
+- `EV-C405-missed` — ลืมมื้อกลางวัน · [เปิดเคส](/?screen=follow&state=missed&splash=0)
+- `EV-C405-checked` — ตอบกลางคอร์สแล้ว · [เปิดเคส](/?screen=follow&state=checked&splash=0)
+- `EV-C405-endonly` — เภสัชกรเลือกถามหลังครบคอร์สอย่างเดียว · [เปิดเคส](/?screen=follow&state=endonly&splash=0)
+- `EV-C405-worse` — แจ้งว่าแย่ลง · [เปิดเคส](/?screen=follow&state=worse&splash=0)
+- `EV-C405-day1` — เพิ่งเริ่มวันนี้ · [เปิดเคส](/?screen=follow&state=day1&splash=0)
+- `EV-C405-done` — ครบคอร์ส · [เปิดเคส](/?screen=follow&state=done&splash=0)
+- `EV-C405-remoff` — ปิดเตือนกินยา · [เปิดเคส](/?screen=follow&state=remoff&splash=0)
+- `EV-C405-off` — หยุดติดตาม · [เปิดเคส](/?screen=follow&state=off&splash=0)
+- `EV-C405-offline` — ไม่มีเน็ต · [เปิดเคส](/?screen=follow&state=offline&splash=0)
+- `EV-C405-empty` — ไม่มีแผน · [เปิดเคส](/?screen=follow&state=empty&splash=0)
+- `EV-C405-loading` — กำลังโหลด · [เปิดเคส](/?screen=follow&state=loading&splash=0)
+- `EV-C405-sym` — ไม่มียา ถามอีก 3 วัน · [เปิดเคส](/?screen=follow&state=sym&splash=0)
+- `EV-C405-symdue` — ไม่มียา ถึงวันถามอาการ · [เปิดเคส](/?screen=follow&state=symdue&splash=0)
+- `EV-C405-symworse` — ไม่มียา แจ้งว่าแย่ลง · [เปิดเคส](/?screen=follow&state=symworse&splash=0)
+- `EV-C405-symdone` — ไม่มียา ตอบแล้ว · [เปิดเคส](/?screen=follow&state=symdone&splash=0)
+- `EV-C405-talked` — แจ้งว่าแย่ลง คุยในการปรึกษาใหม่แล้ว · [เปิดเคส](/?screen=follow&state=talked&splash=0)
+- `EV-C405-multi-plan` — 3 แผนยา ระยะเวลาแตกต่างกัน · [เปิดเคส](/?screen=follow&state=multi-plan&splash=0)
+
+### C406 · fucheck (5 เหตุการณ์)
+
+- `EV-C406-normal` — กลางคอร์ส ยังไม่ตอบ · [เปิดเคส](/?screen=fucheck&state=normal&splash=0)
+- `EV-C406-self` — บอกเองระหว่างคอร์ส · [เปิดเคส](/?screen=fucheck&state=self&splash=0)
+- `EV-C406-closed` — ตอนร้านปิด · [เปิดเคส](/?screen=fucheck&state=closed&splash=0)
+- `EV-C406-error` — ส่งไม่สำเร็จ · [เปิดเคส](/?screen=fucheck&state=error&splash=0)
+- `EV-C406-sym` — ไม่มียา ถามครั้งเดียว · [เปิดเคส](/?screen=fucheck&state=sym&splash=0)
+
+### C407 · furesult (8 เหตุการณ์)
+
+- `EV-C407-better` — ดีขึ้น · [เปิดเคส](/?screen=furesult&state=better&splash=0)
+- `EV-C407-same` — เหมือนเดิม · [เปิดเคส](/?screen=furesult&state=same&splash=0)
+- `EV-C407-worse` — แย่ลง · [เปิดเคส](/?screen=furesult&state=worse&splash=0)
+- `EV-C407-danger` — มีอาการรุนแรง · [เปิดเคส](/?screen=furesult&state=danger&splash=0)
+- `EV-C407-closed` — แย่ลง ตอนร้านปิด · [เปิดเคส](/?screen=furesult&state=closed&splash=0)
+- `EV-C407-symbetter` — ไม่มียา ดีขึ้น · [เปิดเคส](/?screen=furesult&state=symbetter&splash=0)
+- `EV-C407-symsame` — ไม่มียา เหมือนเดิม · [เปิดเคส](/?screen=furesult&state=symsame&splash=0)
+- `EV-C407-late` — แย่ลง ก่อนร้านปิดไม่ถึง 2 ชั่วโมง · [เปิดเคส](/?screen=furesult&state=late&splash=0)
+
+### C408 · fulog (4 เหตุการณ์)
+
+- `EV-C408-normal` — ระหว่างคอร์ส · [เปิดเคส](/?screen=fulog&state=normal&splash=0)
+- `EV-C408-done` — ครบคอร์สแล้ว · [เปิดเคส](/?screen=fulog&state=done&splash=0)
+- `EV-C408-empty` — เพิ่งเริ่ม ยังไม่มี · [เปิดเคส](/?screen=fulog&state=empty&splash=0)
+- `EV-C408-loading` — กำลังโหลด · [เปิดเคส](/?screen=fulog&state=loading&splash=0)
+
+### C409 · fudone (3 เหตุการณ์)
+
+- `EV-C409-ask` — ถามหลังครบคอร์ส · [เปิดเคส](/?screen=fudone&state=ask&splash=0)
+- `EV-C409-healed` — หายดีแล้ว · [เปิดเคส](/?screen=fudone&state=healed&splash=0)
+- `EV-C409-still` — ยังมีอาการ · [เปิดเคส](/?screen=fudone&state=still&splash=0)
+
+### C410 · fureminder (4 เหตุการณ์)
+
+- `EV-C410-normal` — เปิดเตือน · [เปิดเคส](/?screen=fureminder&state=normal&splash=0)
+- `EV-C410-off` — ปิดเตือนอยู่ · [เปิดเคส](/?screen=fureminder&state=off&splash=0)
+- `EV-C410-notifoff` — ปิดแจ้งเตือนของแอป · [เปิดเคส](/?screen=fureminder&state=notifoff&splash=0)
+- `EV-C410-error` — เวลาไม่เรียง · [เปิดเคส](/?screen=fureminder&state=error&splash=0)
+
+### C411 · fuoff (1 เหตุการณ์)
+
+- `EV-C411-default` — ปกติ · [เปิดเคส](/?screen=fuoff&splash=0)
+
+### C412 · adr (8 เหตุการณ์)
+
+- `EV-C412-normal` — เลือกยาที่ใช้อยู่ · [เปิดเคส](/?screen=adr&state=normal&splash=0)
+- `EV-C412-filled` — กรอกครบหลายรายการ · [เปิดเคส](/?screen=adr&state=filled&splash=0)
+- `EV-C412-severe` — อาการเร่งด่วน · [เปิดเคส](/?screen=adr&state=severe&splash=0)
+- `EV-C412-search` — ค้นหายา · [เปิดเคส](/?screen=adr&state=search&splash=0)
+- `EV-C412-no-results` — ค้นหาไม่พบ · [เปิดเคส](/?screen=adr&state=no-results&splash=0)
+- `EV-C412-symptoms` — กรอกอาการในกล่องยา · [เปิดเคส](/?screen=adr&state=symptoms&splash=0)
+- `EV-C412-submit-error` — ส่งไม่สำเร็จ ข้อมูลยังอยู่ · [เปิดเคส](/?screen=adr&state=submit-error&splash=0)
+- `EV-C412-no-active` — ไม่มียาที่ใช้อยู่ · [เปิดเคส](/?screen=adr&state=no-active&splash=0)
+
+### C413 · adrsent (8 เหตุการณ์)
+
+- `EV-C413-sent` — ส่งแล้ว รอติดต่อ · [เปิดเคส](/?screen=adrsent&state=sent&splash=0)
+- `EV-C413-severe` — อาการรุนแรง · [เปิดเคส](/?screen=adrsent&state=severe&splash=0)
+- `EV-C413-replied` — เภสัชกรตอบแล้ว · [เปิดเคส](/?screen=adrsent&state=replied&splash=0)
+- `EV-C413-closed` — ส่งตอนร้านปิด · [เปิดเคส](/?screen=adrsent&state=closed&splash=0)
+- `EV-C413-sfx` — ตอบว่าเป็นผลข้างเคียง · [เปิดเคส](/?screen=adrsent&state=sfx&splash=0)
+- `EV-C413-patient-report` — รายงานใหม่รอประเมิน · [เปิดเคส](/?screen=adrsent&state=patient-report&splash=0)
+- `EV-C413-patient-reply` — ข้อความตอบกลับรายงานใหม่ · [เปิดเคส](/?screen=adrsent&state=patient-reply&splash=0)
+- `EV-C413-unknown-drug` — ไม่ทราบชื่อยา · [เปิดเคส](/?screen=adrsent&state=unknown-drug&splash=0)
+
+### C414 · track (11 เหตุการณ์)
+
+- `EV-C414-transit` — กำลังขนส่ง · [เปิดเคส](/?screen=track&state=transit&splash=0)
+- `EV-C414-delivered` — ส่งถึงแล้ว · [เปิดเคส](/?screen=track&state=delivered&splash=0)
+- `EV-C414-received` — กดได้รับยาแล้ว · [เปิดเคส](/?screen=track&state=received&splash=0)
+- `EV-C414-cold` — ส่งเย็น Inter Express · [เปิดเคส](/?screen=track&state=cold&splash=0)
+- `EV-C414-rider` — ส่งด่วน Lalamove · [เปิดเคส](/?screen=track&state=rider&splash=0)
+- `EV-C414-prep` — ร้านยังไม่ส่งของ · [เปิดเคส](/?screen=track&state=prep&splash=0)
+- `EV-C414-coldlink` — ส่งเย็น ร้านแปะลิงก์ติดตาม · [เปิดเคส](/?screen=track&state=coldlink&splash=0)
+- `EV-C414-chat-preparing` — สนทนา: กำลังเตรียมยา · [เปิดเคส](/?screen=track&state=chat-preparing&splash=0)
+- `EV-C414-chat-calling` — สนทนา: กำลังเรียกไรเดอร์ · [เปิดเคส](/?screen=track&state=chat-calling&splash=0)
+- `EV-C414-chat-delivering` — สนทนา: ไรเดอร์กำลังส่งยา · [เปิดเคส](/?screen=track&state=chat-delivering&splash=0)
+- `EV-C414-chat-delivered` — สนทนา: จัดส่งเสร็จสิ้น · [เปิดเคส](/?screen=track&state=chat-delivered&splash=0)
+
+### C415 · gotask (1 เหตุการณ์)
+
+- `EV-C415-default` — ปกติ · [เปิดเคส](/?screen=gotask&splash=0)
+
+### C416 · adrcare (6 เหตุการณ์)
+
+- `EV-C416-normal` — ข้อมูลของตัวเอง · [เปิดเคส](/?screen=adrcare&state=normal&splash=0)
+- `EV-C416-empty` — ยังไม่มีรายงาน · [เปิดเคส](/?screen=adrcare&state=empty&splash=0)
+- `EV-C416-reported` — มีรายงานรอประเมิน · [เปิดเคส](/?screen=adrcare&state=reported&splash=0)
+- `EV-C416-loading` — กำลังโหลด · [เปิดเคส](/?screen=adrcare&state=loading&splash=0)
+- `EV-C416-error` — โหลดไม่สำเร็จ · [เปิดเคส](/?screen=adrcare&state=error&splash=0)
+- `EV-C416-grouped-days` — หลายรายงาน แบ่งตามวัน · [เปิดเคส](/?screen=adrcare&state=grouped-days&splash=0)
+
+### C418 · medhub (1 เหตุการณ์)
+
+- `EV-C418-normal` — เมนูยา 3 รายการ · [เปิดเคส](/?screen=medhub&state=normal&splash=0)
+
+### C419 · adrreport (4 เหตุการณ์)
+
+- `EV-C419-pending` — รอเภสัชกรประเมิน · [เปิดเคส](/?screen=adrreport&state=pending&splash=0)
+- `EV-C419-replied` — ประเมินแล้ว · [เปิดเคส](/?screen=adrreport&state=replied&splash=0)
+- `EV-C419-reply-long` — คำตอบหลายบรรทัด · [เปิดเคส](/?screen=adrreport&state=reply-long&splash=0)
+- `EV-C419-source-missing` — ไม่มีข้อมูลการปรึกษาต้นทาง · [เปิดเคส](/?screen=adrreport&state=source-missing&splash=0)
+
+### C501 · account (5 เหตุการณ์)
+
+- `EV-C501-normal` — ปกติ · [เปิดเคส](/?screen=account&state=normal&splash=0)
+- `EV-C501-withdrawn` — ถอนความยินยอมแล้ว · [เปิดเคส](/?screen=account&state=withdrawn&splash=0)
+- `EV-C501-profile-cover` — ปกบัญชีและโปรไฟล์ตรงกลาง · [เปิดเคส](/?screen=account&state=profile-cover&splash=0)
+- `EV-C501-abstract-cover` — ปก Abstract CI เต็ม safe area · [เปิดเคส](/?screen=account&state=abstract-cover&splash=0)
+- `EV-C501-clean-profile` — โปรไฟล์พื้นเทาและเมนูพื้นขาว · [เปิดเคส](/?screen=account&state=clean-profile&splash=0)
+
+### C505 · health (7 เหตุการณ์)
+
+- `EV-C505-normal` — ดูข้อมูลสุขภาพ · [เปิดเคส](/?screen=health&state=normal&splash=0)
+- `EV-C505-unknown` — ยังไม่ระบุ · [เปิดเคส](/?screen=health&state=unknown&splash=0)
+- `EV-C505-sfx` — ข้อมูลเดิมที่ผู้ใช้ระบุ · [เปิดเคส](/?screen=health&state=sfx&splash=0)
+- `EV-C505-edit` — แก้ไขข้อมูล · [เปิดเคส](/?screen=health&state=edit&splash=0)
+- `EV-C505-none` — ระบุว่าไม่มี · [เปิดเคส](/?screen=health&state=none&splash=0)
+- `EV-C505-invalid` — แก้ไขข้อมูลไม่ครบ · [เปิดเคส](/?screen=health&state=invalid&splash=0)
+- `EV-C505-long-text` — ข้อมูลหลายรายการ · [เปิดเคส](/?screen=health&state=long-text&splash=0)
+
+### C506 · consents (5 เหตุการณ์)
+
+- `EV-C506-normal` — อ่านเอกสารความยินยอม · [เปิดเคส](/?screen=consents&state=normal&splash=0)
+- `EV-C506-withdrawn` — อ่านเอกสารหลังถอน · [เปิดเคส](/?screen=consents&state=withdrawn&splash=0)
+- `EV-C506-reconsent` — อ่านเอกสารฉบับปัจจุบัน · [เปิดเคส](/?screen=consents&state=reconsent&splash=0)
+- `EV-C506-join` — อ่านเอกสารจากการปรึกษา · [เปิดเคส](/?screen=consents&state=join&splash=0)
+- `EV-C506-unchecked` — อ่านอย่างเดียว ไม่มีช่องติ๊ก · [เปิดเคส](/?screen=consents&state=unchecked&splash=0)
+
+### C507 · consenttext (1 เหตุการณ์)
+
+- `EV-C507-default` — ปกติ · [เปิดเคส](/?screen=consenttext&splash=0)
+
+### C508 · consentwd (1 เหตุการณ์)
+
+- `EV-C508-default` — ปกติ · [เปิดเคส](/?screen=consentwd&splash=0)
+
+### C509 · help (2 เหตุการณ์)
+
+- `EV-C509-open` — ในเวลาทำการ · [เปิดเคส](/?screen=help&state=open&splash=0)
+- `EV-C509-closed` — นอกเวลาทำการ · [เปิดเคส](/?screen=help&state=closed&splash=0)
+
+### C510 · logout (1 เหตุการณ์)
+
+- `EV-C510-default` — ปกติ · [เปิดเคส](/?screen=logout&splash=0)
+
+### C511 · deleteacc (6 เหตุการณ์)
+
+- `EV-C511-normal` — พิมพ์ยืนยันก่อนลบ · [เปิดเคส](/?screen=deleteacc&state=normal&splash=0)
+- `EV-C511-blocked` — มีการปรึกษาค้าง · [เปิดเคส](/?screen=deleteacc&state=blocked&splash=0)
+- `EV-C511-unpaid` — มีรายการรอชำระ · [เปิดเคส](/?screen=deleteacc&state=unpaid&splash=0)
+- `EV-C511-typed` — พิมพ์ยืนยันครบ · [เปิดเคส](/?screen=deleteacc&state=typed&splash=0)
+- `EV-C511-wrong-text` — พิมพ์ไม่ตรง · [เปิดเคส](/?screen=deleteacc&state=wrong-text&splash=0)
+- `EV-C511-save-error` — ลบไม่สำเร็จ · [เปิดเคส](/?screen=deleteacc&state=save-error&splash=0)
+
+### C512 · deleted (1 เหตุการณ์)
+
+- `EV-C512-default` — ปกติ · [เปิดเคส](/?screen=deleted&splash=0)
+
+### C513 · algdel (1 เหตุการณ์)
+
+- `EV-C513-default` — ปกติ · [เปิดเคส](/?screen=algdel&splash=0)
+
+### C514 · addressbook (4 เหตุการณ์)
+
+- `EV-C514-normal` — มีที่อยู่หลัก · [เปิดเคส](/?screen=addressbook&state=normal&splash=0)
+- `EV-C514-empty` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=addressbook&state=empty&splash=0)
+- `EV-C514-alternate` — เปลี่ยนที่อยู่หลัก · [เปิดเคส](/?screen=addressbook&state=alternate&splash=0)
+- `EV-C514-named` — ชื่อที่อยู่ บ้านแม่ · [เปิดเคส](/?screen=addressbook&state=named&splash=0)
+
+### C515 · addressedit (15 เหตุการณ์)
+
+- `EV-C515-normal` — เพิ่มที่อยู่ · [เปิดเคส](/?screen=addressedit&state=normal&splash=0)
+- `EV-C515-edit` — แก้ไขที่อยู่ · [เปิดเคส](/?screen=addressedit&state=edit&splash=0)
+- `EV-C515-invalid` — ข้อมูลไม่ครบ · [เปิดเคส](/?screen=addressedit&state=invalid&splash=0)
+- `EV-C515-named` — แก้ไขชื่อที่อยู่ · [เปิดเคส](/?screen=addressedit&state=named&splash=0)
+- `EV-C515-map-ready` — ที่อยู่ครบ พร้อมยืนยันหมุด · [เปิดเคส](/?screen=addressedit&state=map-ready&splash=0)
+- `EV-C515-map-outside` — หมุดนอกตำบล บันทึกไม่ได้ · [เปิดเคส](/?screen=addressedit&state=map-outside&splash=0)
+- `EV-C515-map-error` — โหลดขอบเขตตำบลไม่ได้ · [เปิดเคส](/?screen=addressedit&state=map-error&splash=0)
+- `EV-C515-form-required` — ไม่กรอกข้อมูลบังคับ · [เปิดเคส](/?screen=addressedit&state=form-required&splash=0)
+- `EV-C515-form-phone` — เบอร์มือถือผิดรูปแบบ · [เปิดเคส](/?screen=addressedit&state=form-phone&splash=0)
+- `EV-C515-form-name` — ชื่อมีตัวเลข · [เปิดเคส](/?screen=addressedit&state=form-name&splash=0)
+- `EV-C515-form-area` — พื้นที่ยังเลือกไม่ครบ · [เปิดเคส](/?screen=addressedit&state=form-area&splash=0)
+- `EV-C515-map-saved` — บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ · [เปิดเคส](/?screen=addressedit&state=map-saved&splash=0)
+- `EV-C515-form-split` — ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน · [เปิดเคส](/?screen=addressedit&state=form-split&splash=0)
+- `EV-C515-form-legacy` — ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ · [เปิดเคส](/?screen=addressedit&state=form-legacy&splash=0)
+- `EV-C515-form-details` — รายละเอียดอาคารยาวเกินกำหนด · [เปิดเคส](/?screen=addressedit&state=form-details&splash=0)
+
+### C516 · noconsent (2 เหตุการณ์)
+
+- `EV-C516-decline` — ยังไม่ยินยอมข้อมูลสุขภาพ · [เปิดเคส](/?screen=noconsent&state=decline&splash=0)
+- `EV-C516-withdrawn` — ถอนความยินยอมแล้ว · [เปิดเคส](/?screen=noconsent&state=withdrawn&splash=0)
+
+### C517 · healthfield (9 เหตุการณ์)
+
+- `EV-C517-allergies` — แก้ไขประวัติแพ้ยา · [เปิดเคส](/?screen=healthfield&state=allergies&splash=0)
+- `EV-C517-meds` — แก้ไขยาที่ใช้ประจำ · [เปิดเคส](/?screen=healthfield&state=meds&splash=0)
+- `EV-C517-conditions` — แก้ไขโรคประจำตัว · [เปิดเคส](/?screen=healthfield&state=conditions&splash=0)
+- `EV-C517-food` — แก้ไขประวัติแพ้อาหาร · [เปิดเคส](/?screen=healthfield&state=food&splash=0)
+- `EV-C517-weight` — แก้ไขน้ำหนัก · [เปิดเคส](/?screen=healthfield&state=weight&splash=0)
+- `EV-C517-height` — แก้ไขส่วนสูง · [เปิดเคส](/?screen=healthfield&state=height&splash=0)
+- `EV-C517-unknown` — ยังไม่ทราบ · [เปิดเคส](/?screen=healthfield&state=unknown&splash=0)
+- `EV-C517-none` — ระบุว่าไม่มี · [เปิดเคส](/?screen=healthfield&state=none&splash=0)
+- `EV-C517-invalid` — กรอกข้อมูลไม่ครบ · [เปิดเคส](/?screen=healthfield&state=invalid&splash=0)
+
+### C518 · taxprofile (6 เหตุการณ์)
+
+- `EV-C518-normal` — บุคคลธรรมดา · [เปิดเคส](/?screen=taxprofile&state=normal&splash=0)
+- `EV-C518-company` — นิติบุคคล · [เปิดเคส](/?screen=taxprofile&state=company&splash=0)
+- `EV-C518-empty` — ยังไม่มีข้อมูล · [เปิดเคส](/?screen=taxprofile&state=empty&splash=0)
+- `EV-C518-address-error` — โหลดข้อมูลที่อยู่ไม่สำเร็จ · [เปิดเคส](/?screen=taxprofile&state=address-error&splash=0)
+- `EV-C518-saved-person` — บันทึกบุคคลธรรมดาแล้ว · [เปิดเคส](/?screen=taxprofile&state=saved-person&splash=0)
+- `EV-C518-saved-company` — บันทึกนิติบุคคลแล้ว · [เปิดเคส](/?screen=taxprofile&state=saved-company&splash=0)
+
+### C519 · taxprofileedit (2 เหตุการณ์)
+
+- `EV-C519-person` — แก้ไขบุคคลธรรมดา · [เปิดเคส](/?screen=taxprofileedit&state=person&splash=0)
+- `EV-C519-company` — แก้ไขนิติบุคคล · [เปิดเคส](/?screen=taxprofileedit&state=company&splash=0)
+
+### C601 · update (2 เหตุการณ์)
+
+- `EV-C601-ios` — iPhone · [เปิดเคส](/?screen=update&state=ios&splash=0)
+- `EV-C601-android` — Android · [เปิดเคส](/?screen=update&state=android&splash=0)
+
+### C602 · sysoff (2 เหตุการณ์)
+
+- `EV-C602-off` — ไม่มีเคสค้าง · [เปิดเคส](/?screen=sysoff&state=off&splash=0)
+- `EV-C602-case` — มีเคสค้างตอนปิด · [เปิดเคส](/?screen=sysoff&state=case&splash=0)
+
+### C603 · queueclosed (2 เหตุการณ์)
+
+- `EV-C603-branch` — สาขาปิดรับก่อนเวลา · [เปิดเคส](/?screen=queueclosed&state=branch&splash=0)
+- `EV-C603-store` — ร้านปิด · [เปิดเคส](/?screen=queueclosed&state=store&splash=0)
+
+### C604 · expired (1 เหตุการณ์)
+
+- `EV-C604-default` — ปกติ · [เปิดเคส](/?screen=expired&splash=0)
+
+### C605 · offline (2 เหตุการณ์)
+
+- `EV-C605-form` — ฝากคำถาม · [เปิดเคส](/?screen=offline&state=form&splash=0)
+- `EV-C605-sent` — ส่งแล้ว · [เปิดเคส](/?screen=offline&state=sent&splash=0)
+
+### C606 · declined (1 เหตุการณ์)
+
+- `EV-C606-default` — ปกติ · [เปิดเคส](/?screen=declined&splash=0)
+
+### C607 · nocam (1 เหตุการณ์)
+
+- `EV-C607-default` — ปกติ · [เปิดเคส](/?screen=nocam&splash=0)
+
+### C608 · lost (3 เหตุการณ์)
+
+- `EV-C608-me` — เน็ตของคุณหลุด · [เปิดเคส](/?screen=lost&state=me&splash=0)
+- `EV-C608-peer` — เภสัชกรหลุด · [เปิดเคส](/?screen=lost&state=peer&splash=0)
+- `EV-C608-fail` — ต่อไม่สำเร็จ · [เปิดเคส](/?screen=lost&state=fail&splash=0)
+
+### C609 · payfail (2 เหตุการณ์)
+
+- `EV-C609-card` — บัตรไม่ผ่าน · [เปิดเคส](/?screen=payfail&state=card&splash=0)
+- `EV-C609-bank` — ยกเลิกในแอปธนาคาร · [เปิดเคส](/?screen=payfail&state=bank&splash=0)
+
+## เหตุการณ์กลาง
+
+- `EV-GLOBAL-001` — ไม่มีอินเทอร์เน็ต
+- `EV-GLOBAL-002` — เซิร์ฟเวอร์ขัดข้อง
+- `EV-GLOBAL-003` — การตอบกลับหมดเวลา
+- `EV-GLOBAL-004` — ระบบตอบกลับช้า
+
+- C308 แสดงข้อมูลผู้รับใบกำกับที่บันทึกแล้วเป็นรายการชื่อ เลขผู้เสียภาษีแบบปกปิด เบอร์ ที่อยู่ และอีเมลหรือสาขาเมื่อมีข้อมูล โดยใช้ข้อมูลชุดเดียวกับบัญชี
+
+
+- ต้นแบบ: หน้าชำระเงิน: ข้อมูลผู้รับใบกำกับภาษีที่บันทึกแล้วมีปุ่มแก้ไข เปิดฟอร์มประเภทที่เลือก และกลับมาหน้าชำระเงินหลังบันทึกหรือยกเลิก
+
+
+### ตัวอย่างสถานะรายงานอาการหลังใช้ยา — 5 พฤศจิกายน 2569
+
+C416 เพิ่มเคสพรีวิว `report-statuses`: รายงานตัวอย่างแยกวันและสถานะ รอเภสัชกรประเมิน, กำลังประเมิน, ต้องการข้อมูลเพิ่มเติม, เภสัชกรตอบแล้ว เปิด C419 เพื่อดูรายละเอียดและข้อความตัวอย่างได้ การรายงานไม่ใช่การยืนยันแพ้ยา สถานะกำลังประเมินและต้องการข้อมูลเพิ่มเติมเป็นข้อเสนอสำหรับระบบจริง ยังไม่มีการเชื่อมงานเภสัชกรจริง

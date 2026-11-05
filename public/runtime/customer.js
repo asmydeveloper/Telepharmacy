@@ -315,6 +315,8 @@ TP.fresh = () => ({
   branchState: { tw: 'open', on: 'pause' },  // open | pause | closed
   queueLen: { tw: 2, on: 1, 'demo-1':0, 'demo-2':0, 'demo-3':0, 'demo-4':1, 'demo-5':0 },
   user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
+  taxWho: {id:'1101700203450',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยทวีวัฒนา 25',prov:'กรุงเทพมหานคร',amp:'ทวีวัฒนา',dist:'ทวีวัฒนา',zip:'10170',country:'ไทย',addr:'88/12 ซอยทวีวัฒนา 25 แขวงทวีวัฒนา เขตทวีวัฒนา กรุงเทพมหานคร 10170'},
+  taxCo: null, _taxProfileMockInitialized: true,
   family: [], // Household feature paused; this app serves the account owner only.
   intake: { who: 'me', symptoms: [], custom: [], otherOpen: false, urgent: [], note: '', photos: 0, attachments: [], mode: 'chat' },
   zoneLock: true, loc: 'near', locDenySeen: false, locWarnSeen: false,   // zone lock = admin switch (default ON) · loc = mock phone position / permission
@@ -1145,7 +1147,21 @@ brand.appicon = (cls = '') => old() ? v11.appicon(cls) : `<span class="appicon $
 /* ===== Preview event metadata: shared by runtime and Markdown generator ===== */
 TP.previewEventPolicy={
  code:(code,state)=>`EV-${code}-${state||'default'}`,
- pageStates(id,states,simulations=[]){const base=(states?.length?states:[['','ปกติ']]).filter(([key,label,enabled])=>enabled!==false&&!(['profile','addressedit','pay'].includes(id)&&(key.startsWith('map-')||['expmap','exppin','locdeny'].includes(key))));if(id!=='home')return base;const ordered=simulations.filter(([key])=>!['queue3','queue2'].includes(key)).map(([key,label])=>['case-'+key,label]);return [...ordered,...base.filter(([key])=>!key.startsWith('case-'))];},
+ pageStates(id,states,simulations=[]){
+  // Hide visual review variants from the event panel; keep actionable scenarios.
+  const visualOnly={
+   home:new Set(['banner-edge','blue-canvas','pharmacy-banner','mini-menu','compact-store','named-address','plain-mini-menu','branch-tile','white-canvas','layout-system','store-list','care-shortcuts','figma-system','real-photos','pastel-icons','banner-actions','refined-store-list','distinct-store-photos','soft-status','store-more','bear-banner','banner-safe-area','bright-bear','tritone-icons','personal-greeting','counter-bear','soft-rounded-icons','glass-tabs','female-pharmacist-banner','consult-banner','active-next','active-room','active-paused','active-payment','active-idle']),
+   login:new Set(['cover','platform-cover','storefront-cover','no-logo-overlay','compact-terms','white-fade','white-image','simple-cover','cover-heading']),
+   loginemail:new Set(['panel-layout','consultation-cover']),loginphone:new Set(['panel-layout','consultation-cover']),
+   registrationsuccess:new Set(['full-cover']),store:new Set(['grouped','neutral-sections']),intake:new Set(['cover']),
+   history:new Set(['dark-filters','shared-tabs','store-recipient-card','detail-rows','tap-card','search-below-tabs','tab-counts']),
+   account:new Set(['profile-cover','abstract-cover','clean-profile']),family:new Set(['generated-members'])
+  };
+  const base=(states?.length?states:[['','ปกติ']]).filter(([key,label,enabled])=>enabled!==false&&!visualOnly[id]?.has(key)&&!(['profile','addressedit','pay'].includes(id)&&(key.startsWith('map-')||['expmap','exppin','locdeny'].includes(key))));
+  if(id!=='home')return base;
+  const ordered=simulations.filter(([key])=>!['queue3','queue2'].includes(key)).map(([key,label])=>['case-'+key,label]);
+  return [...ordered,...base.filter(([key])=>!key.startsWith('case-'))];
+ },
  category(state,label){const text=state+' '+label;return /error|invalid|wrong|fail|national-id|ไม่ถูก|ผิด|ไม่สำเร็จ/.test(text)?'ข้อผิดพลาด':/empty|missing|ยังไม่กรอก|ไม่มีข้อมูล|ไม่ครบ/.test(text)?'ข้อมูลไม่ครบ / ว่าง':/expired|timeout|หมดเวลา|หมดอายุ/.test(text)?'เวลา / หมดอายุ':/consent|ยินยอม/.test(text)?'ความยินยอม':/loading|โหลด/.test(text)?'กำลังโหลด':/offline|เน็ต|สัญญาณ/.test(text)?'การเชื่อมต่อ': 'สถานะ / การใช้งาน';},
  describe(code,state,label){
  const specific={
@@ -1377,6 +1393,32 @@ TP.previewAutofill={enabled:false,
     });
   }
 };
+// Preview categories describe what is being tested; they do not change app state.
+function previewEventGroup(screen,key,label){
+ const t=(key+' '+label).toLowerCase();
+ if(screen==='home' && /^(case-|active-)/.test(key))return 'สถานะการ์ดปรึกษาและคำสั่งซื้อ';
+ if(/error|invalid|fail|wrong|no-results|ไม่สำเร็จ|ไม่ถูกต้อง|ผิดพลาด/.test(t))return 'ข้อผิดพลาดและการแก้ไข';
+ if(/offline|connecting|weak|signal|เน็ต|สัญญาณ|การเชื่อมต่อ/.test(t))return 'การเชื่อมต่อ';
+ if(/empty|missing|noaddr|noaddress|no-active|ยังไม่มี|ไม่พบ|ไม่มียา/.test(t))return 'ข้อมูลว่างหรือไม่พร้อม';
+ if(/payment|payexp|unpaid|paid|qr|card|bank|ชำระ|ใบกำกับ|tax/.test(t))return 'การชำระเงินและเอกสาร';
+ if(/deliver|pickup|parcel|rider|express|ready|รับยา|จัดส่ง|ส่งด่วน/.test(t))return 'การรับยาและจัดส่ง';
+ if(/queue|waiting|paused|matched|คิว|เภสัชกรพัก/.test(t))return 'คิวและการรับปรึกษา';
+ if(/video|call|chat|message|reply|สนทนา|วิดีโอ|ข้อความ/.test(t))return 'การสนทนาและวิดีโอ';
+ if(/sym|adr|allerg|อาการ|แพ้ยา/.test(t))return 'อาการและรายงานหลังใช้ยา';
+ if(/search|ค้นหา/.test(t))return 'ค้นหาและตัวกรอง';
+ if(/consent|ยินยอม/.test(t))return 'ความยินยอม';
+ if(/loading|กำลังโหลด/.test(t))return 'กำลังโหลด';
+ if(/expired|timeout|idle|หมดเวลา|หมดอายุ/.test(t))return 'เวลาและหมดอายุ';
+ return 'ข้อมูลและการใช้งาน';
+}
+function previewEventGroups(screen,states){const groups=new Map();for(const state of states){const name=previewEventGroup(screen,state[0],state[1]);if(!groups.has(name))groups.set(name,[]);groups.get(name).push(state);}return groups;}
+function previewSimGroup(id){
+ if(['next','accept','pause','resume','decline','closeBr','storeShut'].includes(id))return 'คิวและการรับปรึกษา';
+ if(['msg','order','close','requestVideo','withdrawVideo','pcam','ofReply'].includes(id))return 'การปรึกษาและวิดีโอ';
+ if(/^chat/.test(id))return 'จัดเตรียมและส่งยา';
+ if(/adr|sym|follow/i.test(id))return 'ติดตามอาการ';
+ return 'จำลองระบบและกรณีทดสอบ';
+}
 let panelSelectCleanups=[];
 function render() {
   panelSelectCleanups.forEach(cleanup=>cleanup());panelSelectCleanups=[];
@@ -1393,7 +1435,7 @@ function render() {
   const canMock = !s && TP.registrationPreview?.canFill(c);
   if (badge) {
     badge.classList.toggle('has-mock', !!canMock);
-    badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>${canMock ? '<button type="button" class="preview-mock-button">มอคข้อมูล</button>' : ''}${sims.length?`<section class="preview-pharmacist"><h2>จำลองฝั่งเภสัชกร</h2><div class="preview-case-controls">${sims.map(a=>`<button type="button" data-preview-sim="${esc(a.id)}">${esc(a.label)}</button>`).join('')}</div></section>`:''}` : '';
+    badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>${canMock ? '<button type="button" class="preview-mock-button">มอคข้อมูล</button>' : ''}${sims.length?`<section class="preview-pharmacist"><h2>จำลองฝั่งเภสัชกรและระบบ</h2><p>แสดงปุ่มที่ใช้ได้ตามสถานะปัจจุบัน</p>${[...new Set(sims.map(a=>previewSimGroup(a.id)))].map(group=>`<details class="preview-sim-group" open><summary>${esc(group)}</summary><div class="preview-case-controls">${sims.filter(a=>previewSimGroup(a.id)===group).map(a=>`<button type="button" data-preview-sim="${esc(a.id)}">${esc(a.label)}</button>`).join('')}</div></details>`).join('')}</section>`:''}` : '';
   }
   if (fabCode) fabCode.textContent = code;
   panel.innerHTML = `
@@ -1409,7 +1451,7 @@ function render() {
       ${def.wait?.length ? `<p class="pn-wait-h">รอเจ้าของเคาะ</p><ul class="pn-list wait">${def.wait.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
       </details>
     </div></section>` : ''}
-    ${states.length ? `<section class="pn-sec pn-page-events" data-panel-section="states"><h2 class="pn-h">เหตุการณ์ของหน้านี้ <span>${states.length}</span></h2><div class="pn-row pn-event-list">${states.map(([k, l], i) => `<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id) === k}"><b class="pn-sc">${esc(TP.previewEventPolicy?.code(def.code,k)||def.code+'.'+(i+1))}</b>${esc(l)}</button>`).join('')}</div></section>` : ''}
+    ${states.length ? `<section class="pn-sec pn-page-events" data-panel-section="states"><h2 class="pn-h">เหตุการณ์ของหน้านี้ <span>${states.length}</span></h2><p class="pn-sub">เลือกหมวดเพื่อเปิดดูและทดลองสถานการณ์</p>${[...previewEventGroups(id,states)].map(([group,items])=>`<details class="pn-event-group" data-panel-section="event-${esc(id)}-${esc(group)}" ${expanded.has(`event-${id}-${group}`)?'open':''}><summary>${esc(group)} <span>${items.length}</span></summary><div class="pn-row pn-event-list">${items.map(([k,l],i)=>`<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id)===k}"><b class="pn-sc">${esc(TP.previewEventPolicy?.code(def.code,k)||def.code+'.'+(i+1))}</b>${esc(l)}</button>`).join('')}</div></details>`).join('')}</section>` : ''}
     <details class="pn-sec pn-disclosure" data-panel-section="faults" ${expanded.has('faults')?'open':''}><summary>เหตุการณ์กลาง</summary><p class="pn-sub">ใช้กับหน้าที่เปิดอยู่ · ไม่เปลี่ยนข้อมูลแบบร่าง</p><div class="pn-row">${(TP.previewEventPolicy?.globals||[]).map(event=>`<button type="button" class="pn-btn" data-pn="fault" data-k="${event.key}" aria-pressed="${TP.previewEvents?.active?.key===event.key}"><b class="pn-sc">${event.id}</b>${esc(event.label)}</button>`).join('')}</div><button type="button" class="pn-btn wide" data-pn="fault-clear">ยกเลิกเหตุการณ์กลาง</button><a class="pn-event-doc" href="/preview/events/GLOBAL.md" target="_blank" rel="noopener">คู่มือเหตุการณ์กลาง (.md)</a></details>
     <details class="pn-sec pn-disclosure pn-flow" data-panel-section="flow" ${expanded.has('flow')?'open':''}><summary>หน้าในโฟลว์นี้</summary><p class="pn-sub">เลือกหน้าที่ต้องการลอง แล้วเปิดดูสถานะของหน้านั้น</p><div class="pn-grid">${flowIds.map(i=>{const d=TP.def(i);return `<button type="button" class="pn-btn" data-pn="jump" data-k="${i}" aria-current="${i===id}"><b class="pn-sc">${esc(d.code||'')}</b>${esc(typeof d.title==='function'?d.title({S:TP.S,params:{}}):d.title)}${d.kind==='sheet'?'<small>แผ่นเลื่อนขึ้น</small>':''}</button>`;}).join('')}</div></details>
     <details class="pn-sec pn-disclosure" data-panel-section="globals" ${expanded.has('globals')?'open':''}><summary>ตั้งค่าจำลองทั้งแอป</summary><div class="gap8">${GLOBAL.map(([k, l, opts]) => `<div><p class="small" style="margin:0 2px 4px">${esc(l)}</p><div class="pn-row">${opts.map(([v, t]) => `<button type="button" class="pn-btn" data-pn="g" data-k="${k}" data-v="${v}" aria-pressed="${TP.S[k] === v}">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div></details>
@@ -3616,7 +3658,7 @@ TP.fulfillmentPreview = (c,key) => {
 };
 TP.fulfillmentCard = S => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo(c);return f && !f.done;}).map(c=>{
  const f=TP.fulfillmentInfo(c),b=TP.branch(c.branch),title=f.pickup?(c.order.paid?.stage==='ready'?'ยาพร้อมรับที่สาขาแล้ว':'กำลังเตรียมยาสำหรับรับที่สาขา'):f.title;
- return `<article class="post-consult-payment fulfillment-card"><div class="post-payment-heading">${TP.ic(f.pickup?'store':f.icon,22,1.8)}<span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</div><h3>${TP.esc(title)}</h3><p>${TP.esc(b.name)} · ${TP.esc(c.order.no)}</p>${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</article>`;
+ return `<article class="post-consult-payment fulfillment-card"><div class="post-payment-heading">${TP.ic('package',22,1.8)}<span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</div><h3>${TP.esc(title)}</h3><p>${TP.esc(b.name)} · ${TP.esc(c.order.no)}</p>${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</article>`;
 }).join('');
 TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||TP.S.case;if(!TP.fulfillmentInfo(c))return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go('paid',{via:'cover'});});
 TP.chatDeliveryPage = c => {
@@ -4257,7 +4299,7 @@ function recvOpts() {
   const opts = {
     pickup: () => optCard({ group: 'recv', v: 'pickup', a: 'payRecv', icon: 'store', title: 'รับที่ร้าน', on: p.recv === 'pickup', sub: esc(S.storeOpen?'รับยาที่สาขานี้':'รับวันเปิดทำการถัดไป'), fee: 'ฟรี', tone: 'free' }),
     express: () => optCard({ group: 'recv', v: 'express', a: 'payRecv', icon: 'zap', title: 'ส่งด่วน', on: p.recv === 'express', off: !S.storeOpen,
-      sub: esc(S.storeOpen ? '1–4 ชม. · ในระยะ 15 กม.' : `ส่งด่วนใช้ได้ช่วงร้านเปิด ${b.hours}`),
+      sub: esc(S.storeOpen ? 'ส่งเร็วใน 1–4 ชม.' : `ส่งด่วนใช้ได้ช่วงร้านเปิด ${b.hours}`),
       fee: !S.storeOpen ? '' : ozE ? 'นอกเขต' : farNow ? 'นอกระยะ' : p.recv === 'express' && q ? TP.money(EXP_FEE()) : 'ตามระยะทาง', tone: ozE || farNow ? 'warn' : p.recv === 'express' && q ? '' : 'pend' }),
     parcel: () => optCard({ group: 'recv', v: 'parcel', a: 'payRecv', icon: 'package', title: 'ส่งพัสดุ', on: p.recv === 'parcel',
       sub: esc('ถึงใน 1-3 วัน' + next),
@@ -4288,7 +4330,7 @@ function recvExtra() {
   if (p.recv === 'parcel') return courHtml();
   if (p.recv !== 'pickup') return '';
   return `<div class="pay-br"><div class="pay-branch-heading">${b.photo?`<img src="${esc(b.photo)}" alt="${esc(b.name)}" width="72" height="72" loading="lazy">`:`<span class="pay-branch-placeholder">${ic('store',28,1.8)}</span>`}<div><span class="pay-branch-eyebrow">สาขารับยา</span><h4>${esc(b.name)}</h4><p>${ic('clock',14,1.8)} เปิด ${esc(b.hours)}</p></div></div><div class="pay-branch-address">${ic('map-pin',18,1.8)}<p>${esc(b.addr || 'ยังไม่มีข้อมูลที่อยู่สาขา')}</p></div><p class="small pay-br-n">ชำระแล้วได้ QR รับยาในแอป แสดงที่เคาน์เตอร์ · ร้านแจ้งในแอปเมื่อยาพร้อม</p>
-    <div class="pay-br-b">${ui.btn('นำทาง (Google Maps)', { kind: 'secondary', sm: true, icon: 'navigation', a: 'payMapsGo' })}${ui.btn('โทร ' + b.phone, { kind: 'secondary', sm: true, icon: 'phone', a: 'payCallBr' })}</div></div>`;
+    <div class="pay-br-b">${ui.btn('แผนที่', { kind: 'secondary', sm: true, icon: 'navigation', a: 'payMapsGo' })}${ui.btn('โทรหาร้าน', { kind: 'secondary', sm: true, icon: 'phone', a: 'payCallBr' })}</div></div>`;
 }
 /* PL saved-address rows inside one card; the pin tag only matters for express so it shows only there */
 function cardsHtml() {
@@ -4357,13 +4399,15 @@ const VIA_IC = { pickup: 'store', express: 'zap', parcel: 'package', cold: 'snow
 const viaText = () => { const p = P(), b = TP.branch(C().branch); return p.recv === 'pickup' ? `รับยาเองที่ร้าน ${b.name}` : p.recv === 'express' ? 'ส่งด่วนถึงบ้าน (Lalamove)' : p.recv === 'cold' ? `ส่งแบบควบคุมความเย็น (${TP.COLD.short})` : `ส่งพัสดุ ${courier()?.name || ''}`.trim(); };
 const expLine = o => `ชำระภายใน ${TP.orderTime(o)} น. · เหลือ <b data-order-countdown>${TP.orderRemaining(o)}</b>`;
 
+const maskCheckoutTax = v => 'xxxxxxxxx' + String(v).slice(-4);
 function payTaxHtml() {
   const p=P(), who=p.taxWho||'me', record=who==='co'?TP.S.taxCo:TP.S.taxWho;
-  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${record?`<div class="rc-tax-profile"><b>${esc(record.name||[record.first,record.last].filter(Boolean).join(' '))}</b><small>${esc(record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' '))}</small></div>`:'<p class="small">ยังไม่มีข้อมูลผู้รับ กรุณาเพิ่มข้อมูลออกใบกำกับภาษีในเมนูบัญชีก่อนชำระเงิน</p>'}`:''}`;
+  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${record?`<section class="pay-tax-recipient" aria-label="ข้อมูลผู้รับใบกำกับภาษี"><header class="pay-tax-recipient-head"><h4>ข้อมูลผู้รับใบกำกับภาษี</h4><button type="button" class="pay-tax-edit" data-a="payTaxEditProfile">แก้ไขข้อมูล</button></header><dl>${[[who==='co'?'ชื่อนิติบุคคล':'ชื่อผู้รับ',record.name||[record.first,record.last].filter(Boolean).join(' ')],['เลขประจำตัวผู้เสียภาษี',record.id?maskCheckoutTax(record.id):null],...(who==='co'?[['สาขา',record.branch]]:[]),['เบอร์โทรศัพท์',record.phone],['อีเมล',record.email],['ที่อยู่',record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' ')]].filter(([,value])=>value).map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${who==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับเพื่อขอใบกำกับภาษี</p>${ui.btn('เพิ่มข้อมูลใบกำกับภาษี',{a:'payTaxAddProfile'})}</div>`}`:''}`;
 }
 function redrawPayTax(){const el=$('#payTax');if(el){el.innerHTML=payTaxHtml();TP.icons(el)}}
 TP.act('payTaxWant',b=>{P().taxWant=b.dataset.v==='yes';redrawPayTax()});
 TP.act('payTaxWho',b=>{P().taxWho=b.dataset.v;redrawPayTax()});
+TP.act('payTaxAddProfile',async()=>{const who=P().taxWho||'me';await TP.closeSheet({instant:true});TP.S.st.taxprofile=who==='co'?'company':undefined;await TP.go('taxprofile');});
 
 /* ---------- pay sheet ---------- */
 TP.sheetDef('pay', {
@@ -4988,9 +5032,10 @@ TP.screen('paid', {
     return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(`<div class="pd-top"><span class="pd-ok${late ? ' late' : ''}">${ic(late ? 'clock' : 'check', 46, 2.4)}</span>
         <h2 class="h2" data-in="1">${late ? 'เลยกำหนดรับยาแล้ว' : !pick && ['calling','delivering'].includes(fulfillment?.key) ? fulfillment.title : st ? (pick ? 'ยาพร้อมรับแล้ว' : 'ส่งยาแล้ว') : 'ชำระเงินสำเร็จ'}</h2><p class="pd-amt num" data-in="2" id="pdAmt"></p><p class="small" data-in="2">${esc(b.name)}</p></div>
       ${late ? paidCard('การรับยา',`<p class="pd-late" id="pdLate">${ic('clock',18,2)}<span><b>ร้านเก็บยาไว้ให้ถึงวันที่ <span class="num">${holdUntil(pd)}</span></b>ร้านจะโทรหาคุณเพื่อตกลงเรื่องยาและการคืนเงิน</span></p>`,ui.btn('โทรหาร้าน',{icon:'phone',a:'callStore'})) : pick ? paidCard('รหัสรับยา',`<div class="pd-code"><div><b class="num">${esc(o.no.slice(-4))}</b><span>แสดงรหัสนี้ที่เคาน์เตอร์${esc(b.name)} พร้อมบอกชื่อผู้สั่งซื้อ (${esc(TP.S.user.full)})</span></div>${qrMini(o.no)}</div>${st ? `<p class="pd-hold" id="pdHold">${ic('clock',16,2)}<span>ร้านเก็บยาไว้ให้ ${HOLD_DAYS} วัน มารับได้ถึงวันที่ <b class="num">${holdUntil(pd)}</b> · ถ้าเลยกำหนด ร้านจะโทรหา</span></p>` : ''}`) : ''}
-      ${paidCard('สถานะ',`<ol class="tl">${steps.map(([s,t,d])=>`<li class="${s}"><b>${esc(t)}${s==='cur'?' '+now:''}</b>${d?`<span>${esc(d)}</span>`:''}</li>`).join('')}</ol>`,!pick?`${ui.btn(pd.recv==='express'?'ติดตามไรเดอร์':'ติดตามการจัดส่ง',{kind:'secondary',sm:true,icon:'map-pin',go:'track'})}${pd.track?ui.btn('คัดลอกเลขพัสดุ',{kind:'ghost',sm:true,icon:'copy',a:'copyTrack'}):pd.trackUrl?ui.btn('เปิดหน้าติดตามพัสดุ',{kind:'ghost',sm:true,icon:'external-link',a:'openTrackLink'}):''}`:'')}
+      ${paidCard('สถานะ',`<ol class="tl">${steps.map(([s,t,d])=>`<li class="${s}"><b>${esc(t)}${s==='cur'?' '+now:''}</b>${d?`<span>${esc(d)}</span>`:''}</li>`).join('')}</ol>`,!pick && pd.recv!=='express'?`${ui.btn('ติดตามการจัดส่ง',{kind:'secondary',sm:true,icon:'map-pin',go:'track'})}${pd.track?ui.btn('คัดลอกเลขพัสดุ',{kind:'ghost',sm:true,icon:'copy',a:'copyTrack'}):pd.trackUrl?ui.btn('เปิดหน้าติดตามพัสดุ',{kind:'ghost',sm:true,icon:'external-link',a:'openTrackLink'}):''}`:'')}
+      ${pd.recv==='express'?paidCard('ที่อยู่จัดส่ง',pd.addr ? `<div class="pd-branch"><b>${esc([pd.addr.first,pd.addr.last].filter(Boolean).join(' ') || TP.S.user.full)}</b>${pd.addr.phone?`<p>${esc(pd.addr.phone)}</p>`:''}<p>${esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))}</p></div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>',ui.btn('ติดตามไรเดอร์',{kind:'secondary',sm:true,icon:'external-link',a:'openRiderTracking'})):''}
       ${pick?paidCard('รับที่สาขา',`<div class="pd-branch"><b>${esc(b.name)}</b><p>${esc(b.addr)} · เปิด ${esc(b.hours)}</p></div>`,`${ui.btn('โทรหาร้าน',{kind:'secondary',icon:'phone',a:'callStore'})}${late?'':ui.btn('นำทางไปร้าน',{icon:'navigation',a:'navStore'})}`):''}
-      ${paidCard('ข้อมูลคำสั่งซื้อ',ui.kv([['เลขคำสั่งซื้อ',`<span class="num">${esc(o.no)}</span>`],['เวลาชำระ',`${pd.date} ${pd.at}`],['วิธีชำระ',methName(pd.method)],['การรับสินค้า',esc(recvName(pd))],...(pd.addr?[['ส่งไปที่',esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))]]:[])]))}
+      ${paidCard('ข้อมูลคำสั่งซื้อ',ui.kv([['เลขคำสั่งซื้อ',`<span class="num">${esc(o.no)}</span>`],['เวลาชำระ',`${pd.date} ${pd.at}`],['วิธีชำระ',methName(pd.method)],['การรับสินค้า',esc(recvName(pd))],...(pd.addr && pd.recv!=='express'?[['ส่งไปที่',esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))]]:[])]))}
       ${paidCard('รายการยา',`<table class="rc-items rc-short-items pd-receipt-items"><thead><tr><th scope="col">รายการ</th><th scope="col">จำนวนเงิน</th></tr></thead><tbody>${o.items.map(i=>`<tr><td><div class="rc-med">${TP.medicineImage(i)||`<span class="rc-med-placeholder">${ic('pill',20,1.8)}</span>`}<span><b>${esc(i.name)}</b><small>จำนวน ${esc(i.qty)}</small></span></div></td><td class="num">${TP.money(i.price)}</td></tr>`).join('')}</tbody></table><div class="hr"></div>${totKv(pd)}`)}
       <div class="mt16">${ui.group([ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบกำกับภาษีอย่างย่อ · ดาวน์โหลดตัวเต็มได้เอง',go:'receipt',p:{id:c.id}})],{din:5})}</div>
       <details class="pd-consultation mt16"><summary style="cursor:pointer;font-weight:600;padding:8px 0">สรุปการปรึกษา</summary><div class="mt16">${TP.summaryForCase?.(c,{hideHero:true,hideReceipt:true}) || ''}</div></details>
@@ -5006,6 +5051,12 @@ const caseBranch = () => TP.branch(C()?.branch || TP.S.branch);
 TP.act('navStore', () => { const b = caseBranch(); window.open(b.map, '_blank', 'noopener'); TP.notify('เปิด Google Maps ไปที่' + b.name, { icon: 'navigation' }); });
 TP.act('copyTrack', async () => { const t = order().paid.track; try { await navigator.clipboard?.writeText(t); } catch (e) { /* the mask has no clipboard in some previews */ } TP.notify(`คัดลอกเลขพัสดุ ${t} แล้ว`, { icon: 'copy' }); });
 /* the store pasted a tracking link: one button, the long link is never shown (ทำตอนสร้างจริง: เปิดลิงก์ที่ร้านแปะ) */
+TP.act('openRiderTracking', () => {
+  const pd = order()?.paid;
+  const url = pd?.trackingUrl || pd?.trackUrl || '';
+  try { const link = new URL(url); if (link.protocol === 'https:') { window.open(link.href, '_blank', 'noopener,noreferrer'); return; } } catch {}
+  TP.notify('ยังไม่มีลิงก์ติดตามไรเดอร์จากผู้ให้บริการขนส่ง', { icon: 'circle-alert' });
+});
 TP.act('openTrackLink', () => TP.notify(`เปิดหน้าติดตามพัสดุของ ${TP.COLD.short}`, { icon: 'external-link' }));
 TP.act('trackShip', () => { const pd = order().paid; TP.notify(pd.recv === 'express' ? 'เปิดหน้าติดตามไรเดอร์ของ Lalamove' : `เปิดหน้าติดตามพัสดุของ ${courierOf(pd).name}`, { icon: 'external-link' }); });
 /* the store presses "จัดยาครบ" in S404: notified at once, never the medicine names or the amount */
@@ -5697,7 +5748,7 @@ function adrCaseReports(S, report) {
   return report.batchId ? adrReports(S,'me').filter(item=>item.batchId===report.batchId) : [report];
 }
 function adrReplyCard(report, message = report.reply) {
-  if (!report.replied) return '';
+  if (!report.replied && !(report.reviewStatus==='more-info' && report.reply)) return '';
   const pharmacist = TP.PHARM[report.replyPharm || report.pharm];
   const name = pharmacist?.name || pharmacist?.short || 'เภสัชกรผู้ตอบ';
   const photo = pharmacist?.photo || (pharmacist?.id ? TP.demoProfiles?.[pharmacist.id === 'tp' ? 'pharmacist_m' : 'pharmacist_f'] : '');
@@ -5730,6 +5781,18 @@ function adrConsultationLink(S,report) {
     ${ic('chevron-right',18,2)}
   </button>`;
 }
+// Preview statuses describe the report workflow; an assessment never proves a drug allergy.
+function adrReportStatus(r) {
+  if (r.replied) return {label:'เภสัชกรตอบแล้ว',tone:'info'};
+  if (r.reviewStatus==='more-info') return {label:'ต้องการข้อมูลเพิ่มเติม',tone:'warn'};
+  if (r.reviewStatus==='reviewing') return {label:'กำลังประเมิน',tone:'info'};
+  return {label:'รอเภสัชกรประเมิน',tone:'warn'};
+}
+function adrBatchStatus(reports) {
+  if (reports.every(r=>r.replied)) return {label:'เภสัชกรตอบแล้ว',tone:'info'};
+  if (reports.some(r=>r.replied)) return {label:'ตอบแล้วบางรายการ',tone:'info'};
+  return adrReportStatus(reports.find(r=>r.reviewStatus==='more-info') || reports.find(r=>r.reviewStatus==='reviewing') || reports[0]);
+}
 function adrCaseDetails(S,r,sheetView=false) {
   const b=TP.branch(r.branch)||TP.branch();
   const person=historyIdentity(S,r.who,r);
@@ -5738,6 +5801,7 @@ function adrCaseDetails(S,r,sheetView=false) {
   const allReplied = reports.every(item=>item.replied);
   const anyReplied = reports.some(item=>item.replied);
   const branches = [...new Set(reports.map(item=>(TP.branch(item.branch)||b).name))];
+  const reportStatus = adrBatchStatus(reports);
   const cards = reports.map(item=>{
     const symptoms = [
       ['อาการ',item.sym.join(' · ')],
@@ -5750,7 +5814,7 @@ function adrCaseDetails(S,r,sheetView=false) {
       <header class="adr-result-drug">
         ${TP.medicineImage({name:item.drug,image:item.image})||`<span class="adr-section-icon">${ic('pill',24,1.8)}</span>`}
         <div><span>ยาที่แจ้ง</span><h3>${esc(item.drug)}</h3>
-          ${reports.length>1&&anyReplied?ui.tag(item.replied?'ประเมินแล้ว':'รอประเมิน',item.replied?'info':'warn'):''}
+          ${reports.length>1&&anyReplied?ui.tag(adrReportStatus(item).label,adrReportStatus(item).tone):''}
         </div>
       </header>
       ${rows(symptoms)}
@@ -5764,11 +5828,11 @@ function adrCaseDetails(S,r,sheetView=false) {
     <section class="card pad0 adr-result-section adr-result-overview">
 ${sheetView?`      <header class="adr-result-status">
         <h2>${ic('clipboard-list',20,1.8)} ข้อมูลรายงาน</h2>
-        ${ui.tag(allReplied?'ประเมินแล้ว':anyReplied?'ประเมินแล้วบางรายการ':'รอประเมิน',allReplied?'info':'warn')}
+        ${ui.tag(reportStatus.label,reportStatus.tone)}
       </header>`:`      <header class="adr-result-status">
         <span class="adr-section-icon">${ic(allReplied?'message-circle':'clipboard-list',24,1.8)}</span>
         <div><h2>${allReplied?'เภสัชกรตอบแล้ว':'ส่งรายงานแล้ว'}</h2>
-          ${ui.tag(allReplied?'ประเมินแล้ว':anyReplied?'ประเมินแล้วบางรายการ':'รอเภสัชกรประเมิน',allReplied?'info':'warn')}
+          ${ui.tag(reportStatus.label,reportStatus.tone)}
         </div>
       </header>`}
       ${rows([['ผู้มีอาการ',person.name+' · '+person.rel],['ส่งเมื่อ',[r.date,r.at].filter(Boolean).join(' ')],['ร้านยา',branches.join(' · ')],['เลขรายงาน',reports.map(item=>item.id).join('\n')]])}
@@ -5796,6 +5860,7 @@ function adrCaseCards(S,reports) {
     const names=[...new Set(items.map(item=>item.drug))].join(' · ');
     const symptoms=[...new Set(items.flatMap(item=>item.sym||[]))].join(' · ');
     const medicinePhoto = TP.medicineImage({name:report.drug,image:report.image});
+    const reportStatus = adrBatchStatus(items);
     return `<button type="button" class="adr-report" data-a="adrOpenReport" data-v="${esc(report.id)}" aria-haspopup="dialog">
       <span class="adr-report-main">
         <span class="adr-report-icon" aria-hidden="true">${medicinePhoto||ic('pill',22,1.8)}</span>
@@ -5804,22 +5869,22 @@ function adrCaseCards(S,reports) {
       </span>
       <span class="adr-report-meta">
         <small>${esc(date.time || report.at || '')}</small>
-        ${ui.tag(allReplied?'ประเมินแล้ว':anyReplied?'ประเมินแล้วบางรายการ':'รอเภสัชกรประเมิน',allReplied?'info':'warn')}
+        ${ui.tag(reportStatus.label,reportStatus.tone)}
       </span>
     </button>`;
   }).join('')}</div></section>`).join('');
 }
 TP.screen('adrcare',{
   group:'after',title:'แพ้ยาและอาการหลังใช้ยา',code:'C416',parent:'medhub',
-  states:[["normal", "ข้อมูลของตัวเอง"], ["empty", "ยังไม่มีรายงาน"], ["reported", "มีรายงานรอประเมิน"], ["loading", "กำลังโหลด"], ["error", "โหลดไม่สำเร็จ"], ["grouped-days", "หลายรายงาน แบ่งตามวัน"]],
+  states:[["normal", "ข้อมูลของตัวเอง"], ["empty", "ยังไม่มีรายงาน"], ["reported", "มีรายงานรอประเมิน"], ["loading", "กำลังโหลด"], ["error", "โหลดไม่สำเร็จ"], ["grouped-days", "หลายรายงาน แบ่งตามวัน"], ["report-statuses", "ตัวอย่างสถานะรายงาน"]],
   notes:['ดูประวัติและแจ้งอาการของเจ้าของบัญชีเท่านั้น','การส่งรายงานยังไม่ยืนยันว่าแพ้ยา','ค้นหาจากยาที่เจ้าของบัญชีเคยได้รับ รูปยาเป็นภาพประกอบ ไม่ใช้ยืนยันชนิดยา'],
-  prep(S){const st=S.st.adrcare;S._adrWho='me'; if(st==='grouped-days'){
+  prep(S){const st=S.st.adrcare;S._adrWho='me'; if(st==='grouped-days'||st==='report-statuses'){
     S.adrReports=[];
     const medicines=TP.adrActiveMedicines?.({multiPlan:true}) || [];
     const examples=[
       {med:0,date:'18/10/2026',at:'14:12',sym:['ผื่น คัน']},
-      {med:1,date:'18/10/2026',at:'10:30',sym:['ระคายคอ']},
-      {med:2,date:'17/10/2026',at:'16:00',sym:['ง่วงนอน'],replied:true},
+      {med:1,date:'18/10/2026',at:'10:30',sym:['ระคายคอ'],reviewStatus:'reviewing'},
+      {med:2,date:'17/10/2026',at:'16:00',sym:['ง่วงนอน'],reviewStatus:'more-info'},
       {med:0,date:'15/10/2026',at:'09:20',sym:['คลื่นไส้'],replied:true},
       {med:2,date:'12/10/2026',at:'18:45',sym:['เวียนหัว'],replied:true}
     ];
@@ -5828,7 +5893,7 @@ TP.screen('adrcare',{
       const draft=adrNewDraft('me');
       Object.assign(draft,{drug:medicine.v,medicine,sym:example.sym,since:'today',level:'mild'});
       const report=adrStoreReport(S,draft);
-      Object.assign(report,{date:example.date,at:example.at,replied:!!example.replied});
+      Object.assign(report,{date:example.date,at:example.at,replied:!!example.replied,reviewStatus:example.reviewStatus||'',...(example.reviewStatus==='more-info'?{reply:'เพื่อประกอบการประเมิน รบกวนแจ้งเวลาเริ่มมีอาการและยาที่ใช้ร่วมกันเพิ่มเติมค่ะ',replyPharm:report.pharm,replyDate:example.date,replyAt:'16:20',replySample:true}:{}),...(example.replied?{reply:'ได้รับข้อมูลอาการแล้วค่ะ กรุณาติดต่อเภสัชกรหากอาการยังรบกวนหรือมีอาการเพิ่มเติม',replyPharm:report.pharm,replyDate:example.date,replyAt:'16:30',replySample:true}:{})});
     });
   } if(st==='empty')S.adrReports=[];if(st==='reported'){S.adrReports=[];for(const who of ['me']){const d=adrNewDraft(who);Object.assign(d,{drug:'store',other:'ชื่อยาจากฉลาก (ตัวอย่าง)',sym:['ผื่น คัน'],since:'today',level:'mild'});const report=adrStoreReport(S,d);const med=TP.adrActiveMedicines?.({multiPlan:true})[0];if(med)Object.assign(report,{drug:med.name,image:med.image,known:true});}}},
   render(ctx){const S=ctx.S,who=S._adrWho=adrPerson(S,S._adrWho),identity=historyIdentity(S,who),reports=adrReports(S,who),nav=ui.nav({title:'แพ้ยา / อาการหลังใช้ยา',left:`<button type="button" class="back" data-a="adrCareBack">${ic('chevron-left',22,2.2)}<span>เมนูยา</span></button>`});
@@ -6317,6 +6382,8 @@ TP.sheetDef('taxprofileedit',{
   render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,
   close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(ctx.S,d),ctx.S.user,d.kind==='co');}
 });
+TP.act('payTaxEditProfile',()=>{const S=TP.S,d=taxProfileDraft(S),pay=S.pay;d.kind=pay?.taxWho||'me';d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?S.taxCo:S.taxWho,S.user,d.kind==='co');S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;return TP.sheet('checkouttaxedit');});
+TP.sheetDef('checkouttaxedit',{group:'during',title:'แก้ไขข้อมูลออกใบกำกับภาษี',hidden:true,host:'room',tall:true,render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');setTimeout(async()=>{await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;},450);}});
 TP.act('rcProfileNew',()=>{const d=taxProfileDraft(TP.S),o=TP.cur()?.ctx?.rc;d.kind=o?.tax?.who||'me';d.errors={};d.drafts.me=taxProfileEntry(TP.S._taxProfile?.preview?.me||TP.S.taxWho,TP.S.user,false);d.drafts.co=taxProfileEntry(TP.S._taxProfile?.preview?.co||TP.S.taxCo,TP.S.user,true);return TP.sheet('receiptprofile');});
 TP.act('rcProfileEdit',b=>{const S=TP.S,d=taxProfileDraft(S);d.kind=b.dataset.v;d.errors={};d.drafts[d.kind]=taxProfileEntry(S._taxProfile?.preview?.[d.kind]||(d.kind==='co'?S.taxCo:S.taxWho),S.user,d.kind==='co');return TP.sheet('receiptprofile');});
 TP.sheetDef('receiptprofile',{group:'after',title:'ข้อมูลออกใบกำกับภาษี',hidden:true,host:'receipt',tall:true,render:ctx=>`${ui.seg('receiptProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],taxProfileDraft(ctx.S).kind,{a:'receiptProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${taxProfileForm(ctx.S,true)}`,mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');}});
@@ -6324,7 +6391,7 @@ TP.act('receiptProfileKind',b=>{const d=taxProfileDraft(TP.S);d.kind=b.dataset.v
 async function taxProfileRedraw(){
   const sheet=TP.sheetOpen();
   if(sheet?.id==='receiptprofile'){const body=$('.sh-b',sheet.el),top=body.scrollTop;body.innerHTML=`${ui.seg('receiptProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],taxProfileDraft(TP.S).kind,{a:'receiptProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${taxProfileForm(TP.S,true)}`;TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);body.scrollTop=top;return;}
-  if(sheet?.id==='taxprofileedit'){const body=$('.sh-b',sheet.el),top=body.scrollTop;body.innerHTML=taxProfileForm(TP.S,true);TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);body.scrollTop=top;return;}
+  if(['taxprofileedit','checkouttaxedit'].includes(sheet?.id)){const body=$('.sh-b',sheet.el),top=body.scrollTop;body.innerHTML=taxProfileForm(TP.S,true);TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);body.scrollTop=top;return;}
   return TP.refresh({anim:false});
 }
 TP.sheetDef('taxprofiledelete',{group:'account',title:'ลบข้อมูลออกใบกำกับภาษี?',hidden:true,host:'taxprofile',render:()=>'<p>ข้อมูลที่บันทึกไว้สำหรับประเภทนี้จะถูกลบ</p>',foot:()=>ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true})+ui.btn('ยืนยันลบข้อมูล',{kind:'danger',a:'taxProfileDelete'})});
@@ -6348,8 +6415,8 @@ TP.act('taxProfileSave',async()=>{
   if(Object.keys(d.errors).length){await taxProfileRedraw();$('[aria-invalid="true"]',TP.sheetOpen()?.el || TP.cur()?.el)?.focus();return;}
   const name=co?f.name.trim():`${f.first.trim()} ${f.last.trim()}`,branch=co?(f.branchType==='hq'?'สำนักงานใหญ่':f.branchType==='branch'?'สาขา '+f.branch.trim():f.branch.trim()):'',addr=[f.detail.trim(),f.dist.trim(),f.amp.trim(),f.prov.trim(),f.zip.trim(),f.country.trim()].filter(Boolean).join(' ');
   const rec={name,id,phone,branch,kind:co?'นิติบุคคล':'บุคคลธรรมดา',first:f.first.trim(),last:f.last.trim(),branchType:f.branchType,addressMode:f.mode,country:f.country.trim(),prov:f.prov.trim(),amp:f.amp.trim(),dist:f.dist.trim(),zip:f.zip.trim(),detail:f.detail.trim(),addr};
-  if(d.preview?.[d.kind]) d.preview[d.kind]=rec; if(!d.preview?.[d.kind] || TP.sheetOpen()?.id==='receiptprofile'){if(co) S.taxCo=rec;else {S.taxWho=rec;S.rcNoAddr=false;}}
-  TP.emit('state');if(['taxprofileedit','receiptprofile'].includes(TP.sheetOpen()?.id))await TP.closeSheet();await TP.refresh({anim:false});TP.notify('บันทึกข้อมูลแล้ว',{icon:'circle-check'});
+  if(d.preview?.[d.kind]) d.preview[d.kind]=rec; if(co) S.taxCo=rec;else {S.taxWho=rec;S.rcNoAddr=false;} S._taxProfileMockInitialized=true;
+  TP.emit('state');if(['taxprofileedit','receiptprofile','checkouttaxedit'].includes(TP.sheetOpen()?.id))await TP.closeSheet();await TP.refresh({anim:false});TP.notify('บันทึกข้อมูลแล้ว',{icon:'circle-check'});
 });
 
 TP.act('afNotif', t => {
