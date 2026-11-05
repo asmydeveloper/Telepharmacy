@@ -850,13 +850,13 @@ const rv = $('#rv'), panel = $('#panel'), frame = $('#frame'), stage = $('#stage
 /* customer app screens (codes from the review list 19/10/2026); replaced by the live registry the app posts */
 const CUST = { splash: ['C101', 'เปิดแอป'], login: ['C102', 'เข้าสู่ระบบ'], otp: ['C103', 'กรอกรหัส OTP'], profile: ['C104', 'ข้อมูลของคุณและความยินยอม'], consent: ['C105', 'ยินยอมให้ใช้ข้อมูล'], noconsent: ['C106', 'ไม่ยินยอม'], faceid: ['C107', 'Face ID / ลายนิ้วมือ'], doc: ['C108', 'ข้อกำหนดการใช้งาน'], onboard: ['C109', 'แนะนำแอป'],
   home: ['C201', 'หน้าแรก'], branch: ['C202', 'เลือกสาขา'], intake: ['C203', 'แจ้งอาการ'], allergy: ['C204', 'แพ้ยาและยาประจำ'], redflag: ['C205', 'อาการที่ควรไปโรงพยาบาล'], pushask: ['C206', 'เปิดการแจ้งเตือน'], queue: ['C207', 'รอคิว'], cancelq: ['C208', 'ยกเลิกคิวไหม'],
-  lock: ['C301', 'แจ้งเตือนบนจอล็อก'], matched: ['C302', 'เภสัชกรรับคิว'], room: ['C303', 'ห้องปรึกษา (แชท)'], roommenu: ['C304', 'ตัวเลือกในห้องปรึกษา'], endcase: ['C305', 'จบการปรึกษานี้ไหม'], video: ['C306', 'วิดีโอคอล'], hangup: ['C307', 'วางสายไหม'], pay: ['C308', 'ชำระเงิน'], paid: ['C309', 'ชำระสำเร็จ'],
+  lock: ['C301', 'แจ้งเตือนบนจอล็อก'], room: ['C303', 'ห้องปรึกษา (แชท)'], roommenu: ['C304', 'ตัวเลือกในห้องปรึกษา'], endcase: ['C305', 'จบการปรึกษานี้ไหม'], video: ['C306', 'วิดีโอคอล'], hangup: ['C307', 'วางสายไหม'], pay: ['C308', 'ชำระเงิน'], paid: ['C309', 'ชำระสำเร็จ'],
   summary: ['C401', 'ใบสรุปการปรึกษา'], receipt: ['C402', 'ใบเสร็จรับเงิน'], history: ['C403', 'ประวัติ'], inbox: ['C404', 'กล่องแจ้งเตือน'], follow: ['C405', 'ติดตามการใช้ยา'], fucheck: ['C406', 'บอกอาการวันนี้'], furesult: ['C407', 'ส่งคำตอบแล้ว'], fulog: ['C408', 'บันทึกการติดตาม'], fudone: ['C409', 'ครบคอร์สยาแล้ว'], fureminder: ['C410', 'ตั้งเวลาเตือน'], fuoff: ['C411', 'หยุดติดตาม'], adr: ['C412', 'แจ้งอาการหลังใช้ยา'], adrsent: ['C413', 'ส่งรายงานแล้ว'],
   account: ['C501', 'บัญชี'], family: ['C502', 'สมาชิกในบ้าน'], familyedit: ['C503', 'เพิ่ม / แก้ไขสมาชิก'], memberdel: ['C504', 'ลบสมาชิก'], health: ['C505', 'ข้อมูลสุขภาพของฉัน'], consents: ['C506', 'ความยินยอม'], consenttext: ['C507', 'ข้อความความยินยอม'], consentwd: ['C508', 'ถอนความยินยอม'], help: ['C509', 'ช่วยเหลือ'], logout: ['C510', 'ออกจากระบบ'], deleteacc: ['C511', 'ลบบัญชี'], deleted: ['C512', 'ลบบัญชีแล้ว'],
   update: ['C601', 'บังคับอัปเดตแอป'], sysoff: ['C602', 'ปิดรับปรึกษาชั่วคราว'], queueclosed: ['C603', 'สาขาปิดรับปรึกษา'], expired: ['C604', 'คิวหมดเวลา'], offline: ['C605', 'นอกเวลา: ฝากคำถาม'], declined: ['C606', 'เภสัชกรไม่รับเคส'], nocam: ['C607', 'ไม่ให้สิทธิ์กล้อง'], lost: ['C608', 'สัญญาณหลุด'], payfail: ['C609', 'จ่ายไม่ผ่าน'] };
 /* state keys of the customer screens this console points at (src-05, 19/10/2026) */
 const CST = { home: ['normal', 'loading', 'active', 'busy', 'closed'], branch: ['normal', 'noloc'], intake: ['normal', 'filled', 'kid', 'other', 'noallergy', 'fail'],
-  queue: ['q2', 'q1', 'paused', 'urgent', 'notifoff'], lock: ['accept', 'msg', 'order', 'payexp', 'paused', 'summary', 'adr', 'fudose', 'fucheck'], matched: ['chat', 'video'],
+  queue: ['q2', 'q1', 'paused', 'urgent', 'notifoff'], lock: ['accept', 'msg', 'order', 'payexp', 'paused', 'summary', 'adr', 'fudose', 'fucheck'],
   room: ['live', 'order', 'paid', 'expired', 'offline', 'closed', 'call'], video: ['on', 'connecting', 'camoff', 'weak', 'pcam'],
   pay: ['normal', 'parcel', 'express', 'noaddr', 'form', 'closed', 'card', 'otp', 'qr', 'qrexp', 'bankon', 'bankapp', 'checking'], receipt: ['normal', 'parcel', 'notax', 'taxdone', 'late'], paid: ['pickup', 'parcel', 'express', 'night'],
   summary: ['normal', 'nomeds', 'closed', 'rated'], history: ['normal', 'empty', 'loading'], inbox: ['normal', 'read', 'empty'],
@@ -1154,7 +1154,7 @@ const camBox = (st, shot) => {
 const intakeTxt = id => { const S = SC.S, v = S.intake[id]; return S.sysOff ? 'ปิดระบบอยู่' : v === 'open' ? 'เปิดรับ' : v === 'pause' ? 'พักชั่วคราว' : 'ปิดรับ'; };
 SC.screen('branch', {
   code: 'S102', group: 1, title: 'เริ่มกะ', shell: false,
-  states: [['confirm', 'ยืนยันเข้ากะ (บัญชีผูกกับสาขา)', { cust: [['queue', 'q2', 'ชื่อและเลขใบอนุญาตนี้ขึ้นบนบัตรในหน้ารอคิว'], ['matched', 'chat']] }],
+  states: [['confirm', 'ยืนยันเข้ากะ (บัญชีผูกกับสาขา)', { cust: [['queue', 'q2', 'ชื่อและเลขใบอนุญาตนี้ขึ้นบนบัตรในหน้ารอคิว'], ['room', 'live']] }],
     ['takeover', 'มีเภสัชกรประจำอยู่แล้ว: รับกะต่อ', { cust: [['queue', 'q2', 'บัตรในหน้ารอคิวเปลี่ยนเป็นชื่อคนที่รับกะต่อ']] }],
     ['camoff', 'กล้องใช้ไม่ได้', { cust: [['queue', 'q2', 'บัตรใช้รูปจากทะเบียนเภสัชกร']] }],
     ['camdeny', 'ไม่ได้อนุญาตให้ใช้กล้อง', { cust: [['queue', 'q2']] }]],
@@ -1976,7 +1976,7 @@ SC.roomBody = roomBody;
 const roomBack = cur => { const c = SC.CASES[keyFor(cur)]; return c.night ? 'night' : c.key === 'kid' ? 'kid' : 'talk'; };
 SC.screen('room', {
   code: 'S301', group: 3, duty: true, title: 'ห้องปรึกษา (แชท)', nav: ctx => SC.wsCase(ctx).night ? 'night' : 'queue', fill: true,
-  states: [['start', 'เพิ่งรับเคส', { cust: [['matched', 'chat', 'ลูกค้าเห็นว่าเภสัชกรรับคิวแล้ว'], ['lock', 'accept']] }],
+  states: [['start', 'เพิ่งรับเคส', { cust: [['room', 'live', 'ลูกค้าเข้าห้องปรึกษาเมื่อเภสัชกรรับคิว'], ['lock', 'accept']] }],
     ['talk', 'คุยอยู่', { cust: [['room', 'live', 'บทสนทนาเดียวกันฝั่งลูกค้า']] }],
     ['kid', 'ปรึกษาให้ลูก', { cust: [['intake', 'kid', 'ลูกค้าแจ้งอาการแทนลูก']] }],
     ['allergy', 'บันทึกแพ้ยา', { back: roomBack, cust: [['health', 'normal', 'ลูกค้าเห็นว่าใครบันทึกแพ้ยา'], ['familyedit', 'kid']] }],
@@ -2079,7 +2079,7 @@ const vdBtn = (icon, word, label, a) => `<span class="vd-bw">${ui.ib(icon, label
 SC.screen('video', {
   code: 'S302', group: 3, duty: true, title: 'วิดีโอคอล', nav: 'queue', fill: true,
   states: [['on', 'คุยอยู่', { cust: [['video', 'on']] }],
-    ['ask', 'ลูกค้าขอวิดีโอ', { cust: [['matched', 'video', 'กล้องลูกค้ายังปิด จนกว่าลูกค้ากดเริ่มเอง']] }],
+    ['ask', 'ลูกค้าขอวิดีโอ', { cust: [['room', 'live', 'ห้องปรึกษาสำหรับเริ่มวิดีโอคอล']] }],
     ['weak', 'สัญญาณอ่อน', { cust: [['video', 'weak']] }],
     ['drop', 'ลูกค้าหลุดสาย', { cust: [['lost', 'me', 'ฝั่งลูกค้ากำลังต่อใหม่ เคสและแชทไม่หาย']] }],
     ['mycam', 'กล้องของคุณใช้ไม่ได้', { cust: [['video', 'pcam', 'ลูกค้าเห็นว่ากล้องเภสัชกรใช้ไม่ได้']] }]],

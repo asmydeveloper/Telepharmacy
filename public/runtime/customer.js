@@ -1357,7 +1357,7 @@ const PREVIEW_MAIN=[
  {key:'home',label:'หน้าแรก หลังเข้าล็อคอิน',root:'home',ids:['home','homeaddress','addressbook','addressedit','allbranches','storeinfo','storeactions','pushask']},
  {key:'favorites',label:'หน้า Favorite',root:'favorites',ids:['favorites','storeinfo','storeactions']},
  {key:'history',label:'หน้าประวัติ',root:'history',ids:['history','summary','receipt','track','gotask','medhub','adrcare','adrreport','adr','adrsent','follow','fucheck','furesult','fulog','fudone','fureminder','fuoff']},
- {key:'consult',label:'หน้าปรึกษา',root:'intake',ids:['intake','area','allergy','redflag','serviceterms','queue','cancelq','matched','queueclosed','expired','offline','declined','room','roommenu','endcase','video','hangup','nocam','lost','pay','payfail','paid','lock','storeinfo','allbranches']},
+ {key:'consult',label:'หน้าปรึกษา',root:'intake',ids:['intake','area','allergy','redflag','serviceterms','queue','cancelq','queueclosed','expired','offline','declined','room','roommenu','endcase','video','hangup','nocam','lost','pay','payfail','paid','lock','storeinfo','allbranches']},
  {key:'inbox',label:'หน้าแจ้งเตือน',root:'inbox',ids:['inbox']},
  {key:'account',label:'หน้าบัญชี',root:'account',ids:['account','health','consents','consenttext','consentwd','deleteacc','deleted','help','logout','addressbook','addressedit','faceid','marketingconsent']}
 ];
@@ -1558,7 +1558,6 @@ TP.callRows = callRows;
 const afterBio = () => {
   const S = TP.S;
   Object.assign(S, { _fidOffer: false, _fidAsked: true });
-  if (TP.healthConsentNeeded(S) && S.firstTime && TP.SCREENS.consents) return TP.go('consents', { via: 'push', root: true });
   S.firstTime = false;
   return TP.go('home', { via: 'zoom', root: true });
 };
@@ -1754,7 +1753,7 @@ TP.screen('login', {
   states:[['normal','เลือกวิธีเข้าสู่ระบบ'],['error','ข้อความผิดพลาดการเข้าสู่ระบบ'],['signedout','หลุดจากระบบ 30 วัน'],['cover','ภาพปกหน้าร้าน'],['platform-cover','ปกแพลตฟอร์มร้านยา ไม่มีคน'],['storefront-cover','ปกหน้าร้าน ตัดป้ายร้านข้างเคียง'],['no-logo-overlay','ปกหน้าร้าน ไม่มีโลโก้และกล่องทับ'],['compact-terms','ข้อกำหนดและนโยบายระยะกระชับ'],['white-fade','เฟดขาว ปุ่มสี Primary'],['white-image','ภาพปกด้านล่างขาว ไม่มีเฟด CSS'],['simple-cover','ปกไม่มีข้อความรอง'],['cover-heading','หัวข้อและคำอธิบายบรรทัดเดียว']],
   notes:['หน้าแรกเลือกช่องทางเท่านั้น ไม่มีช่องกรอกข้อมูล','อีเมล → C104 / เบอร์โทร → C103 → ยืนยันรหัสในหน้าเดิม','อีเมลใช้บัญชีที่ผูกไว้ ขั้นตอนส่งและยืนยันรหัสยังเป็นต้นแบบ ต้องเชื่อมบริการยืนยันตัวตนจริงก่อนใช้งาน'],
   prep(S){S.loggedIn=false;},
-  render(ctx){return `<div class="auth-cover"><img class="auth-cover-photo" src="/assets/auth/login-storefront-white-v4.png" alt="" fetchpriority="high"><div class="auth-cover-content">${ctx.state==='signedout'?ui.note('ออกจากระบบอัตโนมัติหลังไม่ได้ใช้งาน 30 วัน กรุณาเข้าสู่ระบบอีกครั้ง',{icon:'lock'}):ctx.state==='error'?ui.note('เข้าสู่ระบบไม่สำเร็จ กรุณาเลือกช่องทางเพื่อลองอีกครั้ง',{tone:'warn',icon:'circle-alert'}):''}<h1>ดูแลคุณ<br><span>ใกล้กว่าที่เคย</span></h1><p class="auth-cover-subtitle">ปรึกษาเภสัชกรใกล้บ้าน อุ่นใจเรื่องยา</p><div class="auth-cover-actions"><h2 class="auth-cover-subtitle">เข้าสู่ระบบหรือสมัครสมาชิก</h2>${ui.btn('ดำเนินการต่อด้วยอีเมล',{go:'loginemail',icon:'mail',kind:'primary'})}${ui.btn('ดำเนินการต่อด้วยเบอร์โทรศัพท์',{go:'loginphone',icon:'smartphone',kind:'primary'})}</div>${authTerms()}</div></div>`;}
+  render(ctx){return `<div class="auth-cover"><img class="auth-cover-photo" src="/assets/auth/login-storefront-white-v4.png" alt="" fetchpriority="high"><div class="auth-cover-content">${ctx.state==='signedout'?ui.note('ออกจากระบบอัตโนมัติหลังไม่ได้ใช้งาน 30 วัน กรุณาเข้าสู่ระบบอีกครั้ง',{icon:'lock'}):ctx.state==='error'?ui.note('เข้าสู่ระบบไม่สำเร็จ กรุณาเลือกช่องทางเพื่อลองอีกครั้ง',{tone:'warn',icon:'circle-alert'}):''}<h1>ดูแลคุณ<br><span>ใกล้กว่าที่เคย</span></h1><p class="auth-cover-subtitle">ปรึกษาเภสัชกรใกล้บ้าน อุ่นใจเรื่องยา</p><div class="auth-cover-actions">${ui.btn('ดำเนินการต่อด้วยอีเมล',{go:'loginemail',icon:'mail',kind:'primary'})}${ui.btn('ดำเนินการต่อด้วยเบอร์โทรศัพท์',{go:'loginphone',icon:'smartphone',kind:'primary'})}</div>${authTerms()}</div></div>`;}
 });
 /* Shared channel form: one page panel, with in-place code verification. */
 function authMaskedTarget(channel,value){
@@ -1831,7 +1830,6 @@ async function authVerify(channel,button){
   const result=TP.authDemo.verify(f.challenge,f.code);if(!result.ok){f.error=result.error;await TP.refresh({anim:false});return;}
   if(!result.existing){authNewAccount(S,channel,f.target);S.st.profile='empty';TP.emit('state');return TP.go('profile',{root:true,params:channel==='email'?{email:f.target}:{phone:f.target}});}
   Object.assign(S,{loggedIn:true,firstTime:false,newAccount:false,_authFlows:{},_registration:null,_registrationComplete:false});TP.emit('state');
-  if(TP.healthConsentNeeded?TP.healthConsentNeeded(S):!(S.consent&&S.consentVer>=CN_VER))return TP.go('consents',{root:true});
   return TP.go('home',{root:true,via:'zoom'});
 }
 function authMountCode(el,ctx,channel){
@@ -2545,7 +2543,7 @@ TP.screen('splash', {
 TP.act('splashSkip', () => {
   const S = TP.S;
   if (S.oldApp && TP.SCREENS.update) return TP.go('update', { via: 'zoom', root: true });
-  const next = !S.loggedIn && TP.SCREENS.login ? 'login' : TP.healthConsentNeeded(S) && TP.SCREENS.consents ? 'consents' : 'home';
+  const next = !S.loggedIn && TP.SCREENS.login ? 'login' : 'home';
   TP.go(next, { via: 'zoom', root: true });
 });
 
@@ -3030,10 +3028,10 @@ const intakePhotosHtml = I => {const images=intakePhotoItems(I);return `<div cla
 
 TP.screen('intake', {
   group: 'before', title: 'แจ้งอาการ', code: 'C203', ref: 'C04', parent: 'home', cls:'intake-cover-screen', sb:'dark',
-  states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["other", "พิมพ์อาการเอง"], ["noallergy", "ยังไม่ระบุแพ้ยา"], ["fail", "เข้าคิวไม่สำเร็จ"], ["ack", "ติ๊กรับทราบแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา"], ["search", "ตัวเลือกอาการ 2 คอลัมน์"], ["urgent", "แจ้งเตือนอาการอันตราย"], ["multi", "เลือกหลายอาการ"], ["custom-error", "ยังไม่ได้เล่ารายละเอียด"], ["photos", "แนบรูป 3 รูป"], ["photo-error", "แนบไฟล์ไม่รองรับ"], ["cover", "ปกเล่าอาการและฟอร์มซ้อน"]],
+  states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["other", "พิมพ์อาการเอง"], ["noallergy", "ยังไม่ระบุแพ้ยา"], ["fail", "เข้าคิวไม่สำเร็จ"], ["ack", "ข้อมูลพร้อมปรึกษา"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา"], ["search", "ตัวเลือกอาการ 2 คอลัมน์"], ["urgent", "แจ้งเตือนอาการอันตราย"], ["multi", "เลือกหลายอาการ"], ["custom-error", "ยังไม่ได้เล่ารายละเอียด"], ["photos", "แนบรูป 3 รูป"], ["photo-error", "แนบไฟล์ไม่รองรับ"], ["cover", "ปกเล่าอาการและฟอร์มซ้อน"]],
   notes: ['C04: ตัวเลือก 2 คอลัมน์ มีช่องติ๊ก เลือกได้หลายอาการ ไม่มีช่องค้นหา',
     'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'A11: แพ้ยาไม่บังคับ ดึงจากบัญชีมาให้ แก้ได้ในที่ · ไม่มีข้อมูล = "ยังไม่ได้ระบุ" ไม่ใช่ "ไม่แพ้"', 'อาการอันตราย: เข้าคิวต่อได้พร้อมธงด่วน (A7) จะถามตอนกดเข้าคิว ไม่ขัดตอนแตะชิป', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"',
-    'A2 (ประกาศ อย. ข้อ 2.1(3) "ก่อนการให้บริการ" = ทุกเคส): ติ๊ก รับทราบขั้นตอนและความเสี่ยง ก่อนกดเข้าคิว · ครั้งแรกเปิดข้อความเต็มให้อ่าน ครั้งต่อไปพับไว้ แตะเปิดอ่านได้ · ไม่ติ๊กแล้วกดเข้าคิว = พาไปที่ช่องติ๊ก บอกว่าต้องติ๊กก่อน · เก็บเวลาและเลขฉบับข้อความกับเคส ส่งให้คอนโซล (B8) · อ่านซ้ำได้ที่ C207 (C203.7)',
+    'หน้ารายละเอียดปรึกษาไม่มีช่องติ๊กรับทราบเงื่อนไขก่อนเข้าคิว · ความยินยอมข้อมูลสุขภาพตรวจแยกตามสถานะบัญชี',
     'A1 (C203.8): ที่อยู่หลักอยู่นอกเขตส่งยา บอกก่อนเข้าคิวว่าถ้าต้องซื้อยา รับที่ร้านได้อย่างเดียว ปรึกษาได้ตามปกติ · ไม่บังคับเปลี่ยนที่อยู่'],
   wait: ['ข้อความขั้นตอนและความเสี่ยง (A2) ให้เภสัชกรและฝ่ายกฎหมายตรวจก่อนใช้จริง', 'ฝากคำถามตอนร้านปิด ต้องติ๊กรับทราบด้วยไหม (ต้นแบบยังไม่ให้ติ๊ก)', 'ปรึกษาใหม่ต่อจากเคสที่ระบบปิดเพราะเงียบ และย้ายคิวไปสาขาอื่น ใช้การรับทราบของเคสเดิมได้ไหม (ต้นแบบใช้ของเคสเดิม ไม่ถามซ้ำ)'],
   prep(S) {
@@ -3073,13 +3071,11 @@ TP.screen('intake', {
         <div class="ik-health-summary">${healthRows.map(([key,title,icon,none])=>healthRow(key,title,icon,record[key].mode==='set'?record[key].text:record[key].mode==='none'?none:'ยังไม่ทราบ')).join('')}</div>
 
       </section>
-      ${shut ? '' : ackHtml(S)}
       ${zoneNote(S, b)}`, {cls: 'ik-form-scroll'}) + `</section></div>` +
-      ui.dock(shut ? ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', disabled: !ready, id: 'ikGo' }) : ui.btn('ปรึกษาเภสัช', { a: 'joinQueue', disabled: !ready || !I.ack, id: 'ikGo' }));
+      ui.dock(shut ? ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', disabled: !ready, id: 'ikGo' }) : ui.btn('ปรึกษาเภสัช', { a: 'joinQueue', disabled: !ready, id: 'ikGo' }));
   },
   mount(el,ctx) {
     el.addEventListener('change',e=>{if(e.target.name==='ikConsultMode'&&['chat','video'].includes(e.target.value))ctx.S.intake.mode=e.target.value;});
-    $('#ikAck',el)?.addEventListener('change',e=>TP.ACTS.ikAck(e.target));
     $('#ikPhotos',el)?.addEventListener('change',e=>{const files=Array.from(e.target.files||[]);e.target.value='';if(!files.length)return;const I=ctx.S.intake,error=TP.intakePhotoBatch(I,files);if(error){I.photoError=error;const message=$('#ikPhotoError',el);if(message){message.hidden=false;message.textContent=error;}return;}TP.refresh({anim:false});});
   }
 });
@@ -3100,7 +3096,7 @@ TP.act('symChange', (t, ctx) => {
   I.symptoms = ui.chipVals(el, 'sym').filter(v=>v!=='__other'); I.urgent = ui.chipVals(el, 'urg');
   const alert = $('#ikUrgentAlert',el);if(alert)alert.hidden=!I.urgent.length;
   const ready = TP.intakeReady(I);
-  const go = $('#ikGo', el); go.disabled = !ready || (TP.S.storeOpen !== false && !I.ack);
+  const go = $('#ikGo', el); go.disabled = !ready;
   dockNote(el);
 });
 /* A2: one tick per case, the full text opens by itself the first time; the tick, time and text version go with the case */
@@ -3133,20 +3129,14 @@ TP.act('ikPhotoRemove',t=>{const I=TP.S.intake,items=intakePhotoItems(I),index=N
 TP.act('joinQueue', async t => {
   const S = TP.S;
   if(!TP.intakeReady(S.intake))return;
-  if (!S.intake.ack) {
-    const sec = $('#ikAckSec', TP.cur()?.el), ck = $('#ikAck', sec || undefined); sec?.classList.add('err'); (ck || sec)?.scrollIntoView({ block: 'center', behavior: TP.RED() ? 'auto' : 'smooth' });
-    if (ck) { ck.focus({ preventScroll: true }); ck.classList.remove('flash'); void ck.offsetWidth; ck.classList.add('flash'); }
-    TP.live(ACK_NEED); TP.notify(ACK_NEED, { icon: 'info' }); return;
-  }
   if (S.intake.urgent.length && !S._urgentOk) return TP.sheet('redflag');
   if (!S.consent && !S.user.name && TP.SCREENS.profile) return TP.go('profile', { via: 'cover', params: { phone: (S.user.phone || '').replace(/\D/g, '') } });
-  if (TP.healthConsentNeeded(S) && TP.SCREENS.consents) return TP.go('consents', { via: 'cover', params: { then: 'join' } });
   if (!S.notifAsked) return TP.sheet('pushask');
   S._urgentOk = false; S.st.queue = undefined;
   t.classList.add('busy');
   await TP.wait(TP.RED() ? 50 : 650);
   TP.newCase();
-  S.case.ack = { at: `${TP.NOW.date} ${TP.NOW.time}`, ver: TP.RISK.ver }; S.riskSeen = true; S.intake.ack = false;
+  S.intake.ack = false;
   TP.go('queue', { via: 'morph', from: t, root: false, replace: true });
 });
 TP.resumeJoin = () => { const go = $('#ikGo', TP.cur()?.el); if (TP.cur()?.id === 'intake' && go) TP.ACTS.joinQueue(go); };
@@ -3364,7 +3354,7 @@ TP.screen('lock', {
     else ensureCase(st === 'paused' ? 'paused' : 'matched');
   },
   render(ctx) {
-    const m = { accept: ['เภสัชกรรับคิวของคุณแล้ว', 'แตะเพื่อเข้าห้องปรึกษา', 'matched'], msg: ['มีข้อความใหม่จากเภสัชกร', 'แตะเพื่ออ่าน', 'room'], order: ['รายการยาพร้อมให้ชำระ', 'แตะเพื่อดูรายการ', 'room'], payexp: ['รายการยาใกล้หมดเวลาชำระ', 'ชำระได้อีก 15 นาที แตะเพื่อดู', 'room'], paused: ['เภสัชกรพักชั่วคราว', 'คิวของคุณยังอยู่ ไม่เสียคิว', 'queue'], summary: ['ใบสรุปการปรึกษาพร้อมแล้ว', 'แตะเพื่อเปิดดู', 'summary'], adr: ['เภสัชกรตอบเรื่องที่คุณแจ้งแล้ว', 'แตะเพื่ออ่าน', 'adrsent'], ...(TP.FOLLOW_LOCK || {}) }[ctx.state] || [];
+    const m = { accept: ['เภสัชกรรับคิวของคุณแล้ว', 'แตะเพื่อเข้าห้องปรึกษา', 'room'], msg: ['มีข้อความใหม่จากเภสัชกร', 'แตะเพื่ออ่าน', 'room'], order: ['รายการยาพร้อมให้ชำระ', 'แตะเพื่อดูรายการ', 'room'], payexp: ['รายการยาใกล้หมดเวลาชำระ', 'ชำระได้อีก 15 นาที แตะเพื่อดู', 'room'], paused: ['เภสัชกรพักชั่วคราว', 'คิวของคุณยังอยู่ ไม่เสียคิว', 'queue'], summary: ['ใบสรุปการปรึกษาพร้อมแล้ว', 'แตะเพื่อเปิดดู', 'summary'], adr: ['เภสัชกรตอบเรื่องที่คุณแจ้งแล้ว', 'แตะเพื่ออ่าน', 'adrsent'], ...(TP.FOLLOW_LOCK || {}) }[ctx.state] || [];
     return `<div class="lk-bg" aria-hidden="true"></div>
       <div class="lk-top"><p class="lk-date">วันอาทิตย์ที่ 18 ตุลาคม</p><p class="lk-time">14:16</p></div>
       <button type="button" class="lk-note" data-a="lockOpen" data-v="${m[2]}" data-in="2"><span class="appicon">${brand.plus(22)}</span><span class="bt"><small><span>MITRAREE</span><span>ตอนนี้</span></small><b>${esc(m[0])}</b><span>${esc(m[1])}</span></span></button>
@@ -3379,26 +3369,6 @@ TP.act('lockOpen', async t => {
   if (to !== 'home') TP.go(to, { via: 'zoom' });
 });
 
-/* =====================================================================
-   Matched (C09): who you are about to talk to
-   ===================================================================== */
-TP.screen('matched', {
-  group: 'during', title: 'เภสัชกรรับคิว', code: 'C302', ref: 'C09', parent: 'home',
-  states: [['chat', 'ขอแชท'], ['video', 'ขอวิดีโอ']],
-  notes: ['ป้ายชื่อ + เลขใบอนุญาตอยู่บนการ์ด พร้อมลิงก์ตรวจสอบ (กฎ อย. ข้อ 2.1)', 'บอกชัดว่ากล้องและไมค์ของคุณปิดอยู่ จนกว่าจะกดเริ่มวิดีโอเอง', 'A3 (20/10): บัตรเดียวกับ C207 รูปจากกล้องร้านตอนเข้ากะ ยืนยันตัวตนเมื่อ 08:55 ใบอนุญาตร้านของสาขานี้ ปุ่มตรวจใบอนุญาตร้าน',
-    '21/10 เจ้าของ "ในรูปให้แสดงรูปเภสัชด้วย ไป copy มาจาก website สภาเภสัชก่อนเอามาใส่ในวงกลมๆ": วงกลมใช้รูปของ ภญ.ขวัญใจ จากหน้าตรวจสอบของสภาเภสัชกรรม (เลข 45279 รูปมีลายน้ำของสภาฯ) · ภก.ธัชพล สภาฯ ไม่มีรูป ใช้ตัวย่อชื่อ · ปุ่มเปลี่ยนชื่อเป็น ตรวจสอบใบประกอบเภสัชกร และ ตรวจสอบใบอนุญาตร้าน · บัตรเดียวกันจึงเปลี่ยนที่ C207 และ C306.2 ด้วย'],
-  wait: ['ทำตอนสร้างจริง: รูปในวงกลมเป็นรูปที่กล้องร้านถ่ายตอนเข้ากะ (คอนโซล S102) ไม่ใช้รูปจากเว็บสภาฯ ที่มีลายน้ำ · ขอความยินยอมเภสัชกรก่อนโชว์รูป'],
-  prep(S) { const c = ensureCase('matched'); c.mode = S.st.matched === 'video' ? 'video' : (S.st.matched ? 'chat' : c.mode); },
-  render(ctx) {
-    const c = ensureCase(null), b = TP.branch(c.branch), p = TP.PHARM[c.pharm];
-    if (c.status === 'queue' || c.status === 'paused') c.status = 'matched';
-    return ui.nav({ left: `<button type="button" class="back" data-a="queueMin">${ic('chevron-down', 24, 2.2)}<span>ย่อไว้</span></button>` }) + ui.page(`
-      <div class="mt-top" data-in="0">${brand.halo(92, { check: true, draw: true, cls: 'mt-seal' })}<h2 class="h2">${esc(p.short)} รับคิวของคุณแล้ว</h2><p class="small">${esc(b.name)}</p></div>
-      ${TP.passHtml(p, b, { label: 'เภสัชกรที่ดูแลคุณ', din: 1 })}
-      <div class="mt16">${ui.note('เริ่มปรึกษาผ่านแชท ส่งรูปได้ หากต้องดูอาการเพิ่มเติม เภสัชกรจะส่งคำขอวิดีโอคอลในห้องนี้',{icon:'message-circle',din:2})}</div>`) + ui.dock(ui.btn('เข้าห้องปรึกษา',{icon:'message-circle',a:'enterRoom'}));
-  }
-});
-TP.act('enterRoom', () => { C().status = 'room'; TP.emit('state'); TP.go('room', { via: 'push', replace: true }); });
 TP.act('startVideo', () => {
   const c=C();if(!c||c.status!=='room'||(!TP.S.call&&!c.msgs?.some(m=>m.kind==='video-request'&&m.status==='accepted')))return;
   TP.emit('state');return TP.go(TP.S.camDenied?'nocam':'video',{via:'zoom',replace:true});
