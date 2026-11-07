@@ -232,3 +232,12 @@ C404 ฝั่งลูกค้าแสดงสถานะหลักแล
 ## Current event review — 7 November 2026
 
 Current customer fulfillment scope is pickup/express; no parcel or cold-chain choice is offered. Pharmacist simulation labels follow queue state. Queue safety warning and notification-off recovery are customer-visible fixtures, not proof of a production staff dashboard. Staff invoice processing must distinguish selected recipient, submitted request and issued PDF, retaining the order recipient snapshot. See [event review](docs/customer-event-review.md).
+
+
+## ยกเลิกหน้า C113 — 7 พฤศจิกายน 2026
+
+ลบแผ่นเลือกช่องทางลงทะเบียน C113 (registermethod) และ action ที่ใช้เฉพาะหน้านี้ออกแล้ว ปุ่มลงทะเบียน C102 เปิด C105 ขั้นแรกโดยตรง ไม่มีหน้าคั่น C113 ในแผงพรีวิว /screens หรือ /flow คงรหัส C114 และรหัสอื่นเดิม ไม่เลื่อนเลข ไม่เปลี่ยน C103/C104 หรือการสมัครผ่าน Google การลบหน้าคั่นไม่เปลี่ยนสิทธิ์หรือข้อมูลฝั่งเภสัชกร/แอดมิน
+
+
+## ยกเลิกหน้ารับรหัสแยก C103 และ C104 — 7 พฤศจิกายน 2026
+ลบหน้ารับรหัสทางโทรศัพท์ C103 (loginphone) และทางอีเมล C104 (loginemail) ออกจากต้นแบบ แผงพรีวิว /screens และ /flow ตามคำสั่งล่าสุด เข้าสู่ระบบด้วยอีเมลและรหัสผ่านหรือ Google ที่ C102 ลงทะเบียนตรง C105 โดยคงการยืนยันเบอร์ด้วย OTP ในฟอร์มสมัครเดิม ไม่ลบรหัสหน้าที่เหลือหรือเลื่อนเลข ฝั่งเภสัชกรและแอดมินรับข้อมูลบัญชีที่ยืนยันจากขั้นสมัครเดิม ไม่มีหน้ารับรหัสแยกที่ต้องรองรับเพิ่ม
