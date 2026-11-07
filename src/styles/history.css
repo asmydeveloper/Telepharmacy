@@ -87,3 +87,9 @@
 .history-card-total>span {color:var(--semantic-text-secondary)}
 .history-card-total strong {font-weight:var(--weight-semibold);color:var(--semantic-text);font-variant-numeric:tabular-nums}
 
+
+/* Completed history status: pale green with a readable success label. */
+.phone .history-card .tag.ok {
+  background:color-mix(in srgb,var(--semantic-success-background) 28%,var(--semantic-surface));
+  color:var(--semantic-success-text);
+}

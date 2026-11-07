@@ -1,6 +1,6 @@
 /* C203: one task per group, persistent labels, explicit selection and contextual alerts. */
 .scr[data-screen=intake] {background:var(--semantic-surface)}
-.scr[data-screen=intake] .app-page {display:flex;flex-direction:column;gap:var(--space-6)}
+.scr[data-screen=intake] .app-page {display:flex;flex-direction:column;gap:var(--space-4)}
 .ik-intro {display:grid;gap:var(--space-2)}
 .ik-intro :is(h1,h2) {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line);font-weight:var(--type-h3-mobile-weight)}
 .ik-intro p,.ik-help {font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary);margin:0}
@@ -66,7 +66,7 @@
 .ik-selection[hidden] {display:none}
 
 /* Neutral sections; urgent guidance appears only after a relevant selection. */
-.scr[data-screen=intake] .ik-block {padding-top:var(--space-5);gap:var(--space-3);border-top:1px solid var(--semantic-border)}
+.scr[data-screen=intake] .ik-block {padding-top:var(--space-3);gap:var(--space-3);border-top:1px solid var(--semantic-border)}
 .scr[data-screen=intake] .ik-safety {background:var(--semantic-surface);padding-inline:0;padding-bottom:0;border-radius:0}
 .scr[data-screen=intake] .ik-safety .ik-section-heading>span:first-child {background:var(--semantic-surface-selected);color:var(--semantic-primary)}
 .scr[data-screen=intake] .ik-safety .ik-help {color:var(--semantic-text-secondary)}
@@ -106,7 +106,7 @@
 .ik-upload-title {font-size:var(--text-small);font-weight:var(--weight-medium)}
 .ik-upload-help {font-size:var(--text-caption);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary)}
 
-.ik-extra-fields {display:grid;gap:var(--space-4);padding-top:var(--space-2);min-width:0}
+.ik-extra-fields {display:grid;gap:var(--space-3);padding-top:0;min-width:0}
 .scr[data-screen=intake] #ikUrgentAlert {background:color-mix(in srgb,var(--semantic-error-background) 30%,var(--semantic-surface));color:var(--semantic-error-text)}
 .scr[data-screen=intake] #ikUrgentAlert :is(b,a,span) {color:inherit}
 
@@ -137,7 +137,7 @@
 /* C203 shares the sign-in cover/panel composition; the long form owns scrolling. */
 .scr[data-screen=intake] .ik-cover {height:38%;object-position:65% 38%}
 .scr[data-screen=intake] .ik-form-panel {height:80%;overflow:hidden}
-.scr[data-screen=intake] .ik-form-scroll {position:relative;inset:auto;flex:1;min-height:0;padding:var(--space-8) var(--page-gutter) calc(var(--dock-h,96px) + var(--space-4));scroll-padding-block:var(--space-4) calc(var(--dock-h,96px) + var(--space-4))}
+.scr[data-screen=intake] .ik-form-scroll {position:relative;inset:auto;flex:1;min-height:0;padding:var(--space-5) var(--page-gutter) calc(var(--dock-h,96px) + var(--space-4));scroll-padding-block:var(--space-4) calc(var(--dock-h,96px) + var(--space-4))}
 .scr[data-screen=intake] .ik-intro {gap:var(--space-2)}
 .scr[data-screen=intake] .ik-intro h1 {margin:0}
 .scr[data-screen=intake]>.dock {z-index:3;background:var(--semantic-surface)}

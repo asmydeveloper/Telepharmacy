@@ -26,7 +26,7 @@
     {
       "code": "C402.4",
       "state": "taxpending",
-      "label": "ส่งคำขอแล้ว · รอร้านตรวจสอบ",
+      "label": "ส่งคำขอแล้ว · รอดำเนินการ",
       "url": "/?screen=receipt&state=taxpending&splash=0"
     },
     {

@@ -5101,24 +5101,14 @@ const taxIdOk = v => { if (!/^\d{13}$/.test(v)) return false; const s = [...v].s
 const r2v = x => Math.round(x * 100) / 100;
 TP.screen('receipt', {
   group: 'after', title: 'ใบเสร็จรับเงิน', code: 'C402', parent: 'paid',
-  states: [['normal', 'รับที่ร้าน พร้อมเพย์'], ['parcel', 'ส่งพัสดุ จ่ายบัตร'], ['notax', 'ยังไม่มีข้อมูลใบกำกับภาษี'], ['taxpending', 'ส่งคำขอแล้ว · รอร้านตรวจสอบ'], ['taxdone', 'ออกใบกำกับภาษีแล้ว'], ['late', 'เลยกำหนดขอใบกำกับภาษี'], ['missing', 'ไม่พบใบเสร็จ']],
-  notes: ['19/10 เจ้าของเคาะ "โชว์อย่างย่อ … ถ้าต้องการตัวเต็มก็กดดาวน์โหลดได้เองเลย ผมไม่ต้องการให้กดขอ": ใบบนจอ = ใบเสร็จรับเงิน/ใบกำกับภาษีอย่างย่อ ทุกใบ · ปุ่ม ดาวน์โหลดใบกำกับภาษีเต็มรูป แตะเดียวได้ไฟล์ ในชื่อและที่อยู่หลักของบัญชี (บุคคลธรรมดาไม่ต้องมีเลขผู้เสียภาษี) · ออกในนามบริษัทหรือแก้ที่อยู่ กดลิงก์ใต้ปุ่ม (บริษัทต้องมีเลข 13 หลัก ตรวจเลขให้ + สาขา)',
-    'บัญชีที่ยังไม่มีที่อยู่ (สถานะ บัญชียังไม่มีที่อยู่) ใบเต็มรูปต้องมีที่อยู่ผู้ซื้อ จึงขอที่อยู่ครั้งเดียวก่อนดาวน์โหลด',
-    'ผู้ใช้จริง 19/10: เลือก ในนามตัวเอง / ในนามบริษัท ก่อนกดดาวน์โหลด · บริษัทเริ่มที่ช่องว่าง ที่อยู่ตามทะเบียนบริษัท ไม่ใส่เบอร์ส่วนตัว · เลขผู้เสียภาษีพิมพ์มีขีดได้ ระบบเก็บเฉพาะตัวเลข · ดาวน์โหลดแล้วชื่อผิด กด ออกใบใหม่ ใบเดิมยกเลิก · ปุ่มล่างบอกชัดว่าเป็นใบเสร็จหรือใบกำกับภาษี',
-    '21/10 เจ้าของ "ใบเสร็จรับเงินอย่างย่อ ขอย่อกว่านี้ ย่อมากๆ": ใบอย่างย่อเหลือ ชื่อบริษัทและเลขผู้เสียภาษี · เลขที่และวันเวลา · รายการยา ค่าส่ง ค่าธรรมเนียมบัตร · รวมทั้งสิ้น (รวมภาษีมูลค่าเพิ่มแล้ว) · นโยบายคืนยา 1 บรรทัด · ตัดข้อมูลผู้ซื้อ ราคาต่อหน่วย ส่วนลด ฿0 และแถวติดต่อ · ใบเต็มรูปยังเป็นแบบเต็ม (ต้องมีชื่อ ที่อยู่ เลขผู้เสียภาษีผู้ซื้อ) · ทำตอนสร้างจริง: ฝ่ายบัญชียืนยันว่าใบอย่างย่อแบบนี้ครบตามสรรพากร',
-    '19/10 แถวติดต่อท้ายใบเสร็จ: เว็บไซต์ อีเมล โทร แยกเป็นก้อน ไม่ตัดกลางเบอร์',
-    '19/10 เจ้าของสั่ง "หน้าใบเสร็จด้วย" · หน้าตาและคำตามใบเสร็จบนเว็บ bill/receipt_new.blade.php: ใบเสร็จรับเงิน RECEIPT · ข้อมูลร้าน · ผู้ซื้อ · รายการ · หมายเหตุ · ยอด · ปุ่ม ดาวน์โหลด PDF และ พิมพ์',
-    'ขอใบกำกับภาษีตามหน้ารายละเอียดคำสั่งซื้อของเว็บ (account_order_history_detail.blade.php:353-397): ขอได้เฉพาะที่จ่ายแล้ว ถึงสิ้นเดือนที่ซื้อ ต้องมีที่อยู่ออกใบที่มีเลขผู้เสียภาษี',
-    'ต่างจากเว็บ: ช่องยอดของเว็บเป็นอังกฤษ (Total, PRO/DISC., Net Total) และไม่มีค่าจัดส่ง/ค่าธรรมเนียมบัตร ทำให้บวกไม่ตรงยอดจ่าย แอปใช้คำไทยจากหน้าจ่ายบิลเภสัชกร และใส่ 2 แถวนี้ให้ครบ',
-    'ต่างจากเว็บ: เลขผู้เสียภาษีในตัวเลือกปิดไว้เหลือ 4 ตัวท้าย (เว็บโชว์เต็ม) · แก้คำผิดในหมายเหตุของเว็บ (เงือนไข / ระเอียด)',
-    'ไม่ใส่ปุ่ม ซื้ออีกครั้ง (ยาอันตรายต้องผ่านเภสัชกร) และ รีวิวสินค้า (มีให้คะแนนการปรึกษาแล้ว)',
-    'เปิดได้จาก: หน้าชำระสำเร็จ · กล่องแจ้งเตือน (ใบเสร็จรับเงิน) · ประวัติ (ปุ่มใต้แถวที่ซื้อยา) · ใบสรุปการปรึกษา · ทุกทางเปิดใบเสร็จของการปรึกษานั้นตามเลขเคส ไม่เปิดหรือเปลี่ยนการปรึกษา',
-    'ต่างจากเว็บ: ยอดเขียนสตางค์เฉพาะเมื่อไม่เป็นศูนย์ (฿385, ฿399.05) ตามรูปแบบเงินของแอป · เว็บเขียน .00 ทุกยอด',
-    '19/10 เจ้าของเคาะ "ตามนโยบาย": หมายเหตุคืนสินค้าเปลี่ยนเป็น ยาไม่รับคืน ยกเว้นร้านจัดยาผิด แจ้งภายใน 3 วัน (นโยบายคืนเงิน 04/09) · เว็บยังเขียน สินค้าซื้อแล้วไม่สามารถเปลี่ยนคืนได้',
-    'การปรึกษาเก่าในต้นแบบไม่มีรายการสั่งซื้อจริง ใบเสร็จสร้างจากยาในใบสรุป ราคารวมเท่ายอด "ซื้อยา" ในประวัติ'],
-  wait: ['ใบเสร็จบนเว็บไม่มีแถวค่าจัดส่งและค่าธรรมเนียมบัตร ให้แก้ฝั่งเว็บตามแอปไหม',
-    'ในแอปมือถือ ปุ่ม พิมพ์ ควรเป็น แชร์ (ส่งต่อ/พิมพ์จากเมนูเครื่อง) ไหม',
-    'ฝ่ายบัญชียืนยันก่อนทำจริง: ออกใบกำกับภาษีอย่างย่อได้ในธุรกิจขายปลีก · เลขที่ใบเต็มรูปแยกชุดจากเลขบิล'],
+  states: [['normal', 'รับที่ร้าน พร้อมเพย์'], ['parcel', 'ส่งพัสดุ จ่ายบัตร'], ['notax', 'ยังไม่มีข้อมูลใบกำกับภาษี'], ['taxpending', 'ส่งคำขอแล้ว · รอดำเนินการ'], ['taxdone', 'ออกใบกำกับภาษีแล้ว'], ['late', 'เลยกำหนดขอใบกำกับภาษี'], ['missing', 'ไม่พบใบเสร็จ']],
+  notes: ['ใบเสร็จของคำสั่งซื้อที่ชำระแล้ว แสดงรายการยา รูปยา ค่าส่ง ค่าธรรมเนียม และยอดรวมตรงกับคำสั่งซื้อ',
+    'ถ้าขอใบกำกับใน C308 แล้ว C402 แสดงการ์ดสถานะรอดำเนินการทันที ใช้ข้อมูลผู้รับจากคำสั่งซื้อเดียวกัน ไม่แสดงฟอร์มขอซ้ำ',
+    'ออกใบแล้วแสดงสถานะออกใบกำกับแล้วและปุ่มดาวน์โหลด PDF ในท้ายการ์ด ใช้ไฟล์จากระบบเอกสาร ไม่มีหน้าใบกำกับแยก; ต้นแบบยังไม่ออกเอกสารจริง',
+    'ยังไม่ขอ: เปิดสวิตช์ขอใบกำกับ เลือกบุคคลธรรมดาหรือนิติบุคคล ตรวจการ์ดผู้รับ แก้ไขในแผ่นข้อมูล แล้วส่งคำขอ; ยังไม่มีข้อมูลให้เพิ่มผ่านฟอร์มร่วมกับบัญชี',
+    'ขอใหม่ได้ภายใน 7 วันหลังชำระเงินตามนโยบายผลิตภัณฑ์ เกินกำหนดซ่อนส่วนขอใหม่ แต่คำขอเดิมยังแสดงสถานะและปุ่ม PDF เมื่อออกแล้ว',
+    'ข้อมูลผู้รับเลขผู้เสียภาษีแสดงปิดบางส่วน; รายการเก่าเปิดจากประวัติหรือใบสรุปต้องใช้คำสั่งซื้อเดิม ไม่สร้างการปรึกษาใหม่'],
+  wait: ['ฝ่ายบัญชียืนยันข้อกำหนดเอกสารและนโยบายขอย้อนหลัง 7 วันก่อนนำระบบจริงไปใช้'],
   prep(S) {
     const st = S.st.receipt || 'normal'; if (st === 'missing') return;
     if (st !== 'notax' && !S._taxProfileMockInitialized) { if (!S.taxWho) S.taxWho={id:'1234567890121',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย',addr:'88/12 ซอยตัวอย่าง แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110'}; S._taxProfileMockInitialized=true; }
@@ -5189,15 +5179,15 @@ function taxBox(o, late) {
     const issued = !!t.done, recipient = issued ? t.done : t.pending;
     return `<section class="rc-tax rc-tax-status-card" aria-label="สถานะใบกำกับภาษี">
       <header class="rc-tax-status-head"><span class="rc-tax-pending-icon">${ic('file-text',22,1.8)}</span><div><h3 class="h3">ใบกำกับภาษีเต็มรูป</h3><span class="rc-tax-pending-status">${ic('circle-check',15,1.8)} ${issued?'ออกใบกำกับแล้ว':'ส่งคำขอแล้ว'}</span></div></header>
-      <div class="rc-tax-status-body"><div class="rc-tax-status-line"><span>ผู้ขอ</span><b>${esc(recipient.name)}</b></div><div class="rc-tax-status-line"><span>สถานะ</span><span class="rc-tax-status-tag${issued?' issued':''}">${issued?'ออกใบกำกับแล้ว':'รอร้านตรวจสอบข้อมูล'}</span></div></div>
+      <div class="rc-tax-status-body"><div class="rc-tax-status-line"><span>ผู้ขอ</span><b>${esc(recipient.name)}</b></div><div class="rc-tax-status-line"><span>สถานะ</span><span class="rc-tax-status-tag${issued?' issued':''}">${issued?'ออกใบกำกับแล้ว':'รอดำเนินการ'}</span></div></div>
       ${issued?`<footer class="rc-tax-status-footer">${ui.btn('ดาวน์โหลดใบกำกับภาษี (PDF)', { kind: 'primary', icon: 'download', a: 'rcTaxPdf' })}</footer>`:''}</section>`;
   }
   if (late) return '';
   const co=t.who==='co', w=co?coTax():taxWho();
-  const choice=ui.seg('rcTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],t.want?'yes':'no',{a:'rcTaxWant',label:'รับใบกำกับภาษีเต็มรูป'});
-  const tabs=`<div class="rc-tax-type" role="group" aria-label="ประเภทผู้รับใบกำกับภาษี">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([value,label])=>`<button type="button" class="rc-tax-type-option${(co?'co':'me')===value?' selected':''}" data-a="rcTaxWho" data-v="${value}" aria-pressed="${(co?'co':'me')===value}">${label}</button>`).join('')}</div>`;
-  const body=w?`<div class="rc-tax-profiles"><button type="button" class="rc-tax-profile selected" data-a="rcProfileEdit" data-v="${co?'co':'me'}"><span><b>${esc(w.name)}</b><small>${co?'นิติบุคคล':'บุคคลธรรมดา'}${w.id?' · เลขผู้เสียภาษี '+esc(maskTax(w.id)):''}</small><small>${esc(w.addr || [w.detail,w.dist,w.amp,w.prov,w.zip].filter(Boolean).join(' '))}</small></span>${ic('chevron-right',18,1.8)}</button></div>${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${co?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กรอกข้อมูลผู้รับเพื่อส่งคำขอ</p>${ui.btn('กรอกข้อมูลใบกำกับภาษี',{a:'rcProfileNew'})}</div>`;
-  return `<div class="rc-tax"><h3 class="h3">ใบกำกับภาษีเต็มรูป</h3><p class="small">ขอใบกำกับภาษีย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</p>${choice}${t.want?`${tabs}${body}`:''}</div>`;
+  const choice=`<header class="rc-tax-request-head"><span class="rc-tax-pending-icon" aria-hidden="true">${ic('file-text',22,1.8)}</span><div><h3 class="h3">ใบกำกับภาษีเต็มรูป</h3><p class="small">ขอย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</p></div></header><div class="rc-tax-request-toggle"><span id="rcTaxWantLabel">ขอใบกำกับภาษี</span><button type="button" class="sw" role="switch" aria-labelledby="rcTaxWantLabel" aria-checked="${!!t.want}" data-a="rcTaxWant" data-v="${t.want?'no':'yes'}"></button></div>`;
+  const types=`<fieldset class="rc-tax-recipient-types"><legend>ประเภทผู้รับ</legend><div role="radiogroup" aria-label="ประเภทผู้รับใบกำกับภาษี">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([value,label])=>`<button type="button" class="rc-tax-recipient-option" role="radio" aria-checked="${(co?'co':'me')===value}" data-a="rcTaxWho" data-v="${value}"><span class="rc-tax-radio" aria-hidden="true"></span>${label}</button>`).join('')}</div></fieldset>`;
+  const body=w?`<button type="button" class="rc-tax-profile selected" data-a="rcProfileEdit" data-v="${co?'co':'me'}" aria-label="แก้ไขข้อมูลผู้รับใบกำกับภาษี"><span><b>${esc(w.name)}</b><small>${w.id?'เลขผู้เสียภาษี '+esc(maskTax(w.id)):''}</small><small>${esc(w.addr || [w.detail,w.dist,w.amp,w.prov,w.zip].filter(Boolean).join(' '))}</small><em>แก้ไขข้อมูล</em></span>${ic('chevron-right',18,1.8)}</button>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${co?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับใบกำกับภาษี</p>${ui.btn('กรอกข้อมูลใบกำกับภาษี',{a:'rcProfileNew'})}</div>`;
+  return `<section class="rc-tax rc-tax-request-card">${choice}${t.want?`<div class="rc-tax-request-body">${types}${body}</div>${w?`<footer class="rc-tax-status-footer">${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}</footer>`:''}`:''}</section>`;
 }
 const redrawTax = () => { const box = $('#rcTax'), o = rcCur(); if (!box || !o) return; box.innerHTML = taxBox(o, isLate(o.paid.date)); TP.icons(box); A(box, [{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { d: 320, e: E.out }); };
 async function issue(b, o, who) {
