@@ -22,6 +22,7 @@ export const journey = [
         'เข้าสู่ระบบสมาชิก',
         [
           ['A101', 'เลือกวิธีเข้าสู่ระบบ', 'C102', 'normal'],
+          ['A116', 'รู้จักแอปมิตรอารี', 'C112', 'p1', ['p2', 'p3']],
           ['A113', 'ดำเนินการด้วย Google', 'C114', 'normal', ['new-account', 'error']],
           ['A115', 'ลืมรหัสผ่าน', 'C115', 'normal', ['sent']],
         ],
@@ -81,9 +82,9 @@ export const journey = [
             'ดูสาขาจากหน้าแรก',
             'C201',
             'normal',
-            ['busy', 'closed', 'unknownarea', 'noaddress', 'outarea'],
+            ['branch-statuses', 'busy', 'closed', 'unknownarea', 'noaddress', 'outarea'],
           ],
-          ['A202', 'แจ้งอาการและเลือกแชทหรือวิดีโอ', 'C203', 'filled', ['normal', 'urgent']],
+          ['A202', 'แจ้งอาการและเลือกแชทหรือวิดีโอ', 'C203', 'filled', ['normal']],
           ['A203', 'รอเภสัชกรรับคิว', 'C207', 'q4', ['q2', 'q1', 'paused', 'video-wait']],
           [
             'A204',

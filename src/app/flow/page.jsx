@@ -25,7 +25,9 @@ export default function Page() {
       <header className="flow-hero">
         <div className="flow-top">
           <strong>MITRAREE</strong>
-          <a href="/screens">ผังทุกจอ ↗</a>
+          <div>
+            <a href="/card-status-all">ภาพรวมการ์ด ↗</a> · <a href="/screens">ผังทุกจอ ↗</a>
+          </div>
         </div>
         <h1>โฟลการทำงาน</h1>
         <p>ไล่ทีละขั้นจากการสมัครสมาชิกไปจนถึงรับยา ดูใบเสร็จ และติดตามการกินยา</p>

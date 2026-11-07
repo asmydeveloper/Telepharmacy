@@ -10248,3 +10248,159 @@ ul.risk-l {
 .rc-med span {
   min-width: 0;
 }
+
+/* C112: layered photo stories, shared by the app and /flow. */
+.scr.st-ob {
+  background: var(--semantic-surface);
+}
+.st-ob-pg {
+  padding: var(--space-2) var(--space-6);
+  gap: var(--space-6);
+}
+.st-ob-collage {
+  position: relative;
+  flex: 1 0 270px;
+  min-height: 270px;
+  max-height: 350px;
+  isolation: isolate;
+}
+.st-ob-glow {
+  position: absolute;
+  inset: 12% -4% 3%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--cream), transparent 70%);
+  z-index: -1;
+}
+.st-ob-photo {
+  position: absolute;
+  overflow: hidden;
+  padding: var(--space-2);
+  background: var(--semantic-surface);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 28px color-mix(in srgb, var(--brand) 10%, transparent);
+}
+.st-ob-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--radius-lg);
+}
+.st-ob-photo-back {
+  width: 53%;
+  height: 67%;
+  left: 3%;
+  top: 12%;
+  transform: rotate(-13deg);
+}
+.st-ob-photo-side {
+  width: 52%;
+  height: 67%;
+  right: 1%;
+  top: 15%;
+  transform: rotate(12deg);
+}
+.st-ob-photo-main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  width: 66%;
+  height: 84%;
+  left: 17%;
+  top: 5%;
+  transform: rotate(-3deg);
+}
+.st-ob-photo-main img {
+  flex: 1;
+  min-height: 0;
+}
+.st-ob-photo-label {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--brand);
+  font-size: var(--type-caption-mobile-size);
+  font-weight: 600;
+}
+.st-ob-photo-caption {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-1) var(--space-2);
+  color: var(--ink);
+}
+.st-ob-photo-caption strong {
+  font-size: var(--type-body-sm-mobile-size);
+}
+.st-ob-photo-caption span {
+  font-size: var(--type-caption-mobile-size);
+  color: var(--ink-3);
+}
+.st-ob-collage-1 .st-ob-photo-main {
+  left: 4%;
+  width: 61%;
+  transform: rotate(-9deg);
+}
+.st-ob-collage-1 .st-ob-photo-side {
+  right: 2%;
+  top: 23%;
+  height: 66%;
+  transform: rotate(11deg);
+}
+.st-ob-collage-1 .st-ob-photo-back {
+  display: none;
+}
+.st-ob-collage-3 .st-ob-photo-main {
+  transform: rotate(3deg);
+}
+.st-ob-float {
+  position: absolute;
+  right: 0;
+  bottom: 9%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  max-width: 85%;
+  padding: var(--space-3);
+  border-radius: var(--r-pill);
+  background: var(--semantic-surface);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--brand) 12%, transparent);
+  color: var(--brand);
+  font-size: var(--type-caption-mobile-size);
+  font-weight: 600;
+}
+.st-ob-spark {
+  position: absolute;
+  top: 1%;
+  right: 3%;
+  font-size: var(--type-h1-mobile-size);
+  color: var(--brand);
+}
+.st-ob-tx {
+  padding: 0;
+}
+.st-ob-tx h2 {
+  font-size: var(--type-h2-mobile-size);
+  line-height: 1.4;
+  color: var(--ink);
+}
+.st-ob-tx > p {
+  max-width: 320px;
+  font-size: var(--type-body-sm-mobile-size);
+}
+.st-ob-tx > .st-ob-caution {
+  margin-top: var(--space-3);
+  color: var(--ink-3);
+  font-size: var(--type-caption-mobile-size);
+  line-height: 1.6;
+}
+.st-ob-foot {
+  padding-bottom: calc(var(--space-6) + var(--sb));
+}
+.st-ob-next {
+  width: 100%;
+}
+@container stob (max-height: 520px) {
+  .st-ob-pg { gap: var(--space-3); }
+  .st-ob-collage { flex-basis: 220px; min-height: 220px; }
+}

@@ -343,7 +343,7 @@ TP.fresh = () => ({
   notif: true,               // returning user allowed app notifications
   faceId: false,
   branch: 'tw',
-  branchState: { tw: 'open', on: 'pause' },  // open | pause | closed
+  branchState: { tw: 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' },  // open | pause | closed
   queueLen: { tw: 2, on: 1, 'demo-1':0, 'demo-2':0, 'demo-3':0, 'demo-4':1, 'demo-5':0 },
   user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
   taxWho: {id:'1101700203450',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยทวีวัฒนา 25',prov:'กรุงเทพมหานคร',amp:'ทวีวัฒนา',dist:'ทวีวัฒนา',zip:'10170',country:'ไทย',addr:'88/12 ซอยทวีวัฒนา 25 แขวงทวีวัฒนา เขตทวีวัฒนา กรุงเทพมหานคร 10170'},
@@ -1559,67 +1559,50 @@ TP.freshAccount = freshAccount;
 /* Thai has no spaces between words: keep key phrases on one line (static HTML, not user input) */
 const nw = s => `<span class="st-nw">${s}</span>`;
 const OB = [
-  { t: `${nw('เภสัชกรตัวจริง')} ${nw('ตรวจสอบได้')}`, b: `คุยกับ${nw('เภสัชกร')}ประจำร้าน${nw('มิตรอารี')} เห็นชื่อและ${nw('เลขใบอนุญาต')}ก่อนเริ่มคุยทุกครั้ง`, l: 'เภสัชกรตัวจริง ตรวจสอบได้' },
-  { t: `ปรึกษาได้ทุกวัน ${nw('09:00-21:00')}`, b: `ที่สาขาที่${nw('เปิดรับ')}อยู่ตอนนั้น นอกเวลา${nw('ฝากคำถาม')}ไว้ได้ ${nw('เภสัชกร')}ตอบ${nw('ภายใน 12:00')}ของวันที่ร้านเปิด`, l: 'ปรึกษาได้ทุกวัน 09:00-21:00' },
-  { t: `${nw('คำแนะนำจากเภสัชกร')} ${nw('ไม่ใช่การวินิจฉัย')}${nw('ของแพทย์')}`, b: 'ก่อนเริ่มใช้บริการ รู้ไว้ 3 เรื่อง', l: 'คำแนะนำจากเภสัชกร ไม่ใช่การวินิจฉัยของแพทย์' }
+  { t: 'อุ่นใจ คุยกับเภสัชกรตัวจริง', b: 'ปรึกษาเภสัชกรประจำร้านมิตรอารี พร้อมดูชื่อและเลขใบอนุญาตก่อนเริ่มคุย', l: 'เภสัชกรตัวจริง ตรวจสอบได้', image: 'pharmacist', alt: 'ภาพแนวถ่ายจริงของเภสัชกรในร้านยา', badge: 'เภสัชกรที่คุณตรวจสอบได้', icon: 'badge-check' },
+  { t: 'เลือกร้านที่พร้อมดูแลคุณ', b: 'ดูเวลาและสถานะของแต่ละสาขา แล้วเริ่มปรึกษากับร้านที่เปิดรับบริการ', l: 'เลือกสาขาที่เปิดรับบริการ', image: 'pharmacy', alt: 'ภาพแนวถ่ายจริงของหน้าร้านยา', badge: 'เช็กความพร้อมก่อนเริ่มคุย', icon: 'store' },
+  { t: 'เล่าอาการ รับคำแนะนำที่เข้าใจ', b: 'แจ้งอาการ เข้าคิว แล้วคุยผ่านแชทหรือวิดีโอคอล เภสัชกรจะแนะนำการดูแลและการใช้ยาที่เหมาะสม', l: 'ขั้นตอนและข้อจำกัดของการปรึกษา', image: 'consultation', alt: 'ภาพแนวถ่ายจริงของเภสัชกรอธิบายการใช้ยาให้ผู้รับคำปรึกษา', badge: 'คำแนะนำก่อนเริ่มใช้ยา', icon: 'message-circle' }
 ];
-const OB_LIST = [
-  ['message-circle', '', 'ขั้นตอน', `แจ้งอาการ เข้าคิว แล้วคุยกับ${nw('เภสัชกร')}ทาง${nw('แชท')}หรือ${nw('วิดีโอคอล')}`],
-  ['pill', '', 'ผลที่อาจได้', `${nw('คำแนะนำการใช้ยา')} ${nw('รายการยา')}ให้ชำระในแอป หรือคำแนะนำให้${nw('ไปพบแพทย์')}`],
-  ['triangle-alert', 'w', 'ความเสี่ยง', `${nw('เภสัชกร')}ไม่ได้ตรวจร่างกาย ข้อมูลที่ไม่ครบอาจทำให้คำแนะนำ${nw('คลาดเคลื่อน')} ${nw('อาการฉุกเฉินควรไปโรงพยาบาล')}`]
-];
-function obPass() {
-  const p = TP.PHARM.kj;
-  return `<div class="st-art st-art1">${brand.halo(256, { draw: true, cls: 'st-a-halo' })}
-    <div class="st-float"><div class="pass st-pass" data-tilt="7">${brand.guilloche({ w: 300, h: 190, cx: 282, cy: 18, n: 14, r0: 24, r1: 196, k: 14, a: 7 })}
-      <div class="ps-top">${brand.logo('wmen', { cls: 'sm' })}${ui.tag('เภสัชกร', 'solid')}</div>
-      <div class="ps-id">${ui.av('', { ini: p.ini, size: 'lg', solid: true })}<span><b class="ps-name">${esc(p.name)}</b><span class="ps-lic st-nw">ใบอนุญาต <b>${esc(p.lic)}</b></span></span></div>
-      <div class="ps-foot"><span>${esc(TP.BRANCHES[0].name)}</span><span class="tag ok">${ic('badge-check', 14, 2.2)}ตรวจสอบได้</span></div>
-    </div></div></div>`;
-}
-/* 24-hour dial, noon at the top: service arc 09:00-21:00, "now" marker, moon at midnight */
-function obDial(S) {
-  const C = 120, R = 96, f = n => n.toFixed(1);
-  const P = (h, r) => { const a = (h - 12) / 24 * Math.PI * 2; return [C + r * Math.sin(a), C - r * Math.cos(a)]; };
-  let ticks = '';
-  for (let h = 0; h < 24; h += .5) {
-    const mj = h % 6 === 0, whole = h % 1 === 0, [x1, y1] = P(h, R - 9), [x2, y2] = P(h, R - (mj ? 18 : whole ? 14 : 11));
-    ticks += `<line class="tk${mj ? ' mj' : ''}" x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}"/>`;
-  }
-  const [ax, ay] = P(9, R), [mx, my] = P(15, R), [bx, by] = P(21, R);
-  const open = S.storeOpen !== false, [nx, ny] = P(open ? 14.2 : 21.67, R);
-  const [l1x, l1y] = P(9, R + 18), [l2x, l2y] = P(21, R + 18), [qx, qy] = P(0, R - 36);
-  return `<div class="st-art st-art2"><div class="st-dial"><svg viewBox="0 0 240 240" aria-hidden="true" focusable="false">
-      <circle class="rg" cx="${C}" cy="${C}" r="${R}"/>${ticks}
-      <path class="arc" d="M${f(ax)} ${f(ay)}A${R} ${R} 0 0 1 ${f(mx)} ${f(my)}A${R} ${R} 0 0 1 ${f(bx)} ${f(by)}" pathLength="100"/>
-      <text class="lb" x="${f(l1x)}" y="${f(l1y)}" text-anchor="end">09:00</text>
-      <text class="lb" x="${f(l2x)}" y="${f(l2y + 10)}" text-anchor="start">21:00</text>
-      <g class="moon" transform="translate(${f(qx - 9)} ${f(qy - 9)}) scale(.75)"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></g>
-      <circle class="now-r" cx="${f(nx)}" cy="${f(ny)}" r="9"/><circle class="now" cx="${f(nx)}" cy="${f(ny)}" r="5.5"/>
-    </svg>
-    <div class="st-dial-c"><small>ตอนนี้</small><b class="num">${open ? TP.NOW.time : '21:40'}</b>${open ? ui.tag('เปิดรับปรึกษา', 'ok', { dot: true, live: true }) : ui.tag('นอกเวลา ฝากคำถามได้', 'muted', { dot: true })}</div>
-  </div></div>`;
+function onboardingCollage(page, index) {
+  const photo = (name, alt = '') => `<img src="/assets/onboarding/${name}-photo-v3.webp" alt="${alt}" width="800" height="600" draggable="false">`;
+  const captions = [
+    ['รู้จักเภสัชกรของคุณ', 'ชื่อและใบอนุญาต ก่อนเริ่มคุย'],
+    ['ร้านยาที่พร้อมดูแล', 'เลือกสาขา แล้วดูความพร้อม'],
+    ['คำแนะนำสำหรับคุณ', 'คุยให้เข้าใจ ก่อนเริ่มใช้ยา']
+  ];
+  return `<div class="st-ob-collage st-ob-collage-${index + 1}" role="img" aria-label="${page.alt}">
+    <div class="st-ob-glow" aria-hidden="true"></div>
+    <div class="st-ob-photo st-ob-photo-back" aria-hidden="true">${photo(index === 1 ? 'consultation' : 'pharmacy')}</div>
+    <div class="st-ob-photo st-ob-photo-side" aria-hidden="true">${photo(index === 2 ? 'pharmacist' : 'consultation')}</div>
+    <div class="st-ob-photo st-ob-photo-main" aria-hidden="true">
+      <div class="st-ob-photo-label">${ic(page.icon, 14, 2)} MITRAREE</div>
+      ${photo(page.image)}
+      <div class="st-ob-photo-caption"><strong>${captions[index][0]}</strong><span>${captions[index][1]}</span></div>
+    </div>
+    <div class="st-ob-float" aria-hidden="true">${ic(page.icon, 18, 2)}<span>${page.badge}</span></div>
+    <span class="st-ob-spark" aria-hidden="true">✦</span>
+  </div>`;
 }
 TP.screen('onboard', {
   group: 'start', title: 'แนะนำแอป', code: 'C112', cls: 'st-ob',
   states: [['p1', 'หน้า 1 เภสัชกรตัวจริง'], ['p2', 'หน้า 2 เวลาให้บริการ'], ['p3', 'หน้า 3 ขั้นตอนและความเสี่ยง']],
   notes: [
-    'ไม่อยู่ในขั้นสมัครแล้ว: เจ้าของเลือกขั้นสมัครแบบสั้น 19/10/2026 เปิดแอปแล้วไปหน้าเข้าสู่ระบบทันที · เก็บจอนี้ไว้เผื่อใช้ภายหลัง · ข้อมูลกฎ อย. ข้อ 2.1 ของหน้า 3 อยู่บนจอรอคิว (เปิดให้เห็นในการปรึกษาครั้งแรก)',
-    'ปัดซ้ายขวา แตะจุด หรือกดลูกศรบนคีย์บอร์ดได้ · "ข้าม" ไปหน้าเข้าสู่ระบบ',
-    'หน้า 1: บัตรเภสัชกรแบบเดียวกับที่เห็นในห้องปรึกษา ชื่อ + เลขใบอนุญาต ตรวจสอบได้',
-    'หน้า 2: เวลาให้บริการ 09:00-21:00 ที่สาขาที่เปิดรับ · นอกเวลาฝากคำถามได้ · หน้าปัดบอกเวลาตอนนี้ตามสถานะร้าน (ลองสลับ "ร้านปิด" ในแผง)',
-    'หน้า 3: กฎ อย. ข้อ 2.1 บอกขั้นตอน ผลที่อาจได้ และความเสี่ยง ในรายการสั้นรายการเดียว · บอกชัดว่าไม่ใช่การวินิจฉัยของแพทย์',
-    'Design v1.2: พื้นหลังเป็นแสงนุ่มสีเขียวมิตรอารี ไม่มีลาย (เจ้าของเลือกแบบ B 19/10/2026)'
+    'แนะนำแอป 3 หน้า ใช้การ์ดภาพซ้อนบนพื้นขาวแบบคอลลาจสีมิตรอารี: เภสัชกรที่ตรวจสอบได้ → เลือกสาขาที่พร้อมให้บริการ → ขั้นตอนและข้อจำกัดของการปรึกษา',
+    'ปัดซ้ายขวา แตะจุด หรือกดลูกศรบนคีย์บอร์ดได้ ข้ามและเริ่มใช้งานไป C102 ไม่บังคับอ่านก่อนสมัคร',
+    'เวลาและสถานะบริการต้องอิงแต่ละสาขา ไม่มีการฝากคำถามนอกรอบบริการ',
+    'ภาพประกอบเป็นภาพจำลอง ไม่ใช่ตัวตนเภสัชกรหรือการรับรองใบอนุญาตจริง ต้องตรวจข้อมูลผู้ให้คำปรึกษาจากระบบก่อนเริ่มคุย',
+    'ใช้ภาพสื่อสารข้อความหลักควบคู่หัวข้อและคำอธิบายตามแนวทาง CDC Visual Communication ไม่ใส่ข้อความสำคัญไว้เฉพาะในภาพ'
   ],
-  wait: ['ข้อความความเสี่ยงหน้า 3 ให้เภสัชกรผู้มีหน้าที่ปฏิบัติการและฝ่ายกฎหมายตรวจ', 'เวลาให้บริการ "ทุกวัน 09:00-21:00" ตรงกับทุกสาขาจริงไหม (ถ้าต่างกัน หน้า 2 จะบอกว่า "ตามเวลาของแต่ละสาขา")'],
+  wait: ['ให้เภสัชกรผู้รับผิดชอบทบทวนข้อความข้อจำกัดก่อนนำไปใช้จริง'],
   prep(S) { Object.assign(S, { firstTime: true, loggedIn: false, consent: false, notifAsked: false, newAccount: undefined }); TP.emit('state'); },
   render(ctx) {
-    const arts = [obPass(), obDial(ctx.S), `<div class="st-art st-art3">${brand.halo(132, { draw: true, cls: 'st-a-halo', icon: 'badge-check' })}</div>`];
-    const list = `<ul class="st-ob-list">${OB_LIST.map(([i, tone, h, t]) => `<li><span class="st-li-i${tone ? ' ' + tone : ''}">${ic(i, 18, 2)}</span><span><b>${esc(h)}</b>${t}</span></li>`).join('')}</ul>`;
-    return `<canvas class="field st-ob-field" aria-hidden="true"></canvas>
+    return `
       <header class="st-ob-top" data-in="0">${brand.logo('wmen', { cls: 'sm' })}<button type="button" class="txtbtn st-skip">ข้าม</button></header>
       <div class="st-ob-vp" role="region" aria-roledescription="carousel" aria-label="แนะนำแอป">
-        <div class="st-ob-track">${OB.map((p, n) => `<article class="st-ob-pg" role="group" aria-roledescription="slide" aria-label="${n + 1} จาก 3">${arts[n]}<div class="st-ob-tx"><h2>${p.t}</h2><p>${p.b}</p>${n === 2 ? list : ''}</div></article>`).join('')}</div>
+        <div class="st-ob-track">${OB.map((p, n) => `<article class="st-ob-pg" role="group" aria-roledescription="slide" aria-label="${n + 1} จาก 3">
+          ${onboardingCollage(p, n)}
+          <div class="st-ob-tx"><h2>${p.t}</h2><p>${p.b}</p>${n === 2 ? '<p class="st-ob-caution">การปรึกษาไม่แทนการตรวจวินิจฉัยของแพทย์<br>หากมีอาการฉุกเฉิน ให้ไปโรงพยาบาลทันที</p>' : ''}</div>
+        </article>`).join('')}</div>
       </div>
       <footer class="st-ob-foot" data-in="1"><div class="st-dots">${OB.map((p, n) => `<button type="button" class="st-dot" data-i="${n}" aria-label="หน้า ${n + 1} จาก 3"><i></i></button>`).join('')}</div>
         <button type="button" class="btn primary st-ob-next"></button></footer>`;
@@ -1627,8 +1610,6 @@ TP.screen('onboard', {
   mount(el, ctx) {
     const vp = $('.st-ob-vp', el), track = $('.st-ob-track', el), pages = $$('.st-ob-pg', el), dots = $$('.st-dot', el);
     const next = $('.st-ob-next', el), skip = $('.st-skip', el), last = OB.length - 1;
-    const fld = brand.field($('canvas', el), { color: '#035C67', base: .07, amp: .42, every: 3800, sigma: 38, speed: .38, origin: [.5, .3] });
-    ctx.onLeave(fld.stop);
     let i = { p2: 1, p3: 2 }[ctx.state] || 0, x = 0, drag = null, dragged = false;
     const W = () => vp.offsetWidth;
     const place = v => { x = v; track.style.transform = `translate3d(${v}px,0,0)`; };
@@ -1642,13 +1623,6 @@ TP.screen('onboard', {
     }
     function enter(n, base = 90) {
       const p = pages[n];
-      if (n === 0) { redraw($('.st-a-halo', p)); A($('.st-pass', p), [{ opacity: 0, transform: 'translateY(26px) scale(.95)' }, { opacity: 1, transform: 'none' }], { d: SP.soft.d, e: SP.soft.e, delay: base, fill: 'backwards' }); }
-      if (n === 1) {
-        A($('.arc', p), [{ strokeDashoffset: 100 }, { strokeDashoffset: 0 }], { d: 1200, e: E.out, delay: base, fill: 'backwards' });
-        $$('.now, .now-r', p).forEach(c => A(c, [{ opacity: 0 }, { opacity: 1 }], { d: 300, delay: base + 900, fill: 'backwards' }));
-        rise($('.st-dial-c', p), base + 120, 10);
-      }
-      if (n === 2) redraw($('.st-a-halo', p));
       $$('.st-ob-tx > h2, .st-ob-tx > p, .st-ob-list li', p).forEach((t, k) => rise(t, base + 80 + k * 60));
     }
     function goTo(n, { anim = true } = {}) {
@@ -1657,7 +1631,7 @@ TP.screen('onboard', {
       kill(track); place(to);
       if (anim && from !== to) A(track, [{ transform: `translate3d(${from}px,0,0)` }, { transform: `translate3d(${to}px,0,0)` }], { d: SP.soft.d, e: SP.soft.e });
       i = n; ui8(changed);
-      if (changed) { enter(n); fld.pulse(.9); TP.live(OB[n].l); }
+      if (changed) { enter(n); TP.live(OB[n].l); }
     }
     place(-i * W()); ui8(false); enter(i, 300);
     next.addEventListener('click', () => (i < last ? goTo(i + 1) : finish()));
@@ -2601,7 +2575,8 @@ TP.homeDistance = b => { const a = TP.homeAddress(); return a ? TP.zoneOf(a, b.i
 TP.homeStores = () => TP.homeAddress() ? TP.BRANCHES.filter(b => TP.homeDistance(b) != null && TP.homeDistance(b) <= TP.ZONE_KM).sort((a,b) => TP.homeDistance(a) - TP.homeDistance(b)) : [];
 const homeBranchClosed = (S, b) => S.sysOff || S.storeOpen === false || (S.branchState[b.id] || (b.demo ? 'open' : 'closed')) === 'closed';
 const homeBranchOutside = b => !!TP.homeAddress() && (TP.homeDistance(b) ?? Infinity) > TP.ZONE_KM;
-const homeBranchStatus = (S, b) => homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted']
+const homeBranchStatus = (S, b) => homeBranchOutside(b) ? ['นอกพื้นที่ให้บริการ', 'muted']
+  : homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted']
   : S.branchState[b.id] === 'pause' ? ['ปิดรับชั่วคราว', 'warn'] : ['เปิดรับบริการ', 'ok'];
 /* Selection uses the selected delivery address; unknown queue counts are never treated as zero. */
 TP.quickConsultBranch = () => {
@@ -2726,7 +2701,7 @@ function storeListHtml(S, stores) {
   return `<div class="hm-store-list">${stores.map(b => `<article class="hm-branch-tile">
       <button type="button" class="hm-branch-open" data-sheet="storeinfo" data-p='${esc(JSON.stringify({ branch: b.id }))}' aria-label="ดูข้อมูล${esc(b.name)}">
         <img src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="96" height="96" loading="lazy">
-        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span>${homeBranchOutside(b)?'<span class="small hm-branch-range">'+(TP.homeDistance(b)==null?'ยังตรวจสอบระยะทางไม่ได้':'อยู่นอกระยะให้บริการ')+'</span>':''}<span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ยังไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
+        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span>${homeBranchOutside(b)&&TP.homeDistance(b)==null?'<span class="small hm-branch-range">ยังตรวจสอบระยะทางไม่ได้</span>':''}<span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ยังไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
         ${ic('chevron-right',16,2)}
       </button>
     </article>`).join('')}</div>`;
@@ -2735,10 +2710,10 @@ function storeListHtml(S, stores) {
 function nearbyStoresHtml(S) {
   const address = TP.homeAddress(), stores = TP.homeStores();
   const unknown = !!address && TP.BRANCHES.length > 0 && !TP.BRANCHES.some(b => TP.homeDistance(b) != null);
-  if (!address || (!stores.length && !unknown)) return `<section class="hm-nearby"><div class="hm-section-head"><h2>ร้านยาใกล้ฉัน</h2></div><div class="hm-empty">${ui.emptyArt(!address?'map-pin':'store')}<h3>${!address ? 'เลือกที่อยู่จัดส่งก่อน' : 'ยังไม่มีร้านยาในบริเวณนี้'}</h3><p>${!address ? 'เพิ่มหรือเลือกที่อยู่เพื่อค้นหาร้านยาใกล้คุณ' : 'เลือกที่อยู่อื่น หรือแก้ไขข้อมูลในสมุดที่อยู่'}</p>${ui.btn(address ? 'เปลี่ยนที่อยู่' : 'เลือกที่อยู่จัดส่ง', { sheet: 'homeaddress', a: 'hmOpenAddress' })}</div></section>`;
+  if (!address) return `<section class="hm-nearby"><div class="hm-section-head"><h2>ร้านยาใกล้ฉัน</h2></div><div class="hm-empty">${ui.emptyArt(!address?'map-pin':'store')}<h3>${!address ? 'เลือกที่อยู่จัดส่งก่อน' : 'ยังไม่มีร้านยาในบริเวณนี้'}</h3><p>${!address ? 'เพิ่มหรือเลือกที่อยู่เพื่อค้นหาร้านยาใกล้คุณ' : 'เลือกที่อยู่อื่น หรือแก้ไขข้อมูลในสมุดที่อยู่'}</p>${ui.btn(address ? 'เปลี่ยนที่อยู่' : 'เลือกที่อยู่จัดส่ง', { sheet: 'homeaddress', a: 'hmOpenAddress' })}</div></section>`;
   return `<section class="hm-nearby" aria-labelledby="hmNearbyTitle" data-in="1">
     <div class="hm-section-head"><h2 id="hmNearbyTitle">${unknown ? 'ร้านยาทุกสาขา' : 'ร้านยาใกล้ฉัน'}</h2></div>
-    ${storeListHtml(S, unknown ? TP.BRANCHES : [...stores.slice(0,6),...TP.BRANCHES.filter(x=>TP.homeDistance(x)>TP.ZONE_KM).sort((a,b)=>TP.homeDistance(a)-TP.homeDistance(b))])}
+    ${storeListHtml(S, unknown ? TP.BRANCHES : [...stores,...TP.BRANCHES.filter(x=>TP.homeDistance(x)>TP.ZONE_KM).sort((a,b)=>TP.homeDistance(a)-TP.homeDistance(b))])}
     ${S.autoReason ? `<p class="hm-store-notice">${ic('info', 16, 2)}<span>${esc(S.autoReason)}</span></p>` : ''}
 
   </section>`;
@@ -2761,7 +2736,7 @@ TP.act('hmSelectAllBranch', async t => {
 
 TP.sheetDef('storeinfo', {
   group: 'before', title: 'ข้อมูลร้านและเภสัชกร', code: 'C212', host: 'home', tall: true,
-  notes: ['สถานะร้านมี 3 แบบ: เปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง) ใช้ร่วมกับหน้าแรก; ระยะให้บริการแสดงแยกจากสถานะร้าน ดูข้อมูลร้านได้ทุกสถานะ'],
+  notes: ['สถานะร้านมี 3 แบบ: เปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง) ใช้ร่วมกับหน้าแรก; ห่างเกิน 15 กม. แสดงแท็กนอกพื้นที่ให้บริการแทนสถานะเปิด/ปิด; ในระยะ 15 กม. แสดงเปิดรับบริการ/ปิดรับบริการ/ปิดรับชั่วคราว ดูข้อมูลร้านได้ทุกสถานะ; ปิดรับชั่วคราวไม่มีปุ่มเริ่มปรึกษาและไม่รับคิวใหม่'],
   states: [['normal', 'เปิดรับบริการ'], ['paused', 'ปิดรับชั่วคราว'], ['closed', 'ปิดรับบริการ'], ['outside', 'ยังตรวจสอบระยะทางไม่ได้'], ['choose-mode', 'เลือกสนทนาหรือวิดีโอ', false], ['grouped', 'รายละเอียดแบ่งหมวด', false], ['license', 'ตรวจใบอนุญาตร้านยา'], ['neutral-sections', 'หมวดข้อมูลพื้นเทาอ่อน', false],['outside-known','สาขาอยู่ไกลเกิน 15 กม.']],
   prep(S) {
     const st = S.st.storeinfo;
@@ -2780,7 +2755,7 @@ TP.sheetDef('storeinfo', {
       <section class="bc-overview" aria-label="ภาพรวมร้านยา">
         <img class="bc-detail-photo" src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="1536" height="1024">
         <div class="bc-identity-head"><div class="bc-identity"><h3>${esc(b.name)}</h3><p>${esc(b.area)}</p></div></div>
-        <div class="bc-availability">${ui.tag(status,tone,{dot:true})}<span>${outside ? (km == null ? 'ยังตรวจสอบระยะจากที่อยู่ที่เลือกไม่ได้' : 'สาขานี้อยู่ห่างเกิน 15 กม. จึงเริ่มปรึกษาไม่ได้') : closed ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้' : paused ? 'เลือกวิธีปรึกษาเพื่อเข้าคิวรอ' : ''}</span></div>
+        <div class="bc-availability">${ui.tag(status,tone,{dot:true})}<span>${outside ? (km == null ? 'ยังตรวจสอบระยะจากที่อยู่ที่เลือกไม่ได้' : 'สาขานี้อยู่ห่างเกิน 15 กม. จึงเริ่มปรึกษาไม่ได้') : closed ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้' : paused ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้ โปรดเลือกสาขาที่เปิดรับบริการ' : ''}</span></div>
         <dl class="bc-facts"><div><dt>${ic('clock',16,2)}เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>${ic('map-pin',16,2)}ระยะจากที่อยู่จัดส่ง</dt><dd>${km == null ? 'ยังระบุระยะไม่ได้' : esc(km)+' กม.'}</dd></div></dl>
       </section>
       <section class="bc-section" aria-labelledby="bcLocationTitle"><h4 id="bcLocationTitle">ที่ตั้งและติดต่อร้าน</h4><p class="bc-address">${esc(b.addr)}</p>${b.demo ? '<p class="bc-muted">ข้อมูลจำลองสำหรับแสดงหน้าจอ</p>' : `<div class="hm-store-links"><a href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">${ic('map-pin',18,2)} ดูแผนที่</a><a href="tel:${esc(b.phone)}">${ic('phone',18,2)} โทรหาร้าน</a></div>`}</section>
@@ -2791,13 +2766,13 @@ TP.sheetDef('storeinfo', {
   foot(ctx) {
     const b = TP.branch(ctx.params?.branch) || TP.branch();
     if (TP.caseOpen()) return ui.btn('กลับไปการปรึกษาที่ค้าง', { a: 'hmReturnCase', icon: 'message-circle' });
-    if (homeBranchClosed(ctx.S,b) || !TP.homeStores().some(x => x.id === b.id)) return '';
+    if (homeBranchClosed(ctx.S,b) || ctx.S.branchState[b.id] === 'pause' || !TP.homeStores().some(x => x.id === b.id)) return '';
     return `<div class="hm-consult-options"><div class="bc-action-heading"><p>ปรึกษาเภสัช</p><small>ไม่มีค่าปรึกษา · จ่ายเฉพาะเมื่อซื้อยา</small></div><div><button type="button" class="btn" data-a="hmConsultMode" data-v="chat" data-branch="${b.id}">${ic('message-circle',20,2)}<span>ปรึกษาเภสัช</span></button></div></div>`;
   }
 });
 TP.act('hmConsultMode', async t => {
   const mode = t.dataset.v, b = TP.homeStores().find(b => b.id === t.dataset.branch);
-  if (!['chat','video'].includes(mode) || !b || homeBranchClosed(TP.S,b)) return;
+  if (!['chat','video'].includes(mode) || !b || homeBranchClosed(TP.S,b) || TP.S.branchState[b.id] === 'pause') return;
   if (TP.caseOpen()) return;
   TP.S.branch = b.id; TP.S.branchPicked = true;
   await TP.closeSheet({ instant: true }); TP.ACTS.hmStart({ dataset: { mode } });
@@ -2820,12 +2795,12 @@ function homeActiveCaseCard(S) {
   const title=paused?'คิวของคุณยังอยู่':waiting?(pos===1?'คุณเป็นคิวถัดไป':pos?`มีผู้รอก่อนคุณ ${pos-1} คน`:'รอเภสัชกรรับคิว'):c.fromOf?'เภสัชกรตอบคำถามแล้ว':idle?'เภสัชกรรอคุณตอบกลับ':pending?'มีรายการยารอชำระ':'กลับไปปรึกษาต่อได้เลย';
   const help=paused?'เภสัชกรดูแลหน้าร้านอยู่ คุณยังไม่เสียคิว':waiting?(S.notif===false?'เปิดแอปไว้เพื่อติดตามคิว การแจ้งเตือนปิดอยู่':'ออกจากหน้านี้ได้ เราจะแจ้งเตือนเมื่อเภสัชกรรับคิว'):idle?'หากไม่ตอบภายใน 2 นาที การปรึกษาจะปิด':pending?'ตรวจสอบรายการยาและชำระเงินในห้องปรึกษา':'การปรึกษานี้ยังไม่จบ กลับไปคุยในห้องเดิมได้';
   const cta=waiting?'กลับเข้าห้องแชท':c.fromOf?'อ่านคำตอบ':idle?'กลับไปตอบ':pending?'ดูรายการยาและชำระเงิน':'กลับไปปรึกษาต่อ';
-  return `<article class="hm-active-case" aria-labelledby="hmActiveTitle" data-in="1">
-    <div class="hm-active-top"><span class="hm-active-label">${ic('message-circle',18,2)} การปรึกษาของคุณ</span><span class="hm-active-status" data-tone="${paused?'muted':c.status==='room'&&!idle&&!pending?'active':'waiting'}"><i class="hm-active-status-dot" aria-hidden="true"></i>${status}</span></div>
-    <h2 id="hmActiveTitle">${esc(title)}</h2>
+  return `<article class="hm-active-case case-progress-card" aria-labelledby="hmActiveTitle" data-in="1">
+    <header class="hm-active-top case-progress-head"><span class="case-progress-icon" aria-hidden="true">${ic(paused?'pause':waiting?'clock':pending?'credit-card':idle?'message-circle':'stethoscope',22,1.8)}</span><span class="hm-active-label">การปรึกษาของคุณ</span><span class="hm-active-status" data-tone="${paused?'muted':c.status==='room'&&!idle&&!pending?'active':'waiting'}"><i class="hm-active-status-dot" aria-hidden="true"></i>${status}</span></header>
+    <div class="case-progress-body"><h2 id="hmActiveTitle">${esc(title)}</h2>
     <div class="hm-active-provider">${ui.av('',{ini:ph.ini,img:TP.demoProfiles?.[ph.id==='tp'?'pharmacist_m':'pharmacist_f']})}<div><b>${esc(ph.short)}</b><span>${waiting?'เภสัชกรประจำสาขา':'เภสัชกรผู้ดูแล'} · ${esc(b.name)}</span></div></div>
     ${!waiting||paused||S.notif===false?`<p class="hm-active-help">${ic(waiting?'bell':'info',16,2)}<span>${esc(help)}</span></p>`:''}
-    ${ui.btn(cta,{go:waiting?'queue':'room',via:waiting?'morph':'cover',iconRight:'arrow-right',cls:'hm-active-cta'})}
+    </div><footer class="case-progress-foot">${ui.btn(cta,{go:waiting?'queue':'room',via:waiting?'morph':'cover',iconRight:'arrow-right',cls:'hm-active-cta'})}</footer>
   </article>`;
 }
 
@@ -2847,14 +2822,14 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่'], ['outarea', 'ไม่พบร้านในพื้นที่'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง'],['quick-unknown','ยังไม่ทราบจำนวนคิว'],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room','การปรึกษา ยังไม่จบ'],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],["case-queue2", "จำลอง รออีก 2 คิว"],["case-queue1", "จำลอง รออีก 1 คิว"],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],["case-payment-soon","เหลือชำระ 1 นาที"],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],["case-video-request","เภสัชกรขอวิดีโอคอล"],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false]],
-  notes: ['C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
+  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง'],['quick-unknown','ยังไม่ทราบจำนวนคิว'],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room','การปรึกษา ยังไม่จบ'],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],["case-queue2", "จำลอง รออีก 2 คิว"],["case-queue1", "จำลอง รออีก 1 คิว"],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],["case-payment-soon","เหลือชำระ 1 นาที"],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],["case-video-request","เภสัชกรขอวิดีโอคอล"],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false],['branch-statuses','สาขาครบทุกสถานะ']],
+  notes: ['สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; TP.homeScenario(S, st || 'normal'); if (!st) return;
-    if(st.startsWith('case-')){TP.casePreview.seed(st.slice(5));S._homeEventPreview=true;return;}
+    if(st.startsWith('case-')){if(st.startsWith('case-parcel-') && flowPreview && new URLSearchParams(location.search).get('cardPreview')==='1')TP.fulfillmentPreview(TP.newCase(),st.slice(5));else TP.casePreview.seed(st.slice(5));S._homeEventPreview=true;return;}
     S.case=null;S._paymentCase=null;S.pay=null;S.call=null;S._homeEventPreview=true;
     if (st === 'active' || st.startsWith('active-')) { TP.newCase(); S._homeEventPreview=true;const c=S.case;if(st==='active-next'){c.status='queue';c.pos=1;}if(st==='active-paused')c.status='paused';if(st==='active-room'||st==='active-payment'||st==='active-idle'){c.status='room';c.idle=st==='active-idle';if(st==='active-payment')c.order={...(c.order||{}),status:'pending'};} } else if (TP.caseOpen()) S.case = null;
-    S.branchState.tw = st === 'busy' ? 'pause' : 'open'; S.branchState.on = 'pause';
+    S.branchState = { ...TP.fresh().branchState, tw: st === 'busy' ? 'pause' : 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' };
     S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); S.branchPicked = false;
     S.queueLen={...TP.fresh().queueLen};S.sysOff=TP.flag('sysOff');
     if(st==='quick-busy')for(const b of TP.BRANCHES)S.queueLen[b.id]=1;
@@ -2864,6 +2839,12 @@ TP.screen('home', {
   },
   render(ctx) {
     const S = ctx.S, st = ctx.state;
+    // Isolated gallery adapter: reuse production renderers and existing preview fixtures.
+    if (flowPreview && new URLSearchParams(location.search).get('cardPreview') === '1') {
+      const view = {...S, history: []};
+      const card = TP.paymentReminderCard?.(view) || TP.fulfillmentCard?.(view) || (TP.caseOpen() ? homeActiveCaseCard(view) : '');
+      return ui.page('<div class="consultation-card-preview">' + card + '</div>', {nonav: true});
+    }
     const head = homeBanner(S);
     if (st === 'loading') {
       return ui.page(`<div class="hm-content">${head}<div class="hm-loading" aria-busy="true" aria-label="กำลังโหลดหน้าหลัก"><div class="hm-loading-shortcuts">${Array.from({length:3}, () => '<span class="skel"></span>').join('')}</div><div class="skel hm-loading-card"></div><div class="skel hm-loading-card"></div></div></div>`, { nonav: true });
@@ -3016,9 +2997,9 @@ const intakePhotosHtml = I => {const images=intakePhotoItems(I);return `<div cla
 
 TP.screen('intake', {
   group: 'before', title: 'แจ้งอาการ', code: 'C203', ref: 'C04', parent: 'home', cls:'intake-cover-screen', sb:'dark',
-  states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["other", "พิมพ์อาการเอง"], ["noallergy", "ยังไม่ระบุแพ้ยา"], ["fail", "เข้าคิวไม่สำเร็จ"], ["ack", "ติ๊กรับทราบแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา"], ["search", "ตัวเลือกอาการ 2 คอลัมน์", false], ["urgent", "แจ้งเตือนอาการอันตราย"], ["multi", "เลือกหลายอาการ"], ["custom-error", "ยังไม่ได้เล่ารายละเอียด"], ["photos", "แนบรูป 3 รูป"], ["photo-error", "แนบไฟล์ไม่รองรับ"], ["cover", "ปกเล่าอาการและฟอร์มซ้อน", false]],
+  states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["other", "พิมพ์อาการเอง"], ["noallergy", "ยังไม่ระบุแพ้ยา"], ["fail", "เข้าคิวไม่สำเร็จ"], ["ack", "ติ๊กรับทราบแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา"], ["search", "ตัวเลือกอาการ 2 คอลัมน์", false], ["urgent", "แจ้งเตือนอาการอันตราย", false], ["multi", "เลือกหลายอาการ"], ["custom-error", "ยังไม่ได้เล่ารายละเอียด"], ["photos", "แนบรูป 3 รูป"], ["photo-error", "แนบไฟล์ไม่รองรับ"], ["cover", "ปกเล่าอาการและฟอร์มซ้อน", false]],
   notes: ['C04: ตัวเลือก 2 คอลัมน์ มีช่องติ๊ก เลือกได้หลายอาการ ไม่มีช่องค้นหา',
-    'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'A11: แพ้ยาไม่บังคับ ดึงจากบัญชีมาให้ แก้ได้ในที่ · ไม่มีข้อมูล = "ยังไม่ได้ระบุ" ไม่ใช่ "ไม่แพ้"', 'อาการอันตราย: เข้าคิวต่อได้พร้อมธงด่วน (A7) จะถามตอนกดเข้าคิว ไม่ขัดตอนแตะชิป', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"',
+    'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'A11: แพ้ยาไม่บังคับ ดึงจากบัญชีมาให้ แก้ได้ในที่ · ไม่มีข้อมูล = "ยังไม่ได้ระบุ" ไม่ใช่ "ไม่แพ้"', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ลำดับฟอร์มคือ 1 วิธีปรึกษา 2 อาการที่ต้องการปรึกษา 3 ข้อมูลก่อนปรึกษา; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"',
     'A2 (ประกาศ อย. ข้อ 2.1(3) "ก่อนการให้บริการ" = ทุกเคส): ติ๊ก รับทราบขั้นตอนและความเสี่ยง ก่อนกดเข้าคิว · ครั้งแรกเปิดข้อความเต็มให้อ่าน ครั้งต่อไปพับไว้ แตะเปิดอ่านได้ · ไม่ติ๊กแล้วกดเข้าคิว = พาไปที่ช่องติ๊ก บอกว่าต้องติ๊กก่อน · เก็บเวลาและเลขฉบับข้อความกับเคส ส่งให้คอนโซล (B8) · อ่านซ้ำได้ที่ C207 (C203.7)',
     'A1 (C203.8): ที่อยู่หลักอยู่นอกเขตส่งยา บอกก่อนเข้าคิวว่าถ้าต้องซื้อยา รับที่ร้านได้อย่างเดียว ปรึกษาได้ตามปกติ · ไม่บังคับเปลี่ยนที่อยู่'],
   wait: ['ข้อความขั้นตอนและความเสี่ยง (A2) ให้เภสัชกรและฝ่ายกฎหมายตรวจก่อนใช้จริง', 'ฝากคำถามตอนร้านปิด ต้องติ๊กรับทราบด้วยไหม (ต้นแบบยังไม่ให้ติ๊ก)', 'ปรึกษาใหม่ต่อจากเคสที่ระบบปิดเพราะเงียบ และย้ายคิวไปสาขาอื่น ใช้การรับทราบของเคสเดิมได้ไหม (ต้นแบบใช้ของเคสเดิม ไม่ถามซ้ำ)'],
@@ -3034,11 +3015,11 @@ TP.screen('intake', {
     if(st==='photo-error'){S.intake.note='';S.intake.photoError='เลือกรูป JPG, PNG หรือ WEBP';S.intake.attachments=[];}
     if (st === 'multi') S.intake.symptoms=['น้ำมูก','คัดจมูก','เจ็บคอ'];
     if (st === 'custom-error') S.intake.note='';
-    if (st === 'urgent') S.intake.urgent = [TP.urgentFor(TP.person(S.intake.who))[0]];
+    // Retired urgent preview suffix is preserved; this form no longer collects red flags.
     if (st === 'noallergy') { S.user.allergyState = 'unknown'; S.user.allergies = []; } else if (st) { S.user.allergyState = 'set'; S.user.allergies = ['แอสไพริน']; }
   },
   render(ctx) {
-    const S = ctx.S, I = S.intake;I.who='me';if(!['chat','video'].includes(I.mode))I.mode='chat';if(I.otherOpen&&I.otherText?.trim()){I.note=[I.note,I.otherText].filter(Boolean).join('\n');I.otherOpen=false;I.otherText='';}
+    const S = ctx.S, I = S.intake;I.urgent=[];I.who='me';if(!['chat','video'].includes(I.mode))I.mode='chat';if(I.otherOpen&&I.otherText?.trim()){I.note=[I.note,I.otherText].filter(Boolean).join('\n');I.otherOpen=false;I.otherText='';}
     if(I.symptoms?.length){I.note=[I.symptoms.join(', '),I.note].filter(Boolean).join('\n');I.symptoms=[];}
     const p = TP.person('me'), b = TP.pickBranch();
     const record=TP.healthRecord(p);
@@ -3053,8 +3034,7 @@ TP.screen('intake', {
       <section class="ik-sec ik-block"><div class="ik-section-heading"><span>2</span><h3 class="ik-h"><label for="ikNote">อาการที่ต้องการปรึกษา <span class="reg-required" aria-hidden="true">*</span></label></h3></div>
         <div class="ik-extra-fields"><div class="field"><textarea class="input" id="ikNote" rows="4" required data-bind="intake.note" data-a="symChange" placeholder="เช่น เจ็บคอมา 2 วัน กลืนแล้วเจ็บ มีไอเล็กน้อย หรือพิมพ์คำถามเรื่องยาที่ต้องการปรึกษา">${esc(I.note||'')}</textarea></div>${ctx.state==='custom-error'?ui.note('กรุณาบอกอาการหรือคำถามเรื่องยาก่อนปรึกษาเภสัชกร',{tone:'danger',icon:'triangle-alert'}):''}${intakePhotosHtml(I)}</div>
       </section>
-      <section class="ik-sec ik-block ik-safety"><div class="ik-section-heading"><span>3</span><h3 class="ik-h">ตรวจอาการอันตราย</h3></div><p class="ik-help">ถ้ามีอาการต่อไปนี้ ให้เลือกไว้เพื่อแจ้งเภสัชกร</p>${ui.chips('urg',TP.urgentFor(p),I.urgent,{a:'symChange',label:'เลือกอาการอันตรายได้หลายข้อ'})}<div id="ikUrgentAlert" class="note danger ik-urgent-message" role="alert" ${I.urgent.length ? '' : 'hidden'}>${ic('triangle-alert',20,2)}<span><b>หากมีอาการเหล่านี้ ควรรับการดูแลทันที</b><br>ไปโรงพยาบาลหรือโทร <a href="tel:1669">1669</a> โดยไม่รอการตอบในแอป</span></div></section>
-      <section class="ik-sec ik-block"><div class="ik-section-heading"><span>4</span><h3 class="ik-h">ข้อมูลก่อนปรึกษา</h3></div>
+      <section class="ik-sec ik-block"><div class="ik-section-heading"><span>3</span><h3 class="ik-h">ข้อมูลก่อนปรึกษา</h3></div>
         ${p.allergyState !== 'none' && !p.allergies?.length ? ui.note('<b>ยังไม่ได้ระบุประวัติแพ้ยา</b><br>แจ้งเภสัชกรได้แม้จำชื่อยาไม่ได้', {tone:'warn',icon:'triangle-alert'}) : ''}
         <div class="ik-health-summary">${healthRows.map(([key,title,icon,none])=>healthRow(key,title,icon,record[key].mode==='set'?record[key].text:record[key].mode==='none'?none:'ยังไม่ทราบ')).join('')}</div>
 
@@ -3634,7 +3614,8 @@ TP.fulfillmentPreview = (c,key) => {
 };
 TP.fulfillmentCard = S => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo(c);return f && !f.done;}).map(c=>{
  const f=TP.fulfillmentInfo(c),b=TP.branch(c.branch),title=f.pickup?(c.order.paid?.stage==='ready'?'ยาพร้อมรับที่สาขาแล้ว':'กำลังเตรียมยาสำหรับรับที่สาขา'):f.title;
- return `<article class="post-consult-payment fulfillment-card"><div class="post-payment-heading">${TP.ic('package',22,1.8)}<span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</div><h3>${TP.esc(title)}</h3><p>${TP.esc(b.name)} · ${TP.esc(c.order.no)}</p>${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</article>`;
+ return `<article class="post-consult-payment fulfillment-card case-progress-card"><header class="post-payment-heading case-progress-head"><span class="case-progress-icon" aria-hidden="true">${TP.ic(f.pickup?'store':['calling','delivering','out','transit'].includes(f.key)?'truck':'package',22,1.8)}</span><span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</header><div class="case-progress-body"><h3>${TP.esc(title)}</h3><p class="case-progress-meta">${TP.ic('map-pin',16)}<span>${TP.esc(b.name)}</span></p><p class="case-progress-order">เลขคำสั่งซื้อ <span>${TP.esc(c.order.no)}</span></p></div><footer class="case-progress-foot">${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</footer></article>`;
+
 }).join('');
 TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||TP.S.case;if(!TP.fulfillmentInfo(c))return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(c.order.paid?.recv==='parcel'?'track':'paid',{via:'cover'});});
 TP.chatDeliveryPage = c => {
@@ -3647,7 +3628,7 @@ TP.paymentReminderCard = (S,c) => {
   c ||= TP.pendingPaymentCase(S)||TP.orderCases(S).find(c=>c.status==='closed'&&c.order?.status==='expired');
   if(!c||c.status!=='closed'||!['pending','expired'].includes(c.order?.status))return '';
   TP.expireOrder(c);const o=c.order,pending=TP.orderPayable(o),b=TP.branch(c.branch);
-  return `<article class="post-consult-payment"><div class="post-payment-heading">${ic(pending?'credit-card':'clock',22,1.8)}<span>${pending?'รอชำระค่ายา':'หมดเวลาชำระค่ายา'}</span>${ui.tag('ปรึกษาเสร็จแล้ว','ok')}</div><h3>${pending?'รายการยาของคุณพร้อมชำระแล้ว':'รายการยานี้ชำระไม่ได้แล้ว'}</h3><p>${esc(b.name)} · ${o.items?.length||0} รายการ</p><div class="post-payment-total"><span>รวมค่ายา</span><b>${esc(TP.money(o.total))}</b></div>${pending?`<p class="post-payment-deadline">${ic('clock',16,2)}<span>${o.awaitingCheckout?'เริ่มนับเวลา 15 นาทีเมื่อเปิดหน้าชำระเงิน':`ชำระภายใน ${esc(TP.orderTime(o))} น. · เหลือ <b data-order-countdown data-order-case="${esc(c.id)}">${TP.orderRemaining(o)}</b>`}</span></p>${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',p:{caseId:c.id},icon:'credit-card'})}`:`<p class="post-payment-expired">ครบเวลาชำระ 15 นาทีแล้ว หากยังต้องการยา ให้เภสัชกรตรวจสอบรายการใหม่</p>${ui.btn('ปรึกษาเภสัชอีกครั้ง',{a:'requeue',kind:'secondary',icon:'message-circle'})}`}${ui.btn('ดูใบสรุปการปรึกษา',{go:'summary',p:{id:c.id},kind:'ghost'})}</article>`;
+  return `<article class="post-consult-payment case-progress-card"><header class="post-payment-heading case-progress-head"><span class="case-progress-icon" aria-hidden="true">${ic(pending?'credit-card':'clock',22,1.8)}</span><span>${pending?'รอชำระค่ายา':'หมดเวลาชำระค่ายา'}</span>${ui.tag(pending?'รอชำระ':'สิ้นสุด',pending?'warn':'muted')}</header><div class="case-progress-body"><h3>${pending?'รายการยาของคุณพร้อมชำระแล้ว':'รายการยานี้ชำระไม่ได้แล้ว'}</h3><p>${esc(b.name)} · ${o.items?.length||0} รายการ</p><div class="post-payment-total"><span>รวมค่ายา</span><b>${esc(TP.money(o.total))}</b></div>${pending?`<p class="post-payment-deadline">${ic('clock',16,2)}<span>${o.awaitingCheckout?'เริ่มนับเวลา 15 นาทีเมื่อเปิดหน้าชำระเงิน':`ชำระภายใน ${esc(TP.orderTime(o))} น. · เหลือ <b data-order-countdown data-order-case="${esc(c.id)}">${TP.orderRemaining(o)}</b>`}</span></p></div><footer class="case-progress-foot">${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',p:{caseId:c.id},icon:'credit-card'})}`:`<p class="post-payment-expired">ครบเวลาชำระ 15 นาทีแล้ว หากยังต้องการยา ให้เภสัชกรตรวจสอบรายการใหม่</p></div><footer class="case-progress-foot">${ui.btn('ปรึกษาเภสัชอีกครั้ง',{a:'requeue',kind:'secondary',icon:'message-circle'})}`}${ui.btn('ดูใบสรุปการปรึกษา',{go:'summary',p:{id:c.id},kind:'ghost'})}</footer></article>`;
 };
 TP.act('openOrderPayment',async (t,ctx)=>{
   if(TP.sheetOpen?.()?.id==='roommenu')await TP.closeSheet({instant:true});
@@ -5253,9 +5234,9 @@ function taxBox(o, late) {
   }
   if (late) return '';
   const w=t.want?whoOf(t):null;
-  const choice=`<header class="rc-tax-request-head rc-tax-choice-head"><button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!t.want}" data-a="rcTaxWant" data-v="${t.want?'no':'yes'}" aria-label="ต้องการใบกำกับภาษี"><span aria-hidden="true">${t.want?ic('check',18):''}</span><b>ต้องการใบกำกับภาษี</b></button><button type="button" class="ibtn" data-a="rcTaxPickOpen" aria-label="เลือกข้อมูลใบกำกับภาษี">${ic('pencil',20)}</button></header>`;
+  const choice=`<header class="rc-tax-request-head rc-tax-choice-head"><button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!t.want}" data-a="rcTaxWant" data-v="${t.want?'no':'yes'}" aria-label="ต้องการใบกำกับภาษี" aria-describedby="rcTaxDeadline"><span class="rc-tax-choice-icon" aria-hidden="true">${ic('file-text',22)}</span><span class="rc-tax-choice-copy"><b>ต้องการใบกำกับภาษี</b><span id="rcTaxDeadline">ขอย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</span></span><span class="rc-tax-choice-check" aria-hidden="true">${t.want?ic('check',16):''}</span></button></header>`;
   const body=w?`<div class="rc-tax-selected"><b>ชื่อและที่อยู่ใบกำกับภาษี</b><p>${esc(w.name)}</p><p>${esc(w.addr||[w.detail,w.dist,w.amp,w.prov,w.zip].filter(Boolean).join(' '))}</p><p>โทรศัพท์ : ${esc(w.phone||'—')}</p><p>อีเมล : ${esc(w.email||'—')}</p><p>เลขประจำตัวผู้เสียภาษี : ${esc(maskTax(w.id||''))}</p>${w.branch?`<p>สาขา : ${esc(w.branch)}</p>`:''}</div>`:'';
-  return `<section class="rc-tax rc-tax-request-card">${choice}<p class="small rc-tax-deadline">ขอย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</p>${body}${w?`<footer class="rc-tax-status-footer">${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}</footer>`:''}</section>`;
+  return `<section class="rc-tax rc-tax-request-card">${choice}${w?`<div class="rc-tax-recipient-heading"><b>ข้อมูลผู้รับ</b><button type="button" class="txtbtn" data-a="rcTaxPickOpen">${ic('pencil',16)} เปลี่ยนผู้รับ</button></div>`:''}${body}${w?`<footer class="rc-tax-status-footer">${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}</footer>`:''}</section>`;
 }
 const redrawTax = () => { const box = $('#rcTax'), o = rcCur(); if (!box || !o) return; box.innerHTML = taxBox(o, isLate(o.paid.date)); TP.icons(box); A(box, [{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { d: 320, e: E.out }); };
 async function issue(b, o, who) {

@@ -544,3 +544,14 @@
   background: color-mix(in srgb, var(--semantic-success-background) 28%, var(--semantic-surface));
   color: var(--semantic-success-text);
 }
+
+/* One 16px separation; avoid stacking section margin and page grid gap. */
+.history-page > .history-month {
+  margin-bottom: 0;
+}
+.history-page:has(> .history-month) {
+  row-gap: var(--space-4);
+}
+#afHL > .history-month {
+  margin-bottom: var(--space-4);
+}

@@ -2604,3 +2604,95 @@ select {
 #payRecv .opt.po > .rd {
   display: none;
 }
+
+/* Shared active consultation cards: one hierarchy across queue, payment and delivery. */
+.phone .case-progress-card {
+  display: block;
+  padding: 0;
+  gap: 0;
+  border: 1px solid var(--color-brand-100);
+  border-radius: var(--radius-lg);
+  background: var(--semantic-surface);
+  box-shadow: var(--shadow-card);
+  overflow: hidden;
+}
+.phone .case-progress-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-brand-50);
+  border-bottom: 1px solid var(--color-brand-100);
+  color: var(--semantic-primary);
+  font-size: var(--type-label-mobile-size);
+  font-weight: var(--weight-semibold);
+}
+.phone .case-progress-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: var(--radius-sm);
+  color: var(--semantic-primary);
+  background: var(--semantic-surface);
+}
+.phone .case-progress-head :is(.tag,.hm-active-status) { margin-left: auto; }
+.phone .case-progress-body {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+.phone .case-progress-body :is(h2,h3) {
+  margin: 0;
+  font-size: var(--type-h3-mobile-size);
+  line-height: var(--type-h3-mobile-line);
+  color: var(--semantic-text);
+}
+.phone .case-progress-body p { margin: 0; }
+.phone .case-progress-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--semantic-text-secondary);
+}
+.phone .case-progress-order {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-2);
+  font-size: var(--type-caption-mobile-size);
+  color: var(--semantic-text-secondary);
+}
+.phone .case-progress-order span { overflow-wrap: anywhere; }
+.phone .case-progress-foot {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  border-top: 1px solid var(--semantic-border);
+  background: var(--semantic-surface-muted);
+}
+.phone .case-progress-foot > .btn { width: 100%; margin: 0; }
+.phone .case-progress-body .post-payment-total { margin: 0; }
+.phone .case-progress-body .post-payment-deadline { margin: 0; }
+
+.phone .case-progress-head > .tag.warn { background: var(--semantic-warning-background); color: var(--semantic-warning-text); }
+.phone .case-progress-head > .tag.ok { background: var(--semantic-success-background); color: var(--semantic-success-text); }
+.phone .case-progress-head > .tag.muted { background: var(--semantic-surface-muted); color: var(--semantic-text-secondary); }
+
+/* Gallery isolates the same live cards without the home-page chrome. */
+.phone .consultation-card-preview { padding: 0; }
+.phone .consultation-card-preview > .case-progress-card { margin: 0; }
+
+body:has(.consultation-card-preview) #tabbar,
+body:has(.consultation-card-preview) #minibar { display: none !important; }
+.phone .scr:has(.consultation-card-preview) > .app-page { padding-bottom: var(--space-4); }
+
+body:has(.consultation-card-preview),
+body:has(.consultation-card-preview) .phone,
+body:has(.consultation-card-preview) .scr { background: transparent !important; }
+
+body:has(.consultation-card-preview) #stack,
+body:has(.consultation-card-preview) #stage {background: #e8f1f0 !important;}
+body:has(.consultation-card-preview) nextjs-portal {display:none;}

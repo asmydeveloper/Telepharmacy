@@ -83,6 +83,9 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.S.intake={mode:'chat'}; TP.S.storeOpen=true; TP.S.sysOff=false; TP.S.case={status:'closed'};
   let navigated=null; TP.go=id=>{navigated=id};
   await actions.hmConsultMode({dataset:{v:'video',branch:'on'}});
+  assert.equal(navigated,null,'paused store cannot start consultation');
+  TP.S.branchState.on='open';
+  await actions.hmConsultMode({dataset:{v:'video',branch:'on'}});
   assert.equal(TP.S.intake.mode,'video'); assert.equal(navigated,'intake');
   await actions.hmConsultMode({dataset:{v:'chat',branch:'on'}});
   assert.equal(TP.S.intake.mode,'chat');

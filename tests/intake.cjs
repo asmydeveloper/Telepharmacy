@@ -16,7 +16,7 @@ h.TP.URGENT=['หายใจลำบาก'];h.TP.SYMPTOMS=['ไข้','ไ�
 h.run("const ackHtml=()=>'';const zoneNote=()=>'';const ACK_NEED='รับทราบ';const dockNote=()=>'';");
 const begin=source.indexOf('TP.intakeReady ='),finish=source.indexOf('/* A2: one tick per case',begin);h.run(source.slice(begin,finish));
 Object.assign(h.S.intake,{who:'me',symptoms:[],custom:[],urgent:[],note:'',mode:'chat',photos:0,otherOpen:false});
-let html=h.screens.intake.render({S:h.S,state:'normal',params:{}});assert(!html.includes('ikSymSearch'));assert(!html.includes('id="ikOtherIn"'));assert(!html.includes('ik-selection'));assert(!html.includes('id="ikSymOptions"'));assert(html.includes('บอกอาการหรือคำถามเรื่องยา'));assert(!html.includes('data-v="__other"'));assert(html.includes('aria-pressed="false"'));
+let html=h.screens.intake.render({S:h.S,state:'normal',params:{}});assert(!html.includes('ikSymSearch'));assert(!html.includes('id="ikOtherIn"'));assert(!html.includes('ik-selection'));assert(!html.includes('id="ikSymOptions"'));assert(html.includes('บอกอาการหรือคำถามเรื่องยา'));assert(!html.includes('data-v="__other"'));assert(!html.includes('ik-safety'));
 h.S.intake.symptoms=['ไอ','น้ำมูก'];html=h.screens.intake.render({S:h.S,state:'multi',params:{}});assert(!html.includes('ik-selection'));assert.equal(h.S.intake.note,'ไอ, น้ำมูก');assert.equal(h.S.intake.symptoms.length,0);
 h.S.intake.otherOpen=true;html=h.screens.intake.render({S:h.S,state:'other',params:{}});assert(!html.includes('id="ikOtherIn"'));assert(html.includes('<textarea'));assert(!html.includes('เพิ่มอาการ</span>'));assert(!html.includes('<details class="ik-extra"'));
 h.S.intake.symptoms=['อาการเดิมจากร่าง'];html=h.screens.intake.render({S:h.S,state:'normal',params:{}});assert(h.S.intake.note.includes('อาการเดิมจากร่าง'));assert(!html.includes('id="ikSymOptions"'));
@@ -30,7 +30,7 @@ sections.run(source.slice(begin,source.indexOf('/* A1: the main address',begin))
 Object.assign(sections.S.intake,{symptoms:['ไอ'],custom:[],urgent:[],note:'',mode:'video',photos:0,ack:false});
 let page=sections.screens.intake.render({S:sections.S,state:'filled',params:{}});
 assert.equal(sections.S.intake.mode,'video');assert(page.includes('ik-mode-options'));assert(page.includes('name="ikConsultMode" required value="video" checked'));assert(page.includes('ต้องการปรึกษาแบบไหน'));assert(page.includes('ปรึกษาเภสัช'));assert(!page.includes('ik-mode-change'));assert(!page.includes('ik-br'));assert(!page.includes('dock-note'));assert(page.includes('ฉันได้อ่านและรับทราบเงื่อนไข'));assert(page.includes('data-sheet="serviceterms"'));assert(page.includes('aria-haspopup="dialog"'));assert(/id="ikGo"[^>]*disabled|disabled[^>]*id="ikGo"/.test(page));
-assert(/id="ikUrgentAlert"[^>]*hidden/.test(page));sections.S.intake.ack=true;sections.S.intake.urgent=['หายใจลำบาก'];page=sections.screens.intake.render({S:sections.S,state:'urgent',params:{}});assert(!/id="ikUrgentAlert"[^>]*hidden/.test(page));assert(page.includes('tel:1669'));assert(!/id="ikGo"[^>]*disabled|disabled[^>]*id="ikGo"/.test(page));
+assert(!page.includes('ik-safety'));assert(!page.includes('ikUrgentAlert'));assert(page.includes('<span>3</span><h3 class="ik-h">ข้อมูลก่อนปรึกษา'));sections.S.intake.ack=true;sections.S.intake.urgent=['หายใจลำบาก'];page=sections.screens.intake.render({S:sections.S,state:'filled',params:{}});assert.equal(sections.S.intake.urgent.length,0);assert(!/id="ikGo"[^>]*disabled|disabled[^>]*id="ikGo"/.test(page));
 const snapshot=JSON.stringify(sections.S.intake);assert(sheets.serviceterms.render().includes('FULL SERVICE TERMS'));assert.equal(JSON.stringify(sections.S.intake),snapshot);assert.equal(sheets.serviceterms.code,'C215');
 console.log('PASS: neutral urgent section, conditional emergency text, consultation preference, compact service acknowledgment, read-only terms and button gating');
 
@@ -46,7 +46,7 @@ let picker=0,change;sections.elements['#ikPhotos']={click(){picker++},addEventLi
 assert(hasCss(':where(#ikSymOptions,.ik-safety) .chips {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'));assert(hasCss('grid-template-columns:repeat(3,minmax(0,1fr))'));
 console.log('PASS: upload picker/change, 3-photo limit, hidden filenames, deletion/replacement, cancelled selection and type/size errors');
 
-assert(!hasCss(":is(#ikSymOptions,.ik-safety)"),"shared styles must not inherit ID specificity and override the urgent single column");assert(hasCss(":where(#ikSymOptions,.ik-safety)"));assert(source.includes('class="note danger ik-urgent-message"'));
+assert(!hasCss(":is(#ikSymOptions,.ik-safety)"),"shared styles must not inherit ID specificity and override the urgent single column");assert(hasCss(":where(#ikSymOptions,.ik-safety)"));assert(!page.includes('ik-safety'));
 
 const ready=sections.TP.intakeReady;Object.assign(I,{symptoms:[],note:'',otherOpen:false,otherText:''});assert(!ready(I));I.note='ปวดหูข้างซ้าย\nเริ่มเมื่อวาน';assert(ready(I));
 page=sections.screens.intake.render({S:sections.S,state:'other',params:{}});assert(page.includes('ปวดหูข้างซ้าย'));assert(!page.includes('data-v="__other"'));assert(!page.includes('id="ikOtherIn"'));assert(page.indexOf('ik-upload-help')<page.indexOf('</button>',page.indexOf('ik-upload-help')));

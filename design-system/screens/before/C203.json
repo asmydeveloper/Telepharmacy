@@ -48,12 +48,6 @@
       "url": "/?screen=intake&state=outzone&splash=0"
     },
     {
-      "code": "C203.9",
-      "state": "urgent",
-      "label": "แจ้งเตือนอาการอันตราย",
-      "url": "/?screen=intake&state=urgent&splash=0"
-    },
-    {
       "code": "C203.10",
       "state": "multi",
       "label": "เลือกหลายอาการ",

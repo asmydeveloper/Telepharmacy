@@ -50,7 +50,7 @@
     {
       "code": "C201.8",
       "state": "outarea",
-      "label": "ไม่พบร้านในพื้นที่",
+      "label": "นอกพื้นที่ให้บริการทุกสาขา",
       "url": "/?screen=home&state=outarea&splash=0"
     },
     {
@@ -184,6 +184,12 @@
       "state": "case-pickup-ready",
       "label": "รับที่ร้าน · พร้อมรับยา",
       "url": "/?screen=home&state=case-pickup-ready&splash=0"
+    },
+    {
+      "code": "C201.76",
+      "state": "branch-statuses",
+      "label": "สาขาครบทุกสถานะ",
+      "url": "/?screen=home&state=branch-statuses&splash=0"
     }
   ]
 }
