@@ -293,3 +293,8 @@
 .medhub-copy span {font-size:var(--text-small);line-height:var(--leading-body)}
 .medhub-banner:focus-visible {outline:2px solid var(--brand);outline-offset:2px}
 
+
+/* Pharmacy availability has three shared, text-labelled status tones. */
+.phone :is(.hm-branch-status,.bc-availability) > .tag.warn { background:var(--semantic-warning-background); color:var(--semantic-warning-text); }
+.phone :is(.hm-branch-status,.bc-availability) > .tag.muted { background:var(--semantic-surface-muted); color:var(--semantic-text-secondary); }
+.phone .hm-branch-range { color:var(--semantic-text-secondary); }

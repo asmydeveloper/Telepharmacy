@@ -2526,7 +2526,7 @@ TP.casePreview = {
   }
 };
 TP.caseOpen = () => { const c = TP.S.case; return !!(c && (!c.who || c.who==='me') && !['closed', 'cancelled', 'declined', 'expired', 'branchclosed'].includes(c.status)); };
-const stateTag = st => st === 'open' ? ui.tag('เปิดรับ', 'ok', { dot: true, live: true }) : st === 'pause' ? ui.tag('พักชั่วคราว', 'warn', { dot: true }) : ui.tag('ปิดรับวันนี้', 'muted', { dot: true });
+const stateTag = st => st === 'open' ? ui.tag('เปิดรับบริการ', 'ok', { dot: true, live: true }) : st === 'pause' ? ui.tag('ปิดรับชั่วคราว', 'warn', { dot: true }) : ui.tag('ปิดรับบริการ', 'muted', { dot: true });
 /* C03: nearest open branch picked for the customer; paused/closed nearest -> next one, with the reason */
 TP.pickBranch = () => {
   const S = TP.S, candidates = TP.homeStores ? TP.homeStores() : [...TP.BRANCHES].sort((a,b) => a.km - b.km);
@@ -2576,9 +2576,8 @@ TP.homeDistance = b => { const a = TP.homeAddress(); return a ? TP.zoneOf(a, b.i
 TP.homeStores = () => TP.homeAddress() ? TP.BRANCHES.filter(b => TP.homeDistance(b) != null && TP.homeDistance(b) <= TP.ZONE_KM).sort((a,b) => TP.homeDistance(a) - TP.homeDistance(b)) : [];
 const homeBranchClosed = (S, b) => S.sysOff || S.storeOpen === false || (S.branchState[b.id] || (b.demo ? 'open' : 'closed')) === 'closed';
 const homeBranchOutside = b => !!TP.homeAddress() && (TP.homeDistance(b) ?? Infinity) > TP.ZONE_KM;
-const homeBranchStatus = (S, b) => homeBranchOutside(b) ? ['อยู่นอกระยะให้บริการ', 'muted']
-  : homeBranchClosed(S, b) ? ['ร้านปิด', 'muted']
-  : S.branchState[b.id] === 'pause' ? ['เภสัชกรพักชั่วคราว', 'warn'] : ['เปิดรับปรึกษา', 'ok'];
+const homeBranchStatus = (S, b) => homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted']
+  : S.branchState[b.id] === 'pause' ? ['ปิดรับชั่วคราว', 'warn'] : ['เปิดรับบริการ', 'ok'];
 /* Selection uses the selected delivery address; unknown queue counts are never treated as zero. */
 TP.quickConsultBranch = () => {
   if (!TP.homeAddress()) return {reason:'address'};
@@ -2702,7 +2701,7 @@ function storeListHtml(S, stores) {
   return `<div class="hm-store-list">${stores.map(b => `<article class="hm-branch-tile">
       <button type="button" class="hm-branch-open" data-sheet="storeinfo" data-p='${esc(JSON.stringify({ branch: b.id }))}' aria-label="ดูข้อมูล${esc(b.name)}">
         <img src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="96" height="96" loading="lazy">
-        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span><span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ยังไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
+        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span>${homeBranchOutside(b)?'<span class="small hm-branch-range">อยู่นอกระยะให้บริการ</span>':''}<span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ยังไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
         ${ic('chevron-right',16,2)}
       </button>
     </article>`).join('')}</div>`;
@@ -2737,7 +2736,8 @@ TP.act('hmSelectAllBranch', async t => {
 
 TP.sheetDef('storeinfo', {
   group: 'before', title: 'ข้อมูลร้านและเภสัชกร', code: 'C212', host: 'home', tall: true,
-  states: [['normal', 'เปิดรับปรึกษา'], ['paused', 'เภสัชกรพัก'], ['closed', 'ร้านปิด'], ['outside', 'อยู่นอกระยะให้บริการ'], ['choose-mode', 'เลือกสนทนาหรือวิดีโอ'], ['grouped', 'รายละเอียดแบ่งหมวด'], ['license', 'ตรวจใบอนุญาตร้านยา'], ['neutral-sections', 'หมวดข้อมูลพื้นเทาอ่อน']],
+  notes: ['สถานะร้านมี 3 แบบ: เปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง) ใช้ร่วมกับหน้าแรก; ระยะให้บริการแสดงแยกจากสถานะร้าน ดูข้อมูลร้านได้ทุกสถานะ'],
+  states: [['normal', 'เปิดรับบริการ'], ['paused', 'ปิดรับชั่วคราว'], ['closed', 'ปิดรับบริการ'], ['outside', 'อยู่นอกระยะให้บริการ'], ['choose-mode', 'เลือกสนทนาหรือวิดีโอ'], ['grouped', 'รายละเอียดแบ่งหมวด'], ['license', 'ตรวจใบอนุญาตร้านยา'], ['neutral-sections', 'หมวดข้อมูลพื้นเทาอ่อน']],
   prep(S) {
     const st = S.st.storeinfo;
     if (!st) return;

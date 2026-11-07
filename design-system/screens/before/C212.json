@@ -8,19 +8,19 @@
     {
       "code": "C212.1",
       "state": "normal",
-      "label": "เปิดรับปรึกษา",
+      "label": "เปิดรับบริการ",
       "url": "/?screen=storeinfo&state=normal&splash=0"
     },
     {
       "code": "C212.2",
       "state": "paused",
-      "label": "เภสัชกรพัก",
+      "label": "ปิดรับชั่วคราว",
       "url": "/?screen=storeinfo&state=paused&splash=0"
     },
     {
       "code": "C212.3",
       "state": "closed",
-      "label": "ร้านปิด",
+      "label": "ปิดรับบริการ",
       "url": "/?screen=storeinfo&state=closed&splash=0"
     },
     {
