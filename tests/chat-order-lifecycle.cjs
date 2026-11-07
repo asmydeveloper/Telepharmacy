@@ -7,7 +7,7 @@ require('./consultation-harness.cjs')(TP);
 const context=vm.createContext({TP,C:()=>S._paymentCase||S.case,esc:String,ic:()=>'',ui,now:()=> '00:30',setInterval(){},clearInterval(){},clearTimeout(){},document:{querySelectorAll:()=>[]},$:()=>({innerHTML:''}),push:(_,m)=>S.case.msgs.push(m),typing:async()=>{},wake(){},waitingForPharmacist:()=>false,console});
 const run=(a,b)=>vm.runInContext(source.slice(source.indexOf(a),source.indexOf(b,source.indexOf(a))),context);
 run('TP.ORDER_PAYMENT_MS=','/* ---------- message html ---------- */');
-vm.runInContext("let chain=Promise.resolve(),pending=null,cur=null,sheet=null,hist=[],running=[];const SCREENS={room:{},home:{},track:{},paid:{}};async function doGo(id,o){routeCapture(id,o)}",context);context.routeCapture=(id,o)=>{routes.push(id);current={id,el:{}}};
+vm.runInContext("let chain=Promise.resolve(),pending=null,cur=null,sheet=null,hist=[],running=[];const SCREENS={room:{},home:{},track:{},paid:{},paymentsuccess:{}};async function doGo(id,o){routeCapture(id,o)}",context);context.routeCapture=(id,o)=>{routes.push(id);current={id,el:{}}};
 run('TP.go = (id, o = {}) => {','async function doGo(id, o)');run('TP.back = () => {','TP.canBack =');
 run('TP.sim.closeCase =','TP.sim.idleWarn =');
 run('async function sendText(text)','TP.act(\'quickReply\'');
@@ -29,10 +29,11 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  // Successful express payment starts the existing delivery view without reopening chat.
  vm.runInContext("const P=()=>({recv:'express',method:'promptpay'}),addr=()=>({first:'Test',last:'User',house:'123'}),totals=()=>({items:385,ship:89,fee:0,total:474});",context);
  run('async function paid()','TP.payPaid = paid;');await vm.runInContext('paid()',context);
- assert.equal(order.status,'paid');assert.equal(c.status,'closed');assert.equal(order.fulfillment.status,'preparing');assert.equal(routes.at(-1),'track');assert.equal(order.items.length,3);
+ assert.equal(order.status,'paid');assert.equal(c.status,'closed');assert.equal(order.fulfillment.status,'preparing');assert.equal(routes.at(-1),'paymentsuccess');assert.equal(order.items.length,3);
+ TP.orderStatusCard=(steps,no)=>steps.map(x=>x[1]).join(' ')+no;TP.fulfillmentDetails=c=>c.pharmacistAdvice;
  for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert.equal(order.expiresAt,deadline);}
- assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert(order.picked);assert(TP.fulfillmentCard(S).includes('เสร็จสิ้น'));
- await TP.go('room');assert.equal(routes.at(-1),'track');assert.equal(c.status,'closed');
+ assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert.equal(order.picked,undefined);assert.equal(order.paid.got,undefined);assert(order.paid.deliv);assert(TP.fulfillmentCard(S).includes('เสร็จสิ้น'));order.paid.got='15:00';order.picked=true;assert.equal(TP.fulfillmentCard(S),'');
+ await TP.go('room');assert.equal(routes.at(-1),'paid');assert.equal(c.status,'closed');
  const unpaid={id:'unpaid',status:'closed',mode:'chat',order:{status:'pending',expiresAt:Date.now()-1}};assert.equal(TP.closedChatRoute(unpaid).screen,'home');assert.equal(unpaid.order.status,'expired');assert.equal(TP.setFulfillment(unpaid,'preparing'),false);
  // Video-selected consultation retains its existing navigation behavior.
  c.mode='video';const count=sheets.length;await TP.go('room');assert.equal(routes.at(-1),'room');assert.equal(sheets.length,count);assert.equal(TP.closedChatRoute(c),null);

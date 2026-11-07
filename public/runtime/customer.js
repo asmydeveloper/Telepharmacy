@@ -310,7 +310,7 @@ TP.PAY_MIN = 20;        /* Omise minimum for every method (CSM:2542) */
 /* the one mutable state object; panel toggles and screens both write here */
 /* panel "ทั้งแอป" switches: the reviewer's choice is the base. A screen state may force a value
    (pay "ร้านปิด"), every other state goes back to the base instead of a hard default */
-TP.FLAG0 = { storeOpen: true, sysOff: false, zoneLock: true };
+TP.FLAG0 = { storeOpen: true, sysOff: false, zoneLock: true, firstTime: false };
 TP.flag = k => (TP.S.g && k in TP.S.g ? TP.S.g[k] : TP.FLAG0[k]);
 TP.setFlag = (k, v) => { TP.S[k] = v; (TP.S.g || (TP.S.g = {}))[k] = v; };
 /* opening a state (panel or link) starts from the default zone lock, so an unlocked sample never leaks into later screens
@@ -335,7 +335,7 @@ TP.previewInbox = (history) => {
  return samples.map(([days,at,kind,title,body,go],index)=>{const date=new Date(Date.UTC(y,m-1,d-days)),dateText=[String(date.getUTCDate()).padStart(2,'0'),String(date.getUTCMonth()+1).padStart(2,'0'),date.getUTCFullYear()].join('/');return {id:'preview-note-'+index,kind,title,body,time:dateText+' '+at,read:true,go:go==='summary'&&!summaryId?'history':go,...(go==='summary'&&summaryId?{p:{id:summaryId}}:{})};});
 };
 TP.fresh = () => ({
-  firstTime: false,          // true = onboarding + consent flow from splash
+  firstTime: false,          // true = new user: sign-up, then C108 and onboarding C112
   loggedIn: true,
   consent: true,             // Preview fixture: returning account already accepted the current policy.
   consentVer: 4,
@@ -343,7 +343,6 @@ TP.fresh = () => ({
   storeOpen: true,
   notifAsked: true,
   notif: true,               // returning user allowed app notifications
-  faceId: false,
   branch: 'tw',
   branchState: { tw: 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' },  // open | pause | closed
   queueLen: { tw: 2, on: 1, 'demo-1':0, 'demo-2':0, 'demo-3':0, 'demo-4':1, 'demo-5':0 },
@@ -356,8 +355,8 @@ TP.fresh = () => ({
   case: null,                // see TP.newCase in 60-main
   /* the website account address book (customer_addresses): no labels like บ้าน/ที่ทำงาน, one main address, pin = has a confirmed map point */
   addrs: [
-    { id: 'a1', label: 'บ้าน', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '88/12', alley: 'ซอยทวีวัฒนา 25', road: '', prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170', main: true, pin: false },
-    { id: 'a2', label: 'ที่ทำงาน', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '99/9', building: 'ชั้น 12', alley: '', road: 'พระรามที่ 4', prov: 'กรุงเทพมหานคร', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110', main: false, pin: true }
+    { id: 'a1', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '88/12', alley: 'ซอยทวีวัฒนา 25', road: '', prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170', main: true, pin: false },
+    { id: 'a2', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '99/9', building: 'ชั้น 12', alley: '', road: 'พระรามที่ 4', prov: 'กรุงเทพมหานคร', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110', main: false, pin: true }
   ],
   history: [
     {id:'mock-history-expired',date:'18/10/2026',time:'13:10',who:'me',topic:'เจ็บคอ',note:'เจ็บคอมา 2 วัน กลืนแล้วเจ็บ',branch:'tw',pharm:'kj',orderNo:'MT2026101801',outcome:'payment-expired',summary:true,previewSummary:{meds:[],nomed:'ยังไม่ได้รับยา เนื่องจากไม่ได้ชำระเงินภายในเวลาที่กำหนด',advice:'เภสัชกรแนะนำให้พักผ่อน ดื่มน้ำ และสอบถามเภสัชกรหากอาการไม่ดีขึ้น'}} ,
@@ -1425,7 +1424,7 @@ function render() {
     ${def?.states?.length > 1 && states.length ? `<section class="pn-sec"><h2 class="pn-h">ลองสถานะของจอนี้</h2><div class="gap12">${(def.stateGroups || [{label: "", keys: states.map(([key]) => key)}]).map(group => `${group.label ? `<h3 class="pn-h">${esc(group.label)}</h3>` : ""}<div class="pn-row">${states.filter(([key]) => group.keys.includes(key)).map(([k, l]) => `<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id) === k}"><b class="pn-sc">${esc(stateCode(def, k))}</b>${esc(l)}</button>`).join('')}</div>`).join('')}</div></section>` : ''}
     ${canMock ? '<section class="pn-sec"><button type="button" class="pn-btn wide" data-pn="mock">มอคข้อมูล</button></section>' : ''}
     ${sims.length ? `<section class="pn-sec"><h2 class="pn-h">${ic('stethoscope', 15, 2)}จำลองฝั่งเภสัชกร</h2><div class="pn-grid">${sims.map(a => `<button type="button" class="pn-btn ph" data-pn="sim" data-k="${esc(a.id)}">${esc(a.label)}</button>`).join('')}</div></section>` : ''}
-    <section class="pn-sec"><h2 class="pn-h">ทั้งแอป</h2><div class="gap8">${GLOBAL.map(([k, l, opts]) => `<div><p class="small" style="margin:0 2px 4px">${esc(l)}</p><div class="pn-row">${opts.map(([v, t]) => `<button type="button" class="pn-btn" data-pn="g" data-k="${k}" data-v="${v}" aria-pressed="${TP.S[k] === v}">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div></section>
+    <section class="pn-sec"><h2 class="pn-h">ทั้งแอป</h2><div class="gap8">${GLOBAL.map(([k, l, opts]) => `<div><p class="small" style="margin:0 2px 4px">${esc(l)}</p><div class="pn-row">${opts.map(([v, t]) => `<button type="button" class="pn-btn" data-pn="g" data-k="${k}" data-v="${v}" aria-pressed="${(k === 'firstTime' ? TP.flag(k) : TP.S[k]) === v}">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div></section>
     <section class="pn-sec"><h2 class="pn-h">ไปจอ · ทั้งหมด ${visible.length} จอ</h2>
       ${TP.GROUPS.map(([g, gl]) => { const ids = visible.filter(i => TP.def(i).group === g).sort(byCode); if (!ids.length) return ''; return `<div class="pn-grp"><b>${esc(gl)}</b><div class="pn-grid">${ids.flatMap(i => {
         const d = TP.def(i);
@@ -1467,7 +1466,7 @@ panel.addEventListener('click', async e => {
     case 'g': {
       const raw = b.dataset.v, v = raw === 'true' ? true : raw === 'false' ? false : raw;
       if (k === 'loc' || k === 'zoneLock') TP.S.locDenySeen = TP.S.locWarnSeen = false;
-      if (k === 'firstTime') { TP.S.firstTime = v; restart(mob); break; }
+      if (k === 'firstTime') { TP.setFlag(k, v); restart(mob); break; }
       const shown = () => (TP.sheetOpen()?.el || TP.cur()?.el)?.innerText || '', was = shown();
       if (k in TP.FLAG0) TP.setFlag(k, v); else TP.S[k] = v;
       TP.emit('state');
@@ -1489,13 +1488,14 @@ panel.addEventListener('click', async e => {
     case 'restart': restart(mob); break;
   }
 });
-/* start the app again; the user type and the "ทั้งแอป" switches carry over */
+/* start the app again; the user type and the "ทั้งแอป" switches carry over.
+   The reviewer's user type lives in S.g: finishing sign-up clears S.firstTime for the running app, not this choice. */
 function restart(mob) {
   TP.previewEvents?.clear();
-  const ft = TP.S.firstTime, g = TP.S.g;
-  TP.S = TP.fresh(); TP.S.firstTime = ft;
+  const g = TP.S.g;
+  TP.S = TP.fresh();
   if (g) { TP.S.g = { ...g }; Object.assign(TP.S, g); }
-  if (ft) Object.assign(TP.S, { loggedIn: false, consent: false, notifAsked: false, notif: false, follow: null });
+  if (TP.S.firstTime) Object.assign(TP.S, { loggedIn: false, consent: false, notifAsked: false, notif: false, follow: null });
   TP.emit('state');
   if (mob) toggle(false);
   TP.go(TP.SCREENS.splash ? 'splash' : 'home', { via: 'fade', root: true, force: true });
@@ -1508,7 +1508,7 @@ TP.panel = { render, toggle };
 
 /* ===== 50-start.js ===== */
 /* =====================================================================
-   50 · Start: login, channel-specific in-page OTP, profile, faceid,
+   50 · Start: login, channel-specific in-page OTP, profile,
         update, sysoff. Styles: css/50-start.css (classes st-*).
    ===================================================================== */
 (() => {
@@ -1537,14 +1537,6 @@ const callIc = `<span class="st-call" aria-hidden="true">${ic('phone', 18, 2)}</
 const callRows = () => [...TP.BRANCHES.map(b => ui.row({ icon: 'store', title: b.name, sub: `เปิด ${b.hours} · ${b.phone}`, a: 'stCall', p: { id: b.id }, chev: false, html: callIc })),
   ...(TP.STORE ? [ui.row({ icon: 'headset', title: 'ฝ่ายบริการลูกค้า', sub: `${TP.STORE.csHours} · ${TP.STORE.cs}`, a: 'stCall', p: { tel: TP.STORE.cs }, chev: false, html: callIc })] : [])];
 TP.callRows = callRows;
-/* after the Face ID question (asked once, after the first consult): back to home */
-const afterBio = () => {
-  const S = TP.S;
-  Object.assign(S, { _fidOffer: false, _fidAsked: true });
-  S.firstTime = false;
-  return TP.go('home', { via: 'zoom', root: true });
-};
-
 TP.act('stDoc', t => TP.sheet('doc', { t: t.dataset.v }));
 TP.sheetDef('doc', {
   group: 'start', title: ctx => ctx?.params?.t || 'ข้อกำหนดการใช้งาน', code: 'C111', ref: 'H07', host: 'login', tall: true,
@@ -1559,7 +1551,7 @@ TP.sheetDef('doc', {
   foot: () => ui.btn('ปิด', { kind: 'secondary', closeSheet: true })
 });
 TP.act('stCall', t => { let p = {}; try { p = JSON.parse(t.dataset.p || '{}'); } catch { p = {}; } TP.notify('กำลังโทร ' + (p.tel || TP.branch(p.id).phone), { icon: 'phone' }); });
-/* first run only: a phone number with no account yet fills "ข้อมูลของคุณ" before Face ID.
+/* first run only: a phone number with no account yet fills "ข้อมูลของคุณ".
    S.newAccount undefined = follow firstTime (the natural first-run demo shows the form) */
 const isNewNumber = S => S.newAccount ?? S.firstTime;
 /* a brand-new number must never inherit the mock account (family, allergies, meds, history) */
@@ -1611,7 +1603,7 @@ TP.screen('onboard', {
   states: [['p1', 'หน้า 1 เภสัชกรตัวจริง'], ['p2', 'หน้า 2 เวลาให้บริการ'], ['p3', 'หน้า 3 ขั้นตอนและความเสี่ยง']],
   notes: [
     'แนะนำแอป 3 หน้า ใช้การ์ดภาพซ้อนบนพื้นขาวแบบคอลลาจสีมิตรอารี: เภสัชกรที่ตรวจสอบได้ → เลือกสาขาที่พร้อมให้บริการ → ขั้นตอนและข้อจำกัดของการปรึกษา',
-    'ปัดซ้ายขวา แตะจุด หรือกดลูกศรบนคีย์บอร์ดได้ ข้ามและเริ่มใช้งานไป C102 ไม่บังคับอ่านก่อนสมัคร',
+    'มาจากปุ่มเริ่มใช้งานบน C108 หลังสมัครสำเร็จ ปัดซ้ายขวา แตะจุด หรือกดลูกศรบนคีย์บอร์ดได้ ข้ามและเริ่มใช้งานไปหน้าหลัก C201 ถ้าเปิดเคสนี้โดยยังไม่เข้าสู่ระบบจะไป C102',
     'เวลาและสถานะบริการต้องอิงแต่ละสาขา ไม่มีการฝากคำถามนอกรอบบริการ',
     'ภาพประกอบเป็นภาพจำลอง ไม่ใช่ตัวตนเภสัชกรหรือการรับรองใบอนุญาตจริง ต้องตรวจข้อมูลผู้ให้คำปรึกษาจากระบบก่อนเริ่มคุย',
     'ใช้ภาพสื่อสารข้อความหลักควบคู่หัวข้อและคำอธิบายตามแนวทาง CDC Visual Communication ไม่ใส่ข้อความสำคัญไว้เฉพาะในภาพ'
@@ -1636,7 +1628,7 @@ TP.screen('onboard', {
     let i = { p2: 1, p3: 2 }[ctx.state] || 0, x = 0, drag = null, dragged = false;
     const W = () => vp.offsetWidth;
     const place = v => { x = v; track.style.transform = `translate3d(${v}px,0,0)`; };
-    const finish = () => TP.go('login', { via: 'push' });
+    const finish = () => TP.S.loggedIn ? TP.go('home', { via: 'zoom', root: true }) : TP.go('login', { via: 'push' });
     function ui8(changed) {
       dots.forEach((d, n) => d.setAttribute('aria-current', n === i ? 'step' : 'false'));
       pages.forEach((p, n) => { p.setAttribute('aria-hidden', String(n !== i)); p.inert = n !== i; });
@@ -1777,7 +1769,7 @@ function authNewAccount(S,channel,target){
   TP.freshAccount(S);TP.blankUser(S,channel==='phone'?target:'');
   S.user={name:'',last:'',full:'',phone:channel==='phone'?fmtPhone(target):'',email:channel==='email'?target:'',born:'',birthYear:'',age:'',sex:'none',allergies:[],allergyState:'unknown',allergySrc:'',meds:[],weight:'',conditions:[],condNone:false,food:'',foodNone:false};
   S.intake={who:'me',symptoms:[],custom:[],otherOpen:false,urgent:[],note:'',photos:0,mode:S.intake?.mode==='video'?'video':'chat'};
-  Object.assign(S,{loggedIn:true,firstTime:true,newAccount:true,consent:false,consentVer:0,faceId:false,_gone:false,_pf:null,_authFlows:{},_registration:null,_registrationIdentity:{provider:channel,email:channel==='email'?target:'',phone:channel==='phone'?digits(target):''},_registrationComplete:false,healthConsentRecord:null,adrReports:[],_adrDrafts:{},_adr:null,_adrSent:null,ofPending:null,deliveryAddressId:null});
+  Object.assign(S,{loggedIn:true,firstTime:true,newAccount:true,consent:false,consentVer:0,_gone:false,_pf:null,_authFlows:{},_registration:null,_registrationIdentity:{provider:channel,email:channel==='email'?target:'',phone:channel==='phone'?digits(target):''},_registrationComplete:false,healthConsentRecord:null,adrReports:[],_adrDrafts:{},_adr:null,_adrSent:null,ofPending:null,deliveryAddressId:null});
 }
 function authPreview(S,channel,state){
   S.loggedIn=false;S._authFlows ||= {};delete S._authFlows[channel];const f=authDraft(S,channel);
@@ -1838,7 +1830,7 @@ TP.act('stLgSend',button=>authDraft(TP.S,'phone').step==='code'?authVerify('phon
 /* Ref = 4 letters printed in the same SMS, so the customer knows which SMS is current after asking for a new code */
 const KEYS = [['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'], ['6', 'MNO'], ['7', 'PQRS'], ['8', 'TUV'], ['9', 'WXYZ'], ['', ''], ['0', ''], ['del', '']];
 /* =====================================================================
-   Profile (C02): new phone number with no account yet, after OTP, before Face ID
+   Profile (C02): new phone number with no account yet, after OTP
    ===================================================================== */
 const NOW_Y = +TP.NOW.date.slice(-4);
 const PF_CHECK = {
@@ -2140,7 +2132,7 @@ TP.sheetDef('registrationexit',{group:'start',title:'ออกจากการ
 
 TP.act('regNext',async t=>{const ctx=TP.cur()?.ctx;if(!ctx)return;const d=regInitContact(ctx);regReadInputs(TP.cur().el,d);d.errors=regErrors(d);if(Object.keys(d.errors).length){await TP.refresh({anim:false});const key=Object.keys(d.errors)[0],root=TP.cur()?.el;const input=$('#reg-'+key,root)||$('#regBirth',root);input?.scrollIntoView?.({block:'center'});input?.focus?.();return;}if(d.step<3){if(d.step===0)regAddressContact(d,regContact(ctx));d.step=d.returnToReview?3:d.step+1;d.returnToReview=false;return TP.refresh({anim:false});}if(!regCanSubmit(d)||t.disabled)return;d.busy=true;t.disabled=true;t.setAttribute('aria-busy','true');try{await TP.registrationService.save(TP.S,d,regContact(ctx));d.busy=false;delete d.password;delete d.passwordConfirm;await TP.go('registrationsuccess',{root:true});}catch{d.busy=false;d.submitError='บันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองอีกครั้งได้';TP.refresh({anim:false});}});
 /* Local prototype adapter; production must replace this with authenticated, server-validated storage. */
-TP.registrationService={async save(S,d,contact){if(!regCanSubmit({...d,busy:false}))throw Error('Invalid registration');if(S.st.profile==='save-error')throw Error('Preview failure');const first=d.first.trim(),last=d.last.trim();TP.freshAccount(S);Object.assign(S.user,{name:first,last,full:first+' '+last,nationalId:d.nationalId,identityAddress:{first:d.addressFirst.trim(),last:d.addressLast.trim(),phone:d.addressPhone,house:d.house.trim(),building:(d.building||'').trim(),alley:(d.alley||'').trim(),road:(d.road||'').trim(),dist:d.dist.trim(),amp:d.amp.trim(),prov:d.prov.trim(),zip:d.zip,pin:d.pin,location:d.location},birthDate:`${d.year}-${d.month.padStart(2,'0')}-${d.day.padStart(2,'0')}`,birthYear:+d.year,born:d.year,age:regAge(d),sex:d.sex,weight:d.weight,height:d.height,conditions:regHealthValues(d.health.conditions),condNone:d.health.conditions.mode==='none',conditionState:d.health.conditions.mode,meds:regHealthValues(d.health.meds),medState:d.health.meds.mode,allergies:regHealthValues(d.health.allergies),allergyState:d.health.allergies.mode==='set'?'set':d.health.allergies.mode,allergySrc:'ผู้ใช้ระบุ · รอเภสัชกรตรวจสอบ',food:regHealthValues(d.health.food).join(', '),foodNone:d.health.food.mode==='none',foodState:d.health.food.mode,allergyDocuments:d.documents.map(({name,size,type})=>({name,size,type}))});S.user[contact.channel==='email'?'email':'phone']=contact.value;if(d.contactInitialized)Object.assign(S.user,{email:d.email.trim(),phone:d.verifiedPhone,phoneVerifiedAt:d.phoneVerifiedAt,registrationProvider:d.emailProvider});Object.assign(S,{consent:true,consentVer:CN_VER,consentTopics:{...d.consents},healthConsentRecord:{documentVersion:REG_HEALTH_POLICY.version,controller:REG_HEALTH_POLICY.controller,purpose:'pharmaceutical-care',acceptedAt:new Date().toISOString(),method:'registration-checkbox',categories:REG_TOPICS.map(([key])=>key),prototype:true},firstTime:false,newAccount:false,loggedIn:true,_appNew:true});S._registrationComplete=true;TP.emit('state');}};
+TP.registrationService={async save(S,d,contact){if(!regCanSubmit({...d,busy:false}))throw Error('Invalid registration');if(S.st.profile==='save-error')throw Error('Preview failure');const first=d.first.trim(),last=d.last.trim();TP.freshAccount(S);/* Prototype: mock default address until the real adapter saves the C105 current address. */S.addrs=[{...TP.fresh().addrs[0],first,last,phone:d.addressPhone,main:true}];S.deliveryAddressId=null;S.branchPicked=false;Object.assign(S.user,{name:first,last,full:first+' '+last,nationalId:d.nationalId,identityAddress:{first:d.addressFirst.trim(),last:d.addressLast.trim(),phone:d.addressPhone,house:d.house.trim(),building:(d.building||'').trim(),alley:(d.alley||'').trim(),road:(d.road||'').trim(),dist:d.dist.trim(),amp:d.amp.trim(),prov:d.prov.trim(),zip:d.zip,pin:d.pin,location:d.location},birthDate:`${d.year}-${d.month.padStart(2,'0')}-${d.day.padStart(2,'0')}`,birthYear:+d.year,born:d.year,age:regAge(d),sex:d.sex,weight:d.weight,height:d.height,conditions:regHealthValues(d.health.conditions),condNone:d.health.conditions.mode==='none',conditionState:d.health.conditions.mode,meds:regHealthValues(d.health.meds),medState:d.health.meds.mode,allergies:regHealthValues(d.health.allergies),allergyState:d.health.allergies.mode==='set'?'set':d.health.allergies.mode,allergySrc:'ผู้ใช้ระบุ · รอเภสัชกรตรวจสอบ',food:regHealthValues(d.health.food).join(', '),foodNone:d.health.food.mode==='none',foodState:d.health.food.mode,allergyDocuments:d.documents.map(({name,size,type})=>({name,size,type}))});S.user[contact.channel==='email'?'email':'phone']=contact.value;if(d.contactInitialized)Object.assign(S.user,{email:d.email.trim(),phone:d.verifiedPhone,phoneVerifiedAt:d.phoneVerifiedAt,registrationProvider:d.emailProvider});Object.assign(S,{consent:true,consentVer:CN_VER,consentTopics:{...d.consents},healthConsentRecord:{documentVersion:REG_HEALTH_POLICY.version,controller:REG_HEALTH_POLICY.controller,purpose:'pharmaceutical-care',acceptedAt:new Date().toISOString(),method:'registration-checkbox',categories:REG_TOPICS.map(([key])=>key),prototype:true},firstTime:false,newAccount:false,loggedIn:true});S._registrationComplete=true;TP.emit('state');}};
 TP.thaiAddressData={rows:null,pending:null,async load(){if(this.rows)return this.rows;if(!this.pending)this.pending=fetch('/assets/data/thailand/addresses.json').then(r=>{if(!r.ok)throw Error('Address data');return r.json();}).then(rows=>this.rows=rows).catch(e=>{this.pending=null;throw e;});return this.pending;},search(rows,key,query){const mapped={dist:'district',amp:'amphoe',prov:'province',zip:'zipcode'}[key],q=query.trim();if(!q||(!mapped&&key!=='all'))return [];const fields=mapped?[mapped]:['district','amphoe','province','zipcode'],terms=q.split(/[\s\u00b7]+/).filter(Boolean);return rows.filter(r=>terms.every(term=>fields.some(k=>String(r[k]).includes(term)))).sort((a,b)=>Number(fields.some(k=>String(b[k])===q))-Number(fields.some(k=>String(a[k])===q))).slice(0,12);}};
 function regMount(el,ctx){const d=regDraft(ctx.S),go=$('#regNext',el);const progress=$(':scope>.reg-progress',el);if(progress){const measure=()=>el.style.setProperty('--reg-progress-height',progress.offsetHeight+'px');measure();if(typeof ResizeObserver!=='undefined'){const observer=new ResizeObserver(measure);observer.observe(progress);ctx.onLeave(()=>observer.disconnect());}}const passwordRules=$$('[data-reg-password-rule]',el);
 for(const toggle of $$('[data-reg-password-toggle]',el)){
@@ -2218,12 +2210,12 @@ TP.previewSavedAddressPin=function(a){a.pin=true;a.location={lat:13.758528150779
 function regPreview(S,state='empty'){const d=regDraft(S);if(state==='google-new'||state.startsWith('phone-')){regPreview(S,'filled');d.email='new.member@gmail.com';d.emailLocked=true;d.emailProvider='google';if(state==='google-new'){d.verifiedPhone='';d.phone='';}else if(state!=='phone-verified'){d.verifiedPhone='';if(state==='phone-change')d.phone='0899999999';if(['phone-sent','phone-wrong','phone-expired','phone-locked','phone-resend'].includes(state)){d.phoneRound=1;d.phoneChallenge=TP.authDemo.issue('phone',d.phone,1,S,'new');if(state==='phone-wrong'){d.phoneCode='000000';d.phoneError='รหัสไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';d.phoneChallenge.attempts=1;}if(state==='phone-expired'){d.phoneChallenge.expiresAt=Date.now()-1;d.phoneChallenge.resendAt=0;}if(state==='phone-locked'){d.phoneChallenge.attempts=5;d.phoneChallenge.resendAt=0;d.phoneError='กรุณาขอรหัสใหม่เพื่อยืนยันเบอร์';}if(state==='phone-resend')d.phoneChallenge.resendAt=0;}if(state==='phone-send-error')d.phoneError='ส่งรหัสไม่สำเร็จ กรุณาลองอีกครั้ง';}return;}if(state==='password-partial'||state==='password-mismatch'){regPreview(S,'filled');d.passwordConfirm=state==='password-mismatch'?'Different-Preview42!':'';if(state==='password-partial')d.password='Demo';d.errors=regErrors(d);return;}if(['address-split','address-legacy','address-details-invalid'].includes(state)){regPreview(S,'address');Object.assign(d,{house:'88/12',building:'หมู่บ้านมิตรอารี อาคารบี ห้อง 1201 ชั้น 12',alley:'ทวีวัฒนา 25',road:'เลียบคลองทวีวัฒนา'});if(state==='address-legacy')Object.assign(d,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});if(state==='address-details-invalid')d.building='ก'.repeat(201);d.errors=regErrors(d);return;}if(state.startsWith('map-')){regPreview(S,'address');d.pin=false;d.location=null;if(state==='map-saved')TP.previewSavedAddressPin(d);return;}if(['national-id-short','national-id-format','national-id-checksum'].includes(state)){regPreview(S,'filled');d.step=0;d.nationalId=state==='national-id-short'?'110170020345':state==='national-id-format'?'11017002034AB':'1101700203459';d.errors=regErrors(d);return;}if(['address-select','address-missing-phone','address-invalid-phone','health-text'].includes(state)){regPreview(S,state==='health-text'?'health':'address');if(state==='address-select')Object.assign(d,{prov:'',amp:'',dist:'',zip:''});if(state==='address-missing-phone')d.addressPhone='';if(state==='address-invalid-phone')d.addressPhone='0212345678';if(state==='health-text')for(const [key,h]of Object.entries(d.health))Object.assign(h,{mode:'set',text:'ข้อมูลตัวอย่าง '+REG_HEALTH_LABELS[key]});d.errors=regErrors(d);return;}if(['filled','registration-back','address','address-search','address-no-results','address-error','health','health-empty','health-filled','review','consent-partial','consent-ready','save-error','health-none','health-no-results','health-documents','health-doc-error'].includes(state)||state.startsWith('conditions-')||state==='health-all-other'||state==='health-doc-limit'){Object.assign(d,{email:d.email||'somjai@example.com',phone:'0812345678',verifiedPhone:'0812345678',phoneVerifiedAt:new Date().toISOString(),contactInitialized:true,first:'สมใจ',last:'ใจดี',nationalId:'1101700203450',password:REG_PREVIEW_PASSWORD,passwordConfirm:REG_PREVIEW_PASSWORD,day:'15',month:'6',year:'1988',weight:'55',height:'160',addressFirst:'สมใจ',addressLast:'ใจดี',addressPhone:'0812345678',house:'88/12',building:'',alley:'ซอยทวีวัฒนา',road:'',dist:'ทวีวัฒนา',amp:'ทวีวัฒนา',prov:'กรุงเทพมหานคร',zip:'10170'});const base=d.nationalId.slice(0,12);let sum=0;for(let i=0;i<12;i++)sum+=(13-i)*+base[i];d.nationalId=base+((11-sum%11)%10);}
 if(state==='error')Object.assign(d,{first:'สมใจ',last:'ใจดี',nationalId:'123',day:'31',month:'2',year:'2025',weight:'0',height:'160',errors:{nationalId:'ตรวจสอบเลขบัตรประชาชน 13 หลัก',day:'วันที่นี้ไม่มีในปฏิทิน',weight:'กรอกน้ำหนักมากกว่า 0'}});
 if(state==='registration-back')d.step=1;if(state.startsWith('address'))d.step=1;if(state==='address-search')d.addressQuery='10170';if(state==='address-no-results')d.dist='ตำบลตัวอย่างที่ไม่มี';if(state.startsWith('health'))d.step=2;if(state==='health-empty')d.health.meds.mode='set';if(state==='health-none')for(const h of Object.values(d.health))h.mode='none';if(state==='health-no-results')Object.assign(d.health.meds,{mode:'set',other:true,otherText:''});if(state==='health-documents'||state==='health-doc-limit'){d.documents=[{name:'บัตรแพ้ยา-ตัวอย่าง.png',type:'image/png',size:248832,url:'/assets/preview/allergy-document.svg'},{name:'เอกสารประกอบ-ตัวอย่าง.pdf',type:'application/pdf',size:524288}];if(state==='health-doc-limit')for(let n=3;n<=5;n++)d.documents.push({name:`เอกสารตัวอย่าง-${n}.pdf`,type:'application/pdf',size:n*102400});}if(state==='health-doc-error')d.docError='ไฟล์นี้ไม่รองรับ กรุณาเลือก JPG, PNG, WEBP หรือ PDF ไม่เกิน 5 MB';if(state==='health-all-other')for(const [key,h]of Object.entries(d.health))Object.assign(h,{mode:'set',items:[REG_LISTS[key][0]],other:true,otherText:'ข้อมูลเพิ่มเติมที่ผู้ใช้ระบุ'});if(state==='health-filled'){d.health.conditions={mode:'set',items:['ความดันโลหิตสูง']};d.health.food={mode:'set',items:['ไข่']};}if(['review','consent-partial','consent-ready','save-error'].includes(state))d.step=3;if(state==='consent-partial')d.consents={weight:true,height:true};if(['consent-ready','save-error'].includes(state)){d.consents=Object.fromEntries(REG_TOPICS.map(([k])=>[k,true]));d.healthConsentVersion=REG_HEALTH_POLICY.version;}if(state==='save-error')d.submitError='บันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองอีกครั้งได้';if(state.startsWith('conditions-')){d.step=2;d.health.conditions={mode:'set',items:['ความดันโลหิตสูง','โรคเบาหวาน']};if(state.includes('other'))Object.assign(d.health.conditions,{other:true,otherText:state==='conditions-other'?'โรคหอบหืด':''});if(state==='conditions-other-empty')d.errors.conditions='กรอกโรคประจำตัวอื่น ๆ';if(state==='conditions-no-results')Object.assign(d.health.conditions,{other:true,otherText:''});}if(state==='review-documents'){regPreview(S,'health-documents');d.step=3;}if(state.startsWith('dob-')){regPreview(S,'filled');d.step=0;}}
-TP.screen('registrationsuccess',{group:'start',title:'สมัครสมาชิกสำเร็จ',code:'C108',cls:'auth-cover-screen registration-welcome-screen',sb:'dark',states:[['normal','สมัครสำเร็จด้วยเบอร์โทร'],['email','สมัครสำเร็จด้วยอีเมล', false],['unavailable','ยังสมัครไม่เสร็จ'],['long-name','ชื่อจริงยาว'],['no-name','ไม่มีชื่อแสดง'],['full-cover','ปกเต็มจอและปุ่มใต้คำต้อนรับ', false]],notes:['หน้าต้อนรับหลังบันทึกข้อมูล แสดงชื่อจริงและปุ่มเริ่มใช้งาน','ระบบยืนยันและบันทึกยังเป็นต้นแบบ ไม่ได้ส่งข้อมูลจริง'],prep(S){S._registrationComplete=S.st.registrationsuccess!=='unavailable';Object.assign(S.user,{name:'สมใจ',full:'สมใจ ใจดี',email:S.st.registrationsuccess==='email'?'somjai@example.com':'',phone:S.st.registrationsuccess==='email'?'':'0812345678'});if(S.st.registrationsuccess==='long-name')S.user.name='กาญจนาภัทรวรรณ';if(S.st.registrationsuccess==='no-name')S.user.name='';},render(ctx){const S=ctx.S;if(!S._registrationComplete)return ui.nav({title:'สมัครสมาชิก'})+ui.page(ui.empty({title:'ยังสมัครสมาชิกไม่เสร็จ',body:'กลับไปตรวจสอบข้อมูลและความยินยอม',icon:'clipboard-list',btn:{label:'กลับไปสมัคร',go:'profile'}}));return `<div class="auth-cover registration-welcome" aria-label="สมัครสมาชิกสำเร็จ"><img class="auth-cover-photo reg-welcome-cover" src="/assets/auth/registration-welcome-full-v3.png" alt="" width="864" height="1824" fetchpriority="high"><div class="auth-cover-content reg-welcome-copy"><div class="reg-welcome-message"><p class="reg-welcome-status">สมัครสมาชิกเรียบร้อยแล้ว</p><h1>ยินดีต้อนรับ${S.user.name?`<br><span>คุณ${esc(S.user.name)}</span>`:''}</h1><p class="auth-cover-subtitle">พร้อมให้เภสัชกรดูแลคุณแล้ว</p><div class="auth-cover-actions">${ui.btn('เริ่มใช้งาน',{go:'faceid',root:true,iconRight:'arrow-right'})}</div></div></div></div>`;}});
+TP.screen('registrationsuccess',{group:'start',title:'สมัครสมาชิกสำเร็จ',code:'C108',cls:'auth-cover-screen registration-welcome-screen',sb:'dark',states:[['normal','สมัครสำเร็จด้วยเบอร์โทร'],['email','สมัครสำเร็จด้วยอีเมล', false],['unavailable','ยังสมัครไม่เสร็จ',false],['long-name','ชื่อจริงยาว'],['no-name','ไม่มีชื่อแสดง',false],['full-cover','ปกเต็มจอและปุ่มใต้คำต้อนรับ', false]],notes:['หน้าต้อนรับหลังบันทึกข้อมูล แสดงชื่อจริงและปุ่มเริ่มใช้งาน ไปแนะนำแอป C112','ระบบยืนยันและบันทึกยังเป็นต้นแบบ ไม่ได้ส่งข้อมูลจริง'],prep(S){S._registrationComplete=S.st.registrationsuccess!=='unavailable';S.loggedIn=S._registrationComplete;Object.assign(S.user,{name:'สมใจ',full:'สมใจ ใจดี',email:S.st.registrationsuccess==='email'?'somjai@example.com':'',phone:S.st.registrationsuccess==='email'?'':'0812345678'});if(S.st.registrationsuccess==='long-name')S.user.name='กาญจนาภัทรวรรณ';if(S.st.registrationsuccess==='no-name')S.user.name='';},render(ctx){const S=ctx.S;if(!S._registrationComplete)return ui.nav({title:'สมัครสมาชิก'})+ui.page(ui.empty({title:'ยังสมัครสมาชิกไม่เสร็จ',body:'กลับไปตรวจสอบข้อมูลและความยินยอม',icon:'clipboard-list',btn:{label:'กลับไปสมัคร',go:'profile'}}));return `<div class="auth-cover registration-welcome" aria-label="สมัครสมาชิกสำเร็จ"><img class="auth-cover-photo reg-welcome-cover" src="/assets/auth/registration-welcome-full-v3.png" alt="" width="864" height="1824" fetchpriority="high"><div class="auth-cover-content reg-welcome-copy"><div class="reg-welcome-message"><p class="reg-welcome-status">สมัครสมาชิกเรียบร้อยแล้ว</p><h1>ยินดีต้อนรับ${S.user.name?`<br><span>คุณ${esc(S.user.name)}</span>`:''}</h1><p class="auth-cover-subtitle">พร้อมให้เภสัชกรดูแลคุณแล้ว</p><div class="auth-cover-actions">${ui.btn('เริ่มใช้งาน',{go:'onboard',root:true,iconRight:'arrow-right'})}</div></div></div></div>`;}});
 
 TP.screen('profile', {
   group: 'start', title: 'ข้อมูลของคุณและความยินยอม', code: 'C105', ref: 'C02', cls: 'st-cn',
   states: [['empty', 'สมัครใหม่: ยังไม่กรอก'], ['filled', 'เบอร์ใหม่: กรอกแล้ว'], ['error', 'ปีเกิดไม่ถูกต้อง'], ['acct', 'มีบัญชีเว็บ: ความยินยอมฉบับใหม่'], ['email', 'สมัครใหม่ด้วยอีเมลที่ยืนยันแล้ว'],['address','ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ'],['address-no-results','ค้นหาที่อยู่ไม่พบ กรอกเองได้'],['address-error','ตัวช่วยที่อยู่โหลดไม่สำเร็จ'],['health','ขั้นข้อมูลสุขภาพ ยังไม่ทราบ'],['health-empty','ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ'],['health-filled','ข้อมูลสุขภาพหลายรายการ'],['review','ตรวจทานและความยินยอม ยังไม่ติ๊ก'],['consent-partial','ความยินยอมเก่าไม่แทนการเลือกฉบับใหม่', false],['consent-ready','เลือกยินยอมแล้ว พร้อมสมัคร'],['save-error','บันทึกไม่สำเร็จ ข้อมูลยังอยู่'],['health-none','ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง'],['health-no-results','ยาไม่อยู่ในลิสต์ ใช้อื่น ๆ', false],['health-documents','แนบเอกสารแพ้ยาแล้ว'],['health-doc-error','ไฟล์แนบไม่ผ่านเงื่อนไข'],['quick-fill','ปุ่มมอคข้อมูลใต้ป้ายชื่อหน้า', false],['address-search','ค้นหาที่อยู่และเติมอัตโนมัติ', false],['conditions-multi','ระบุโรคประจำตัว'],['conditions-other','ระบุโรคอื่น ๆ'],['conditions-other-empty','เลือกอื่น ๆ แต่ยังไม่กรอก'],['conditions-no-results','โรคที่ไม่มีในลิสต์ ใช้อื่น ๆ', false],['registration-back','ย้อนกลับเพื่อแก้ไขข้อมูล', false],['health-all-other','เลือกหลายข้อและอื่น ๆ ทุกกลุ่มสุขภาพ'],['health-doc-limit','แนบเอกสารครบ 5 ไฟล์'],['review-documents','ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์'],["dob-years", "วันเกิด: ล้อหมุน"], ["dob-months", "วันเกิด: เลือกเดือน", false], ["dob-days", "วันเกิด: เลือกวัน", false], ["dob-selected", "วันเกิด: ค่าเดิม", false], ["dob-leap", "วันเกิด: ปีอธิกสุรทิน"], ["dob-future", "วันเกิด: จำกัดถึงวันนี้"], ["dob-oldest", "วันเกิด: ปี 1900"],['address-select','เลือกจังหวัด อำเภอ ตำบล'],['address-missing-phone','ที่อยู่ยังไม่กรอกเบอร์'],['address-invalid-phone','รูปแบบเบอร์ติดต่อไม่ถูกต้อง'],['health-text','ระบุสุขภาพด้วยข้อความ'],['national-id-short','เลขประชาชนไม่ครบ 13 หลัก'],['national-id-format','เลขประชาชนมีตัวอักษร'],['national-id-checksum','เลขประชาชนครบแต่เลขตรวจสอบผิด'],['map-ready', '', false],['map-outside', '', false],['map-error', '', false],['map-saved', '', false],['address-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน'],['address-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ'],['address-details-invalid','รายละเอียดอาคารยาวเกินกำหนด'],['personal-edit','แก้ไขข้อมูลส่วนตัว'],['personal-edit-invalid','แก้ไขข้อมูลส่วนตัวไม่ครบ'],['password-partial','รหัสผ่านยังไม่ครบเงื่อนไข'],['password-mismatch','รหัสผ่านยืนยันไม่ตรงกัน'],['google-new','Google สมาชิกใหม่ อีเมลแก้ไม่ได้'],['phone-entry','กรอกเบอร์ ขอ SMS OTP'],['phone-sent','ส่ง SMS แล้ว กรอกรหัสในฟอร์ม'],['phone-wrong','รหัส OTP ไม่ถูกต้อง'],['phone-expired','OTP หมดอายุ ขอใหม่ได้'],['phone-locked','OTP ผิดครบจำนวน ขอใหม่'],['phone-resend','ส่งรหัสใหม่ได้'],['phone-verified','ยืนยันเบอร์แล้ว ไปขั้นที่อยู่'],['phone-change','เปลี่ยนเบอร์ ต้องยืนยันใหม่'],['phone-send-error','ส่ง SMS ไม่สำเร็จ ลองอีกครั้ง']],
-  notes:['สมัครใหม่: ข้อมูลส่วนตัว → ที่อยู่ปัจจุบัน → สุขภาพ → ตรวจทานและยินยอม → C108 สมัครสำเร็จ ไม่มีหน้าไม่ยินยอม','อีเมล/เบอร์ที่ผ่าน OTP แล้วแสดงสถานะยืนยัน ผู้สมัครใหม่ตั้งและยืนยันรหัสผ่านในขั้นข้อมูลส่วนตัว','อ้างอิงช่องฟอร์มจากภาพเว็บที่ผู้ใช้ส่ง 1 พ.ย. 2026; ตัวเลือกยาเป็นรายการตัวอย่าง กรอกเองได้','ไม่ตั้งค่าไม่มีโรคหรือไม่แพ้ยาให้เอง; ผู้ใช้เลือกยังไม่ทราบได้','ที่อยู่ปัจจุบันไม่ถูกนำไปบันทึกเป็นที่อยู่จัดส่งโดยอัตโนมัติ','ความยินยอม1ช่องสำหรับบริการเภสัชกรรม ไม่ติ๊กล่วงหน้า เปิดC107อ่านอย่างเดียว ไม่รวมการตลาด; การบันทึกยังเป็นต้นแบบ','มีบัญชีเดิม/แก้ไขข้อมูลใช้เส้นทางเดิม คงข้อมูลและความยินยอม'],
+  notes:['สมัครใหม่: ข้อมูลส่วนตัว → ที่อยู่ปัจจุบัน → สุขภาพ → ตรวจทานและยินยอม → C108 สมัครสำเร็จ ไม่มีหน้าไม่ยินยอม','สมัครสำเร็จแล้วตั้งที่อยู่ปัจจุบันเป็นที่อยู่หลัก หน้าแรก C201 จึงมีที่อยู่จัดส่งทันที ต้นแบบใช้ที่อยู่จำลองแทนค่าที่กรอก','อีเมล/เบอร์ที่ผ่าน OTP แล้วแสดงสถานะยืนยัน ผู้สมัครใหม่ตั้งและยืนยันรหัสผ่านในขั้นข้อมูลส่วนตัว','อ้างอิงช่องฟอร์มจากภาพเว็บที่ผู้ใช้ส่ง 1 พ.ย. 2026; ตัวเลือกยาเป็นรายการตัวอย่าง กรอกเองได้','ไม่ตั้งค่าไม่มีโรคหรือไม่แพ้ยาให้เอง; ผู้ใช้เลือกยังไม่ทราบได้','ที่อยู่ปัจจุบันไม่ถูกนำไปบันทึกเป็นที่อยู่จัดส่งโดยอัตโนมัติ','ความยินยอม1ช่องสำหรับบริการเภสัชกรรม ไม่ติ๊กล่วงหน้า เปิดC107อ่านอย่างเดียว ไม่รวมการตลาด; การบันทึกยังเป็นต้นแบบ','มีบัญชีเดิม/แก้ไขข้อมูลใช้เส้นทางเดิม คงข้อมูลและความยินยอม'],
   prep(S) {
     const st = S.st.profile;
     if(st?.startsWith('personal-edit')){S._profileEdit=null;if(st==='personal-edit-invalid'){const d=pfEditDraft(S);d.first='';d.errors=pfEditErrors(d);}return;}
@@ -2343,74 +2335,13 @@ TP.screen('profile', {
       save();
       if (m === 'edit') { TP.emit('state'); TP.back(); TP.notify('บันทึกข้อมูลส่วนตัวแล้ว', { icon: 'circle-check' }); return; }
       TP.saveHealthConsent(S,TP.healthConsentVersion(),'profile-checkbox');
-      Object.assign(S, { firstTime: false, newAccount: false, _appNew: true });
+      Object.assign(S, { firstTime: false, newAccount: false });
       TP.emit('state');
       await TP.go('home', { via: 'none', root: true });
       // Stay on home after registration or updated consent.
       TP.notify(m === 'acct' ? 'บันทึกความยินยอมแล้ว' : 'บันทึกข้อมูลและความยินยอมแล้ว', { icon: 'circle-check' });
     });
     if (ctx.state === 'empty' && m === 'new') ctx.later(() => $('#pf-first', el)?.focus({ preventScroll: true }), 650);
-  }
-});
-
-/* =====================================================================
-   Face ID / fingerprint (ใหม่): optional, A3
-   ===================================================================== */
-const FACE = `<svg class="st-face" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
-  <g class="cr"><path d="M5 19v-6a8 8 0 0 1 8-8h6"/><path d="M45 5h6a8 8 0 0 1 8 8v6"/><path d="M59 45v6a8 8 0 0 1-8 8h-6"/><path d="M19 59h-6a8 8 0 0 1-8-8v-6"/></g>
-  <g class="ft"><path d="M22 23v5M42 23v5"/><path d="M32 23v13h-3"/><path d="M23 43c5 4 13 4 18 0"/></g>
-  <path class="ok" d="M20 33l8 8 16-17" pathLength="40"/></svg>`;
-const FP = () => `<svg class="st-face st-fp" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><g class="ft">${TP.PATH.fingerprint}</g><path class="ok" d="M6.5 12.5l3.5 3.5 7.5-7.5" stroke-width="2.2" pathLength="40"/></svg>`;
-TP.screen('faceid', {
-  group: 'start', title: 'Face ID / ลายนิ้วมือ', code: 'C110',
-  states: [['ios', 'iPhone (Face ID)'], ['android', 'Android (ลายนิ้วมือ)']],
-  notes: [
-    'A3: เลือกเปิดได้ ไม่บังคับ · ปุ่ม "ไว้ทีหลัง" เห็นชัดเท่ากัน ไม่ซ่อน',
-    'ใช้ล็อกแอปในเครื่องนี้ กันคนอื่นเปิดดูข้อมูล · ไม่เปิดก็ไม่ต้องใส่ OTP ทุกครั้ง แอปจำการเข้าระบบไว้ ใช้ OTP เฉพาะตอนหลุดจากระบบ (ไม่ได้เปิดแอป 30 วัน) หรือเปลี่ยนเครื่อง',
-    'ข้อมูลใบหน้าและลายนิ้วมืออยู่ในเครื่อง แอปได้แค่ผลว่าผ่านหรือไม่ผ่าน',
-    'ถามหลังสมัครสำเร็จเมื่อกดเริ่มใช้งาน และเปิดภายหลังจากการ์ด "เปิดแอปด้วย Face ID" บนหน้าแรก แตะแล้วมาจอนี้ · ตอบแล้วไม่ถามซ้ำ · ปิด/เปิดภายหลังได้ที่หน้าบัญชี',
-    'ยืนยันบัญชีเว็บย้ายไปอยู่จอข้อมูลของคุณ (สถานะ "มีบัญชีเว็บ") ไม่อยู่บนจอนี้แล้ว'
-  ],
-  wait: ['ใช้ Face ID ยืนยันก่อนชำระเงินด้วยไหม'],
-  prep(S) { S.faceId = false; },
-  render(ctx) {
-    const S = ctx.S, and = ctx.state === 'android', what = and ? 'ลายนิ้วมือ' : 'ใบหน้า', name = and ? 'ลายนิ้วมือ' : ' Face ID';
-    return ui.page(`<div class="st-fid">
-        <div class="st-fid-art" data-in="0">${brand.halo(196, { draw: true })}<span class="st-fid-g">${and ? FP() : FACE}</span></div>
-        <h2 class="st-h1 c" data-in="1">เปิดแอปด้วย${name}</h2>
-        <p class="st-sub c" data-in="2">คนอื่นที่ใช้เครื่องนี้เปิดดูประวัติการปรึกษาของคุณไม่ได้</p>
-        <p class="st-fid-no" data-in="2">${ic('info', 15, 2)}<span>ไม่เปิดก็ได้ แอปจำการเข้าระบบไว้ ใช้รหัสทาง SMS เฉพาะตอนหลุดจากระบบ (ไม่ได้เปิดแอป 30 วัน)</span></p>
-      </div>
-      ${ui.group([
-        ui.row({ icon: 'lock', title: `ข้อมูล${what}อยู่ในเครื่องของคุณ`, sub: 'แอปได้รับแค่ผลว่าผ่านหรือไม่ผ่าน ไม่ได้เก็บไว้' }),
-        ui.row({ icon: 'smartphone', title: 'ใช้ได้เฉพาะเครื่องนี้', sub: 'เข้าจากเครื่องใหม่ยังต้องใช้รหัส OTP' }),
-        ui.row({ icon: 'sliders', title: 'ปิดได้ทุกเมื่อ', sub: 'ที่หน้าบัญชี' })
-      ], { din: 3 })}`, { nonav: true }) +
-      ui.dock(ui.btn(`เปิดใช้${name}`, { id: 'fidGo', icon: and ? 'fingerprint' : 'scan-face' }) + ui.btn('ไว้ทีหลัง', { kind: 'ghost', id: 'fidLater' }));
-  },
-  mount(el, ctx) {
-    const and = ctx.state === 'android', go = $('#fidGo', el), later = $('#fidLater', el);
-    later.addEventListener('click', () => { if (go.classList.contains('busy')) return; afterBio(); TP.notify('เปิดได้ภายหลังที่หน้าบัญชี', { icon: 'info' }); });
-    go.addEventListener('click', async () => {
-      if (go.classList.contains('busy')) return;
-      go.classList.add('busy'); go.setAttribute('aria-busy', 'true'); later.disabled = true;
-      const hud = document.createElement('div');
-      hud.className = 'st-hud'; hud.setAttribute('role', 'status');
-      hud.innerHTML = `<div class="st-hud-b"><span class="st-hud-g">${and ? FP() : FACE}<i class="st-scan" aria-hidden="true"></i></span><b>${and ? 'แตะเซ็นเซอร์ลายนิ้วมือ' : 'Face ID'}</b></div>`;
-      el.appendChild(hud);
-      A(hud, [{ opacity: 0 }, { opacity: 1 }], { d: 220, e: E.apple });
-      A(hud.firstElementChild, [{ opacity: 0, transform: 'scale(.86)' }, { opacity: 1, transform: 'none' }], { d: SP.spring.d, e: SP.spring.e });
-      hud.classList.add('scan');
-      await sleep(ctx, 1400);
-      hud.classList.remove('scan'); hud.classList.add('done');
-      $('b', hud).textContent = and ? 'ยืนยันแล้ว' : 'Face ID';
-      TP.live('ยืนยันตัวตนแล้ว');
-      await sleep(ctx, 750);
-      await TP.fin(A(hud, [{ opacity: 1 }, { opacity: 0 }], { d: 240, e: E.apple, fill: 'forwards' }));
-      TP.S.faceId = true; TP.emit('state');
-      afterBio();
-      TP.notify(and ? 'เปิดใช้ลายนิ้วมือแล้ว' : 'เปิดใช้ Face ID แล้ว', { icon: and ? 'fingerprint' : 'scan-face' });
-    });
   }
 });
 
@@ -2593,23 +2524,23 @@ TP.act('splashSkip', () => {
    ===================================================================== */
 /* C210 / C514 / C515: address-based pharmacy discovery. */
 TP.homeAddress = () => (TP.S.addrs || []).find(a => a.id === TP.S.deliveryAddressId) || (TP.S.addrs || []).find(a => a.main) || (TP.S.addrs || [])[0] || null;
-TP.addressName = a => a ? String(a.label || '').trim() || (a.main ? 'ที่อยู่หลัก' : 'ที่อยู่จัดส่ง') : 'เพิ่มที่อยู่จัดส่ง';
 TP.homeDistance = b => { const a = TP.homeAddress(); return a ? TP.zoneOf(a, b.id)?.km ?? null : null; };
 TP.homeStores = () => TP.homeAddress() ? TP.BRANCHES.filter(b => TP.homeDistance(b) != null && TP.homeDistance(b) <= TP.ZONE_KM).sort((a,b) => TP.homeDistance(a) - TP.homeDistance(b)) : [];
 const homeBranchClosed = (S, b) => S.sysOff || S.storeOpen === false || (S.branchState[b.id] || (b.demo ? 'open' : 'closed')) === 'closed';
 const homeBranchOutside = b => !!TP.homeAddress() && (TP.homeDistance(b) ?? Infinity) > TP.ZONE_KM;
-const homeBranchStatus = (S, b) => homeBranchOutside(b) ? ['นอกพื้นที่ให้บริการ', 'muted']
+const homeBranchStatus = (S, b) => homeBranchOutside(b) ? [TP.homeDistance(b) == null ? 'ตรวจสอบพื้นที่ไม่ได้' : 'นอกพื้นที่ให้บริการ', 'muted']
   : homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted']
   : S.branchState[b.id] === 'pause' ? ['ปิดรับชั่วคราว', 'warn'] : ['เปิดรับบริการ', 'ok'];
-/* Selection uses the selected delivery address; unknown queue counts are never treated as zero. */
+/* Selection uses the selected delivery address. A busy branch never blocks: the customer joins the shortest known queue among open branches, nearest first. */
 TP.quickConsultBranch = () => {
   if (!TP.homeAddress()) return {reason:'address'};
   const stores=TP.homeStores();
   if (!stores.length) return {reason:'area'};
   if (TP.S.sysOff || TP.S.storeOpen===false) return {reason:'unavailable'};
-  if (stores.every(b => homeBranchClosed(TP.S,b))) return {reason:'unavailable'};
-  const branch=stores.find(b=>(TP.S.branchState[b.id]||(b.demo?'open':'closed'))==='open' && Number.isFinite(TP.S.queueLen?.[b.id]) && TP.S.queueLen[b.id]===0);
-  return branch?{branch}:{reason:stores.some(b=>!Number.isFinite(TP.S.queueLen?.[b.id]))?'unknown':'busy'};
+  const open=stores.filter(b=>!homeBranchClosed(TP.S,b)&&(TP.S.branchState[b.id]||(b.demo?'open':'closed'))==='open');
+  if (!open.length) return {reason:'unavailable'};
+  const queue=b=>Number.isFinite(TP.S.queueLen?.[b.id])?TP.S.queueLen[b.id]:Infinity;
+  return {branch:open.reduce((best,b)=>queue(b)<queue(best)?b:best)};
 };
 TP.act('quickConsult',()=>{
   const S=TP.S;
@@ -2619,7 +2550,7 @@ TP.act('quickConsult',()=>{
   if (!result.branch){
     if(result.reason==='address'){TP.notify('เลือกที่อยู่จัดส่งเพื่อหาร้านยาใกล้คุณ',{icon:'map-pin'});return TP.sheet('homeaddress');}
     if(result.reason==='unavailable') return TP.sheet('storeinfo', { branch: TP.homeStores()[0].id });
-    TP.notify(result.reason==='area'?'ยังไม่พบร้านในพื้นที่ที่เลือก':result.reason==='unknown'?'ยังตรวจสอบจำนวนคิวไม่ได้ เลือกดูข้อมูลสาขาได้':'ขณะนี้ไม่มีร้านที่ว่าง เลือกดูสาขาอื่นได้',{icon:'info'});
+    TP.notify('ยังไม่พบร้านในพื้นที่ที่เลือก',{icon:'info'});
     return TP.go('home',{root:true});
   }
   S.branch=result.branch.id;S.branchPicked=true;S.autoReason='';
@@ -2654,38 +2585,38 @@ TP.homeScenario = (S, st) => {
   } else if (TP._addressScenarioBase) { Object.assign(S, TP._addressScenarioBase); TP._addressScenarioBase = null; S.branchPicked = false; }
 };
 const homeAddressCards = (S, picker) => (S.addrs || []).map(a => `<article class="hm-address-card${a.id === TP.homeAddress()?.id ? ' selected' : ''}">
-  <div class="hm-address-card-head"><b>${esc(TP.addressName(a))}</b>${a.main ? '<span class="tag">ที่อยู่หลัก</span>' : ''}</div>
-  <p>${esc(a.first)} ${esc(a.last)} · ${esc(a.phone)}</p><p>${esc(TP.fmtAddr(a))}</p>
+  <div class="hm-address-card-head"><b>${esc(a.first)} ${esc(a.last)}</b>${a.main ? '<span class="tag">ที่อยู่หลัก</span>' : ''}</div>
+  <p>${esc(a.phone)}</p><p>${esc(TP.fmtAddr(a))}</p>
   <div class="hm-address-actions">${picker ? `<button type="button" class="btn sm ${a.id === TP.homeAddress()?.id ? 'secondary' : ''}" data-a="hmSelectAddress" data-v="${esc(a.id)}">${a.id === TP.homeAddress()?.id ? 'เลือกอยู่' : 'ใช้ที่อยู่นี้'}</button>` : `<button type="button" class="btn secondary sm" data-a="hmEditAddress" data-v="${esc(a.id)}">แก้ไข</button><button type="button" class="btn sm ${a.main ? 'secondary' : ''}" data-a="hmMainAddress" data-v="${esc(a.id)}" ${a.main ? 'disabled' : ''}>${a.main ? 'ที่อยู่หลัก' : 'ตั้งเป็นที่อยู่หลัก'}</button>`}</div>
 </article>`).join('');
 const addressEmpty = () => `<div class="hm-empty">${ui.emptyArt('map-pin')}<h3>ยังไม่มีที่อยู่จัดส่ง</h3><p>เพิ่มที่อยู่เพื่อค้นหาร้านยาในบริเวณนั้น</p>${ui.btn('เพิ่มที่อยู่', { a: 'hmNewAddress', icon: 'plus' })}</div>`;
 TP.sheetDef('homeaddress', {
   group: 'before', title: 'เลือกที่อยู่จัดส่ง', code: 'C210', host: 'home', tall: true,
-  states: [['normal', 'มีที่อยู่'], ['empty', 'ยังไม่มีที่อยู่'], ['named', 'ที่อยู่ตั้งชื่อเอง']],
-  prep(S) { if (S.st.homeaddress === 'empty') { S.addrs = []; S.deliveryAddressId = null; } else if (S.st.homeaddress === 'named') { S.addrs = TP.fresh().addrs; S.addrs[0].label = 'บ้านแม่'; S.deliveryAddressId = null; } },
+  states: [['normal', 'มีที่อยู่'], ['empty', 'ยังไม่มีที่อยู่'], ['named', 'ที่อยู่ตั้งชื่อเอง', false]],
+  prep(S) { if (S.st.homeaddress === 'empty') { S.addrs = []; S.deliveryAddressId = null; } },
   render(ctx) { return `<p class="small">เลือกรายการเพื่อดูร้านยาใกล้ฉันนี้ การเลือกไม่เปลี่ยนที่อยู่หลัก</p><div class="hm-address-list">${ctx.S.addrs?.length ? homeAddressCards(ctx.S, true) : addressEmpty()}</div>`; },
   foot: () => ui.btn('จัดการสมุดที่อยู่', { a: 'hmAddressBook', kind: 'secondary', icon: 'map-pin' })
 });
 TP.screen('addressbook', {
   group: 'account', title: 'สมุดที่อยู่', code: 'C514', parent: 'account',
-  states: [['normal', 'มีที่อยู่หลัก'], ['empty', 'ยังไม่มีที่อยู่'], ['alternate', 'เปลี่ยนที่อยู่หลัก'], ['named', 'ชื่อที่อยู่ บ้านแม่']],
-  prep(S) { if (S.st.addressbook === 'named') { S.addrs = TP.fresh().addrs; S.addrs[0].label = 'บ้านแม่'; } else if (S.st.addressbook === 'empty') S.addrs = []; else if (S.st.addressbook === 'alternate') { S.addrs = TP.fresh().addrs; S.addrs.forEach(a => a.main = a.id === 'a2'); S.deliveryAddressId = null; } },
+  states: [['normal', 'มีที่อยู่หลัก'], ['empty', 'ยังไม่มีที่อยู่'], ['alternate', 'เปลี่ยนที่อยู่หลัก'], ['named', 'ชื่อที่อยู่ บ้านแม่', false]],
+  prep(S) { if (S.st.addressbook === 'empty') S.addrs = []; else if (S.st.addressbook === 'alternate') { S.addrs = TP.fresh().addrs; S.addrs.forEach(a => a.main = a.id === 'a2'); S.deliveryAddressId = null; } },
   render(ctx) { return ui.nav({ back: true, title: 'สมุดที่อยู่' }) + ui.page(`<div class="hm-address-list">${ctx.S.addrs?.length ? homeAddressCards(ctx.S, false) : addressEmpty()}</div>${ctx.S.addrs?.length ? `<div class="mt16">${ui.btn('เพิ่มที่อยู่ใหม่', { a: 'hmNewAddress', icon: 'plus' })}</div>` : ''}`); }
 });
-const addressFields = [['label','ชื่อที่อยู่ (เช่น บ้าน ที่ทำงาน บ้านแม่)','text'],['first','ชื่อ','text'],['last','นามสกุล','text'],['phone','เบอร์โทรศัพท์มือถือ','tel'],['house','บ้านเลขที่','text'],['building','หมู่บ้าน / อาคาร / ห้อง / ชั้น','text',true],['alley','ซอย','text',true],['road','ถนน','text',true],['prov','จังหวัด','text'],['amp','อำเภอ / เขต','text'],['dist','ตำบล / แขวง','text'],['zip','รหัสไปรษณีย์','text']];
+const addressFields = [['first','ชื่อ','text'],['last','นามสกุล','text'],['phone','เบอร์โทรศัพท์มือถือ','tel'],['house','บ้านเลขที่','text'],['building','หมู่บ้าน / อาคาร / ห้อง / ชั้น','text',true],['alley','ซอย','text',true],['road','ถนน','text',true],['prov','จังหวัด','text'],['amp','อำเภอ / เขต','text'],['dist','ตำบล / แขวง','text'],['zip','รหัสไปรษณีย์','text']];
 TP.screen('addressedit', {
   group: 'account', title: 'เพิ่ม / แก้ไขที่อยู่', code: 'C515', parent: 'addressbook',
-  states: [['normal', 'เพิ่มที่อยู่'], ['edit', 'แก้ไขที่อยู่'], ['invalid', 'ข้อมูลไม่ครบ'], ['named', 'แก้ไขชื่อที่อยู่'],['map-ready', '', false],['map-outside', '', false],['map-error', '', false],['form-required','ไม่กรอกข้อมูลบังคับ'],['form-phone','เบอร์มือถือผิดรูปแบบ'],['form-name','ชื่อมีตัวเลข'],['form-area','พื้นที่ยังเลือกไม่ครบ'],['map-saved', '', false],['form-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน'],['form-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ'],['form-details','รายละเอียดอาคารยาวเกินกำหนด'],['form-address-label','ยังไม่กรอกชื่อที่อยู่']],
-  prep(S) { if(S.st.addressedit?.startsWith('form-')){S.addrs=TP.fresh().addrs;const a=S.addrs[0];S._homeEditAddress=a.id;if(S.st.addressedit==='form-required')for(const k of ['first','last','phone','house','prov','amp','dist','zip'])a[k]='';if(S.st.addressedit==='form-address-label')a.label='';if(S.st.addressedit==='form-phone')a.phone='0212345678';if(S.st.addressedit==='form-name')a.first='123';if(S.st.addressedit==='form-area'){a.amp='';a.dist='';a.zip='';}if(['form-split','form-legacy','form-details'].includes(S.st.addressedit))Object.assign(a,{house:'88/12',building:'หมู่บ้านมิตรอารี อาคารบี ห้อง 1201 ชั้น 12',alley:'ทวีวัฒนา 25',road:'เลียบคลองทวีวัฒนา'});if(S.st.addressedit==='form-legacy')Object.assign(a,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});if(S.st.addressedit==='form-details')a.building='ก'.repeat(201);a.pin=false;a.location=null;} if(S.st.addressedit?.startsWith('map-')){S.addrs=TP.fresh().addrs;S._homeEditAddress=S.addrs[0].id;S.addrs[0].pin=false;S.addrs[0].location=null;if(S.st.addressedit==='map-saved'){const a=S.addrs[0];TP.previewSavedAddressPin(a);}} if (S.st.addressedit === 'named') { S.addrs = TP.fresh().addrs; S.addrs[0].label = 'บ้านแม่'; S._homeEditAddress = S.addrs[0].id; } if (S.st.addressedit === 'edit') S._homeEditAddress = S.addrs?.[0]?.id; if (S.st.addressedit === 'invalid') { S._homeAddressInvalid = true; S._homeEditAddress = S.addrs?.[0]?.id; if(S.addrs?.[0]){S.addrs[0].label='';S.addrs[0].phone='';} } },
+  states: [['normal', 'เพิ่มที่อยู่'], ['edit', 'แก้ไขที่อยู่'], ['invalid', 'ข้อมูลไม่ครบ'], ['named', 'แก้ไขชื่อที่อยู่', false],['map-ready', '', false],['map-outside', '', false],['map-error', '', false],['form-required','ไม่กรอกข้อมูลบังคับ'],['form-phone','เบอร์มือถือผิดรูปแบบ'],['form-name','ชื่อมีตัวเลข'],['form-area','พื้นที่ยังเลือกไม่ครบ'],['map-saved', '', false],['form-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน'],['form-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ'],['form-details','รายละเอียดอาคารยาวเกินกำหนด'],['form-address-label','ยังไม่กรอกชื่อที่อยู่', false]],
+  prep(S) { if(S.st.addressedit?.startsWith('form-')){S.addrs=TP.fresh().addrs;const a=S.addrs[0];S._homeEditAddress=a.id;if(S.st.addressedit==='form-required')for(const k of ['first','last','phone','house','prov','amp','dist','zip'])a[k]='';if(S.st.addressedit==='form-phone')a.phone='0212345678';if(S.st.addressedit==='form-name')a.first='123';if(S.st.addressedit==='form-area'){a.amp='';a.dist='';a.zip='';}if(['form-split','form-legacy','form-details'].includes(S.st.addressedit))Object.assign(a,{house:'88/12',building:'หมู่บ้านมิตรอารี อาคารบี ห้อง 1201 ชั้น 12',alley:'ทวีวัฒนา 25',road:'เลียบคลองทวีวัฒนา'});if(S.st.addressedit==='form-legacy')Object.assign(a,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});if(S.st.addressedit==='form-details')a.building='ก'.repeat(201);a.pin=false;a.location=null;} if(S.st.addressedit?.startsWith('map-')){S.addrs=TP.fresh().addrs;S._homeEditAddress=S.addrs[0].id;S.addrs[0].pin=false;S.addrs[0].location=null;if(S.st.addressedit==='map-saved'){const a=S.addrs[0];TP.previewSavedAddressPin(a);}} if (S.st.addressedit === 'edit') S._homeEditAddress = S.addrs?.[0]?.id; if (S.st.addressedit === 'invalid') { S._homeAddressInvalid = true; S._homeEditAddress = S.addrs?.[0]?.id; if(S.addrs?.[0])S.addrs[0].phone=''; } },
   render(ctx) {
     const stored=(ctx.S.addrs||[]).find(a=>a.id===ctx.S._homeEditAddress)||{};
     const a={...stored};
     const field=([key,label,type,optional])=>{
       const id='home-address-'+key,area=['prov','amp','dist'].includes(key);
       const attrs=`required aria-required="true" aria-describedby="${id}-error" aria-invalid="false"`;
-      return `<div class="field" data-address-field="${key}"><label for="${id}">${label} ${optional?'<span class="opt-t">(ไม่บังคับ)</span>':'<span class="reg-required" aria-hidden="true">*</span>'}</label>${area?`<select class="input" id="${id}" name="${key}" ${attrs} disabled><option value="${esc(a[key]||'')}">${esc(a[key]||'เลือก'+label)}</option></select>`:`<input class="input" id="${id}" name="${key}" type="${type}" value="${esc(a[key]||'')}" ${optional?`aria-describedby="${id}-error" aria-invalid="false"`:attrs} maxlength="${['house','building'].includes(key)?200:['alley','road'].includes(key)?100:key==='phone'?10:key==='zip'?5:key==='label'?40:50}" ${key==='phone'?'inputmode="numeric" autocomplete="tel-national" pattern="0[689][0-9]{8}" placeholder="เช่น 0812345678"':key==='zip'?'inputmode="numeric" pattern="[0-9]{5}" readonly placeholder="ระบบจะเติมให้เมื่อเลือกตำบล"':key==='first'?'autocomplete="given-name" placeholder="ชื่อผู้ติดต่อ"':key==='last'?'autocomplete="family-name" placeholder="นามสกุลผู้ติดต่อ"':key==='house'?'autocomplete="address-line1" placeholder="เช่น 88/12"':key==='building'?'autocomplete="address-line2" placeholder="ชื่อหมู่บ้าน อาคาร ห้อง หรือชั้น"':key==='alley'?'placeholder="เช่น ทวีวัฒนา 25"':key==='road'?'placeholder="เช่น เลียบคลองทวีวัฒนา"':''}>`}<p class="err-t" id="${id}-error" role="alert" hidden></p></div>`;
+      return `<div class="field" data-address-field="${key}"><label for="${id}">${label} ${optional?'<span class="opt-t">(ไม่บังคับ)</span>':'<span class="reg-required" aria-hidden="true">*</span>'}</label>${area?`<select class="input" id="${id}" name="${key}" ${attrs} disabled><option value="${esc(a[key]||'')}">${esc(a[key]||'เลือก'+label)}</option></select>`:`<input class="input" id="${id}" name="${key}" type="${type}" value="${esc(a[key]||'')}" ${optional?`aria-describedby="${id}-error" aria-invalid="false"`:attrs} maxlength="${['house','building'].includes(key)?200:['alley','road'].includes(key)?100:key==='phone'?10:key==='zip'?5:50}" ${key==='phone'?'inputmode="numeric" autocomplete="tel-national" pattern="0[689][0-9]{8}" placeholder="เช่น 0812345678"':key==='zip'?'inputmode="numeric" pattern="[0-9]{5}" readonly placeholder="ระบบจะเติมให้เมื่อเลือกตำบล"':key==='first'?'autocomplete="given-name" placeholder="ชื่อผู้ติดต่อ"':key==='last'?'autocomplete="family-name" placeholder="นามสกุลผู้ติดต่อ"':key==='house'?'autocomplete="address-line1" placeholder="เช่น 88/12"':key==='building'?'autocomplete="address-line2" placeholder="ชื่อหมู่บ้าน อาคาร ห้อง หรือชั้น"':key==='alley'?'placeholder="เช่น ทวีวัฒนา 25"':key==='road'?'placeholder="เช่น เลียบคลองทวีวัฒนา"':''}>`}<p class="err-t" id="${id}-error" role="alert" hidden></p></div>`;
     };
-    return ui.nav({back:true,title:stored.id?'แก้ไขที่อยู่':'เพิ่มที่อยู่'})+ui.page(`<div class="hm-address-form registration-page"><p class="reg-help">กรอกข้อมูลติดต่อและที่อยู่ปัจจุบันในช่องที่มี <span class="reg-required" aria-hidden="true">*</span> ให้ครบ</p>${/ซอย|ถนน|หมู่บ้าน|อาคาร|ชั้น|ห้อง/.test(a.house||'')?'<p class="hint">ข้อมูลเดิมยังอยู่ครบในช่องบ้านเลขที่ กรุณาตรวจและแยกลงช่องที่ตรงกัน</p>':''}${field(addressFields[0])}<div class="reg-name-fields">${addressFields.slice(1,3).map(field).join('')}</div>${addressFields.slice(3).map(field).join('')}<p class="hint" id="homeAddressLoadStatus" role="status">เลือกจังหวัด ตามด้วยอำเภอและตำบล ระบบจะเติมรหัสไปรษณีย์ให้</p><label class="hm-primary-check reg-consent-single"><input type="checkbox" id="home-address-main" ${a.main||!ctx.S.addrs?.length?'checked':''}><span>ตั้งเป็นที่อยู่หลัก</span></label><p id="home-address-error" class="danger-t" role="alert">${ctx.state==='invalid'||ctx.S._homeAddressInvalid?'กรุณากรอกข้อมูลให้ครบและตรวจสอบเบอร์โทรกับรหัสไปรษณีย์':''}</p>${ui.btn('บันทึกที่อยู่',{a:'hmSaveAddress'})}</div>`);
+    return ui.nav({back:true,title:stored.id?'แก้ไขที่อยู่':'เพิ่มที่อยู่'})+ui.page(`<div class="hm-address-form registration-page"><p class="reg-help">กรอกข้อมูลติดต่อและที่อยู่ปัจจุบันในช่องที่มี <span class="reg-required" aria-hidden="true">*</span> ให้ครบ</p>${/ซอย|ถนน|หมู่บ้าน|อาคาร|ชั้น|ห้อง/.test(a.house||'')?'<p class="hint">ข้อมูลเดิมยังอยู่ครบในช่องบ้านเลขที่ กรุณาตรวจและแยกลงช่องที่ตรงกัน</p>':''}<div class="reg-name-fields">${addressFields.slice(0,2).map(field).join('')}</div>${addressFields.slice(2).map(field).join('')}<p class="hint" id="homeAddressLoadStatus" role="status">เลือกจังหวัด ตามด้วยอำเภอและตำบล ระบบจะเติมรหัสไปรษณีย์ให้</p><label class="hm-primary-check reg-consent-single"><input type="checkbox" id="home-address-main" ${a.main||!ctx.S.addrs?.length?'checked':''}><span>ตั้งเป็นที่อยู่หลัก</span></label><p id="home-address-error" class="danger-t" role="alert">${ctx.state==='invalid'||ctx.S._homeAddressInvalid?'กรุณากรอกข้อมูลให้ครบและตรวจสอบเบอร์โทรกับรหัสไปรษณีย์':''}</p>${ui.btn('บันทึกที่อยู่',{a:'hmSaveAddress'})}</div>`);
   }
 
 });
@@ -2724,7 +2655,7 @@ function storeListHtml(S, stores) {
   return `<div class="hm-store-list">${stores.map(b => `<article class="hm-branch-tile">
       <button type="button" class="hm-branch-open" data-sheet="storeinfo" data-p='${esc(JSON.stringify({ branch: b.id }))}' aria-label="ดูข้อมูล${esc(b.name)}">
         <img src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="96" height="96" loading="lazy">
-        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span>${homeBranchOutside(b)&&TP.homeDistance(b)==null?'<span class="small hm-branch-range">ยังตรวจสอบระยะทางไม่ได้</span>':''}<span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ยังไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
+        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span><span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
         ${ic('chevron-right',16,2)}
       </button>
     </article>`).join('')}</div>`;
@@ -2735,7 +2666,7 @@ function nearbyStoresHtml(S) {
   const unknown = !!address && TP.BRANCHES.length > 0 && !TP.BRANCHES.some(b => TP.homeDistance(b) != null);
   if (!address) return `<section class="hm-nearby"><div class="hm-section-head"><h2>ร้านยาใกล้ฉัน</h2></div><div class="hm-empty">${ui.emptyArt(!address?'map-pin':'store')}<h3>${!address ? 'เลือกที่อยู่จัดส่งก่อน' : 'ยังไม่มีร้านยาในบริเวณนี้'}</h3><p>${!address ? 'เพิ่มหรือเลือกที่อยู่เพื่อค้นหาร้านยาใกล้คุณ' : 'เลือกที่อยู่อื่น หรือแก้ไขข้อมูลในสมุดที่อยู่'}</p>${ui.btn(address ? 'เปลี่ยนที่อยู่' : 'เลือกที่อยู่จัดส่ง', { sheet: 'homeaddress', a: 'hmOpenAddress' })}</div></section>`;
   return `<section class="hm-nearby" aria-labelledby="hmNearbyTitle" data-in="1">
-    <div class="hm-section-head"><h2 id="hmNearbyTitle">${unknown ? 'ร้านยาทุกสาขา' : 'ร้านยาใกล้ฉัน'}</h2></div>
+    <div class="hm-section-head"><h2 id="hmNearbyTitle">ร้านยาใกล้ฉัน</h2></div>
     ${storeListHtml(S, unknown ? TP.BRANCHES : [...stores,...TP.BRANCHES.filter(x=>TP.homeDistance(x)>TP.ZONE_KM).sort((a,b)=>TP.homeDistance(a)-TP.homeDistance(b))])}
     ${S.autoReason ? `<p class="hm-store-notice">${ic('info', 16, 2)}<span>${esc(S.autoReason)}</span></p>` : ''}
 
@@ -2745,7 +2676,7 @@ TP.sheetDef('allbranches', {
   group: 'before', title: 'สาขาทั้งหมด', code: 'C213', hidden: true, host: 'home', tall: true,
   states: [['normal', 'หลายสาขา'], ['noaddress', 'ยังไม่มีที่อยู่'], ['closed', 'ร้านปิด']],
   prep(S) { TP.homeScenario(S, S.st.allbranches === 'noaddress' ? 'noaddress' : 'normal'); if (S.st.allbranches === 'closed') S.storeOpen = false; },
-  render(ctx) { const S = ctx.S, address = TP.homeAddress(); return `<p class="small">${address ? 'ระยะทางอ้างอิงจาก ' + esc(TP.addressName(address)) : 'ดูข้อมูลได้ทุกสาขา เลือกที่อยู่บนหน้าแรกเพื่อดูสาขาที่จัดส่งได้'}</p><div class="hm-address-list">${[...TP.BRANCHES].sort((a,b) => (TP.homeDistance(a) ?? Infinity) - (TP.homeDistance(b) ?? Infinity)).map(b => {
+  render(ctx) { const S = ctx.S, address = TP.homeAddress(); return `<p class="small">${address ? 'ระยะทางอ้างอิงจาก ' + esc(TP.fmtAddr(address)) : 'ดูข้อมูลได้ทุกสาขา เลือกที่อยู่บนหน้าแรกเพื่อดูสาขาที่จัดส่งได้'}</p><div class="hm-address-list">${[...TP.BRANCHES].sort((a,b) => (TP.homeDistance(a) ?? Infinity) - (TP.homeDistance(b) ?? Infinity)).map(b => {
     const km = TP.homeDistance(b), closed = homeBranchClosed(S,b), eligible = !closed && km != null && km <= TP.ZONE_KM;
     const [status] = homeBranchStatus(S,b);
     return `<article class="hm-address-card"><div class="all-branch-head"><h3>${esc(b.name)}</h3>${b.id === S.branch ? '<span class="tag">สาขาที่เลือก</span>' : ''}</div><p>${status}${km == null ? '' : ' · ' + km + ' กม.'}</p><p>${esc(b.area)} · ${esc(b.hours)} น.</p>${address && !eligible && !closed ? `<p class="all-branch-note">${km == null ? 'ยังตรวจสอบระยะทางจากที่อยู่นี้ไม่ได้' : 'อยู่นอกพื้นที่จัดส่งของที่อยู่ที่เลือก'}</p>` : ''}<div class="hm-address-actions">${ui.btn('ข้อมูลร้าน', { kind: 'secondary', sm: true, sheet: 'storeinfo', p: { branch: b.id } })}<button type="button" class="btn sm" data-a="hmSelectAllBranch" data-v="${b.id}" ${eligible ? '' : 'disabled'}>${!address ? 'เลือกที่อยู่ก่อน' : b.id === S.branch ? 'เลือกอยู่' : 'ใช้สาขานี้'}</button></div></article>`;
@@ -2779,7 +2710,7 @@ TP.sheetDef('storeinfo', {
         <img class="bc-detail-photo" src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="1536" height="1024">
         <div class="bc-identity-head"><div class="bc-identity"><h3>${esc(b.name)}</h3><p>${esc(b.area)}</p></div></div>
         <div class="bc-availability">${ui.tag(status,tone,{dot:true})}<span>${outside ? (km == null ? 'ยังตรวจสอบระยะจากที่อยู่ที่เลือกไม่ได้' : 'สาขานี้อยู่ห่างเกิน 15 กม. จึงเริ่มปรึกษาไม่ได้') : closed ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้' : paused ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้ โปรดเลือกสาขาที่เปิดรับบริการ' : ''}</span></div>
-        <dl class="bc-facts"><div><dt>${ic('clock',16,2)}เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>${ic('map-pin',16,2)}ระยะจากที่อยู่จัดส่ง</dt><dd>${km == null ? 'ยังระบุระยะไม่ได้' : esc(km)+' กม.'}</dd></div></dl>
+        <dl class="bc-facts"><div><dt>${ic('clock',16,2)}เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>${ic('map-pin',16,2)}ระยะจากที่อยู่จัดส่ง</dt><dd>${km == null ? 'ไม่ทราบระยะทาง' : esc(km)+' กม.'}</dd></div></dl>
       </section>
       <section class="bc-section" aria-labelledby="bcLocationTitle"><h4 id="bcLocationTitle">ที่ตั้งและติดต่อร้าน</h4><p class="bc-address">${esc(b.addr)}</p>${b.demo ? '<p class="bc-muted">ข้อมูลจำลองสำหรับแสดงหน้าจอ</p>' : `<div class="hm-store-links"><a href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">${ic('map-pin',18,2)} ดูแผนที่</a><a href="tel:${esc(b.phone)}">${ic('phone',18,2)} โทรหาร้าน</a></div>`}</section>
       <section class="bc-section" aria-labelledby="bcPharmacistTitle"><h4 id="bcPharmacistTitle">เภสัชกรผู้ดูแล</h4><div class="bc-pharmacist-card">${ui.av('',{ini:ph.ini})}<div><b>${esc(ph.short)}</b><span>${closed ? 'ข้อมูลเภสัชกรประจำสาขา' : paused ? 'พักรับปรึกษาชั่วคราว' : 'ให้คำปรึกษาประจำสาขานี้'}</span><small>ใบประกอบวิชาชีพ ${esc(ph.lic)}</small></div></div></section>
@@ -2845,7 +2776,7 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง'],['quick-unknown','ยังไม่ทราบจำนวนคิว'],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room','การปรึกษา ยังไม่จบ'],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],["case-queue2", "จำลอง รออีก 2 คิว"],["case-queue1", "จำลอง รออีก 1 คิว"],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],["case-payment-soon","เหลือชำระ 1 นาที"],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],["case-video-request","เภสัชกรขอวิดีโอคอล"],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false],['branch-statuses','สาขาครบทุกสถานะ']],
+  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง', false], ['busy', 'สาขาใกล้สุดพัก', false], ['closed', 'ร้านปิด', false], ['address-alt', 'เลือกที่อยู่คลองเตย', false], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง', false],['quick-unknown','ยังไม่ทราบจำนวนคิว', false],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room', 'การปรึกษา ยังไม่จบ', false],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],['case-queue2', "จำลอง รออีก 2 คิว", false],['case-queue1', "จำลอง รออีก 1 คิว", false],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],['case-payment-soon', "เหลือชำระ 1 นาที", false],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],['case-video-request', "เภสัชกรขอวิดีโอคอล", false],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false],['branch-statuses', 'สาขาครบทุกสถานะ', false]],
   notes: ['สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; TP.homeScenario(S, st || 'normal'); if (!st) return;
@@ -2855,8 +2786,6 @@ TP.screen('home', {
     S.branchState = { ...TP.fresh().branchState, tw: st === 'busy' ? 'pause' : 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' };
     S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); S.branchPicked = false;
     S.queueLen={...TP.fresh().queueLen};S.sysOff=TP.flag('sysOff');
-    if(st==='quick-busy')for(const b of TP.BRANCHES)S.queueLen[b.id]=1;
-    if(st==='quick-unknown')S.queueLen={};
     if(st==='quick-address')TP.homeScenario(S,'noaddress');
     TP.emit('state');
   },
@@ -2878,16 +2807,14 @@ TP.screen('home', {
       ['addressbook', 'addressbook', 'สมุดที่อยู่']
     ];
     const updates = [TP.orderReadyRow?.(S, { din: 2 }) || '',
-      S._fidOffer && !S.faceId && !TP.caseOpen() ? fidCard() : '',
       S.ofPending ? ui.group([ui.row({ icon: 'message-square-text', title: 'คำถามที่ฝากไว้', sub: `${S.ofPending.whoName} · ฝากไว้ ${S.ofPending.at} · เภสัชกรจะตอบ${TP.OF_REPLY}`, chev: false })]) : ''
     ].filter(Boolean).join('');
     const address=TP.homeAddress();
-    const delivery=`<button type="button" class="hm-delivery-bar" data-sheet="homeaddress" aria-haspopup="dialog" aria-label="เลือกที่อยู่จัดส่ง: ${esc(TP.addressName(address))}">${ic('map-pin',20,1.8)}<span>ที่อยู่จัดส่ง</span><b>${esc(TP.addressName(address))}</b>${ic('chevron-down',18,2)}</button>`;
+    const delivery=address?`<button type="button" class="hm-delivery-bar" data-sheet="homeaddress" aria-haspopup="dialog" aria-label="เลือกที่อยู่จัดส่ง: ${esc(TP.fmtAddr(address))}">${ic('map-pin',20,1.8)}<span>ที่อยู่จัดส่ง</span><b>${esc(TP.fmtAddr(address))}</b>${ic('chevron-down',18,2)}</button>`:'';
     const shortcuts = `<nav class="hm-mini-menu" aria-label="ดูแลสุขภาพของคุณ">${quick.map(([go, icon, label]) => `<button type="button" class="hm-mini-item" data-go="${go}"><span class="hm-mini-icon hm-mini-art hm-mini-art-${icon}"><img src="/assets/menu-icons/${icon}-rounded-v3.svg" alt="" width="48" height="48" decoding="async"></span><span>${esc(label)}</span></button>`).join('')}</nav>`;
     return ui.page(`<div class="hm-content">${head}
       ${delivery}
       ${shortcuts}
-      ${['quick-busy','quick-unknown'].includes(st)?ui.note(st==='quick-busy'?'ขณะนี้ไม่มีร้านที่คิวว่าง เลือกสาขาเพื่อรอปรึกษาได้':'ยังตรวจสอบจำนวนคิวไม่ได้ เลือกดูข้อมูลสาขาก่อนได้',{icon:'info'}):''}
       ${TP.paymentReminderCard?.(S._homeEventPreview?{...S,history:[]}:S)||''}${TP.fulfillmentCard?.(S._homeEventPreview?{...S,history:[]}:S)||''}
       ${(st === 'active' || TP.caseOpen()) ? heroHtml(S,st)+homeConsultBanner(S)+nearbyStoresHtml(S) : homeConsultBanner(S)+heroHtml(S,st)}
       ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}
@@ -2898,9 +2825,6 @@ TP.screen('home', {
 TP.act('tabHistory', () => TP.tab('history'));
 /* consult switched off from the back office (C17): the start button leads to sysoff, the rest of the app still works */
 /* asked once, after the first consult (owner 19/10/2026) */
-const fidCard = () => `<article class="card hm-fid" data-in="2"><div class="hm-fid-h"><span class="hm-fid-i">${ic('scan-face', 22, 1.9)}</span><div class="grow"><b>เปิดแอปด้วย Face ID หรือลายนิ้วมือ</b><span>คนอื่นที่ใช้เครื่องนี้เปิดดูประวัติการปรึกษาของคุณไม่ได้</span></div></div>
-  <div class="btn-row mt12">${ui.btn('ไม่ใช่ตอนนี้', { kind: 'secondary', sm: true, a: 'hmFidNo' })}${ui.btn('เปิดใช้', { sm: true, go: 'faceid', via: 'push' })}</div></article>`;
-TP.act('hmFidNo', () => { Object.assign(TP.S, { _fidOffer: false, _fidAsked: true }); TP.refresh({ anim: false }); TP.notify('เปิดได้ภายหลังที่หน้าบัญชี', { icon: 'info' }); });
 TP.act('hmStart', t => {
   const S = TP.S;
   if (S.case && !TP.caseOpen()) Object.assign(S.intake, { who: 'me', symptoms: [], custom: [], otherOpen: false, urgent: [], note: '', photos: 0, attachments: [] });
@@ -4017,7 +3941,6 @@ TP.sim.closeCase = (by = 'ph', at) => {
   if (by === 'ph' && TP.chatConsult(c) && TP.cur()?.id === 'room' && c.order?.items?.length && TP.orderPayable(c.order)) c.checkoutHandoffUntil = Date.now() + 30000;
   c.msgs.filter(m=>m.kind==='video-request'&&['pending','accepted'].includes(m.status)).forEach(m=>m.status='ended');
   if(c.order?.status==='pending')TP.orderDeadline(c.order);
-  if (TP.S._appNew && !TP.S.faceId && !TP.S._fidAsked) TP.S._fidOffer = true;
   TP.S._disSeen = true;
   const qk = TP.cur()?.id === 'room' && $('#rmQuick', TP.cur().el); if (qk) qk.innerHTML = '';
   c.msgs.push({ kind: 'summary', time: at || now(), by });
@@ -6495,8 +6418,7 @@ TP.screen('account', {
       ], { din: 2 })}
       ${ui.group([
         ui.row({ icon: 'inbox', title: 'กล่องแจ้งเตือน', sub: unread ? `ยังไม่ได้อ่าน ${unread} รายการ` : 'อ่านครบแล้ว', go: 'inbox', tag: unread ? [`ใหม่ ${unread}`, 'solid'] : undefined }),
-        ui.switchRow({ icon: 'bell', title: 'การแจ้งเตือน', sub: 'ซ่อนข้อมูลสุขภาพและยอดเงิน', on: S.notif, a: 'afNotif' }),
-        ui.switchRow({ icon: 'scan-face', title: 'Face ID หรือลายนิ้วมือ', sub: 'ใช้ปลดล็อกแอปบนเครื่องนี้', on: S.faceId, a: 'afFace' })
+        ui.switchRow({ icon: 'bell', title: 'การแจ้งเตือน', sub: 'ซ่อนข้อมูลสุขภาพและยอดเงิน', on: S.notif, a: 'afNotif' })
       ], { din: 4 })}
       ${ui.group([ui.row({ icon: 'headset', title: 'ติดต่อฝ่ายบริการลูกค้า', sub: 'ทุกวัน 10:00-18:00', go: 'help' })], { din: 5 })}
       <div class="group account-actions" data-in="6">
@@ -6673,11 +6595,6 @@ TP.act('afNotif', t => {
   const on = t.getAttribute('aria-checked') === 'true';
   TP.S.notif = on; TP.S.notifAsked = true;
   TP.notify(on ? 'เปิดการแจ้งเตือนแล้ว' : 'ปิดการแจ้งเตือนแล้ว', { icon: on ? 'bell' : 'bell-off' });
-});
-TP.act('afFace', t => {
-  const on = t.getAttribute('aria-checked') === 'true';
-  TP.S.faceId = on;
-  TP.notify(on ? 'เปิดปลดล็อกด้วย Face ID แล้ว' : 'ปิด Face ID แล้ว', { icon: 'scan-face' });
 });
 TP.sheetDef('logout', {
   group: 'account', title: 'ออกจากระบบ', code: 'C510', host: 'account',
@@ -7106,7 +7023,7 @@ TP.act('afDelGo',async t=>{
  const attempt={};S._delAttempt=attempt;S._delBusy=true;if(t){t.disabled=true;t.classList.add('busy');}
  try{
   await TP.accountService.remove();if(S._delAttempt!==attempt)return;
-  Object.assign(S,{loggedIn:false,consent:false,history:[],family:[],inbox:[],case:null,faceId:false,notif:false,_delTxt:'',_dr:null,_adr:null,_adrSent:null,_adrDrafts:{},adrReports:[],_clog:[],addrs:[],follow:null,_gone:true});
+  Object.assign(S,{loggedIn:false,consent:false,history:[],family:[],inbox:[],case:null,notif:false,_delTxt:'',_dr:null,_adr:null,_adrSent:null,_adrDrafts:{},adrReports:[],_clog:[],addrs:[],follow:null,_gone:true});
   TP.freshAccount?.(S);S.user={name:'',last:'',full:'',phone:'',email:'',allergies:[],allergyState:'unknown',meds:[],conditions:[],food:'',weight:'',height:''};S._authFlows={};
   TP.emit('state');await TP.closeSheet({instant:true});return TP.go('deleted',{via:'fade',root:true});
  }catch{S._delError='ยังลบบัญชีไม่สำเร็จ ข้อมูลยังอยู่ กรุณาลองอีกครั้ง';const el=TP.sheetOpen()?.el,error=$('#afDelError',el);if(error){error.hidden=false;error.textContent=S._delError;}TP.live(S._delError);}
@@ -8441,6 +8358,7 @@ TP.icons(document.getElementById('app'));
 /* ?motif=curve|glow|type : trial replacements for the "+" pattern (home hero only for now) */
 TP.MOTIF = ['plus', 'curve', 'glow', 'type'].includes(Q.get('motif')) ? Q.get('motif') : 'glow';   /* v1.2 default = glow (owner 19/10/2026) */
 document.documentElement.dataset.motif = TP.MOTIF;
+if (Q.get('first') === '1') TP.setFlag('firstTime', true);
 if (Q.get('first') === '1') Object.assign(TP.S, { firstTime: true, loggedIn: false, consent: false, notifAsked: false, notif: false, follow: null });
 TP.panel.render();
 if (Q.get('registry') === '1' && parent !== window) {

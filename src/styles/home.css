@@ -264,7 +264,6 @@
   font-weight: 500;
 }
 .hm-updates > .fu-entry,
-.hm-updates > .hm-fid,
 .hm-updates > .group,
 .hm-recent > .group {
   margin: 0;
@@ -321,14 +320,6 @@
   border-radius: var(--radius-control);
   min-height: var(--button-height);
   padding: var(--space-3) var(--space-5);
-}
-.hm-fid {
-  padding: var(--card-padding);
-}
-.hm-fid-i {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-control);
 }
 .hm-status-dot {
   display: inline-block;
@@ -1630,7 +1621,4 @@
 .phone :is(.hm-branch-status, .bc-availability) > .tag.warn {
   background: var(--semantic-warning-background);
   color: var(--semantic-warning-text);
-}
-.phone .hm-branch-range {
-  color: var(--semantic-text-secondary);
 }

@@ -166,15 +166,8 @@
 
 - `EV-C108-normal` — สมัครสำเร็จด้วยเบอร์โทร · [เปิดเคส](/?screen=registrationsuccess&state=normal&splash=0)
 - `EV-C108-email` — สมัครสำเร็จด้วยอีเมล · [เปิดเคส](/?screen=registrationsuccess&state=email&splash=0)
-- `EV-C108-unavailable` — ยังสมัครไม่เสร็จ · [เปิดเคส](/?screen=registrationsuccess&state=unavailable&splash=0)
 - `EV-C108-long-name` — ชื่อจริงยาว · [เปิดเคส](/?screen=registrationsuccess&state=long-name&splash=0)
-- `EV-C108-no-name` — ไม่มีชื่อแสดง · [เปิดเคส](/?screen=registrationsuccess&state=no-name&splash=0)
 - `EV-C108-full-cover` — ปกเต็มจอและปุ่มใต้คำต้อนรับ · [เปิดเคส](/?screen=registrationsuccess&state=full-cover&splash=0)
-
-### C110 · faceid (2 เหตุการณ์)
-
-- `EV-C110-ios` — iPhone (Face ID) · [เปิดเคส](/?screen=faceid&state=ios&splash=0)
-- `EV-C110-android` — Android (ลายนิ้วมือ) · [เปิดเคส](/?screen=faceid&state=android&splash=0)
 
 ### C111 · doc (1 เหตุการณ์)
 
@@ -190,11 +183,6 @@
 
 - `EV-C201-normal` — ปกติ · [เปิดเคส](/?screen=home&state=normal&splash=0)
 - `EV-C201-loading` — กำลังโหลด · [เปิดเคส](/?screen=home&state=loading&splash=0)
-- `EV-C201-active` — มีเคสค้าง · [เปิดเคส](/?screen=home&state=active&splash=0)
-- `EV-C201-busy` — สาขาใกล้สุดพัก · [เปิดเคส](/?screen=home&state=busy&splash=0)
-- `EV-C201-closed` — ร้านปิด · [เปิดเคส](/?screen=home&state=closed&splash=0)
-- `EV-C201-address-alt` — เลือกที่อยู่คลองเตย · [เปิดเคส](/?screen=home&state=address-alt&splash=0)
-- `EV-C201-noaddress` — ไม่มีที่อยู่ · [เปิดเคส](/?screen=home&state=noaddress&splash=0)
 - `EV-C201-outarea` — ไม่พบร้านในพื้นที่ · [เปิดเคส](/?screen=home&state=outarea&splash=0)
 - `EV-C201-unknownarea` — ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา · [เปิดเคส](/?screen=home&state=unknownarea&splash=0)
 - `EV-C201-banner-edge` — แบนเนอร์เต็มขอบ · [เปิดเคส](/?screen=home&state=banner-edge&splash=0)
@@ -226,18 +214,13 @@
 - `EV-C201-glass-tabs` — เมนูล่าง Liquid Glass · [เปิดเคส](/?screen=home&state=glass-tabs&splash=0)
 - `EV-C201-female-pharmacist-banner` — ปกเภสัชกรหญิงหลังเคาน์เตอร์ · [เปิดเคส](/?screen=home&state=female-pharmacist-banner&splash=0)
 - `EV-C201-quick-consult` — ปุ่มกลาง เลือกร้านว่างใกล้สุด · [เปิดเคส](/?screen=home&state=quick-consult&splash=0)
-- `EV-C201-quick-busy` — ไม่มีร้านคิวว่าง · [เปิดเคส](/?screen=home&state=quick-busy&splash=0)
-- `EV-C201-quick-unknown` — ยังไม่ทราบจำนวนคิว · [เปิดเคส](/?screen=home&state=quick-unknown&splash=0)
 - `EV-C201-quick-address` — ปรึกษาโดยยังไม่มีที่อยู่ · [เปิดเคส](/?screen=home&state=quick-address&splash=0)
 - `EV-C201-consult-banner` — แบนเนอร์ชวนปรึกษาเหนือร้านยา · [เปิดเคส](/?screen=home&state=consult-banner&splash=0)
 - `EV-C201-active-next` — การปรึกษา คิวถัดไป · [เปิดเคส](/?screen=home&state=active-next&splash=0)
-- `EV-C201-active-room` — การปรึกษา ยังไม่จบ · [เปิดเคส](/?screen=home&state=active-room&splash=0)
 - `EV-C201-active-paused` — การปรึกษา พักรับคิว · [เปิดเคส](/?screen=home&state=active-paused&splash=0)
 - `EV-C201-active-payment` — การปรึกษา รอชำระ · [เปิดเคส](/?screen=home&state=active-payment&splash=0)
 - `EV-C201-active-idle` — การปรึกษา รอคำตอบ · [เปิดเคส](/?screen=home&state=active-idle&splash=0)
 - `EV-C201-case-queue3` — จำลอง รออีก 3 คิว · [เปิดเคส](/?screen=home&state=case-queue3&splash=0)
-- `EV-C201-case-queue2` — จำลอง รออีก 2 คิว · [เปิดเคส](/?screen=home&state=case-queue2&splash=0)
-- `EV-C201-case-queue1` — จำลอง รออีก 1 คิว · [เปิดเคส](/?screen=home&state=case-queue1&splash=0)
 - `EV-C201-case-next` — จำลอง คิวถัดไป · [เปิดเคส](/?screen=home&state=case-next&splash=0)
 - `EV-C201-case-paused` — จำลอง เภสัชกรพัก · [เปิดเคส](/?screen=home&state=case-paused&splash=0)
 - `EV-C201-case-matched` — จำลอง รับคิวแล้ว · [เปิดเคส](/?screen=home&state=case-matched&splash=0)
@@ -248,9 +231,7 @@
 - `EV-C201-case-cancelled` — จำลอง ยกเลิกคิว · [เปิดเคส](/?screen=home&state=case-cancelled&splash=0)
 - `EV-C201-case-expired` — จำลอง หมดเวลารอคำตอบ · [เปิดเคส](/?screen=home&state=case-expired&splash=0)
 - `EV-C201-case-closed-unpaid` — จบแชท รอชำระค่ายา · [เปิดเคส](/?screen=home&state=case-closed-unpaid&splash=0)
-- `EV-C201-case-payment-soon` — เหลือชำระ 1 นาที · [เปิดเคส](/?screen=home&state=case-payment-soon&splash=0)
 - `EV-C201-case-closed-payexpired` — จบแชท หมดเวลาชำระ · [เปิดเคส](/?screen=home&state=case-closed-payexpired&splash=0)
-- `EV-C201-case-video-request` — เภสัชกรขอวิดีโอคอล · [เปิดเคส](/?screen=home&state=case-video-request&splash=0)
 - `EV-C201-case-none` — ไม่มีปรึกษา · [เปิดเคส](/?screen=home&state=case-none&splash=0)
 - `EV-C201-case-delivery-preparing` — ชำระแล้ว · เตรียมยา · [เปิดเคส](/?screen=home&state=case-delivery-preparing&splash=0)
 - `EV-C201-case-delivery-calling` — กำลังเรียกไรเดอร์ · [เปิดเคส](/?screen=home&state=case-delivery-calling&splash=0)
@@ -316,7 +297,6 @@
 
 - `EV-C210-normal` — มีที่อยู่ · [เปิดเคส](/?screen=homeaddress&state=normal&splash=0)
 - `EV-C210-empty` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=homeaddress&state=empty&splash=0)
-- `EV-C210-named` — ที่อยู่ตั้งชื่อเอง · [เปิดเคส](/?screen=homeaddress&state=named&splash=0)
 
 ### C212 · storeinfo (8 เหตุการณ์)
 
@@ -664,14 +644,12 @@ C302 เลิกใช้: เมื่อเภสัชกรรับคิ�
 - `EV-C514-normal` — มีที่อยู่หลัก · [เปิดเคส](/?screen=addressbook&state=normal&splash=0)
 - `EV-C514-empty` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=addressbook&state=empty&splash=0)
 - `EV-C514-alternate` — เปลี่ยนที่อยู่หลัก · [เปิดเคส](/?screen=addressbook&state=alternate&splash=0)
-- `EV-C514-named` — ชื่อที่อยู่ บ้านแม่ · [เปิดเคส](/?screen=addressbook&state=named&splash=0)
 
 ### C515 · addressedit (16 เหตุการณ์)
 
 - `EV-C515-normal` — เพิ่มที่อยู่ · [เปิดเคส](/?screen=addressedit&state=normal&splash=0)
 - `EV-C515-edit` — แก้ไขที่อยู่ · [เปิดเคส](/?screen=addressedit&state=edit&splash=0)
 - `EV-C515-invalid` — ข้อมูลไม่ครบ · [เปิดเคส](/?screen=addressedit&state=invalid&splash=0)
-- `EV-C515-named` — แก้ไขชื่อที่อยู่ · [เปิดเคส](/?screen=addressedit&state=named&splash=0)
 - `EV-C515-map-ready` — ที่อยู่ครบ พร้อมยืนยันหมุด · [เปิดเคส](/?screen=addressedit&state=map-ready&splash=0)
 - `EV-C515-map-outside` — หมุดนอกตำบล บันทึกไม่ได้ · [เปิดเคส](/?screen=addressedit&state=map-outside&splash=0)
 - `EV-C515-map-error` — โหลดขอบเขตตำบลไม่ได้ · [เปิดเคส](/?screen=addressedit&state=map-error&splash=0)
@@ -696,7 +674,6 @@ C302 เลิกใช้: เมื่อเภสัชกรรับคิ�
 - `EV-C517-none` — ระบุว่าไม่มี · [เปิดเคส](/?screen=healthfield&state=none&splash=0)
 - `EV-C517-invalid` — กรอกข้อมูลไม่ครบ · [เปิดเคส](/?screen=healthfield&state=invalid&splash=0)
 
-- `EV-C515-form-address-label` — ยังไม่กรอกชื่อที่อยู่ · [เปิดเคส](/?screen=addressedit&state=form-address-label&splash=0)
 
 ### C518 · taxprofile (6 เหตุการณ์)
 
@@ -1193,3 +1170,28 @@ C414 แผงทดสอบแบ่งหัวข้อรับยาที
 ข้อมูลยาในใบสรุปและรายละเอียดประวัติใช้รายการยาร่วมกับแชทเภสัชกร: รูป ชื่อ จำนวน และวิธีใช้ในก้อนเดียว คงคำแนะนำและมื้อยาจากข้อมูลเดิม ไม่แสดงราคาซ้ำในใบสรุป /flow ใช้หน้าจอจริง
 
 หน้าสถานะจัดส่งใช้ปุ่มปิดมุมขวาแทนปุ่มกลับ ส่วนหัวปกใบสรุปแสดงคำสั่งซื้อ # ตามเลขคำสั่งซื้อของรายการเดียวกันแทนรหัสเคส /flow ใช้ดีไซน์จริงร่วมกัน
+## สวิตช์ประเภทผู้ใช้ในแผงพรีวิว — 7 พฤศจิกายน 2569
+- เครื่องมือพรีวิวจำตัวเลือกใช้ครั้งแรก/เคยใช้แล้วแยกจากสถานะแอป สมัครสำเร็จแล้ว S.firstTime ของแอปเป็น false ตามเดิม แต่ปุ่มยังเลือกค่าเดิมและกดเริ่มใหม่จะเป็นผู้ใช้ครั้งแรกอีกครั้ง เลือกค่าใหม่ได้จากสวิตช์เท่านั้น ไม่เป็นส่วนของแอปจริง และโหลดหน้าใหม่แล้วค่าจะกลับเป็นค่าเริ่มต้น
+
+## หลังสมัครสมาชิก: ลบ Face ID และเข้าแนะนำแอป — 7 พฤศจิกายน 2569
+- ลำดับใหม่ C105 → C108 → กดเริ่มใช้งาน → C112 → ข้ามหรือเริ่มใช้งาน → หน้าหลัก C201
+- ลบหน้า C110 และการ์ดชวนเปิด Face ID บนหน้าแรก ไม่นำรหัส C110 ไปใช้ซ้ำ
+- เปิดเคส C112 โดยยังไม่เข้าสู่ระบบ ปุ่มเดิมไป C102
+- ลบสวิตช์ Face ID หรือลายนิ้วมือใน C501 ตามคำสั่งผู้ใช้ แอปไม่มีฟีเจอร์นี้แล้ว
+- ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser
+- ปิดเคส C108.3 ยังสมัครไม่เสร็จ และ C108.5 ไม่มีชื่อแสดง เพราะผู้ใช้จริงต้องผ่านการสมัครก่อนจึงถึงหน้านี้ คงรหัสเดิมไว้ ไม่เลื่อนเลขเคส
+
+## ที่อยู่หลังสมัครและการแสดงที่อยู่ — 7 พฤศจิกายน 2569
+- สมัครสำเร็จแล้วบัญชีมีที่อยู่หลักทันที C201 จึงไม่แสดงสถานะยังไม่มีที่อยู่ ปิดเคส C201.7
+- ต้นแบบใช้ที่อยู่จำลอง ไม่ได้ใช้ค่าที่กรอกใน C105 ระบบจริงต้องบันทึกที่อยู่ปัจจุบันจาก C105 เป็นที่อยู่หลัก
+- เลิกใช้ชื่อที่อยู่ ลบฟิลด์ใน C515 ปิดเคส C210.3, C514.4, C515.4, C515.16
+- แถบที่อยู่บน C201 แสดงที่อยู่เต็มบรรทัดเดียว ยาวเกินแสดง ... ส่วนการ์ดใน C210 และ C514 แสดงชื่อผู้รับ เบอร์ และที่อยู่เต็ม
+- ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser
+
+## ยุบเหตุการณ์ C201 — 7 พฤศจิกายน 2569
+- C201.1 แสดงร้านยาใกล้ฉันคละสถานะ เปิด ปิด ปิดชั่วคราว และนอกพื้นที่ในหน้าเดียว
+- ปิดเคส C201.3, .4, .5, .6, .44, .49, .50, .61, .63, .76 เพราะซ้ำข้อมูลในเคสอื่น คงเลขเดิม
+- ร้านปิดทั้งหมดดูได้จากสวิตช์เวลาร้านในแผงพรีวิว การเปลี่ยนที่อยู่ดูได้จาก C210 คำขอวิดีโอดูได้จาก C303.15
+- ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser
+- ปุ่มปรึกษาเภสัชบน C201 พาเข้าคิวสาขาที่เปิดรับและคิวสั้นสุดเสมอ ไม่บล็อกเมื่อไม่มีคิวว่าง ปิดเคส C201.39 และ C201.40 ถ้าทุกสาขาในพื้นที่ไม่เปิดรับจะเปิดข้อมูลสาขา C212
+- C201.8 และ C201.9 ใช้หัวข้อร้านยาใกล้ฉันและแถวร้านแบบเดียวกัน ต่างกันที่แท็ก นอกพื้นที่ให้บริการ พร้อมระยะทาง กับ ตรวจสอบพื้นที่ไม่ได้ พร้อมไม่ทราบระยะทาง ไม่บอกว่านอกพื้นที่เมื่อยังไม่รู้ระยะ

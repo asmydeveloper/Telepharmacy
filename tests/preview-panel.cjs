@@ -5,7 +5,7 @@ const loginStates=vm.runInNewContext(source.match(/TP\.screen\('login', \{[\s\S]
 const defs={login:{group:'start',code:'C102',title:'Login',states:loginStates},profile:{group:'start',code:'C105',title:'Signup'},home:{group:'before',code:'C201',title:'Home',states:[['normal','N'],['case-queue3','Q3'],['case-chat','Chat']]},registrationexit:{code:'C106',hidden:true,host:'profile'}};
 let id='login',sheet=null,filled=0,mockable=false;const events={},prepared=[];
 const panel={querySelectorAll:()=>[],querySelector:()=>null,addEventListener:(name,fn)=>events[name]=fn,getBoundingClientRect:()=>({top:0}),clientHeight:0,classList:{toggle(){},contains:()=>false},innerHTML:'',scrollTop:40};
-const TP={S:{st:{}},SCREENS:defs,ORDER:Object.keys(defs),GROUPS:[['start','Start'],['before','Before']],brand:{logo:()=>''},def:k=>defs[k],sheetOpen:()=>sheet,cur:()=>({id,ctx:{params:{}}}),codeOf:k=>defs[k].code,stateOf:k=>TP.S.st[k]||defs[k].states?.[0]?.[0]||'normal',icons(){},prepState:d=>prepared.push(d),refresh(){},registrationPreview:{canFill:()=>mockable,fillCurrent:()=>filled++},casePreview:{playChat:k=>played.push(k)}};
+const TP={flag:k=>TP.S.g?.[k]??false,S:{st:{}},SCREENS:defs,ORDER:Object.keys(defs),GROUPS:[['start','Start'],['before','Before']],brand:{logo:()=>''},def:k=>defs[k],sheetOpen:()=>sheet,cur:()=>({id,ctx:{params:{}}}),codeOf:k=>defs[k].code,stateOf:k=>TP.S.st[k]||defs[k].states?.[0]?.[0]||'normal',icons(){},prepState:d=>prepared.push(d),refresh(){},registrationPreview:{canFill:()=>mockable,fillCurrent:()=>filled++},casePreview:{playChat:k=>played.push(k)}};
 const played=[],ran=[],SIM=[];
 const context={TP,panel,SIM,badge:{innerHTML:''},fabCode:null,fab:{addEventListener(){},setAttribute(){},focus(){}},$:()=>null,esc:s=>String(s??''),ic:()=>'',tapped:null,anchorOf:()=>null,holdAnchor(){},keyOf:()=>'',document:{documentElement:{classList:{contains:()=>false}}},CSS:{escape:s=>s}};
 vm.createContext(context);
@@ -53,3 +53,18 @@ context.Event=class{constructor(type){this.type=type}};
 const field=(id,value='',type='text')=>({id,value,type,dataset:{},closest:()=>null,dispatchEvent(e){(this.events||=[]).push(e.type)}});
 const mail=field('loginEmail');TP.previewAutofill.fill({querySelectorAll:()=>[mail]},{});assert.equal(mail.value,'');
 console.log('PASS: autofill stays off without a toggle');
+
+// The reviewer's user type survives app logic that clears S.firstTime, such as finishing sign-up.
+const flags={};vm.createContext(flags);
+vm.runInContext(source.match(/TP\.FLAG0 = \{[^\n]+\n[^\n]+\nTP\.setFlag[^\n]+/)[0].replace(/^TP\./,'var TP={};TP.'),flags);
+vm.runInContext(`TP.fresh=()=>({firstTime:false,loggedIn:true,consent:true});TP.emit=()=>{};TP.SCREENS={splash:{}};TP.go=()=>{};var toggle=()=>{};TP.S=TP.fresh();${source.match(/function restart\(mob\) \{[\s\S]*?\n\}/)[0]}`,flags);
+vm.runInContext("TP.setFlag('firstTime',true);restart(false);",flags);
+assert.equal(flags.TP.S.firstTime,true);assert.equal(flags.TP.S.loggedIn,false);
+flags.TP.S.firstTime=false;
+assert.equal(vm.runInContext("TP.flag('firstTime')",flags),true);
+vm.runInContext('restart(false)',flags);
+assert.equal(flags.TP.S.firstTime,true);assert.equal(flags.TP.S.loggedIn,false);
+vm.runInContext("TP.setFlag('firstTime',false);restart(false);",flags);
+assert.equal(flags.TP.S.firstTime,false);assert.equal(flags.TP.S.loggedIn,true);
+assert(source.includes("(k === 'firstTime' ? TP.flag(k) : TP.S[k]) === v"));
+console.log('PASS: first-time user choice stays selected after sign-up and restart');

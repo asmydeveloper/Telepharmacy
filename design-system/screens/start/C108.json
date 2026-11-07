@@ -12,22 +12,10 @@
       "url": "/?screen=registrationsuccess&state=normal&splash=0"
     },
     {
-      "code": "C108.3",
-      "state": "unavailable",
-      "label": "ยังสมัครไม่เสร็จ",
-      "url": "/?screen=registrationsuccess&state=unavailable&splash=0"
-    },
-    {
       "code": "C108.4",
       "state": "long-name",
       "label": "ชื่อจริงยาว",
       "url": "/?screen=registrationsuccess&state=long-name&splash=0"
-    },
-    {
-      "code": "C108.5",
-      "state": "no-name",
-      "label": "ไม่มีชื่อแสดง",
-      "url": "/?screen=registrationsuccess&state=no-name&splash=0"
     }
   ]
 }

@@ -4,7 +4,7 @@ const S={case:null,st:{},notif:true,netOff:false},screens={},elements={},actions
 let current={id:'queue',el:{}};
 const fresh=()=>({id:'case-test',status:'queue',pos:4,branch:'tw',pharm:'kj',msgs:[],urgent:[],symptoms:['ไอ'],note:'',mode:'chat'});
 S.case=fresh();
-const TP={miniStatusIcon:kind=>`<svg data-status="${kind}"></svg>`,sheetOpen:()=>null,S,SCREENS:screens,NOW:{time:'14:12'},screen:(id,d)=>screens[id]=d,act:(id,fn)=>actions[id]=fn,cur:()=>current,branch:()=>({name:'ร้านตัวอย่าง',short:'ร้านตัวอย่าง'}),ensureCase:()=>S.case,emit:()=>{},live:t=>calls.push(['live',t]),mini:()=>{},refresh:()=>Promise.resolve(),go:(id,o)=>{calls.push(['go',id,o]);current.id=id;return Promise.resolve();},banner:()=>{},RED:()=>true,casePlan:()=>({p:{}}),demoProfiles:{}};
+const TP={checkoutHandoffRemaining:()=>0,miniStatusIcon:kind=>`<svg data-status="${kind}"></svg>`,sheetOpen:()=>null,S,SCREENS:screens,NOW:{time:'14:12'},screen:(id,d)=>screens[id]=d,act:(id,fn)=>actions[id]=fn,cur:()=>current,branch:()=>({name:'ร้านตัวอย่าง',short:'ร้านตัวอย่าง'}),ensureCase:()=>S.case,emit:()=>{},live:t=>calls.push(['live',t]),mini:()=>{},refresh:()=>Promise.resolve(),go:(id,o)=>{calls.push(['go',id,o]);current.id=id;return Promise.resolve();},banner:()=>{},RED:()=>true,casePlan:()=>({p:{}}),demoProfiles:{}};
 const ui={av:()=>'<avatar>',dock:s=>s,btn:s=>s,tag:s=>s},C=()=>S.case;
 require('./consultation-harness.cjs')(TP);
 const context=vm.createContext({TP,ui,C,P:()=>({name:'เภสัชกรตัวอย่าง',short:'ภญ.ตัวอย่าง',lic:'12345',ini:'ต'}),esc:s=>String(s??''),ic:()=>'<icon>',now:()=> '14:12',qDanger:()=>'<aside>urgent</aside>',idleHtml:()=>'',ensureCase:status=>{if(status)S.case.status=status;return S.case;},$:selector=>elements[selector],$$:()=>[],wake:()=>{},push:(el,m)=>S.case.msgs.push(m),SCRIPT:()=>{throw Error('Pharmacist script must not run while waiting');},requestAnimationFrame:()=>{},Date,console});
@@ -22,7 +22,7 @@ assert.doesNotMatch(quote,/ชำระ|data-order-countdown|<button|mo-ty|ต�
 assert.match(quote,/จำนวน: 1 แผง.*วิธีใช้: วิธีใช้ตามฉลาก/s);
 assert.equal(TP.chatBasketBar(null),'');
 assert.equal(TP.chatBasketBar({...context.order,status:'cancelled'}),'');
-assert.match(TP.chatBasketBar(context.order),/data-sheet="medicinebasket".*ตะกร้ายา 1 รายการ/s);
+assert.match(TP.chatBasketBar(context.order),/data-a="openMedicineBasket".*ตะกร้ายา 1 รายการ/s);
 const sheets={};TP.sheetDef=(id,def)=>sheets[id]=def;
 a=source.indexOf("TP.sheetDef('medicinebasket'");b=source.indexOf('/* End consultation',a);run(source.slice(a,b));
 S.case.order=context.order;

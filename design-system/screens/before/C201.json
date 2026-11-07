@@ -8,7 +8,7 @@
     {
       "code": "C201.1",
       "state": "normal",
-      "label": "ปกติ",
+      "label": "ปกติ · ร้านยาหลายสถานะ",
       "url": "/?screen=home&state=normal&splash=0"
     },
     {
@@ -16,36 +16,6 @@
       "state": "loading",
       "label": "กำลังโหลด",
       "url": "/?screen=home&state=loading&splash=0"
-    },
-    {
-      "code": "C201.3",
-      "state": "active",
-      "label": "มีเคสค้าง",
-      "url": "/?screen=home&state=active&splash=0"
-    },
-    {
-      "code": "C201.4",
-      "state": "busy",
-      "label": "สาขาใกล้สุดพัก",
-      "url": "/?screen=home&state=busy&splash=0"
-    },
-    {
-      "code": "C201.5",
-      "state": "closed",
-      "label": "ร้านปิด",
-      "url": "/?screen=home&state=closed&splash=0"
-    },
-    {
-      "code": "C201.6",
-      "state": "address-alt",
-      "label": "เลือกที่อยู่คลองเตย",
-      "url": "/?screen=home&state=address-alt&splash=0"
-    },
-    {
-      "code": "C201.7",
-      "state": "noaddress",
-      "label": "ไม่มีที่อยู่",
-      "url": "/?screen=home&state=noaddress&splash=0"
     },
     {
       "code": "C201.8",
@@ -56,44 +26,14 @@
     {
       "code": "C201.9",
       "state": "unknownarea",
-      "label": "ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา",
+      "label": "ตรวจสอบพื้นที่ไม่ได้",
       "url": "/?screen=home&state=unknownarea&splash=0"
-    },
-    {
-      "code": "C201.39",
-      "state": "quick-busy",
-      "label": "ไม่มีร้านคิวว่าง",
-      "url": "/?screen=home&state=quick-busy&splash=0"
-    },
-    {
-      "code": "C201.40",
-      "state": "quick-unknown",
-      "label": "ยังไม่ทราบจำนวนคิว",
-      "url": "/?screen=home&state=quick-unknown&splash=0"
-    },
-    {
-      "code": "C201.44",
-      "state": "active-room",
-      "label": "การปรึกษา ยังไม่จบ",
-      "url": "/?screen=home&state=active-room&splash=0"
     },
     {
       "code": "C201.48",
       "state": "case-queue3",
       "label": "จำลอง รออีก 3 คิว",
       "url": "/?screen=home&state=case-queue3&splash=0"
-    },
-    {
-      "code": "C201.49",
-      "state": "case-queue2",
-      "label": "จำลอง รออีก 2 คิว",
-      "url": "/?screen=home&state=case-queue2&splash=0"
-    },
-    {
-      "code": "C201.50",
-      "state": "case-queue1",
-      "label": "จำลอง รออีก 1 คิว",
-      "url": "/?screen=home&state=case-queue1&splash=0"
     },
     {
       "code": "C201.51",
@@ -138,22 +78,10 @@
       "url": "/?screen=home&state=case-closed-unpaid&splash=0"
     },
     {
-      "code": "C201.61",
-      "state": "case-payment-soon",
-      "label": "เหลือชำระ 1 นาที",
-      "url": "/?screen=home&state=case-payment-soon&splash=0"
-    },
-    {
       "code": "C201.62",
       "state": "case-closed-payexpired",
       "label": "จบแชท หมดเวลาชำระ",
       "url": "/?screen=home&state=case-closed-payexpired&splash=0"
-    },
-    {
-      "code": "C201.63",
-      "state": "case-video-request",
-      "label": "เภสัชกรขอวิดีโอคอล",
-      "url": "/?screen=home&state=case-video-request&splash=0"
     },
     {
       "code": "C201.65",
@@ -184,12 +112,6 @@
       "state": "case-pickup-ready",
       "label": "รับที่ร้าน · พร้อมรับยา",
       "url": "/?screen=home&state=case-pickup-ready&splash=0"
-    },
-    {
-      "code": "C201.76",
-      "state": "branch-statuses",
-      "label": "สาขาครบทุกสถานะ",
-      "url": "/?screen=home&state=branch-statuses&splash=0"
     }
   ]
 }
