@@ -1214,6 +1214,11 @@ TP.previewEventPolicy={
  'C105:national-id-checksum':['เลขประชาชนครบ 13 หลัก แต่เลขตรวจสอบผิด','แจ้งว่าเลขประชาชนไม่ถูกต้อง แยกจากกรณีกรอกไม่ครบ'],
  'C105:address-missing-phone':['ไม่กรอกเบอร์ติดต่อในที่อยู่','แสดงข้อผิดพลาดเบอร์ที่จำเป็นและไม่ให้ผ่านขั้นที่อยู่'],
  'C105:address-invalid-phone':['กรอกเบอร์ติดต่อไม่ตรงรูปแบบมือถือ','แจ้งรูปแบบที่ถูกต้อง แก้แล้วผ่านได้โดยไม่ล้างชื่อและที่อยู่'],
+ 'C519:invalid-person':['กดบันทึกโดยไม่กรอกข้อมูลบุคคลธรรมดา','แสดงข้อความใต้ทุกช่องบังคับ ไม่บันทึก และยังอยู่ในฟอร์ม'],
+ 'C519:invalid-company':['กดบันทึกโดยไม่กรอกข้อมูลนิติบุคคล','แสดงข้อความใต้ทุกช่องบังคับรวมชื่อธุรกิจ ไม่บันทึก และยังอยู่ในฟอร์ม'],
+ 'C519:invalid-format':['กรอกเลขประจำตัวประชาชนและเบอร์ผิดรูปแบบ','แสดงข้อความเฉพาะสองช่องนั้น ข้อมูลอื่นยังอยู่ แก้ถูกแล้วข้อความหาย'],
+ 'C514:main-changed':['กดตั้งเป็นที่อยู่หลักบนการ์ดอีกใบ','ป้ายที่อยู่หลักย้ายไปการ์ดนั้น และแสดงแจ้งเตือนตั้งเป็นที่อยู่หลักแล้ว'],
+ 'C514:address-saved':['บันทึกที่อยู่จาก C515 สำเร็จ','กลับมาสมุดที่อยู่ และแสดงแจ้งเตือนบันทึกที่อยู่แล้ว'],
  'C105:consent-ready':['ข้อมูลครบและเลือกความยินยอมสุขภาพแล้ว','กดยืนยันจึงสมัคร ข่าวสารเป็นทางเลือก ไม่ยืนยันให้อัตโนมัติ'],
  'C105:review':['ข้อมูลครบแต่ยังไม่เลือกความยินยอมสุขภาพ','ปุ่มสมัครยังใช้งานไม่ได้จนกว่าจะยินยอมด้วยตนเอง'],
  'C105:save-error':['จำลองบันทึกสมัครไม่สำเร็จ','ข้อมูลต้องอยู่ครบและลองบันทึกซ้ำได้ ไม่ไปหน้าสมัครสำเร็จ']
@@ -1403,7 +1408,7 @@ function render() {
   const sims = SIM.filter(a => { try { return a.when(TP.S); } catch { return false; } });
   const visible = TP.ORDER.filter(i => !TP.def(i).hidden);
   const code = id ? TP.codeOf(id) : '', ttl = def ? (typeof def.title === 'function' ? def.title({ S: TP.S, params: s ? s.ctx.params : c?.ctx?.params || {} }) : def.title) : '';
-  const canMock = !s && TP.registrationPreview?.canFill(c);
+  const canMock = s ? !!s.def?.previewMock?.canFill(s.ctx) : TP.registrationPreview?.canFill(c);
   if (badge) badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>` : '';
   if (fabCode) fabCode.textContent = code;
   panel.innerHTML = `
@@ -1446,7 +1451,7 @@ panel.addEventListener('click', async e => {
       if (mob) toggle(false);
       break;
     }
-    case 'mock': TP.registrationPreview?.fillCurrent(); if (mob) toggle(false); break;
+    case 'mock': { const open = TP.sheetOpen(); if (open?.def?.previewMock) await open.def.previewMock.fill(open.ctx); else TP.registrationPreview?.fillCurrent(); if (mob) toggle(false); break; }
     case 'g': {
       const raw = b.dataset.v, v = raw === 'true' ? true : raw === 'false' ? false : raw;
       if (k === 'loc' || k === 'zoneLock') TP.S.locDenySeen = TP.S.locWarnSeen = false;
@@ -2574,17 +2579,28 @@ TP.sheetDef('homeaddress', {
   render(ctx) { return `<p class="small">เลือกรายการเพื่อดูร้านยาใกล้ฉันนี้ การเลือกไม่เปลี่ยนที่อยู่หลัก</p><div class="hm-address-list">${ctx.S.addrs?.length ? homeAddressCards(ctx.S, true) : addressEmpty()}</div>`; },
   foot: () => ui.btn('จัดการสมุดที่อยู่', { a: 'hmAddressBook', kind: 'secondary', icon: 'map-pin' })
 });
+const ADDRESS_MAIN_ALERT = 'ตั้งเป็นที่อยู่หลักแล้ว', ADDRESS_SAVED_ALERT = 'บันทึกที่อยู่แล้ว';
 TP.screen('addressbook', {
   group: 'account', title: 'สมุดที่อยู่', code: 'C514', parent: 'account',
-  states: [['normal', 'มีที่อยู่หลัก'], ['empty', 'ยังไม่มีที่อยู่'], ['alternate', 'เปลี่ยนที่อยู่หลัก'], ['named', 'ชื่อที่อยู่ บ้านแม่', false]],
-  prep(S) { if (S.st.addressbook === 'empty') S.addrs = []; else if (S.st.addressbook === 'alternate') { S.addrs = TP.fresh().addrs; S.addrs.forEach(a => a.main = a.id === 'a2'); S.deliveryAddressId = null; } },
+  states: [['normal', 'มีที่อยู่หลัก'], ['empty', 'ยังไม่มีที่อยู่', false], ['alternate', 'เปลี่ยนที่อยู่หลัก', false], ['named', 'ชื่อที่อยู่ บ้านแม่', false], ['main-changed', 'แจ้งเตือน ตั้งเป็นที่อยู่หลักแล้ว'], ['address-saved', 'แจ้งเตือน บันทึกที่อยู่แล้ว']],
+  prep(S) {
+    const st = S.st.addressbook;
+    S._addressAlert = { 'main-changed': ADDRESS_MAIN_ALERT, 'address-saved': ADDRESS_SAVED_ALERT }[st] || null;
+    if (st === 'main-changed') {
+      TP._addressBookBase ||= structuredClone({ addrs: S.addrs, deliveryAddressId: S.deliveryAddressId });
+      S.addrs = TP.fresh().addrs; S.addrs.forEach(a => a.main = a.id === 'a2'); S.deliveryAddressId = null;
+    } else if (TP._addressBookBase) { Object.assign(S, TP._addressBookBase); TP._addressBookBase = null; }
+    if (st === 'empty') S.addrs = [];
+  },
+  /* Preview cases show the same toast as the real action, once per opening. */
+  mount(el, ctx) { const message = ctx.S._addressAlert; if (!message) return; ctx.S._addressAlert = null; TP.notify(message, { icon: 'map-pin' }); },
   render(ctx) { return ui.nav({ back: true, title: 'สมุดที่อยู่' }) + ui.page(`<div class="hm-address-list">${ctx.S.addrs?.length ? homeAddressCards(ctx.S, false) : addressEmpty()}</div>${ctx.S.addrs?.length ? `<div class="mt16">${ui.btn('เพิ่มที่อยู่ใหม่', { a: 'hmNewAddress', icon: 'plus' })}</div>` : ''}`); }
 });
 const addressFields = [['first','ชื่อ','text'],['last','นามสกุล','text'],['phone','เบอร์โทรศัพท์มือถือ','tel'],['house','บ้านเลขที่','text'],['building','หมู่บ้าน / อาคาร / ห้อง / ชั้น','text',true],['alley','ซอย','text',true],['road','ถนน','text',true],['prov','จังหวัด','text'],['amp','อำเภอ / เขต','text'],['dist','ตำบล / แขวง','text'],['zip','รหัสไปรษณีย์','text']];
 TP.screen('addressedit', {
   group: 'account', title: 'เพิ่ม / แก้ไขที่อยู่', code: 'C515', parent: 'addressbook',
-  states: [['normal', 'เพิ่มที่อยู่'], ['edit', 'แก้ไขที่อยู่'], ['invalid', 'ข้อมูลไม่ครบ'], ['named', 'แก้ไขชื่อที่อยู่', false],['map-ready', '', false],['map-outside', '', false],['map-error', '', false],['form-required','ไม่กรอกข้อมูลบังคับ'],['form-phone','เบอร์มือถือผิดรูปแบบ'],['form-name','ชื่อมีตัวเลข'],['form-area','พื้นที่ยังเลือกไม่ครบ'],['map-saved', '', false],['form-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน'],['form-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ'],['form-details','รายละเอียดอาคารยาวเกินกำหนด'],['form-address-label','ยังไม่กรอกชื่อที่อยู่', false]],
-  prep(S) { if(S.st.addressedit?.startsWith('form-')){S.addrs=TP.fresh().addrs;const a=S.addrs[0];S._homeEditAddress=a.id;if(S.st.addressedit==='form-required')for(const k of ['first','last','phone','house','prov','amp','dist','zip'])a[k]='';if(S.st.addressedit==='form-phone')a.phone='0212345678';if(S.st.addressedit==='form-name')a.first='123';if(S.st.addressedit==='form-area'){a.amp='';a.dist='';a.zip='';}if(['form-split','form-legacy','form-details'].includes(S.st.addressedit))Object.assign(a,{house:'88/12',building:'หมู่บ้านมิตรอารี อาคารบี ห้อง 1201 ชั้น 12',alley:'ทวีวัฒนา 25',road:'เลียบคลองทวีวัฒนา'});if(S.st.addressedit==='form-legacy')Object.assign(a,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});if(S.st.addressedit==='form-details')a.building='ก'.repeat(201);a.pin=false;a.location=null;} if(S.st.addressedit?.startsWith('map-')){S.addrs=TP.fresh().addrs;S._homeEditAddress=S.addrs[0].id;S.addrs[0].pin=false;S.addrs[0].location=null;if(S.st.addressedit==='map-saved'){const a=S.addrs[0];TP.previewSavedAddressPin(a);}} if (S.st.addressedit === 'edit') S._homeEditAddress = S.addrs?.[0]?.id; if (S.st.addressedit === 'invalid') { S._homeAddressInvalid = true; S._homeEditAddress = S.addrs?.[0]?.id; if(S.addrs?.[0])S.addrs[0].phone=''; } },
+  states: [['normal', 'เพิ่มที่อยู่'], ['edit', 'แก้ไขที่อยู่'], ['invalid', 'ข้อมูลไม่ครบ', false], ['named', 'แก้ไขชื่อที่อยู่', false],['map-ready', '', false],['map-outside', '', false],['map-error', '', false],['form-required','ไม่กรอกข้อมูลบังคับ'],['form-phone','เบอร์มือถือผิดรูปแบบ'],['form-name','ชื่อมีตัวเลข', false],['form-area','พื้นที่ยังเลือกไม่ครบ'],['map-saved', '', false],['form-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน', false],['form-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ'],['form-details','รายละเอียดอาคารยาวเกินกำหนด', false],['form-address-label','ยังไม่กรอกชื่อที่อยู่', false]],
+  prep(S) { if(S.st.addressedit?.startsWith('form-')){S.addrs=TP.fresh().addrs;const a=S.addrs[0];S._homeEditAddress=a.id;if(S.st.addressedit==='form-required')for(const k of ['first','last','phone','house','prov','amp','dist','zip'])a[k]='';if(S.st.addressedit==='form-phone')a.phone='0212345678';if(S.st.addressedit==='form-area'){a.amp='';a.dist='';a.zip='';}if(S.st.addressedit==='form-legacy')Object.assign(a,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});a.pin=false;a.location=null;} if(S.st.addressedit?.startsWith('map-')){S.addrs=TP.fresh().addrs;S._homeEditAddress=S.addrs[0].id;S.addrs[0].pin=false;S.addrs[0].location=null;if(S.st.addressedit==='map-saved'){const a=S.addrs[0];TP.previewSavedAddressPin(a);}} if (S.st.addressedit === 'edit') S._homeEditAddress = S.addrs?.[0]?.id; if (S.st.addressedit === 'invalid') { S._homeAddressInvalid = true; S._homeEditAddress = S.addrs?.[0]?.id; if(S.addrs?.[0])S.addrs[0].phone=''; } },
   render(ctx) {
     const stored=(ctx.S.addrs||[]).find(a=>a.id===ctx.S._homeEditAddress)||{};
     const a={...stored};
@@ -2609,7 +2625,7 @@ TP.act('hmEditAddress', t => { TP.S._homeEditAddress = t.dataset.v; TP.S._homeAd
 TP.act('hmMainAddress', t => {
   const a = (TP.S.addrs || []).find(a => a.id === t.dataset.v); if (!a) return;
   TP.S.addrs.forEach(x => x.main = x.id === a.id); TP.S.deliveryAddressId = null; TP.S.branchPicked = false;
-  TP.saveHomePreferences(); TP.refresh({ anim: false }); TP.notify('ตั้งเป็นที่อยู่หลักแล้ว', { icon: 'map-pin' });
+  TP.saveHomePreferences(); TP.refresh({ anim: false }); TP.notify(ADDRESS_MAIN_ALERT, { icon: 'map-pin' });
 });
 TP.act('hmSaveAddress', () => {
   const formRoot=document.getElementById('home-address-house')?.closest?.('.scr');
@@ -2623,7 +2639,7 @@ TP.act('hmSaveAddress', () => {
   if (a) { Object.assign(a, values, { pin:keepPin }); } else { a = { id: 'a' + Date.now(), ...values, main: false, pin:false }; list.push(a); }
   if (document.getElementById('home-address-main').checked || list.length === 1) { list.forEach(x => x.main = x.id === a.id); TP.S.deliveryAddressId = null; }
   else if (!list.some(x => x.main)) list[0].main = true;
-  TP.S.branchPicked = false; TP.saveHomePreferences(); TP.S.st.addressbook = undefined; TP.go('addressbook', { via: 'none' }); TP.notify('บันทึกที่อยู่แล้ว', { icon: 'map-pin' });
+  TP.S.branchPicked = false; TP.saveHomePreferences(); TP.S.st.addressbook = undefined; TP.go('addressbook', { via: 'none' }); TP.notify(ADDRESS_SAVED_ALERT, { icon: 'map-pin' });
 });
 const homeBanner = S => { const a = TP.homeAddress(); return `<header class="hm-banner" data-in="0"><img class="hm-banner-image" src="/assets/banners/home-storefront-cover-v2.png" alt="" aria-hidden="true" fetchpriority="high" width="1536" height="1024"><div class="hm-banner-copy"><h2 class="hm-greeting">สวัสดี${S.user.name ? ' คุณ' + esc(S.user.name) : S.user.full ? ' คุณ' + esc(String(S.user.full).trim().split(/\s+/)[0]) : ''}</h2><p class="hm-brand-message">MITRAREE ดูแลคุณ<br>ใกล้กว่าที่เคย</p></div></header>`; };
 
@@ -4307,13 +4323,14 @@ TP.taxRecords = (kind, S=TP.S) => {
   if(!Array.isArray(S.taxProfiles[kind])) {const legacy=kind==='co'?S.taxCo:S.taxWho;S.taxProfiles[kind]=legacy?[{...legacy,profileKey:legacy.profileKey||'saved-'+kind}]:[];}
   return S.taxProfiles[kind];
 };
+TP.taxAddress = r => r.addr || [r.detail,r.village,r.alley,r.road,r.dist,r.amp,r.prov,r.zip].filter(Boolean).join(' ');
 TP.taxSelected = (kind, S=TP.S) => {const rows=TP.taxRecords(kind,S),current=kind==='co'?S.taxCo:S.taxWho;return rows.find(r=>r.profileKey===current?.profileKey)||rows[0]||null;};
 TP.taxChoose = (kind,key,S=TP.S) => {const r=TP.taxRecords(kind,S).find(r=>r.profileKey===key);if(r)S[kind==='co'?'taxCo':'taxWho']=r;return r;};
 TP.taxRecipientPicker = (kind,action) => {const rows=TP.taxRecords(kind),selected=TP.taxSelected(kind);return rows.length>1?`<div class="tax-recipient-picker" role="group" aria-label="เลือกผู้รับใบกำกับภาษี">${rows.map(r=>`<button type="button" class="rc-tax-type-option${r.profileKey===selected?.profileKey?' selected':''}" data-a="${action}" data-key="${esc(r.profileKey)}" data-v="${kind}" aria-pressed="${r.profileKey===selected?.profileKey}">${esc(r.name)} · ${esc(String(r.id).slice(-4))}</button>`).join('')}</div>`:'';};
 const maskCheckoutTax = v => 'xxxxxxxxx' + String(v).slice(-4);
 function payTaxHtml() {
   const p=P(), who=p.taxWho||'me', record=TP.taxSelected(who);
-  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${TP.taxRecipientPicker(who,'payTaxSelectProfile')}${record?`<section class="pay-tax-recipient" aria-label="ข้อมูลผู้รับใบกำกับภาษี"><header class="pay-tax-recipient-head"><h4>ข้อมูลผู้รับใบกำกับภาษี</h4><button type="button" class="pay-tax-edit" data-a="payTaxEditProfile">แก้ไขข้อมูล</button></header><dl>${[[who==='co'?'ชื่อนิติบุคคล':'ชื่อผู้รับ',record.name||[record.first,record.last].filter(Boolean).join(' ')],['เลขประจำตัวผู้เสียภาษี',record.id?maskCheckoutTax(record.id):null],...(who==='co'?[['สาขา',record.branch]]:[]),['เบอร์โทรศัพท์',record.phone],['อีเมล',record.email],['ที่อยู่',record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' ')]].filter(([,value])=>value).map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${who==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับเพื่อขอใบกำกับภาษี</p>${ui.btn('เพิ่มข้อมูลใบกำกับภาษี',{a:'payTaxAddProfile'})}</div>`}`:''}`;
+  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${TP.taxRecipientPicker(who,'payTaxSelectProfile')}${record?`<section class="pay-tax-recipient" aria-label="ข้อมูลผู้รับใบกำกับภาษี"><header class="pay-tax-recipient-head"><h4>ข้อมูลผู้รับใบกำกับภาษี</h4><button type="button" class="pay-tax-edit" data-a="payTaxEditProfile">แก้ไขข้อมูล</button></header><dl>${[[who==='co'?'ชื่อนิติบุคคล':'ชื่อผู้รับ',record.name||[record.first,record.last].filter(Boolean).join(' ')],...(who==='co'?[['ชื่อธุรกิจ',record.business]]:[]),[who==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน',record.id?maskCheckoutTax(record.id):null],['เบอร์โทรศัพท์',record.phone],['ที่อยู่',TP.taxAddress(record)]].filter(([,value])=>value).map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${who==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับเพื่อขอใบกำกับภาษี</p>${ui.btn('เพิ่มข้อมูลใบกำกับภาษี',{a:'payTaxAddProfile'})}</div>`}`:''}`;
 }
 function redrawPayTax(){const el=$('#payTax');if(el){el.innerHTML=payTaxHtml();TP.icons(el)}}
 TP.act('payTaxWant',b=>{P().taxWant=b.dataset.v==='yes';redrawPayTax()});
@@ -5158,7 +5175,7 @@ function taxBox(o, late) {
   if (late) return '';
   const w=t.want?whoOf(t):null;
   const choice=`<header class="rc-tax-request-head rc-tax-choice-head"><button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!t.want}" data-a="rcTaxWant" data-v="${t.want?'no':'yes'}" aria-label="ต้องการใบกำกับภาษี" aria-describedby="rcTaxDeadline"><span class="rc-tax-choice-icon" aria-hidden="true">${ic('file-text',22)}</span><span class="rc-tax-choice-copy"><b>ต้องการใบกำกับภาษี</b><span id="rcTaxDeadline">ขอย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</span></span><span class="rc-tax-choice-check" aria-hidden="true">${t.want?ic('check',16):''}</span></button></header>`;
-  const body=w?`<div class="rc-tax-selected"><b>ชื่อและที่อยู่ใบกำกับภาษี</b><p>${esc(w.name)}</p><p>${esc(w.addr||[w.detail,w.dist,w.amp,w.prov,w.zip].filter(Boolean).join(' '))}</p><p>โทรศัพท์ : ${esc(w.phone||'—')}</p><p>อีเมล : ${esc(w.email||'—')}</p><p>เลขประจำตัวผู้เสียภาษี : ${esc(maskTax(w.id||''))}</p>${w.branch?`<p>สาขา : ${esc(w.branch)}</p>`:''}</div>`:'';
+  const body=w?`<div class="rc-tax-selected"><b>ชื่อและที่อยู่ใบกำกับภาษี</b><p>${esc(w.name)}</p><p>${esc(TP.taxAddress(w))}</p>${w.business?`<p>ชื่อธุรกิจ : ${esc(w.business)}</p>`:''}<p>โทรศัพท์ : ${esc(w.phone||'—')}</p><p>${w.business?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(maskTax(w.id||''))}</p></div>`:'';
   return `<section class="rc-tax rc-tax-request-card">${choice}${w?`<div class="rc-tax-recipient-heading"><b>ข้อมูลผู้รับ</b><button type="button" class="txtbtn" data-a="rcTaxPickOpen">${ic('pencil',16)} เปลี่ยนผู้รับ</button></div>`:''}${body}${w?`<footer class="rc-tax-status-footer">${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}</footer>`:''}</section>`;
 }
 const redrawTax = () => { const box = $('#rcTax'), o = rcCur(); if (!box || !o) return; box.innerHTML = taxBox(o, isLate(o.paid.date)); TP.icons(box); A(box, [{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { d: 320, e: E.out }); };
@@ -6251,25 +6268,23 @@ const taxProfileIdOk = v => { if (!/^\d{13}$/.test(v)) return false; const sum =
 const taxProfileEntry = (record, user, company) => {
   const parts = String(record?.name || (company ? '' : user.full || '')).trim().split(/\s+/);
   return {
-    id: record?.id || '', name: company ? record?.name || '' : '',
+    id: record?.id || '', name: company ? record?.name || '' : '', business: company ? record?.business || '' : '',
     first: company ? '' : record?.first || parts.shift() || '',
     last: company ? '' : record?.last || parts.join(' '),
     phone: record?.phone || (company ? '' : user.phone || ''),
-    branchType: record?.branchType || (record?.branch && record.branch !== 'สำนักงานใหญ่' ? 'other' : 'hq'),
-    branch: record?.branch && record.branch !== 'สำนักงานใหญ่' ? record.branch : '',
     mode: record?.addressMode || 'select', country: record?.country || 'ไทย',
     prov: record?.prov || '', amp: record?.amp || '', dist: record?.dist || '', zip: record?.zip || '',
-    detail: record?.detail || record?.addr || ''
+    detail: record?.detail || record?.addr || '', village: record?.village || '', alley: record?.alley || '', road: record?.road || ''
   };
 };
 const taxProfileDraft = S => S._taxProfile ||= {kind:'me', errors:{}, addressState:'loading', drafts:{me:taxProfileEntry(S.taxWho,S.user,false),co:taxProfileEntry(S.taxCo,S.user,true)}};
 function taxProfilePreview(kind) { return kind==='co'
-  ? {id:'0105569024564',name:'บริษัท ตัวอย่าง จำกัด',phone:'021234567',branch:'สำนักงานใหญ่',branchType:'hq',detail:'99 ถนนตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย'}
-  : {id:'1234567890121',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย'}; }
+  ? {id:'0105569024564',name:'บริษัท ตัวอย่าง จำกัด',business:'ร้านตัวอย่าง',phone:'021234567',detail:'99',road:'ถนนตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย'}
+  : {id:'1234567890121',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12',alley:'ซอยตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย'}; }
 // Select from the same saved records as C518. Choosing never submits a request.
 function receiptTaxPicker(S) {
   const kind=S._receiptTaxKind||'me', rows=TP.taxRecords(kind,S), selected=TP.taxSelected(kind,S);
-  return `<div class="tax-profile-page rc-tax-picker">${ui.seg('receiptTaxKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],kind,{a:'receiptTaxKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${rows.length})</span></h3>${ui.btn('เพิ่มข้อมูล',{kind:'secondary',icon:'plus',a:'rcTaxPickerAdd'})}</div><div class="tax-profile-list">${rows.length?rows.map(r=>`<button type="button" class="card tax-summary tax-summary-compact rc-tax-pick-card" data-a="rcTaxPickerChoose" data-v="${kind}" data-key="${esc(r.profileKey)}" aria-label="เลือก ${esc(r.name)}"><header class="tax-summary-head"><b>${esc(r.name)}</b>${r.profileKey===selected?.profileKey?ic('circle-check',20):ic('chevron-right',20)}</header><div class="tax-summary-content"><p>${esc(r.addr||[r.detail,r.dist,r.amp,r.prov,r.zip].filter(Boolean).join(' '))}</p><p>โทรศัพท์ : ${esc(r.phone||'—')}</p><p>อีเมล : ${esc(r.email||'—')}</p><p>เลขผู้เสียภาษี : ${esc(('xxxxxxxxx'+String(r.id||'').slice(-4)))}</p></div></button>`).join(''):`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`;
+  return `<div class="tax-profile-page rc-tax-picker">${ui.seg('receiptTaxKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],kind,{a:'receiptTaxKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${rows.length})</span></h3>${ui.btn('เพิ่มข้อมูล',{kind:'secondary',icon:'plus',a:'rcTaxPickerAdd'})}</div><div class="tax-profile-list">${rows.length?rows.map(r=>`<button type="button" class="card tax-summary tax-summary-compact rc-tax-pick-card" data-a="rcTaxPickerChoose" data-v="${kind}" data-key="${esc(r.profileKey)}" aria-label="เลือก ${esc(r.name)}"><header class="tax-summary-head"><b>${esc(r.name)}</b>${r.profileKey===selected?.profileKey?ic('circle-check',20):ic('chevron-right',20)}</header><div class="tax-summary-content"><p>${esc(TP.taxAddress(r))}</p>${kind==='co'&&r.business?`<p>ชื่อธุรกิจ : ${esc(r.business)}</p>`:''}<p>โทรศัพท์ : ${esc(r.phone||'—')}</p><p>${kind==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(('xxxxxxxxx'+String(r.id||'').slice(-4)))}</p></div></button>`).join(''):`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`;
 }
 TP.act('rcTaxPickOpen',()=>{TP.S._receiptTaxKind=TP.cur()?.ctx?.rc?.tax?.who||'me';return TP.sheet('receipttaxpicker');});
 TP.act('receiptTaxKind',b=>{TP.S._receiptTaxKind=b.dataset.v;const sheet=TP.sheetOpen(),body=$('.sh-b',sheet.el);body.innerHTML=receiptTaxPicker(TP.S);TP.icons(body);});
@@ -6288,23 +6303,55 @@ TP.sheetDef('receipttaxpicker',{
   render:ctx=>receiptTaxPicker(ctx.S)
 });
 const taxProfileRecord = (S,d) => TP.taxRecords(d.kind,S).find(r=>r.profileKey===d.editKey) || TP.taxSelected(d.kind,S);
+const TAX_LONG_FIELDS=['name','business','first','last','detail'];
+const TAX_PLACEHOLDERS={name:'เช่น บริษัท ตัวอย่าง จำกัด',business:'เช่น ร้านตัวอย่าง',first:'เช่น สมใจ',last:'เช่น ใจดี',id:'ตัวเลข 13 หลัก',phone:'เช่น 0812345678',detail:'เช่น 88/12',village:'เช่น หมู่บ้านตัวอย่าง อาคาร A',alley:'เช่น ซอยตัวอย่าง',road:'เช่น ถนนตัวอย่าง',prov:'เช่น กรุงเทพมหานคร',amp:'เช่น คลองเตย',dist:'เช่น คลองเตย',zip:'เช่น 10110'};
 function taxProfileForm(S, sheet=false, allowDelete=false) {
   const d=taxProfileDraft(S), co=d.kind==='co', f=d.drafts[d.kind], bind=key=>`_taxProfile.drafts.${d.kind}.${key}`;
     const field=(key,label,o={})=>{
-      const id='tax-profile-'+key,error=d.errors[key],attrs=`id="${id}" class="input" data-bind="${bind(key)}" aria-invalid="${!!error}" aria-describedby="${id}-error" required aria-required="true"`;
-      return `<div class="field${error?' err':''}"><label for="${id}">${esc(label)} <span class="reg-required" aria-hidden="true">*</span></label>${o.area?`<textarea ${attrs} rows="3" placeholder="เลขที่ หมู่ อาคาร หมู่บ้าน ซอย ถนน">${esc(f[key])}</textarea>`:`<input ${attrs} value="${esc(f[key])}" ${key==='id'?'inputmode="numeric" maxlength="17" placeholder="จำนวน 13 หลัก"':key==='phone'?'type="tel" inputmode="tel" maxlength="15" placeholder="เช่น 0812345678"':key==='zip'?'inputmode="numeric" maxlength="5"':''} ${o.readonly?'readonly':''}>`}<p class="err-t" id="${id}-error" role="alert" ${error?'':'hidden'}>${esc(error||'')}</p></div>`;
+      const id='tax-profile-'+key,error=d.errors[key],attrs=`id="${id}" class="input" data-bind="${bind(key)}" aria-invalid="${!!error}" aria-describedby="${id}-error" ${o.optional?'':'required aria-required="true"'}`;
+      return `<div class="field${error?' err':''}"><label for="${id}">${esc(label)} ${o.optional?'<span class="opt-t">(ไม่บังคับ)</span>':'<span class="reg-required" aria-hidden="true">*</span>'}</label><input ${attrs} value="${esc(f[key])}" placeholder="${key==='zip'&&o.readonly?'ระบบจะเติมให้เมื่อเลือกตำบล':TAX_PLACEHOLDERS[key]}" ${key==='id'?'inputmode="numeric" maxlength="17"':key==='phone'?'type="tel" inputmode="tel" maxlength="15"':key==='zip'?'inputmode="numeric" maxlength="5"':TAX_LONG_FIELDS.includes(key)?'maxlength="500"':''} ${o.readonly?'readonly':''}><p class="err-t" id="${id}-error" role="alert" ${error?'':'hidden'}>${esc(error||'')}</p></div>`;
     };
     const select=(key,label)=>`<div class="field${d.errors[key]?' err':''}"><label for="tax-profile-${key}">${label} <span class="reg-required" aria-hidden="true">*</span></label><select class="input" id="tax-profile-${key}" required aria-required="true" aria-describedby="tax-profile-${key}-error" aria-invalid="${!!d.errors[key]}" disabled><option value="">เลือก${label}</option></select><p class="err-t" id="tax-profile-${key}-error" role="alert" ${d.errors[key]?'':'hidden'}>${esc(d.errors[key]||'')}</p></div>`;
-    const branch=co?`<fieldset><legend>สาขา <span class="reg-required" aria-hidden="true">*</span></legend>${`<div class="tax-branch-options" role="group" aria-label="ประเภทสาขา">${[['hq','สำนักงานใหญ่'],['branch','สาขา'],['other','อื่น ๆ']].map(([value,label])=>`<button type="button" class="tax-branch-option" data-a="taxProfileBranch" data-v="${value}" aria-pressed="${f.branchType===value}">${esc(label)}</button>`).join('')}</div>`}</fieldset>${f.branchType!=='hq'?field('branch',f.branchType==='branch'?'รหัสสาขา 5 หลัก':'ระบุสาขา'):''}`:'';
     const area=f.mode==='select'?`${select('prov','จังหวัด')}${select('amp','อำเภอ / เขต')}${select('dist','ตำบล / แขวง')}${field('zip','รหัสไปรษณีย์',{readonly:true})}<p class="hint" id="taxAddressStatus" role="status">กำลังโหลดข้อมูลพื้นที่</p><button type="button" class="txtbtn" id="taxAddressRetry" hidden>โหลดข้อมูลที่อยู่อีกครั้ง</button><button type="button" class="txtbtn" id="taxAddressManual" data-a="taxProfileAddressMode" data-v="manual" hidden>กรอกข้อมูลที่อยู่เอง</button>`:`${field('prov','จังหวัด')}${field('amp','อำเภอ / เขต')}${field('dist','ตำบล / แขวง')}${field('zip','รหัสไปรษณีย์')}`;
-    return `<div class="registration-page tax-profile">${field('id','เลขประจำตัวผู้เสียภาษี 13 หลัก')}${co?field('name','ชื่อนิติบุคคล'):`${field('first','ชื่อผู้รับ')}${field('last','นามสกุลผู้รับ')}`}${branch}${field('phone','เบอร์โทรศัพท์ผู้รับ')}${field('detail','ที่อยู่',{area:true})}${area}<div class="tax-form-actions">${sheet?ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true}):''}${ui.btn('บันทึกข้อมูล',{a:'taxProfileSave'})}</div>${allowDelete&&d.editKey?`<div class="tax-edit-delete">${d.deleteConfirm?`<p>ลบข้อมูลผู้รับรายการนี้หรือไม่?</p><p class="small">ใบกำกับภาษีที่ขอไว้แล้วจะยังคงเดิม</p><div class="tax-form-actions">${ui.btn('ยกเลิก',{kind:'secondary',a:'taxProfileDeleteCancel'})}${ui.btn('ยืนยันลบ',{kind:'danger',a:'taxProfileDelete'})}</div>`:ui.btn('ลบข้อมูลผู้รับนี้',{kind:'danger-line',icon:'trash',a:'taxProfileDeleteAsk'})}</div>`:''}</div>`;
+    return `<div class="registration-page tax-profile">${allowDelete?`<p class="hint">ออกใบกำกับภาษีในนาม <b>${co?'นิติบุคคล':'บุคคลธรรมดา'}</b></p>`:''}${co?`${field('name','ชื่อนิติบุคคล')}${field('business','ชื่อธุรกิจ')}`:`${field('first','ชื่อ')}${field('last','นามสกุล')}`}${field('id',co?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน')}${field('phone','เบอร์โทรศัพท์')}${field('detail','ที่อยู่ (เลขที่)')}${field('village','หมู่บ้าน / อาคาร',{optional:true})}${field('alley','ตรอก / ซอย',{optional:true})}${field('road','ถนน',{optional:true})}${area}<div class="tax-form-actions">${sheet?ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true}):''}${ui.btn('บันทึกข้อมูล',{a:'taxProfileSave'})}</div>${allowDelete&&d.editKey?`<div class="tax-edit-delete">${d.deleteConfirm?`<p>ลบข้อมูลผู้รับรายการนี้หรือไม่?</p><p class="small">ใบกำกับภาษีที่ขอไว้แล้วจะยังคงเดิม</p><div class="tax-form-actions">${ui.btn('ยกเลิก',{kind:'secondary',a:'taxProfileDeleteCancel'})}${ui.btn('ยืนยันลบ',{kind:'danger',a:'taxProfileDelete'})}</div>`:ui.btn('ลบข้อมูลผู้รับนี้',{kind:'danger-line',icon:'trash',a:'taxProfileDeleteAsk'})}</div>`:''}</div>`;
 }
 function taxProfileCard(record, co) {
-  const name=record.name||[record.first,record.last].filter(Boolean).join(' '),addr=record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' ');
-  return `<section class="card tax-summary tax-summary-compact"><header class="tax-summary-head"><div><strong>${esc(name)}</strong>${co?`<span class="small">${esc(record.branch||'สำนักงานใหญ่')}</span>`:''}</div><button type="button" class="txtbtn tax-summary-edit" data-a="taxProfileEdit" data-p="${esc(record.profileKey)}" aria-label="แก้ไขข้อมูล ${esc(name)}">${ic('pencil',16,1.8)} แก้ไข</button></header><div class="tax-summary-content"><p class="tax-summary-address">${esc(addr)}</p><p class="small">โทรศัพท์ : ${esc(record.phone||'—')}</p><p class="small">อีเมล : ${esc(record.email||'—')}</p><p class="small">เลขประจำตัวผู้เสียภาษี : ${esc('xxxxxxxxx'+String(record.id||'').slice(-4))}</p></div></section>`;
+  const name=record.name||[record.first,record.last].filter(Boolean).join(' '),addr=TP.taxAddress(record);
+  return `<section class="card tax-summary tax-summary-compact"><header class="tax-summary-head"><div><strong>${esc(name)}</strong>${co&&record.business?`<span class="small">${esc(record.business)}</span>`:''}</div><button type="button" class="txtbtn tax-summary-edit" data-a="taxProfileEdit" data-p="${esc(record.profileKey)}" aria-label="แก้ไขข้อมูล ${esc(name)}">${ic('pencil',16,1.8)} แก้ไข</button></header><div class="tax-summary-content"><p class="tax-summary-address">${esc(addr)}</p><p class="small">โทรศัพท์ : ${esc(record.phone||'—')}</p><p class="small">${co?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc('xxxxxxxxx'+String(record.id||'').slice(-4))}</p></div></section>`;
+}
+function taxProfileErrors(d,{skipLoad=false}={}) {
+  const co=d.kind==='co',f=d.drafts[d.kind],id=f.id.replace(/\D/g,''),phone=f.phone.replace(/\D/g,''),choose=f.mode==='select',e={};
+  if(!/^\d{13}$/.test(id))e.id='ใส่ตัวเลข 13 หลัก';else if(!co&&!taxProfileIdOk(id))e.id='เลขประจำตัวประชาชนไม่ถูกต้อง ตรวจอีกครั้ง';
+  const titles={name:'ชื่อนิติบุคคล',business:'ชื่อธุรกิจ',first:'ชื่อ',last:'นามสกุล',detail:'ที่อยู่ (เลขที่)'};
+  for(const key of [...(co?['name','business']:['first','last']),'detail']){const text=f[key].trim();if(!text)e[key]='กรอก'+titles[key];else if(text.length>500)e[key]=titles[key]+'ต้องไม่เกิน 500 ตัวอักษร';}
+  if(!/^\d{9,10}$/.test(phone))e.phone='กรอกเบอร์โทรศัพท์ 9–10 หลัก';
+  for(const [key,label] of [['prov','จังหวัด'],['amp','อำเภอ / เขต'],['dist','ตำบล / แขวง']])if(!f[key].trim())e[key]=(choose?'เลือก':'กรอก')+label;
+  if(!/^\d{5}$/.test(f.zip))e.zip=choose?'เลือกตำบล / แขวง เพื่อเติมรหัสไปรษณีย์':'กรอกรหัสไปรษณีย์ 5 หลัก';
+  if(choose&&!skipLoad&&d.addressState!=='ready')e.prov='โหลดข้อมูลพื้นที่ให้สำเร็จ หรือเลือกกรอกเอง';
+  if(choose&&d.addressState==='ready'&&f.prov&&f.amp&&f.dist&&!TP.thaiAddressData.rows.some(r=>r.province===f.prov&&r.amphoe===f.amp&&r.district===f.dist&&String(r.zipcode)===f.zip))e.dist='เลือกจังหวัด อำเภอ และตำบลให้สัมพันธ์กัน';
+  return e;
+}
+/* Preview panel only: fills blank fields of the add form with sample data. Never saves. */
+const taxProfileMock={
+  canFill(ctx){const d=taxProfileDraft(ctx.S);return !d.editKey;},
+  async fill(ctx){
+    const d=taxProfileDraft(ctx.S),co=d.kind==='co',f=d.drafts[d.kind],sample=taxProfileEntry(taxProfilePreview(d.kind),ctx.S.user,co),area=f.mode!=='select'||d.addressState==='ready';
+    for(const key of ['id','phone','detail','village','alley','road',...(co?['name','business']:['first','last']),...(area?['prov','amp','dist','zip']:[])])if(!String(f[key]||'').trim())f[key]=sample[key];
+    d.errors={};return taxProfileRedraw();
+  }
+};
+function taxProfileFieldCheck(el,d) {
+  const f=d.drafts[d.kind],form=$('.tax-profile',el);if(!form)return;
+  const check=(e,onlyExisting)=>{
+    const input=e.target,key=input.id?.replace('tax-profile-','');if(!input.id?.startsWith('tax-profile-')||input.tagName==='SELECT'||!(key in f))return;
+    f[key]=input.value;if(onlyExisting&&!d.errors[key])return;
+    const error=taxProfileErrors(d)[key];if(error)d.errors[key]=error;else delete d.errors[key];
+    const message=$('#'+input.id+'-error',form);input.setAttribute('aria-invalid',String(!!error));input.closest('.field')?.classList.toggle('err',!!error);if(message){message.hidden=!error;message.textContent=error||'';}
+  };
+  form.addEventListener('focusout',e=>check(e,false));form.addEventListener('input',e=>check(e,true));
 }
 function taxProfileMount(el,ctx) {
-  const d=taxProfileDraft(ctx.S), f=d.drafts[d.kind]; if(f.mode!=='select'||!$('#taxAddressStatus',el))return;
+  const d=taxProfileDraft(ctx.S), f=d.drafts[d.kind]; taxProfileFieldCheck(el,d); if(f.mode!=='select'||!$('#taxAddressStatus',el))return;
     const status=$('#taxAddressStatus',el), retry=$('#taxAddressRetry',el), manual=$('#taxAddressManual',el); let rows=[];
     const populate=()=>{
       for(const [key,label,column] of [['prov','จังหวัด','province'],['amp','อำเภอ / เขต','amphoe'],['dist','ตำบล / แขวง','district']]){
@@ -6324,13 +6371,13 @@ function taxProfileMount(el,ctx) {
 TP.screen('taxprofile', {
   group:'account', title:'ข้อมูลออกใบกำกับภาษี', code:'C518', parent:'account',
   states:[['normal','บุคคลธรรมดา'],['company','นิติบุคคล'],['empty','ยังไม่มีข้อมูล'],['address-error','โหลดข้อมูลที่อยู่ไม่สำเร็จ'],['saved-person','บันทึกบุคคลธรรมดาแล้ว'],['saved-company','บันทึกนิติบุคคลแล้ว'],['multiple-person','บุคคลธรรมดาหลายรายการ'],['multiple-company','นิติบุคคลหลายรายการ']],
-  notes:['เมื่อไม่มีข้อมูลแสดง Empty พร้อมไอคอน กดเพิ่มข้อมูลจึงเปิดฟอร์ม ทั้งสองประเภทใช้รูปแบบเดียวกัน','การ์ดเรียงที่อยู่ โทรศัพท์ อีเมล และเลขผู้เสียภาษีตามลำดับ','แต่ละประเภทเพิ่มผู้รับได้หลายรายการ แสดงการ์ดสั้นและเพิ่ม แก้ไข หรือลบเฉพาะรายการที่เลือก','ใช้ผู้รับชุดเดียวกับหน้าชำระเงินและใบเสร็จ โดยคำขอที่ส่งแล้วเก็บสำเนาข้อมูล ณ เวลาส่ง','ข้อมูลตัวอย่างในต้นแบบยังไม่ส่งให้ร้านหรือออกใบกำกับภาษีจริง'],
+  notes:['เมื่อไม่มีข้อมูลแสดง Empty พร้อมไอคอน กดเพิ่มข้อมูลจึงเปิดฟอร์ม ทั้งสองประเภทใช้รูปแบบเดียวกัน','การ์ดเรียงที่อยู่ โทรศัพท์ และเลขประจำตัวตามลำดับ','แต่ละประเภทเพิ่มผู้รับได้หลายรายการ แสดงการ์ดสั้นและเพิ่ม แก้ไข หรือลบเฉพาะรายการที่เลือก','ใช้ผู้รับชุดเดียวกับหน้าชำระเงินและใบเสร็จ โดยคำขอที่ส่งแล้วเก็บสำเนาข้อมูล ณ เวลาส่ง','ข้อมูลตัวอย่างในต้นแบบยังไม่ส่งให้ร้านหรือออกใบกำกับภาษีจริง'],
   prep(S) {
     const state=S.st.taxprofile; if(state==='normal' && !S._taxProfileMockInitialized){if(!S.taxWho) S.taxWho=taxProfilePreview('me'); S._taxProfileMockInitialized=true;} S._taxProfile=null; const d=taxProfileDraft(S);
     if(state==='company'||state==='saved-company'||state==='multiple-company')d.kind='co';
     if(state==='empty'){d.previewLists={me:[],co:[]};d.drafts.me=taxProfileEntry(null,{},false);}
     if(state==='saved-person'||state==='saved-company'){d.preview={[d.kind]:taxProfilePreview(d.kind)};d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');}
-    if(state==='multiple-person'||state==='multiple-company'){const kind=d.kind,base=taxProfilePreview(kind);d.previewLists={[kind]:[{...base,profileKey:'example-1'},{...base,profileKey:'example-2',name:kind==='co'?'บริษัท มิตรสุข จำกัด':'สมใจ ใจดี',detail:'12 ถนนสุขใจ',addr:'12 ถนนสุขใจ แขวงคลองตัน เขตคลองเตย กรุงเทพมหานคร 10110'}]};}
+    if(state==='multiple-person'||state==='multiple-company'){const kind=d.kind,base=taxProfilePreview(kind);d.previewLists={[kind]:[{...base,profileKey:'example-1'},{...base,profileKey:'example-2',name:kind==='co'?'บริษัท มิตรสุข จำกัด':'สมใจ ใจดี',detail:'12',alley:'',road:'ถนนสุขใจ',addr:'12 ถนนสุขใจ แขวงคลองตัน เขตคลองเตย กรุงเทพมหานคร 10110'}]};}
   },
   render(ctx) {
     const d=taxProfileDraft(ctx.S), records=TP.taxRecords(d.kind,ctx.S);
@@ -6339,10 +6386,11 @@ TP.screen('taxprofile', {
   mount(el,ctx){taxProfileMount(el,ctx);if(ctx.state==='address-error'){const d=taxProfileDraft(ctx.S);d.editKey=null;d.drafts[d.kind]=taxProfileEntry(null,ctx.S.user,d.kind==='co');TP.sheet('taxprofileedit',{addressError:true});}}
 });
 TP.sheetDef('taxprofileedit',{
-  group:'account',title:'แก้ไขข้อมูลออกใบกำกับภาษี',code:'C519',host:'taxprofile',tall:true,
-  states:[['person','แก้ไขบุคคลธรรมดา'],['company','แก้ไขนิติบุคคล']],
-  notes:['แก้ไขเฉพาะข้อมูลประเภทที่เลือก','ยกเลิกหรือปิดหน้าต่างโดยไม่เปลี่ยนข้อมูลที่บันทึกไว้'],
-  prep(S){const d=taxProfileDraft(S);d.kind=S.st.taxprofileedit==='company'?'co':'me';d.preview={[d.kind]:{...taxProfilePreview(d.kind),profileKey:'preview-'+d.kind}};d.editKey=d.preview[d.kind].profileKey;d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');},
+  group:'account',title:'แก้ไขข้อมูลออกใบกำกับภาษี',sheetTitle:ctx=>(taxProfileDraft(ctx.S).editKey?'แก้ไข':'เพิ่ม')+'ข้อมูลออกใบกำกับภาษี',code:'C519',host:'taxprofile',tall:true,
+  states:[['person','แก้ไขบุคคลธรรมดา'],['company','แก้ไขนิติบุคคล'],['add-person','เพิ่มบุคคลธรรมดา'],['add-company','เพิ่มนิติบุคคล'],['invalid-person','ไม่กรอกข้อมูลบังคับ · บุคคลธรรมดา'],['invalid-company','ไม่กรอกข้อมูลบังคับ · นิติบุคคล'],['invalid-format','เลขประจำตัวประชาชนและเบอร์ผิดรูปแบบ']],
+  previewMock:taxProfileMock,
+  notes:['ช่องตามสเปกเว็บเดิม: นิติบุคคลใช้ชื่อนิติบุคคล ชื่อธุรกิจ เลขผู้เสียภาษี 13 หลัก ส่วนบุคคลธรรมดาใช้ชื่อ นามสกุล เลขประจำตัวประชาชนที่ถูกต้อง','ไม่มีช่องสาขาตามสเปก ต้องให้นักบัญชียืนยันก่อนใช้จริง','กดเพิ่มข้อมูลใน C518 เปิดฟอร์มว่าง กดแก้ไขบนการ์ดเปิดฟอร์มพร้อมข้อมูลเดิม','ตรวจแต่ละช่องเมื่อออกจากช่องและก่อนบันทึก แก้ถูกแล้วข้อความหายทันที ข้อมูลที่กรอกไม่หาย','แก้ไขเฉพาะข้อมูลประเภทที่เลือก','ยกเลิกหรือปิดหน้าต่างโดยไม่เปลี่ยนข้อมูลที่บันทึกไว้'],
+  prep(S){const d=taxProfileDraft(S),st=S.st.taxprofileedit;d.kind=['company','add-company','invalid-company'].includes(st)?'co':'me';d.errors={};if(st?.startsWith('add-')||st?.startsWith('invalid-')){d.editKey=null;const f=d.drafts[d.kind]=taxProfileEntry(st==='invalid-format'?taxProfilePreview(d.kind):null,{},d.kind==='co');if(st==='invalid-format')Object.assign(f,{id:'1234567890123',phone:'12'});if(st.startsWith('invalid-'))d.errors=taxProfileErrors(d,{skipLoad:true});return;}d.preview={[d.kind]:{...taxProfilePreview(d.kind),profileKey:'preview-'+d.kind}};d.editKey=d.preview[d.kind].profileKey;d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');},
   render:ctx=>taxProfileForm(ctx.S,true,true),mount:taxProfileMount,
   close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(ctx.S,d),ctx.S.user,d.kind==='co');}
 });
@@ -6366,21 +6414,11 @@ TP.act('taxProfileAdd',()=>{const S=TP.S,d=taxProfileDraft(S);d.editKey=null;d.d
 TP.act('taxProfileEdit',b=>{const S=TP.S,d=taxProfileDraft(S);d.editKey=b.dataset.p;d.deleteConfirm=false;d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(S,d),S.user,d.kind==='co');return TP.sheet('taxprofileedit');});
 TP.act('taxProfileKind',b=>{const d=taxProfileDraft(TP.S);d.kind=b.dataset.v;d.errors={};return TP.refresh({anim:false});});
 TP.act('taxProfileAddressMode',b=>{const d=taxProfileDraft(TP.S),f=d.drafts[d.kind];f.mode=b.dataset.v;d.errors={};return taxProfileRedraw();});
-TP.act('taxProfileBranch',b=>{const d=taxProfileDraft(TP.S);d.drafts[d.kind].branchType=b.dataset.v;d.errors={};return taxProfileRedraw();});
 TP.act('taxProfileSave',async()=>{
-  const S=TP.S,d=taxProfileDraft(S),co=d.kind==='co',f=d.drafts[d.kind],id=f.id.replace(/\D/g,''),phone=f.phone.replace(/\D/g,''); d.errors={};
-  if(!taxProfileIdOk(id))d.errors.id=/^\d{13}$/.test(id)?'เลขนี้ไม่ถูกต้อง ตรวจอีกครั้ง':'ใส่ตัวเลข 13 หลัก';
-  for(const key of co?['name']:['first','last'])if(!f[key].trim())d.errors[key]='กรอก'+({name:'ชื่อนิติบุคคล',first:'ชื่อผู้รับ',last:'นามสกุลผู้รับ'}[key]);
-  if(!/^0\d{8,9}$/.test(phone))d.errors.phone='กรอกเบอร์โทรศัพท์ 9 หรือ 10 หลัก';
-  if(co&&f.branchType==='branch'&&!/^\d{5}$/.test(f.branch.trim()))d.errors.branch='กรอกรหัสสาขา 5 หลัก';
-  if(co&&f.branchType==='other'&&!f.branch.trim())d.errors.branch='ระบุสาขา';
-  for(const key of ['prov','amp','dist','detail'])if(!f[key].trim())d.errors[key]='กรอกข้อมูลให้ครบ';
-  if(!/^\d{5}$/.test(f.zip))d.errors.zip='กรอกรหัสไปรษณีย์ 5 หลัก';
-  if(f.mode==='select'&&d.addressState!=='ready')d.errors.prov='โหลดข้อมูลพื้นที่ให้สำเร็จ หรือเลือกกรอกเอง';
-  if(f.mode==='select'&&d.addressState==='ready'&&!TP.thaiAddressData.rows.some(r=>r.province===f.prov&&r.amphoe===f.amp&&r.district===f.dist&&String(r.zipcode)===f.zip))d.errors.dist='เลือกจังหวัด อำเภอ และตำบลให้สัมพันธ์กัน';
+  const S=TP.S,d=taxProfileDraft(S),co=d.kind==='co',f=d.drafts[d.kind],id=f.id.replace(/\D/g,''),phone=f.phone.replace(/\D/g,''); d.errors=taxProfileErrors(d);
   if(Object.keys(d.errors).length){await taxProfileRedraw();$('[aria-invalid="true"]',TP.sheetOpen()?.el || TP.cur()?.el)?.focus();return;}
-  const name=co?f.name.trim():`${f.first.trim()} ${f.last.trim()}`,branch=co?(f.branchType==='hq'?'สำนักงานใหญ่':f.branchType==='branch'?'สาขา '+f.branch.trim():f.branch.trim()):'',addr=[f.detail.trim(),f.dist.trim(),f.amp.trim(),f.prov.trim(),f.zip.trim(),f.country.trim()].filter(Boolean).join(' ');
-  const rec={profileKey:d.editKey||('tax-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),name,id,phone,branch,kind:co?'นิติบุคคล':'บุคคลธรรมดา',first:f.first.trim(),last:f.last.trim(),branchType:f.branchType,addressMode:f.mode,country:f.country.trim(),prov:f.prov.trim(),amp:f.amp.trim(),dist:f.dist.trim(),zip:f.zip.trim(),detail:f.detail.trim(),addr};
+  const name=co?f.name.trim():`${f.first.trim()} ${f.last.trim()}`,addr=[f.detail.trim(),f.village.trim(),f.alley.trim(),f.road.trim(),f.dist.trim(),f.amp.trim(),f.prov.trim(),f.zip.trim(),f.country.trim()].filter(Boolean).join(' ');
+  const rec={profileKey:d.editKey||('tax-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),name,business:f.business.trim(),id,phone,kind:co?'นิติบุคคล':'บุคคลธรรมดา',first:f.first.trim(),last:f.last.trim(),addressMode:f.mode,country:f.country.trim(),prov:f.prov.trim(),amp:f.amp.trim(),dist:f.dist.trim(),zip:f.zip.trim(),detail:f.detail.trim(),village:f.village.trim(),alley:f.alley.trim(),road:f.road.trim(),addr};
   const rows=TP.taxRecords(d.kind,S),index=rows.findIndex(r=>r.profileKey===d.editKey);if(index>=0)rows[index]=rec;else rows.push(rec);if(d.preview?.[d.kind]){d.previewLists||={};d.previewLists[d.kind]=rows;delete d.preview[d.kind];}TP.taxChoose(d.kind,rec.profileKey,S);d.editKey=rec.profileKey;S.rcNoAddr=false;S._taxProfileMockInitialized=true;
   if(TP.sheetOpen()?.id==='receiptprofile'){const order=TP.cur()?.ctx?.rc;if(order?.tax)Object.assign(order.tax,{who:d.kind,want:true});}
   TP.emit('state');if(['taxprofileedit','receiptprofile','checkouttaxedit'].includes(TP.sheetOpen()?.id))await TP.closeSheet();await TP.refresh({anim:false});TP.notify('บันทึกข้อมูลแล้ว',{icon:'circle-check'});
@@ -6499,7 +6537,7 @@ TP.act('afAlgAdd', async () => {
 const algRm = (d, v) => { d.allergies = d.allergies.filter(a => a !== v); if (!d.allergies.length) d.allergyState = 'unknown'; };
 TP.act('afAlgRm', t => { const d = TP.S._dr; if (!d) return; const v = t.dataset.v; if (phAlg(d).includes(v)) { TP.sheet('algdel', { v }); return; } algRm(d, v); TP.refresh({ anim: false }); });
 TP.sheetDef('algdel', {
-  group: 'account', title: 'ลบแพ้ยาที่เภสัชกรบันทึก', code: 'C513', host: 'health',
+  group: 'account', title: 'ลบแพ้ยาที่เภสัชกรบันทึก', code: 'C513', hidden:true, disabled:true, host: 'health',
   notes: ['ผู้ใช้จริง 21/10: กดกากบาทแล้วแพ้ยาที่เภสัชกรบันทึกหายเงียบ · ตอนนี้ถามก่อน และเภสัชกรเห็นว่าลูกค้าแจ้งลบ (ทำตอนสร้างจริง: ส่งเป็นคำขอให้เภสัชกรยืนยัน ไม่ลบจากประวัติการจ่ายยา)'],
   render(ctx) {
     const v = ctx.params?.v || 'ยานี้', d = TP.S._dr;
@@ -6726,7 +6764,7 @@ function hdEdit(S,ctx){
 }
 TP.screen('health',{
  group:'account',title:'ข้อมูลสุขภาพของฉัน',code:'C505',ref:'A11',parent:'account',
- states:[['normal','ดูข้อมูลสุขภาพ'],['unknown','ยังไม่ระบุ'],['sfx','ข้อมูลเดิมที่ผู้ใช้ระบุ', false],['edit','แก้ไขข้อมูล'],['none','ระบุว่าไม่มี'],['invalid','แก้ไขข้อมูลไม่ครบ'],['long-text','ข้อมูลหลายรายการ']],
+ states:[['normal','ดูข้อมูลสุขภาพ'],['unknown','ยังไม่ระบุ'],['sfx','ข้อมูลเดิมที่ผู้ใช้ระบุ', false],['edit','แก้ไขข้อมูล',false],['none','ระบุว่าไม่มี'],['invalid','แก้ไขข้อมูลไม่ครบ',false],['long-text','ข้อมูลหลายรายการ']],
  notes:['หน้าสรุปเป็นรายการพื้นขาวแบ่งหมวดด้วยเส้นบาง น้ำหนักและส่วนสูงแยกคนละบรรทัด กดดินสอเพื่อแก้เฉพาะหมวดในแผ่นแก้ไข','แสดงเฉพาะข้อมูลสุขภาพที่ผู้ใช้กรอกเอง ไม่มีการ์ดบันทึกจากเภสัชกร','ยังไม่ทราบต่างจากไม่มี ไม่เติมโรคประจำตัวเมื่อไม่มีข้อมูล','ยาที่ใช้ประจำ โรคประจำตัว แพ้อาหาร ใช้ไม่มี/ยังไม่ทราบ/ระบุข้อมูลแบบตอนสมัคร','ข้อมูลแพ้ยาเป็นข้อมูลที่ผู้ใช้พิมพ์เอง แก้ไขและบันทึกได้เหมือนหมวดอื่น ไม่ขึ้นกล่องยืนยันเภสัชกร'],
  prep(S){
   const st=S.st.health;if(!st)return;

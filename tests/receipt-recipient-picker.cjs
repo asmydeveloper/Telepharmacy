@@ -5,7 +5,7 @@ const source = fs.readFileSync('public/runtime/customer.js', 'utf8');
 const actions = {}, sheets = {}, rows = {me:[{profileKey:'person-1', name:'Person', id:'1234567890121', addr:'Saved address', phone:'0812345678'}],co:[]};
 const order = {tax:{who:'me',want:false}}, calls = [];
 const S = {_receiptTaxKind:'me'};
-const TP = {S,cur:()=>({ctx:{rc:order}}),taxRecords:k=>rows[k],taxSelected:k=>rows[k][0],
+const TP = {taxAddress:r=>r.addr||[r.detail,r.dist,r.amp,r.prov,r.zip].filter(Boolean).join(' '),S,cur:()=>({ctx:{rc:order}}),taxRecords:k=>rows[k],taxSelected:k=>rows[k][0],
 taxChoose:(k,key)=>calls.push(['choose',k,key]),act:(id,fn)=>actions[id]=fn,sheetDef:(id,def)=>sheets[id]=def,
 sheet:id=>calls.push(['sheet',id]),closeSheet:async()=>calls.push(['close']),refresh:async()=>calls.push(['refresh'])};
 const context = vm.createContext({TP,ui:{seg:()=>'',btn:()=>'',emptyArt:()=>'<svg></svg>'},ic:()=>'<svg></svg>',esc:s=>String(s??''),taxProfileDraft:()=>({drafts:{}}),taxProfileEntry:()=>({}),taxProfilePreview:()=>({}),$:()=>{},});

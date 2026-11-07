@@ -12,16 +12,16 @@
       "url": "/?screen=addressbook&state=normal&splash=0"
     },
     {
-      "code": "C514.2",
-      "state": "empty",
-      "label": "ยังไม่มีที่อยู่",
-      "url": "/?screen=addressbook&state=empty&splash=0"
+      "code": "C514.5",
+      "state": "main-changed",
+      "label": "แจ้งเตือน ตั้งเป็นที่อยู่หลักแล้ว",
+      "url": "/?screen=addressbook&state=main-changed&splash=0"
     },
     {
-      "code": "C514.3",
-      "state": "alternate",
-      "label": "เปลี่ยนที่อยู่หลัก",
-      "url": "/?screen=addressbook&state=alternate&splash=0"
+      "code": "C514.6",
+      "state": "address-saved",
+      "label": "แจ้งเตือน บันทึกที่อยู่แล้ว",
+      "url": "/?screen=addressbook&state=address-saved&splash=0"
     }
   ]
 }

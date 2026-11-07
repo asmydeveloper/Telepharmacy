@@ -16,6 +16,36 @@
       "state": "company",
       "label": "แก้ไขนิติบุคคล",
       "url": "/?screen=taxprofileedit&state=company&splash=0"
+    },
+    {
+      "code": "C519.3",
+      "state": "add-person",
+      "label": "เพิ่มบุคคลธรรมดา",
+      "url": "/?screen=taxprofileedit&state=add-person&splash=0"
+    },
+    {
+      "code": "C519.4",
+      "state": "add-company",
+      "label": "เพิ่มนิติบุคคล",
+      "url": "/?screen=taxprofileedit&state=add-company&splash=0"
+    },
+    {
+      "code": "C519.5",
+      "state": "invalid-person",
+      "label": "ไม่กรอกข้อมูลบังคับ · บุคคลธรรมดา",
+      "url": "/?screen=taxprofileedit&state=invalid-person&splash=0"
+    },
+    {
+      "code": "C519.6",
+      "state": "invalid-company",
+      "label": "ไม่กรอกข้อมูลบังคับ · นิติบุคคล",
+      "url": "/?screen=taxprofileedit&state=invalid-company&splash=0"
+    },
+    {
+      "code": "C519.7",
+      "state": "invalid-format",
+      "label": "เลขประจำตัวประชาชนและเบอร์ผิดรูปแบบ",
+      "url": "/?screen=taxprofileedit&state=invalid-format&splash=0"
     }
   ]
 }

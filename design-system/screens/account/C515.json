@@ -18,12 +18,6 @@
       "url": "/?screen=addressedit&state=edit&splash=0"
     },
     {
-      "code": "C515.3",
-      "state": "invalid",
-      "label": "ข้อมูลไม่ครบ",
-      "url": "/?screen=addressedit&state=invalid&splash=0"
-    },
-    {
       "code": "C515.8",
       "state": "form-required",
       "label": "ไม่กรอกข้อมูลบังคับ",
@@ -36,34 +30,16 @@
       "url": "/?screen=addressedit&state=form-phone&splash=0"
     },
     {
-      "code": "C515.10",
-      "state": "form-name",
-      "label": "ชื่อมีตัวเลข",
-      "url": "/?screen=addressedit&state=form-name&splash=0"
-    },
-    {
       "code": "C515.11",
       "state": "form-area",
       "label": "พื้นที่ยังเลือกไม่ครบ",
       "url": "/?screen=addressedit&state=form-area&splash=0"
     },
     {
-      "code": "C515.13",
-      "state": "form-split",
-      "label": "ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน",
-      "url": "/?screen=addressedit&state=form-split&splash=0"
-    },
-    {
       "code": "C515.14",
       "state": "form-legacy",
       "label": "ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ",
       "url": "/?screen=addressedit&state=form-legacy&splash=0"
-    },
-    {
-      "code": "C515.15",
-      "state": "form-details",
-      "label": "รายละเอียดอาคารยาวเกินกำหนด",
-      "url": "/?screen=addressedit&state=form-details&splash=0"
     }
   ]
 }

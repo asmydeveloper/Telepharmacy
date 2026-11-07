@@ -128,6 +128,14 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.S.sysOff=true;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');
   TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;
   const shell=fs.readFileSync('src/app/Shell.jsx','utf8'),nav=shell.slice(shell.indexOf("id: 'tabbar'"),shell.indexOf('</nav>',shell.indexOf('"id": "tabbar"')));assert(nav.indexOf('history')<nav.indexOf('quickConsult'));assert(nav.indexOf('quickConsult')<nav.indexOf('inbox'));assert(nav.includes('aria-label="ปรึกษาเภสัชกร"'));
+  {
+    const book=registrations.addressbook,toasts=[],savedNotify=TP.notify;TP.notify=m=>toasts.push(m);TP.S.addrs=TP.fresh().addrs;
+    TP.S.st.addressbook='main-changed';book.prep(TP.S);assert.equal(TP.S.addrs.find(x=>x.main).id,'a2');
+    book.mount(null,{S:TP.S});book.mount(null,{S:TP.S});assert.deepEqual(toasts,['ตั้งเป็นที่อยู่หลักแล้ว'],'the alert shows once');
+    TP.S.st.addressbook='normal';book.prep(TP.S);assert.equal(TP.S.addrs.find(x=>x.main).id,'a1','normal restores the primary address');
+    TP.S.st.addressbook='address-saved';book.prep(TP.S);book.mount(null,{S:TP.S});assert.equal(toasts.at(-1),'บันทึกที่อยู่แล้ว');
+    TP.S.st.addressbook=undefined;TP.notify=savedNotify;
+  }
   console.log('PASS: selected address, nearby coverage, primary address, branch details, empty/outside/unknown cases and screen registrations');
 })().catch(e=>{console.error(e);process.exitCode=1});
 
