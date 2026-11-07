@@ -202,22 +202,22 @@
 .rc-tax-pending-head {display:flex;align-items:center;gap:12px}
 .rc-tax-pending-icon {width:44px;height:44px;display:grid;place-items:center;flex:none;border-radius:12px;background:#e9f5f4;color:var(--semantic-primary)}
 .rc-tax-pending-head h3 {margin:0 0 5px}
-.rc-tax-pending-status {display:inline-flex;align-items:center;gap:5px;color:var(--semantic-primary);font-size:13px;font-weight:600}
-.rc-tax-pending-message {margin:16px 0 10px;color:var(--ink-2);font-size:14px}
-.rc-tax-pending-person {display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--semantic-border);padding-top:12px;font-size:14px}
+.rc-tax-pending-status {display:inline-flex;align-items:center;gap:5px;color:var(--semantic-primary);font-size:var(--type-body-sm-mobile-size);font-weight:600}
+.rc-tax-pending-message {margin:16px 0 10px;color:var(--ink-2);font-size:var(--type-body-sm-mobile-size)}
+.rc-tax-pending-person {display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--semantic-border);padding-top:12px;font-size:var(--type-body-sm-mobile-size)}
 .rc-tax-pending-person span {color:var(--ink-2)}
 .rc-tax-pending-person b {text-align:right}
 
 .rc-tax-pending-head + .rc-tax-pending-person { margin-top: 16px; }
 .rc-tax-pending-row { align-items: center; margin-top: 12px; }
-.rc-tax-pending-person .rc-tax-pending-tag { display: inline-block; padding: 5px 10px; border-radius: 999px; background: #fff2d6; color: #765400; font-size: 12px; font-weight: 600; text-align: right; }
+.rc-tax-pending-person .rc-tax-pending-tag { display: inline-block; padding: 5px 10px; border-radius: 999px; background: #fff2d6; color: #765400; font-size: var(--type-caption-mobile-size); font-weight: 600; text-align: right; }
 
 .rc-tax-status-card { padding:0; overflow:hidden; border:1px solid var(--semantic-border); border-radius:var(--radius-md); background:var(--semantic-surface); }
 .rc-tax-status-head { display:flex; align-items:center; gap:12px; padding:16px; background:#edf6f5; }
 .rc-tax-status-head h3 { margin:0 0 4px; }
 .rc-tax-status-head .rc-tax-pending-icon { background:#fff; }
 .rc-tax-status-body { padding:0 16px; }
-.rc-tax-status-line { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; font-size:14px; }
+.rc-tax-status-line { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; font-size:var(--type-body-sm-mobile-size); }
 .rc-tax-status-line + .rc-tax-status-line { border-top:1px solid var(--semantic-border); }
 .rc-tax-status-line > span:first-child { color:var(--ink-2); }
 .rc-tax-status-line b { text-align:right; }
@@ -235,3 +235,36 @@
 .pay-tax-recipient dl>div:last-child {border-bottom:0}
 .pay-tax-recipient dt {color:var(--ink-2)}
 .pay-tax-recipient dd {margin:0;text-align:right;overflow-wrap:anywhere}
+
+.reg-password{display:grid;gap:var(--space-3);padding-top:var(--space-4);border-top:1px solid var(--semantic-border-control)}
+.reg-password h3,.reg-password .field{margin:0}
+#regPasswordRules{display:grid;gap:var(--space-1);margin:0;padding:var(--space-3);list-style:none;background:var(--brand-tint);border-radius:var(--space-3);font-size:var(--type-body-sm-mobile-size)}
+#regPasswordRules li{display:flex;align-items:baseline;gap:var(--space-2)}
+.reg-rule-mark{width:1em;flex:none;text-align:center}
+.reg-rule-mark::before{content:"○"}
+.is-passed .reg-rule-mark::before{content:"✓";color:var(--brand);font-weight:700}
+.reg-rule-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+
+.reg-password-input{position:relative}
+.reg-password-input>.input{padding-inline-end:48px}
+.reg-password-toggle{position:absolute;inset-inline-end:0;inset-block:0;width:44px;display:grid;place-items:center;color:var(--brand);background:transparent;border:0;border-radius:var(--radius-md);cursor:pointer}
+.reg-password-toggle:focus-visible{outline-offset:-3px}
+
+/* Signup contact and inline SMS verification share form tokens. */
+.reg-signup-contact{display:grid;gap:var(--space-3);padding-bottom:var(--space-5);border-bottom:1px solid var(--semantic-border);min-width:0}
+.reg-signup-contact .field{margin:0;min-width:0}
+.reg-signup-contact .hint{margin:0}
+.reg-email-locked,.reg-phone-status,.reg-phone-status>span{display:flex;align-items:center;gap:var(--space-2)}
+.reg-phone-control{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:var(--space-2);row-gap:var(--space-2);margin-top:var(--space-3)}
+.reg-phone-control>.field{display:contents}
+.reg-phone-control>.field>label{grid-column:1 / -1;grid-row:1;margin:0}
+.reg-phone-control>.field>.input{grid-column:1;grid-row:2;min-width:0}
+.reg-phone-control>.field>.err-t{grid-column:1 / -1;grid-row:3;margin:0}
+.reg-phone-control>.btn{grid-column:2;grid-row:2}
+.reg-phone-control>.btn,.reg-phone-code-row>.btn{flex:none;width:auto;padding-inline:var(--space-3);white-space:nowrap}
+.reg-phone-status{justify-content:space-between;font-size:var(--text-small);color:var(--brand);flex-wrap:wrap}
+.reg-phone-status .txtbtn{min-height:44px;padding:var(--space-2)}
+.reg-phone-otp{display:grid;gap:var(--space-2);padding:var(--space-4);background:var(--brand-tint);border-radius:var(--radius-control)}
+.reg-phone-code-row{display:flex;gap:var(--space-2);min-width:0}
+.reg-phone-code-row>.input{min-width:0;flex:1;text-align:center;letter-spacing:.15em}
+.reg-phone-otp>.txtbtn{justify-self:start;min-height:44px}

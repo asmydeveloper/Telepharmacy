@@ -664,7 +664,7 @@ button.row:hover .st-call{background:var(--brand);color:var(--semantic-surface)}
 .st-dial .tk{stroke:var(--brand);stroke-width:1.1;stroke-linecap:round;opacity:.3}
 .st-dial .tk.mj{opacity:.75;stroke-width:1.6}
 .st-dial .arc{fill:none;stroke:var(--brand);stroke-width:7;stroke-linecap:round;stroke-dasharray:100;stroke-dashoffset:0}
-.st-dial .lb{font:600 11.5px var(--font);fill:var(--ink-3);letter-spacing:.02em}
+.st-dial .lb{font:600 var(--type-caption-mobile-size) var(--font);fill:var(--ink-3);letter-spacing:.02em}
 .st-dial .moon path{fill:none;stroke:var(--ink-4);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .st-dial .now{fill:var(--brand);stroke:var(--semantic-surface);stroke-width:2}
 .st-dial .now-r{fill:var(--brand);opacity:.25;transform-box:fill-box;transform-origin:center;animation:pulse-ring 2.2s var(--ease-out) infinite}
@@ -1178,8 +1178,6 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 .pay-br .small{margin-top:var(--space-1)}
 .pay-br-b{display:flex;flex-wrap:wrap;gap:var(--space-2);margin-top:var(--space-3)}
 /* PL courier block: indented under the options with a grey rule */
-.pay-cour{margin:var(--space-3) 0 0 var(--space-3);padding-left:var(--space-3);border-left:2px solid var(--cream-2)}
-.pay-cour .opt.po{min-height:56px}
 /* PL address card: saved rows in one card, edit on the right */
 #payAddrSec{display:flex;flex-direction:column;gap:var(--space-3);margin-top:var(--space-3)}
 #payAddrSec[hidden]{display:none}
@@ -1354,12 +1352,9 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 .vd-pcam b{font-size:var(--type-body-mobile-size)}
 .vd-pcam p{font-size:var(--type-body-sm-mobile-size);line-height:1.55;color:var(--on-brand-2)}
 .vd-pcam .gap8{width:100%;margin-top:var(--space-1)}
-.pd-code{display:flex;align-items:center;gap:var(--space-4)}
 .pd-code > div{flex:1;min-width:0;display:flex;flex-direction:column;gap:0}
-.pd-code small{font-size:var(--type-caption-mobile-size);color:var(--ink-3)}
 .pd-code b{font-size:var(--type-display-mobile-size);font-weight:800;letter-spacing:.12em;color:var(--brand);line-height:1.2}
 .pd-code span{font-size:var(--type-caption-mobile-size);color:var(--ink-3);line-height:1.5}
-.pd-qr{width:88px;height:88px;flex:none;fill:var(--ink);background:var(--semantic-surface);border-radius:var(--r-md)}
 /* owner 20/10: packed pickup medicine is kept 30 days */
 .pd-hold{display:flex;align-items:flex-start;gap:var(--space-2);margin:var(--space-3) 0 0;padding-top:var(--space-3);border-top:1px solid var(--hair);font-size:var(--type-body-sm-mobile-size);line-height:1.55;color:var(--ink-2)}
 .pd-hold .ic{flex:none;margin-top:0;color:var(--brand)}
@@ -1924,6 +1919,7 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 .fu-ans-t{flex:1;min-width:0;padding-top:var(--space-3)}
 .fu-ans-t b{display:block;font:600 var(--type-body-lg-mobile-size)/var(--type-body-lg-mobile-line) var(--font)}
 .fu-ans-t span{display:block;margin-top:0;font-size:var(--type-body-sm-mobile-size);line-height:1.5;color:var(--ink-3)}
+.history-assessment .fu-ans-t b{font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line)}
 .fu-ans .chev{flex:none;margin-top:var(--space-4);color:var(--ink-4)}
 @media (hover:hover){.fu-ans:hover:not(:disabled){box-shadow:var(--shadow-card),inset 0 0 0 1.5px var(--brand)}}
 .fu-ans:active:not(:disabled){transform:scale(.98);transition-duration:var(--dur-fast)}
@@ -1984,11 +1980,23 @@ ol.risk-l{list-style:decimal}ul.risk-l{list-style:disc}.risk-l li::marker{color:
 .fu-stats span{display:block;margin-top:0;font-size:var(--type-body-sm-mobile-size);color:var(--ink-3)}
 
 /* ---------- C410 reminder + C411 stop sheets ---------- */
-.fu-trow{cursor:pointer}
-.fu-time{min-height:44px;width:112px;flex:none;padding:0 var(--space-2);border:0;border-radius:var(--r-md);background:var(--semantic-surface);box-shadow:inset 0 0 0 1px var(--line);font:500 var(--type-body-mobile-size)/var(--type-body-mobile-line) var(--font);color:var(--ink);font-variant-numeric:tabular-nums;transition:box-shadow var(--dur) var(--ease)}
+.fu-trow{cursor:pointer;list-style:none}
+.fu-trow::-webkit-details-marker{display:none}
+#fuTimes.open > div,#fuTimes .group{overflow:visible}
+.fu-time-picker{position:relative}
+.fu-time-picker[open]{z-index:2}
+.fu-time-picker + .fu-time-picker{border-top:1px solid var(--line)}
+.fu-time-picker[open] .fu-time svg{transform:rotate(180deg)}
+.fu-time-options{position:absolute;inset-inline-end:var(--space-4);top:calc(100% - var(--space-2));width:min(168px,calc(100% - 2 * var(--space-4)));box-sizing:border-box;border:1px solid var(--line);border-radius:var(--r-xl);box-shadow:var(--shadow-card);display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2);padding:var(--space-2);background:var(--semantic-surface)}
+.fu-time-part>b{display:block;text-align:center;margin-bottom:var(--space-2);font-size:var(--type-label-mobile-size);line-height:var(--type-label-mobile-line)}
+.fu-time-values{display:grid;gap:4px;max-height:188px;overflow:auto;overscroll-behavior:contain}
+.fu-time-values button{min-height:44px;text-align:center;padding:0;border:1px solid var(--line);border-radius:var(--r-md);background:var(--semantic-surface);color:var(--ink);font:inherit;font-variant-numeric:tabular-nums}
+.fu-time-values button[aria-pressed="true"]{background:var(--brand);color:white;border-color:var(--brand)}
+.fu-time-values button:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.fu-time{display:flex;align-items:center;justify-content:space-between;min-height:44px;width:112px;flex:none;padding:0 var(--space-2);border:0;border-radius:var(--r-md);background:var(--semantic-surface);box-shadow:inset 0 0 0 1px var(--line);font:500 var(--type-body-mobile-size)/var(--type-body-mobile-line) var(--font);color:var(--ink);font-variant-numeric:tabular-nums;transition:box-shadow var(--dur) var(--ease)}
 .fu-time:hover{box-shadow:inset 0 0 0 1px var(--brand)}
-.fu-time:focus{outline:none;box-shadow:inset 0 0 0 2px var(--brand)}
-.fu-time.err{box-shadow:inset 0 0 0 2px var(--danger)}
+.fu-trow:focus-visible .fu-time{outline:none;box-shadow:inset 0 0 0 2px var(--brand)}
+.fu-trow.err .fu-time{box-shadow:inset 0 0 0 2px var(--danger)}
 .fu-err{display:flex;gap:var(--space-1);align-items:flex-start;margin:var(--space-3) var(--space-1) 0;font-size:var(--type-body-sm-mobile-size);line-height:1.5;color:var(--danger)}
 .fu-err>.ic{margin-top:0;flex:none}
 /* owner C410 19/10: the label stays dead centre like "ยกเลิก"; the icon sits to its left without pushing it */

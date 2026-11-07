@@ -14,13 +14,13 @@
     {
       "code": "C308.2",
       "state": "parcel",
-      "label": "ส่งด่วน (แทนตัวเลือกเดิม)",
+      "label": "จัดส่งปกติ",
       "url": "/?screen=pay&state=parcel&splash=0"
     },
     {
       "code": "C308.3",
       "state": "express",
-      "label": "ส่งด่วน ยังไม่ปักหมุด",
+      "label": "ส่งด่วน",
       "url": "/?screen=pay&state=express&splash=0"
     },
     {
@@ -84,24 +84,6 @@
       "url": "/?screen=pay&state=checking&splash=0"
     },
     {
-      "code": "C308.14",
-      "state": "expmap",
-      "label": "ส่งด่วน ปักหมุดเองบนแผนที่",
-      "url": "/?screen=pay&state=expmap&splash=0"
-    },
-    {
-      "code": "C308.15",
-      "state": "exppin",
-      "label": "ส่งด่วน ยืนยันตำแหน่งแล้ว",
-      "url": "/?screen=pay&state=exppin&splash=0"
-    },
-    {
-      "code": "C308.16",
-      "state": "locdeny",
-      "label": "ส่งด่วน ไม่ให้สิทธิ์ตำแหน่ง",
-      "url": "/?screen=pay&state=locdeny&splash=0"
-    },
-    {
       "code": "C308.17",
       "state": "far",
       "label": "กรุงเทพแต่เกิน 15 กม.",
@@ -132,30 +114,6 @@
       "url": "/?screen=pay&state=unlock&splash=0"
     },
     {
-      "code": "C308.22",
-      "state": "map-ready",
-      "label": "ยืนยันหมุดตำบล",
-      "url": "/?screen=pay&state=map-ready&splash=0"
-    },
-    {
-      "code": "C308.23",
-      "state": "map-outside",
-      "label": "หมุดนอกตำบล",
-      "url": "/?screen=pay&state=map-outside&splash=0"
-    },
-    {
-      "code": "C308.24",
-      "state": "map-error",
-      "label": "โหลดขอบเขตตำบลไม่ได้",
-      "url": "/?screen=pay&state=map-error&splash=0"
-    },
-    {
-      "code": "C308.25",
-      "state": "map-saved",
-      "label": "บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ",
-      "url": "/?screen=pay&state=map-saved&splash=0"
-    },
-    {
       "code": "C308.26",
       "state": "coupon-valid",
       "label": "โค้ดส่วนลดใช้ได้",
@@ -172,6 +130,12 @@
       "state": "coupon-expired",
       "label": "โค้ดส่วนลดหมดอายุ",
       "url": "/?screen=pay&state=coupon-expired&splash=0"
+    },
+    {
+      "code": "C308.29",
+      "state": "order-expired",
+      "label": "หมดเวลาชำระค่ายา",
+      "url": "/?screen=pay&state=order-expired&splash=0"
     }
   ]
 }

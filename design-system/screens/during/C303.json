@@ -24,12 +24,6 @@
       "url": "/?screen=room&state=paid&splash=0"
     },
     {
-      "code": "C303.4",
-      "state": "expired",
-      "label": "รายการหมดอายุ",
-      "url": "/?screen=room&state=expired&splash=0"
-    },
-    {
       "code": "C303.5",
       "state": "offline",
       "label": "ไม่มีอินเทอร์เน็ต",
@@ -112,12 +106,6 @@
       "state": "payment-soon",
       "label": "จบแชท เหลือชำระ 1 นาที",
       "url": "/?screen=room&state=payment-soon&splash=0"
-    },
-    {
-      "code": "C303.20",
-      "state": "closed-payexpired",
-      "label": "จบแชท หมดเวลาชำระ",
-      "url": "/?screen=room&state=closed-payexpired&splash=0"
     }
   ]
 }

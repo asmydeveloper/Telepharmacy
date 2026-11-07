@@ -1,15 +1,15 @@
 {
   "code": "C113",
-  "screen": "marketingconsent",
-  "title": "ความยินยอมรับข่าวสาร",
+  "screen": "registermethod",
+  "title": "ลงทะเบียนสมาชิก",
   "group": "start",
   "kind": "sheet",
   "cases": [
     {
       "code": "C113",
       "state": "normal",
-      "label": "อ่านรายละเอียด ไม่เปลี่ยนการเลือก",
-      "url": "/?screen=marketingconsent&state=normal&splash=0"
+      "label": "เลือกช่องทางลงทะเบียน",
+      "url": "/?screen=registermethod&state=normal&splash=0"
     }
   ]
 }

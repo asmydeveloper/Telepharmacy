@@ -8,44 +8,32 @@
     {
       "code": "C414.1",
       "state": "transit",
-      "label": "กำลังขนส่ง",
+      "label": "จัดส่งปกติ · กำลังขนส่ง",
       "url": "/?screen=track&state=transit&splash=0"
     },
     {
       "code": "C414.2",
       "state": "delivered",
-      "label": "ส่งถึงแล้ว",
+      "label": "ขนส่งแจ้งว่าส่งถึงแล้ว",
       "url": "/?screen=track&state=delivered&splash=0"
     },
     {
       "code": "C414.3",
       "state": "received",
-      "label": "กดได้รับยาแล้ว",
+      "label": "ลูกค้ายืนยันว่าได้รับยาแล้ว",
       "url": "/?screen=track&state=received&splash=0"
-    },
-    {
-      "code": "C414.4",
-      "state": "cold",
-      "label": "ส่งเย็น Inter Express",
-      "url": "/?screen=track&state=cold&splash=0"
     },
     {
       "code": "C414.5",
       "state": "rider",
-      "label": "ส่งด่วน Lalamove",
+      "label": "ส่งด่วน · ไรเดอร์กำลังจัดส่ง",
       "url": "/?screen=track&state=rider&splash=0"
     },
     {
       "code": "C414.6",
       "state": "prep",
-      "label": "ร้านยังไม่ส่งของ",
+      "label": "จัดส่งปกติ · ร้านกำลังเตรียมยา",
       "url": "/?screen=track&state=prep&splash=0"
-    },
-    {
-      "code": "C414.7",
-      "state": "coldlink",
-      "label": "ส่งเย็น ร้านแปะลิงก์ติดตาม",
-      "url": "/?screen=track&state=coldlink&splash=0"
     },
     {
       "code": "C414.8",
@@ -70,6 +58,12 @@
       "state": "chat-delivered",
       "label": "สนทนา: จัดส่งเสร็จสิ้น",
       "url": "/?screen=track&state=chat-delivered&splash=0"
+    },
+    {
+      "code": "C414.12",
+      "state": "out",
+      "label": "จัดส่งปกติ · กำลังนำส่ง",
+      "url": "/?screen=track&state=out&splash=0"
     }
   ]
 }

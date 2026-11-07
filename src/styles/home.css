@@ -20,7 +20,7 @@
 .hm-banner :focus-visible {outline-color:var(--semantic-surface)}
 .phone:has(.scr[data-screen=home])>.sbar {color:var(--semantic-surface);background:linear-gradient(to bottom,rgb(var(--color-primary-deep-rgb) / .98),rgb(var(--color-primary-deep-rgb) / .86) 65%,transparent)}
 .phone:has(.scr[data-screen=home])>.homebar {background:var(--ink)}
-.hm-mini-menu {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-2);padding:0;border:0;background:transparent;box-shadow:none}
+.hm-mini-menu {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-2);padding:0;border:0;background:transparent;box-shadow:none}
 .hm-mini-item {display:grid;grid-template-rows:44px auto;justify-items:center;align-content:start;gap:var(--space-2);min-width:0;min-height:72px;text-align:center;border-radius:var(--radius-control)}
 .hm-mini-icon {display:grid;place-items:center;width:44px;height:44px;background:var(--brand-tint);color:var(--brand);border-radius:var(--radius-control)}
 .hm-mini-item>span:last-child {font-size:var(--type-caption-mobile-size);line-height:1.5;font-weight:500;white-space:nowrap}
@@ -48,8 +48,6 @@
 .hm-branch-copy>strong {font-size:var(--type-body-mobile-size);line-height:1.4;padding-right:var(--space-6);overflow-wrap:anywhere}
 .hm-branch-copy>span {display:flex;align-items:center;gap:var(--space-1);font-size:var(--type-caption-mobile-size);line-height:1.5;color:var(--ink-3)}
 .hm-branch-copy .hm-branch-status {color:var(--ink);font-weight:500}.hm-branch-arrow {color:var(--brand)}
-.hm-branch-favorite {position:absolute;right:4px;top:4px;width:44px;height:44px;display:grid;place-items:center;z-index:1;color:var(--brand);border-radius:var(--radius-control)}
-.hm-branch-favorite[aria-pressed=true]>.ic,.hm-favorite-button[aria-pressed=true]>.ic {fill:currentColor}
 .hm-branch-open:focus-visible {outline:2px solid var(--brand);outline-offset:-3px}.hm-branch-open:hover {background:var(--brand-soft)}
 .hm-other-stores>summary {display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);min-height:44px;font-size:var(--type-body-sm-mobile-size);color:var(--brand);list-style:none;cursor:pointer}
 .hm-other-stores>summary::-webkit-details-marker {display:none}.hm-other-stores>div {display:grid;gap:var(--space-2)}
@@ -74,13 +72,13 @@
 .hm-store-pharm {display:flex;align-items:center;gap:var(--space-3)}.hm-store-pharm b,.hm-store-pharm span {display:block}.hm-store-pharm span {font-size:var(--type-caption-mobile-size);color:var(--ink-3)}
 .hm-store-links {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}.hm-store-links a {background:var(--semantic-surface);display:flex;align-items:center;justify-content:center;gap:var(--space-2);min-height:44px;border:1px solid var(--line-soft);border-radius:var(--radius-control);color:var(--brand)}
 .hm-consult-options {display:grid;gap:var(--space-2);width:100%}.hm-consult-options>p {font-size:var(--type-body-sm-mobile-size);font-weight:600;margin:0}.hm-consult-options>div {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-3)}.hm-consult-options .btn {min-width:0;padding:var(--space-3);gap:var(--space-2);font-size:var(--type-body-sm-mobile-size)}
-.hm-loading {display:grid;gap:var(--space-6)}.hm-loading-shortcuts {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--space-3)}.hm-loading-shortcuts>span {height:64px;border-radius:var(--radius-md)}.hm-loading-card {height:132px;border-radius:var(--radius-lg)}
+.hm-loading {display:grid;gap:var(--space-6)}.hm-loading-shortcuts {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--space-3)}.hm-loading-shortcuts>span {height:64px;border-radius:var(--radius-md)}.hm-loading-card {height:132px;border-radius:var(--radius-lg)}
 @container app (max-width:360px){.hm-banner-copy h2 {font-size:var(--type-h2-mobile-size)}.hm-banner-copy>span {font-size:var(--type-caption-mobile-size)}.hm-branch-open {grid-template-columns:80px minmax(0,1fr) 14px;gap:var(--space-2)}.hm-branch-open>img{width:80px}.hm-branch-copy>strong{font-size:var(--type-body-sm-mobile-size)}}
 
 .hm-store-list {display:grid;gap:0}
 .hm-store-list .hm-branch-tile + .hm-branch-tile {border-top:1px solid var(--line-soft)}
 
-.hm-banner-copy h2 {font-size:clamp(18px,5.6cqi,24px)}
+.hm-banner-copy h2 {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line)}
 .hm-banner-copy h2>span {white-space:nowrap}
 /* C212: task-first overview, then meaningful information groups. */
 .bc-organized {gap:var(--space-6);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line)}
@@ -125,28 +123,10 @@
 .hm-mini-item:active .hm-mini-art {background:var(--brand-tint);transform:scale(.96)}
 
 .bc-identity-head {display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:start;gap:var(--space-3)}
-.phone .bc-favorite {width:44px;height:44px;min-height:44px;border-radius:var(--radius-md);color:var(--brand);background:var(--brand-tint)}
 .bc-availability>span:empty {display:none}
 .phone .bc-availability>.tag.ok {background:var(--store-status-open-background);color:var(--semantic-success-text)}
 
-/* C211 uses the same pharmacy rows as C201. */
-.scr[data-screen=favorites] {background:var(--semantic-surface)}
-.fav-content {display:grid;gap:var(--space-3)}
-.fav-intro {display:grid;gap:var(--space-1);padding:0 0 var(--space-2)}
-.fav-intro p {margin:0;font-size:var(--text-body);color:var(--ink)}
-.fav-intro>span {font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--ink-3)}
-.fav-address-note {display:flex;align-items:flex-start;gap:var(--space-3);padding:var(--space-4);background:var(--brand-tint);border-radius:var(--radius-md);color:var(--brand)}
-.fav-address-note>div {min-width:0}.fav-address-note b {display:block;font-size:var(--text-small)}
-.fav-empty {display:grid;justify-items:center;gap:var(--space-4);padding:var(--space-8) var(--space-4);text-align:center}
-.fav-empty>.ic {box-sizing:content-box;padding:var(--space-5);background:var(--brand-tint);border-radius:var(--radius-xl);color:var(--brand)}
-.fav-empty h2 {margin:0;font-size:var(--text-heading);line-height:var(--type-h3-mobile-line)}
-.fav-empty p {margin:0;max-width:30ch;font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--ink-3)}
-.fav-empty>.btn {margin-top:var(--space-2)}
 
-.hm-store-actions {display:grid;gap:var(--space-3)}
-.hm-store-actions>p {margin:0;font-size:var(--text-small);color:var(--ink-3)}
-.hm-store-action {display:flex;align-items:center;gap:var(--space-3);width:100%;min-height:56px;padding:var(--space-3) var(--space-4);border-radius:var(--radius-md);background:var(--brand-tint);color:var(--brand);text-align:left;font-size:var(--text-body)}
-.hm-store-action:hover {background:var(--brand-soft)}
 
 .phone .hm-banner .hm-delivery-select,.phone .hm-banner .hm-banner-heart {border-color:transparent;box-shadow:none}
 
@@ -201,7 +181,7 @@
 .hm-mini-menu .hm-mini-icon.hm-mini-art {background:transparent}
 .hm-mini-menu .hm-mini-art img {width:52px;height:52px}
 
-.hm-banner-copy .hm-greeting {margin:0 0 var(--space-2);font-size:calc(var(--type-h1-mobile-size) - 2px);line-height:1.35;overflow-wrap:anywhere}
+.hm-banner-copy .hm-greeting {margin:0 0 var(--space-2);font-size:var(--type-h2-mobile-size);line-height:var(--type-h2-mobile-line);overflow-wrap:anywhere}
 .hm-banner-copy .hm-brand-message {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line);font-weight:var(--weight-medium);color:var(--semantic-surface)}
 .phone .hm-banner .hm-banner-heart>.ic {fill:var(--semantic-surface);stroke:var(--semantic-surface);filter:drop-shadow(0 1px 2px rgb(var(--color-primary-deep-rgb) / .4))}
 
@@ -292,7 +272,7 @@
 .chat-delivery-section h3 {display:flex;align-items:center;gap:var(--space-2);font-size:var(--type-body-mobile-size);margin:0 0 var(--space-3)}
 .chat-delivery-section p {line-height:1.6;margin:var(--space-2) 0}
 .chat-delivery-section .tl {margin:0}
-.fulfillment-card h2 {font-size:22px;line-height:1.5}
+.fulfillment-card h2 {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line)}
 
 /* C501: generated quiet cover; the center stays clear for account identity. */
 .scr[data-screen=account]>.app-page {

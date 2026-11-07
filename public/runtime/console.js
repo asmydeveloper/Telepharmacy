@@ -1426,7 +1426,7 @@ function pcFind(code) {
 function pcResHtml() {
   const pc = SC.S.pc || {}, r = pc.res;
   if (pc.err) return `<p class="err-t mt8" id="pcErr">${ic('circle-x', 14, 2)}<span>${esc(pc.err).replace(/0\d{1,2}-\d{3}-\d{4}/g, '<span class="nowrap">$&</span>')}</span></p>`;
-  if (!r) return '<p class="small mt8">ลูกค้าเปิดแอปแล้วแตะ "รหัสรับยา" ที่หน้าแรก หรือใช้เครื่องสแกนยิงลงช่องนี้</p>';
+  if (!r) return '<p class="small mt8">ลูกค้าเปิดแอปแล้วแตะ "รหัสรับยา" ที่หน้าแรก</p>';
   const unpk = r.can && !r.ready, over = r.can && r.over, tag = unpk ? ui.tag('ชำระแล้ว ยังไม่ได้จัดยา', 'warn', { icon: 'scan-barcode' }) : over ? ui.tag('เลยกำหนดรับ', 'warn', { icon: 'clock' }) : r.can ? ui.tag('ชำระแล้ว รับที่ร้าน', 'ok', { icon: 'circle-check' }) : r.handed ? ui.tag(`ส่งมอบแล้ว ${r.handed}`, 'ok', { icon: 'check' }) : r.status === 'sent' ? ui.tag('ยังไม่ชำระ', 'warn', { icon: 'clock' })
     : r.status === 'paid' ? ui.tag('ชำระแล้ว ไม่ได้รับที่ร้าน', 'muted', { icon: 'truck' }) : ui.tag(r.status === 'expired' ? 'หมดเวลา' : 'ยกเลิกแล้ว', 'muted', { icon: 'x' });
   const why = unpk ? 'ยังไม่ได้จัดยาและสแกนบาร์โค้ด ส่งมอบไม่ได้ กด "จัดยา" สแกนให้ครบก่อน แล้วค้นรหัสอีกครั้ง' : r.can ? '' : r.handed ? 'รายการนี้ส่งมอบแล้ว ไม่ต้องส่งมอบซ้ำ ถ้าลูกค้ายืนยันว่ายังไม่ได้รับยา ให้ตรวจกับเภสัชกรประจำวัน'
@@ -3190,10 +3190,9 @@ function fulfil(st, o) {
         : !o.ready ? `<p class="small mt12">จัดยาให้ครบแล้วกดแจ้งลูกค้า ลูกค้าได้รับแจ้งเตือนว่ายาพร้อมรับ</p><div class="gap8 mt12">${ui.btn('ยาพร้อมรับแล้ว แจ้งลูกค้า', { block: true, a: 'ready', v: o.key, icon: 'bell' })}</div>`
         : `<div class="mt12">${ui.note(`<b>แจ้งลูกค้าแล้ว ${esc(o.ready)} ยาพร้อมรับ</b>`, { tone: 'ok' })}</div>
           <p class="label mt16">ลูกค้ามารับยา</p>
-          ${ui.btn('สแกน QR จากจอลูกค้า', { block: true, a: 'pkScan', v: o.key, icon: 'qr-code', cls: 'mt8' })}
           <p class="pk-or small">หรือพิมพ์รหัส</p>
           <div>${ui.field({ id: 'pkCode', label: 'รหัสรับยา 4 ตัวที่ลูกค้าแสดง', max: 11, req: true, ph: 'เช่น K7P2', error: SC.S.pkErr === 'empty' ? 'ใส่รหัสรับยา 4 ตัวที่ลูกค้าแสดง' : SC.S.pkErr ? 'รหัสไม่ตรง ตรวจกับจอของลูกค้าอีกครั้ง' : '' })}</div>
-          ${ui.btn('ยืนยันส่งมอบยา', { kind: 'secondary', block: true, a: 'handOver', v: o.key, icon: 'check', cls: 'mt8' })}<p class="small mt8">ตรวจชื่อผู้รับให้ตรงกับเคสก่อนส่งมอบ · เครื่องสแกนแบบยิงก็ใช้ได้ ยิงลงช่องรหัสแล้วกดยืนยัน</p>`}
+          ${ui.btn('ยืนยันส่งมอบยา', { kind: 'secondary', block: true, a: 'handOver', v: o.key, icon: 'check', cls: 'mt8' })}<p class="small mt8">ตรวจชื่อผู้รับให้ตรงกับเคสก่อนส่งมอบ</p>`}
       </div><div class="card mt12"><p class="small">ร้านจัดยาต่อได้หลังปิดเคส ไม่ต้องรอ · ใบสรุปส่งให้ลูกค้าทันทีที่ปิดเคส</p>${closeBtn}</div>`;
   if (o.paid.recv === 'parcel') return `<div class="card"><div class="card-h"><h3>จัดส่งพัสดุ</h3>${tagPaid}</div>
       ${ui.kv([['ขนส่ง', 'Flash Express · 1-3 วัน'], ['ส่งไปที่', esc(SC.HOME_TO)], ['เขตส่งยา', esc(SC.zoneTxt(SC.HOME_TO, SC.HOME_KM))]])}
@@ -3211,14 +3210,14 @@ function fulfil(st, o) {
 SC.screen('pay', {
   code: 'S304', group: 3, duty: true, title: 'ชำระเงินและจัดยา', nav: 'queue',
   states: [['wait', 'รอชำระ', { cust: [['room', 'order', 'การ์ดรายการยา รอชำระ'], ['pay', 'normal']] }],
-    ['pickup', 'ชำระแล้ว รับที่ร้าน', { cust: [['paid', 'pickup', 'รหัสรับยาและ QR · พร้อมเพย์ ฿385 เวลา 14:33'], ['room', 'paid']] }],
+    ['pickup', 'ชำระแล้ว รับที่ร้าน', { cust: [['paid', 'pickup', 'รหัสรับยา · พร้อมเพย์ ฿385 เวลา 14:33'], ['room', 'paid']] }],
     ['parcel', 'ชำระแล้ว ส่งพัสดุ', { cust: [['paid', 'parcel', 'พร้อมเพย์ ฿410 (ค่ายา ฿385 + ค่าส่ง ฿25)'], ['pay', 'parcel']] }],
     ['express', 'ชำระแล้ว ส่งด่วน', { cust: [['paid', 'express', 'พร้อมเพย์ ฿474 (ค่ายา ฿385 + ค่าส่ง ฿89)'], ['pay', 'express']] }],
     ['failed', 'ลูกค้าจ่ายไม่ผ่าน', { cust: [['payfail', 'card']] }],
     ['expired', 'รายการหมดเวลา', { cust: [['room', 'expired']] }],
     ['edit', 'แก้รายการ ออกใหม่', { back: 'wait', cust: [['room', 'order', 'ลิงก์เดิมใช้ไม่ได้ทันทีเมื่อยกเลิก']] }],
     ['cold', 'ชำระแล้ว ส่งเย็น Inter Express', { cust: [['paid', 'cold', 'ลูกค้าเห็นเลขพัสดุ Inter Express เมื่อร้านใส่เลข (C309.8)'], ['pay', 'cold', 'ค่าส่งเย็น ฿300 คงที่']] }]],
-  notes: ['เคาะแล้ว 20/10: เรียกไรเดอร์และจองขนส่งใช้ขั้นตอนเดิมของระบบเว็บ หรืออาจนำระบบเดิมมาสร้างใหม่ ตัดสินตอนสร้างจริง ปุ่มในจอนี้เป็นตัวแทนของขั้นตอนนั้น (เจ้าของ: "ต่อ api จากระบบ website มี flow ตรงนั้นอยู่แล้ว" · "หรืออาจจะต้องเอาระบบเดิมมาสร้างใหม่")', 'รีวิว UX 20/10: หัวจอ "ชำระเงินและจัดยา" + แถบเคส (ชื่อ แพ้ยา ยาประจำ + 4 ขั้น) · ปุ่มทึบปุ่มเดียวคืองานจัดยาขั้นถัดไป · ปิดเคสอยู่ที่ขั้น 4 ของแถบเคสที่เดียว · แก้หรือยกเลิกรายการรวมเป็นปุ่มข้อความเล็กปุ่มเดียว เปิดหน้าต่างเลือก 2 ทาง', 'ยอดและเวลาตรงกับแอปลูกค้า: พร้อมเพย์ 14:33 · รับที่ร้าน ฿385 · ส่งพัสดุ ฿410 · ส่งด่วน ฿474 (จ่ายด้วยบัตรมีแค่ในหน้าชำระ C308 ฿399.05)', 'วิธีรับยา 3 ทาง: รับที่ร้าน · ส่งด่วน Lalamove · ส่งพัสดุ Flash (1-3 วัน) หรือ DHL (1-2 วัน) ตามแอปลูกค้า', 'รับที่ร้าน: กดแจ้งยาพร้อม แล้วใส่รหัสรับยา 4 ตัวท้ายของเลขรายการ (XR4A) ไทม์ไลน์ขยับเป็น "ลูกค้ารับยาแล้ว"', '19/10 เจ้าของถาม "ฝั่ง staff ต้องมี scan QR ที่เข้ากับ 309 ได้ด้วยถูกมั้ย": เพิ่มปุ่ม สแกน QR จากจอลูกค้า (กล้องของเครื่องร้าน) ตรวจแล้วบอกว่าตรงกับรายการนี้ไหมก่อนส่งมอบ · เครื่องสแกนแบบยิงยิงลงช่องรหัสได้ · QR เก็บแค่เลขรายการ ไม่มีชื่อหรือยา', 'ปิดเคสก่อนลูกค้าจ่ายได้ รายการไปรอที่กล่องรอชำระ / รอรับที่ร้านบนหน้าคิว', 'ที่อยู่จัดส่งแสดงแค่ตำบล อำเภอ จังหวัด ที่อยู่เต็มอยู่บนใบปะหน้า (ใช้ข้อมูลเท่าที่จำเป็น)', 'สถานะในแผงตรวจใช้รายการ 3 ตัวแบบเดียวกับแอปลูกค้า (฿385)'],
+  notes: ['เคาะแล้ว 20/10: เรียกไรเดอร์และจองขนส่งใช้ขั้นตอนเดิมของระบบเว็บ หรืออาจนำระบบเดิมมาสร้างใหม่ ตัดสินตอนสร้างจริง ปุ่มในจอนี้เป็นตัวแทนของขั้นตอนนั้น (เจ้าของ: "ต่อ api จากระบบ website มี flow ตรงนั้นอยู่แล้ว" · "หรืออาจจะต้องเอาระบบเดิมมาสร้างใหม่")', 'รีวิว UX 20/10: หัวจอ "ชำระเงินและจัดยา" + แถบเคส (ชื่อ แพ้ยา ยาประจำ + 4 ขั้น) · ปุ่มทึบปุ่มเดียวคืองานจัดยาขั้นถัดไป · ปิดเคสอยู่ที่ขั้น 4 ของแถบเคสที่เดียว · แก้หรือยกเลิกรายการรวมเป็นปุ่มข้อความเล็กปุ่มเดียว เปิดหน้าต่างเลือก 2 ทาง', 'ยอดและเวลาตรงกับแอปลูกค้า: พร้อมเพย์ 14:33 · รับที่ร้าน ฿385 · ส่งพัสดุ ฿410 · ส่งด่วน ฿474 (จ่ายด้วยบัตรมีแค่ในหน้าชำระ C308 ฿399.05)', 'วิธีรับยา 3 ทาง: รับที่ร้าน · ส่งด่วน Lalamove · ส่งพัสดุ Flash (1-3 วัน) หรือ DHL (1-2 วัน) ตามแอปลูกค้า', 'รับที่ร้าน: กดแจ้งยาพร้อม แล้วใส่รหัสรับยา 4 ตัวท้ายของเลขรายการ (XR4A) ไทม์ไลน์ขยับเป็น "ลูกค้ารับยาแล้ว"', 'ปิดเคสก่อนลูกค้าจ่ายได้ รายการไปรอที่กล่องรอชำระ / รอรับที่ร้านบนหน้าคิว', 'ที่อยู่จัดส่งแสดงแค่ตำบล อำเภอ จังหวัด ที่อยู่เต็มอยู่บนใบปะหน้า (ใช้ข้อมูลเท่าที่จำเป็น)', 'สถานะในแผงตรวจใช้รายการ 3 ตัวแบบเดียวกับแอปลูกค้า (฿385)'],
   wait: [],
   head: () => ({ title: 'ชำระเงินและจัดยา', sub: SC.branch().name }),
   now: ctx => ({ date: SC.NOW.date, time: { wait: SC.at('14:20'), edit: SC.at('14:24'), failed: '14:31', expired: '16:21' }[ctx.st] || '14:34' }),
@@ -3268,7 +3267,6 @@ SC.screen('pay', {
   },
   sims: ({ st }) => {
     const o = SC.S.orders[SC.cur()?.p?.k || 'smj'];
-    if (o?.status === 'paid' && o.paid?.recv === 'pickup' && !o.handed) return [{ label: 'ลูกค้ายื่น QR ของรายการอื่น (สแกนครั้งถัดไป)', run: () => { SC.S.scanOther = true; SC.toast('จำลองแล้ว กด สแกน QR จากจอลูกค้า เพื่อดู', 'qr-code'); } }];
     if (!o || o.status !== 'sent') return [];
     const paidAs = (r, label) => ({ label, run: () => { SC.go('pay', { st: r, p: { k: o.key } }); SC.toast(`ลูกค้าชำระแล้ว ${SC.money(total(o) + PAY[r].ship)} ทางพร้อมเพย์`, 'circle-check'); } });
     /* item 71: a way the pharmacist closed for this list cannot be chosen by the customer */
@@ -3301,27 +3299,10 @@ SC.act('ready', async t => { await SC.busy(t, 500); SC.S.orders[t.dataset.v].rea
 SC.act('handOver', async t => {
   const o = SC.S.orders[t.dataset.v], v = $('#pkCode');
   const val = v.value.trim().toUpperCase();
-  /* the 4-character code, or the whole order no that a handheld scanner types from the customer's QR */
+  /* Accept the pickup code or full order number for this order. */
   if (val !== o.no.slice(-4) && val !== o.no) { SC.S.pkErr = val ? 'bad' : 'empty'; SC.refresh(); requestAnimationFrame(() => $('#pkCode')?.focus()); return; }
   await SC.busy(t, 500); SC.S.pkErr = false; o.handed = SC.clockStr(); SC.refresh(); SC.toast(`บันทึกแล้ว ลูกค้ารับยาเรียบร้อย ${o.handed}`, 'check');
 });
-/* camera scan of the customer's pickup QR (C309). The QR holds the order no only */
-const scanOv = () => {
-  const sc = SC.S.scan, o = SC.S.orders[sc.k], c = SC.CASES[o.key], p = SC.casePerson(c);
-  const body = sc.st === 'look' ? `<div class="scan-cam" role="img" aria-label="ภาพจากกล้อง กำลังหา QR"><span class="scan-fr"></span><span class="scan-ln"></span></div><p class="small mt12">ให้ลูกค้าเปิดจอ ชำระสำเร็จ หรือแตะ รหัสรับยา ที่หน้าแรกของแอป แล้วหันจอมาที่กล้อง</p>`
-    : sc.st === 'ok' ? `${ui.note(`<b>ตรงกับรายการนี้</b><p>รายการ <span class="mono">${esc(o.no)}</span> · รหัสรับยา <span class="mono">${esc(o.no.slice(-4))}</span> · ${esc(p.name)}</p>`, { tone: 'ok' })}<p class="small mt12">ถามชื่อผู้รับให้ตรงกับเคสก่อนส่งมอบ</p>`
-    : ui.note('<b>QR นี้ไม่ใช่ของรายการนี้</b><p>อาจเป็นรายการอื่น หรือรายการที่รับยาไปแล้ว · ตรวจกับลูกค้าอีกครั้ง หรือพิมพ์รหัสรับยาแทน</p>', { tone: 'danger' });
-  const foot = sc.st === 'ok' ? `${ui.btn('ยกเลิก', { kind: 'secondary', a: 'ovClose' })}${ui.btn('ยืนยันส่งมอบยา', { a: 'pkScanGo', v: o.key, icon: 'check' })}`
-    : sc.st === 'other' ? `${ui.btn('ปิด', { kind: 'secondary', a: 'ovClose' })}${ui.btn('สแกนอีกครั้ง', { a: 'pkScan', v: o.key, icon: 'qr-code' })}` : ui.btn('ยกเลิก', { kind: 'secondary', a: 'ovClose' });
-  return `<div class="scrim" data-a="ovClose"></div><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mdT">
-    <div class="modal-h"><span class="brand-t">${ic('qr-code', 24, 2)}</span><div class="grow"><h2 id="mdT">สแกน QR รับยา</h2><p>รายการ ${esc(o.no)} · ${esc(p.name)}</p></div>${ui.ib('x', 'ปิด', { a: 'ovClose' })}</div>
-    <div class="modal-b" aria-live="polite">${body}</div><div class="modal-f">${foot}</div></div>`;
-};
-SC.act('pkScan', t => {
-  const k = t.dataset.v; SC.S.scan = { k, st: 'look' }; SC.openOv(scanOv);
-  setTimeout(() => { if (SC.S.ov === scanOv && SC.S.scan?.st === 'look') { SC.S.scan.st = SC.S.scanOther ? 'other' : 'ok'; SC.S.scanOther = false; SC.openOv(scanOv); } }, SC.RED() ? 200 : 1600);
-});
-SC.act('pkScanGo', async t => { const o = SC.S.orders[t.dataset.v]; await SC.busy(t, 500); SC.S.ov = null; SC.S.pkErr = false; o.handed = SC.clockStr(); SC.refresh(); SC.toast(`สแกนตรงกัน บันทึกแล้ว ลูกค้ารับยาเรียบร้อย ${o.handed}`, 'check'); });
 SC.act('book', async t => { await SC.busy(t, 800); Object.assign(SC.S.orders[t.dataset.v], { booked: true, bookedAt: SC.clockStr() }); SC.refresh(); SC.toast('จองขนส่งแล้ว ลูกค้าได้รับแจ้งในแอป', 'package'); });
 SC.act('printLabel', () => SC.toast('จำลอง: ส่งใบปะหน้า 4x6 ไปที่เครื่องพิมพ์ร้าน', 'file-text'));
 

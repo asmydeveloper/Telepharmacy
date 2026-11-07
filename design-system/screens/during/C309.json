@@ -14,7 +14,7 @@
     {
       "code": "C309.2",
       "state": "parcel",
-      "label": "ส่งด่วน (แทนตัวเลือกเดิม)",
+      "label": "จัดส่งปกติ",
       "url": "/?screen=paid&state=parcel&splash=0"
     },
     {
@@ -48,16 +48,16 @@
       "url": "/?screen=paid&state=rider&splash=0"
     },
     {
-      "code": "C309.8",
-      "state": "cold",
-      "label": "ส่งเย็น Inter Express มีเลขพัสดุ",
-      "url": "/?screen=paid&state=cold&splash=0"
-    },
-    {
       "code": "C309.9",
       "state": "overdue",
       "label": "เลยกำหนดรับยา",
       "url": "/?screen=paid&state=overdue&splash=0"
+    },
+    {
+      "code": "C309.10",
+      "state": "pickup-complete",
+      "label": "รับยาที่สาขาแล้ว",
+      "url": "/?screen=paid&state=pickup-complete&splash=0"
     }
   ]
 }

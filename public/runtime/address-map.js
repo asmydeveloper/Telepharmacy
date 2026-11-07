@@ -6,8 +6,9 @@ function ring(p,r){let inside=false;for(let i=0,j=r.length-1;i<r.length;j=i++){c
 function contains(g,p){if(!p.every(Number.isFinite))return false;return(g.type==='Polygon'?[g.coordinates]:g.type==='MultiPolygon'?g.coordinates:[]).some(poly=>ring(p,poly[0])&&!poly.slice(1).some(h=>ring(p,h)));}
 function interior(g,preferred){if(preferred?.every(Number.isFinite)&&contains(g,preferred))return preferred;const polygons=g.type==='Polygon'?[g.coordinates]:g.coordinates;for(const poly of polygons){const points=poly[0],xs=points.map(p=>p[0]),ys=points.map(p=>p[1]),x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);for(let n=1;n<32;n++)for(let m=1;m<32;m++){const p=[x0+(x1-x0)*n/32,y0+(y1-y0)*m/32];if(contains(g,p))return p;}if(contains(g,points[0]))return points[0];}throw Error('Boundary has no usable point');}
 const valid=a=>!!(complete(a)&&a?.pin&&a.location?.verified&&a.location.addressKey===key(a)&&/^\d{6}$/.test(a.location.code)&&Number.isFinite(a.location.lat)&&Number.isFinite(a.location.lng));
-function errors(a={},rows){
+function errors(a={},rows,requireLabel=false){
  const e={},name=/^[\p{L}\p{M}][\p{L}\p{M} .’'-]{0,49}$/u;
+ if(requireLabel&&!String(a.label||'').trim())e.label='กรอกชื่อที่อยู่';
  for(const k of ['first','last'])if(!name.test(String(a[k]||'').trim()))e[k]='กรอก'+(k==='first'?'ชื่อ':'นามสกุล')+'ให้ถูกต้อง ไม่ใช้ตัวเลขหรือสัญลักษณ์พิเศษ';
  if(!/^0[689][0-9]{8}$/.test(String(a.phone||'')))e.phone='กรอกเบอร์มือถือ 10 หลัก ขึ้นต้นด้วย 06, 08 หรือ 09';
  if(!String(a.house||'').trim())e.house='กรอกบ้านเลขที่';
@@ -22,7 +23,7 @@ function errors(a={},rows){
 function addressValues(scope){return Object.fromEntries(['label','first','last','phone','house','building','alley','road','prov','amp','dist','zip'].map(k=>[k,scope.querySelector('#home-address-'+k)?.value.trim()||'']));}
 function mountValidation(scope,ctx){
  if(scope._validateAddressForm)return;const touched=new Set();
- function validate(all=false){const a=addressValues(scope),e=errors(a,root.TP.thaiAddressData.rows);if(!root.TP.thaiAddressData.rows)e.prov='กำลังโหลดข้อมูลพื้นที่ กรุณาลองอีกครั้ง';
+ function validate(all=false){const a=addressValues(scope),e=errors(a,root.TP.thaiAddressData.rows,true);if(!root.TP.thaiAddressData.rows)e.prov='กำลังโหลดข้อมูลพื้นที่ กรุณาลองอีกครั้ง';
   for(const k of Object.keys(a)){const input=scope.querySelector('#home-address-'+k),msg=scope.querySelector('#home-address-'+k+'-error');if(!input||!msg)continue;const text=(all||touched.has(k))?e[k]||'':'';input.setAttribute('aria-invalid',String(!!text));input.closest('[data-address-field]')?.classList.toggle('err',!!text);msg.textContent=text;msg.hidden=!text;}
   const summary=scope.querySelector('#home-address-error');if(summary)summary.textContent='';
   if(all&&Object.keys(e).length){const k=Object.keys(e)[0];(scope.querySelector('#home-address-'+k+'-trigger')||scope.querySelector('#home-address-'+k))?.focus();}

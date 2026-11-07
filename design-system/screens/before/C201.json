@@ -56,7 +56,7 @@
     {
       "code": "C201.9",
       "state": "unknownarea",
-      "label": "พื้นที่ยังตรวจสอบไม่ได้",
+      "label": "ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา",
       "url": "/?screen=home&state=unknownarea&splash=0"
     },
     {
@@ -175,255 +175,285 @@
     },
     {
       "code": "C201.29",
-      "state": "store-more",
-      "label": "เมนูจุดสามจุดของร้าน",
-      "url": "/?screen=home&state=store-more&splash=0"
-    },
-    {
-      "code": "C201.30",
       "state": "bear-banner",
       "label": "ปกหมีเภสัชกร 3D",
       "url": "/?screen=home&state=bear-banner&splash=0"
     },
     {
-      "code": "C201.31",
+      "code": "C201.30",
       "state": "banner-safe-area",
       "label": "ภาพปกเต็ม safe area เฟดต่อเนื่อง",
       "url": "/?screen=home&state=banner-safe-area&splash=0"
     },
     {
-      "code": "C201.32",
+      "code": "C201.31",
       "state": "bright-bear",
       "label": "หมีสดใส เฟดเฉพาะด้านบน",
       "url": "/?screen=home&state=bright-bear&splash=0"
     },
     {
-      "code": "C201.33",
+      "code": "C201.32",
       "state": "tritone-icons",
       "label": "ไอคอน Flat 3 สี CI",
       "url": "/?screen=home&state=tritone-icons&splash=0"
     },
     {
-      "code": "C201.34",
+      "code": "C201.33",
       "state": "personal-greeting",
       "label": "ทักทายชื่อจริงและหัวใจขาวเต็ม",
       "url": "/?screen=home&state=personal-greeting&splash=0"
     },
     {
-      "code": "C201.35",
+      "code": "C201.34",
       "state": "counter-bear",
       "label": "หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ",
       "url": "/?screen=home&state=counter-bear&splash=0"
     },
     {
-      "code": "C201.36",
+      "code": "C201.35",
       "state": "soft-rounded-icons",
       "label": "ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่",
       "url": "/?screen=home&state=soft-rounded-icons&splash=0"
     },
     {
-      "code": "C201.37",
+      "code": "C201.36",
       "state": "glass-tabs",
       "label": "เมนูล่าง Liquid Glass",
       "url": "/?screen=home&state=glass-tabs&splash=0"
     },
     {
-      "code": "C201.38",
+      "code": "C201.37",
       "state": "female-pharmacist-banner",
       "label": "ปกเภสัชกรหญิงหลังเคาน์เตอร์",
       "url": "/?screen=home&state=female-pharmacist-banner&splash=0"
     },
     {
-      "code": "C201.39",
+      "code": "C201.38",
       "state": "quick-consult",
       "label": "ปุ่มกลาง เลือกร้านว่างใกล้สุด",
       "url": "/?screen=home&state=quick-consult&splash=0"
     },
     {
-      "code": "C201.40",
+      "code": "C201.39",
       "state": "quick-busy",
       "label": "ไม่มีร้านคิวว่าง",
       "url": "/?screen=home&state=quick-busy&splash=0"
     },
     {
-      "code": "C201.41",
+      "code": "C201.40",
       "state": "quick-unknown",
       "label": "ยังไม่ทราบจำนวนคิว",
       "url": "/?screen=home&state=quick-unknown&splash=0"
     },
     {
-      "code": "C201.42",
+      "code": "C201.41",
       "state": "quick-address",
       "label": "ปรึกษาโดยยังไม่มีที่อยู่",
       "url": "/?screen=home&state=quick-address&splash=0"
     },
     {
-      "code": "C201.43",
-      "state": "quick-system-off",
-      "label": "ระบบปรึกษาปิด",
-      "url": "/?screen=home&state=quick-system-off&splash=0"
-    },
-    {
-      "code": "C201.44",
+      "code": "C201.42",
       "state": "consult-banner",
       "label": "แบนเนอร์ชวนปรึกษาเหนือร้านยา",
       "url": "/?screen=home&state=consult-banner&splash=0"
     },
     {
-      "code": "C201.45",
+      "code": "C201.43",
       "state": "active-next",
       "label": "การปรึกษา คิวถัดไป",
       "url": "/?screen=home&state=active-next&splash=0"
     },
     {
-      "code": "C201.46",
+      "code": "C201.44",
       "state": "active-room",
       "label": "การปรึกษา ยังไม่จบ",
       "url": "/?screen=home&state=active-room&splash=0"
     },
     {
-      "code": "C201.47",
+      "code": "C201.45",
       "state": "active-paused",
       "label": "การปรึกษา พักรับคิว",
       "url": "/?screen=home&state=active-paused&splash=0"
     },
     {
-      "code": "C201.48",
+      "code": "C201.46",
       "state": "active-payment",
       "label": "การปรึกษา รอชำระ",
       "url": "/?screen=home&state=active-payment&splash=0"
     },
     {
-      "code": "C201.49",
+      "code": "C201.47",
       "state": "active-idle",
       "label": "การปรึกษา รอคำตอบ",
       "url": "/?screen=home&state=active-idle&splash=0"
     },
     {
-      "code": "C201.50",
+      "code": "C201.48",
       "state": "case-queue3",
       "label": "จำลอง รออีก 3 คิว",
       "url": "/?screen=home&state=case-queue3&splash=0"
     },
     {
-      "code": "C201.51",
+      "code": "C201.49",
       "state": "case-queue2",
       "label": "จำลอง รออีก 2 คิว",
       "url": "/?screen=home&state=case-queue2&splash=0"
     },
     {
-      "code": "C201.52",
+      "code": "C201.50",
       "state": "case-queue1",
       "label": "จำลอง รออีก 1 คิว",
       "url": "/?screen=home&state=case-queue1&splash=0"
     },
     {
-      "code": "C201.53",
+      "code": "C201.51",
       "state": "case-next",
       "label": "จำลอง คิวถัดไป",
       "url": "/?screen=home&state=case-next&splash=0"
     },
     {
-      "code": "C201.54",
+      "code": "C201.52",
       "state": "case-paused",
       "label": "จำลอง เภสัชกรพัก",
       "url": "/?screen=home&state=case-paused&splash=0"
     },
     {
-      "code": "C201.55",
+      "code": "C201.53",
       "state": "case-matched",
       "label": "จำลอง รับคิวแล้ว",
       "url": "/?screen=home&state=case-matched&splash=0"
     },
     {
-      "code": "C201.56",
+      "code": "C201.54",
       "state": "case-chat",
       "label": "สนทนา-จ่ายยา",
       "url": "/?screen=home&state=case-chat&splash=0"
     },
     {
-      "code": "C201.57",
+      "code": "C201.55",
       "state": "case-reply",
       "label": "จำลอง รอคำตอบจากคุณ",
       "url": "/?screen=home&state=case-reply&splash=0"
     },
     {
-      "code": "C201.58",
+      "code": "C201.56",
       "state": "case-payment",
       "label": "จำลอง รอชำระเงิน",
       "url": "/?screen=home&state=case-payment&splash=0"
     },
     {
-      "code": "C201.59",
+      "code": "C201.57",
       "state": "case-finished",
       "label": "จำลอง จบการปรึกษา",
       "url": "/?screen=home&state=case-finished&splash=0"
     },
     {
-      "code": "C201.60",
+      "code": "C201.58",
       "state": "case-cancelled",
       "label": "จำลอง ยกเลิกคิว",
       "url": "/?screen=home&state=case-cancelled&splash=0"
     },
     {
-      "code": "C201.61",
+      "code": "C201.59",
       "state": "case-expired",
       "label": "จำลอง หมดเวลารอคำตอบ",
       "url": "/?screen=home&state=case-expired&splash=0"
     },
     {
-      "code": "C201.62",
+      "code": "C201.60",
       "state": "case-closed-unpaid",
       "label": "จบแชท รอชำระค่ายา",
       "url": "/?screen=home&state=case-closed-unpaid&splash=0"
     },
     {
-      "code": "C201.63",
+      "code": "C201.61",
       "state": "case-payment-soon",
       "label": "เหลือชำระ 1 นาที",
       "url": "/?screen=home&state=case-payment-soon&splash=0"
     },
     {
-      "code": "C201.64",
+      "code": "C201.62",
       "state": "case-closed-payexpired",
       "label": "จบแชท หมดเวลาชำระ",
       "url": "/?screen=home&state=case-closed-payexpired&splash=0"
     },
     {
-      "code": "C201.65",
+      "code": "C201.63",
       "state": "case-video-request",
       "label": "เภสัชกรขอวิดีโอคอล",
       "url": "/?screen=home&state=case-video-request&splash=0"
     },
     {
-      "code": "C201.66",
+      "code": "C201.64",
       "state": "case-none",
       "label": "ไม่มีปรึกษา",
       "url": "/?screen=home&state=case-none&splash=0"
     },
     {
-      "code": "C201.67",
+      "code": "C201.65",
       "state": "case-delivery-preparing",
       "label": "ชำระแล้ว · เตรียมยา",
       "url": "/?screen=home&state=case-delivery-preparing&splash=0"
     },
     {
-      "code": "C201.68",
+      "code": "C201.66",
       "state": "case-delivery-calling",
       "label": "กำลังเรียกไรเดอร์",
       "url": "/?screen=home&state=case-delivery-calling&splash=0"
     },
     {
-      "code": "C201.69",
+      "code": "C201.67",
       "state": "case-delivery-delivering",
       "label": "ไรเดอร์กำลังส่งยา",
       "url": "/?screen=home&state=case-delivery-delivering&splash=0"
     },
     {
-      "code": "C201.70",
+      "code": "C201.68",
       "state": "case-delivery-delivered",
       "label": "จัดส่งเสร็จสิ้น",
       "url": "/?screen=home&state=case-delivery-delivered&splash=0"
+    },
+    {
+      "code": "C201.69",
+      "state": "case-pickup-preparing",
+      "label": "รับที่ร้าน · ร้านกำลังเตรียมยา",
+      "url": "/?screen=home&state=case-pickup-preparing&splash=0"
+    },
+    {
+      "code": "C201.70",
+      "state": "case-pickup-ready",
+      "label": "รับที่ร้าน · พร้อมรับยา",
+      "url": "/?screen=home&state=case-pickup-ready&splash=0"
+    },
+    {
+      "code": "C201.71",
+      "state": "case-pickup-complete",
+      "label": "รับยาที่สาขาแล้ว",
+      "url": "/?screen=home&state=case-pickup-complete&splash=0"
+    },
+    {
+      "code": "C201.72",
+      "state": "case-parcel-preparing",
+      "label": "จัดส่งปกติ · ร้านกำลังเตรียมยา",
+      "url": "/?screen=home&state=case-parcel-preparing&splash=0"
+    },
+    {
+      "code": "C201.73",
+      "state": "case-parcel-transit",
+      "label": "จัดส่งปกติ · กำลังขนส่ง",
+      "url": "/?screen=home&state=case-parcel-transit&splash=0"
+    },
+    {
+      "code": "C201.74",
+      "state": "case-parcel-out",
+      "label": "จัดส่งปกติ · กำลังนำส่ง",
+      "url": "/?screen=home&state=case-parcel-out&splash=0"
+    },
+    {
+      "code": "C201.75",
+      "state": "case-parcel-delivered",
+      "label": "จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา",
+      "url": "/?screen=home&state=case-parcel-delivered&splash=0"
     }
   ]
 }

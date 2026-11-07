@@ -261,6 +261,7 @@ button,input,textarea,select {font-family:var(--font-family-ui)}
 
 #payRecv {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--space-2)}
 .checkout-block #payRecv>.opt.po {display:grid;grid-template-columns:20px 1fr;gap:var(--space-2);align-content:start;align-items:start;min-width:0;padding:var(--space-3)}
+#payRecv > [data-v=parcel] {grid-column:1 / -1}
 #payRecv .po-i {grid-column:1;grid-row:1;justify-self:start;color:var(--brand-deep)}
 #payRecv .tx {grid-column:2;grid-row:1;min-width:0}
 #payRecv .tx b {display:block}
@@ -351,7 +352,7 @@ button,input,textarea,select {font-family:var(--font-family-ui)}
 .health-weight {display:flex;align-items:center;gap:var(--space-2);flex-wrap:wrap}
 .health-weight>div {flex:1;min-width:120px}
 .health-weight p {margin:var(--space-1) 0 0;font-size:var(--text-caption);line-height:var(--type-caption-mobile-line);color:var(--semantic-text-secondary)}
-.health-weight>b {color:var(--semantic-primary);font-size:var(--text-h3);font-weight:var(--weight-semibold)}
+.health-weight>b {color:var(--semantic-primary);font-size:var(--type-h3-mobile-size);font-weight:var(--weight-semibold)}
 .health-weight small,.health-unknown {font-size:var(--text-small);font-weight:var(--weight-regular)}
 .health-privacy {display:flex;align-items:flex-start;gap:var(--space-2);margin:0;padding:0 var(--space-1);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary)}
 .health-page .af-sfx {margin:0;box-shadow:none}
@@ -390,7 +391,7 @@ button,input,textarea,select {font-family:var(--font-family-ui)}
 }
 .health-overview .health-card-body {padding:var(--space-1) 0 0}
 .health-overview .health-card-edit {position:absolute;inset-inline-end:0;top:50%;translate:0 -50%;min-width:var(--size-touch);min-height:var(--size-touch)}
-.health-measurement-value {margin:0;font-size:var(--text-h3);line-height:var(--leading-tight);font-weight:var(--weight-semibold);color:var(--semantic-primary)}
+.health-measurement-value {margin:0;font-size:var(--type-h3-mobile-size);line-height:var(--leading-tight);font-weight:var(--weight-semibold);color:var(--semantic-primary)}
 .health-measurement-value small {font-size:var(--text-small);font-weight:var(--weight-regular);color:var(--semantic-text-secondary)}
 .health-overview .health-privacy {padding:var(--space-4) 0 0;border-top:1px solid var(--semantic-border)}
 .health-field-editor {display:grid;gap:var(--space-4)}
@@ -621,11 +622,11 @@ button,input,textarea,select {font-family:var(--font-family-ui)}
 
 /* Payment details: consistent header, content and optional actions. */
 .pd-section.card { padding: 0; overflow: hidden; margin-top: 16px; }
-.pd-section-head { margin: 0; padding: 14px 16px; background: #f2f3f3; color: #181b1c; font-size: 16px; font-weight: 700; border-bottom: 1px solid #e8ebeb; }
+.pd-section-head { margin: 0; padding: 14px 16px; background: #f2f3f3; color: #181b1c; font-size: var(--type-body-mobile-size); line-height: var(--type-body-mobile-line); font-weight: 700; border-bottom: 1px solid #e8ebeb; }
 .pd-section-body { padding: 16px; }
 .pd-section-foot { display: flex; gap: 8px; padding: 12px 16px; background: #f6f7f7; border-top: 1px solid #e8ebeb; }
 .pd-section-foot .btn { flex: 1; min-width: 0; }
-.pd-branch p { margin: 6px 0 0; color: #6c7374; font-size: 14px; line-height: 1.5; }
+.pd-branch p { margin: 6px 0 0; color: #6c7374; font-size: var(--type-body-sm-mobile-size); line-height: var(--type-body-sm-mobile-line); }
 .pd-page-actions { display: flex; flex-direction: column; gap: 8px; margin: 16px 0 24px; }
 
 /* As-needed medicines use the same full-width card sections as meal cards. */

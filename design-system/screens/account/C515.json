@@ -30,24 +30,6 @@
       "url": "/?screen=addressedit&state=named&splash=0"
     },
     {
-      "code": "C515.5",
-      "state": "map-ready",
-      "label": "ที่อยู่ครบ พร้อมยืนยันหมุด",
-      "url": "/?screen=addressedit&state=map-ready&splash=0"
-    },
-    {
-      "code": "C515.6",
-      "state": "map-outside",
-      "label": "หมุดนอกตำบล บันทึกไม่ได้",
-      "url": "/?screen=addressedit&state=map-outside&splash=0"
-    },
-    {
-      "code": "C515.7",
-      "state": "map-error",
-      "label": "โหลดขอบเขตตำบลไม่ได้",
-      "url": "/?screen=addressedit&state=map-error&splash=0"
-    },
-    {
       "code": "C515.8",
       "state": "form-required",
       "label": "ไม่กรอกข้อมูลบังคับ",
@@ -72,12 +54,6 @@
       "url": "/?screen=addressedit&state=form-area&splash=0"
     },
     {
-      "code": "C515.12",
-      "state": "map-saved",
-      "label": "บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ",
-      "url": "/?screen=addressedit&state=map-saved&splash=0"
-    },
-    {
       "code": "C515.13",
       "state": "form-split",
       "label": "ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน",
@@ -94,6 +70,12 @@
       "state": "form-details",
       "label": "รายละเอียดอาคารยาวเกินกำหนด",
       "url": "/?screen=addressedit&state=form-details&splash=0"
+    },
+    {
+      "code": "C515.16",
+      "state": "form-address-label",
+      "label": "ยังไม่กรอกชื่อที่อยู่",
+      "url": "/?screen=addressedit&state=form-address-label&splash=0"
     }
   ]
 }

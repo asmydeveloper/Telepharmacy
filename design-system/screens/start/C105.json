@@ -8,7 +8,7 @@
     {
       "code": "C105.1",
       "state": "empty",
-      "label": "เบอร์ใหม่: ยังไม่กรอก",
+      "label": "สมัครใหม่: ยังไม่กรอก",
       "url": "/?screen=profile&state=empty&splash=0"
     },
     {
@@ -223,111 +223,147 @@
     },
     {
       "code": "C105.37",
-      "state": "marketing-opt-in",
-      "label": "ยินยอมรับข่าวสาร",
-      "url": "/?screen=profile&state=marketing-opt-in&splash=0"
-    },
-    {
-      "code": "C105.38",
-      "state": "marketing-opt-out",
-      "label": "ไม่รับข่าวสาร สมัครได้",
-      "url": "/?screen=profile&state=marketing-opt-out&splash=0"
-    },
-    {
-      "code": "C105.39",
       "state": "address-select",
       "label": "เลือกจังหวัด อำเภอ ตำบล",
       "url": "/?screen=profile&state=address-select&splash=0"
     },
     {
-      "code": "C105.40",
+      "code": "C105.38",
       "state": "address-missing-phone",
       "label": "ที่อยู่ยังไม่กรอกเบอร์",
       "url": "/?screen=profile&state=address-missing-phone&splash=0"
     },
     {
-      "code": "C105.41",
+      "code": "C105.39",
       "state": "address-invalid-phone",
       "label": "รูปแบบเบอร์ติดต่อไม่ถูกต้อง",
       "url": "/?screen=profile&state=address-invalid-phone&splash=0"
     },
     {
-      "code": "C105.42",
+      "code": "C105.40",
       "state": "health-text",
       "label": "ระบุสุขภาพด้วยข้อความ",
       "url": "/?screen=profile&state=health-text&splash=0"
     },
     {
-      "code": "C105.43",
+      "code": "C105.41",
       "state": "national-id-short",
       "label": "เลขประชาชนไม่ครบ 13 หลัก",
       "url": "/?screen=profile&state=national-id-short&splash=0"
     },
     {
-      "code": "C105.44",
+      "code": "C105.42",
       "state": "national-id-format",
       "label": "เลขประชาชนมีตัวอักษร",
       "url": "/?screen=profile&state=national-id-format&splash=0"
     },
     {
-      "code": "C105.45",
+      "code": "C105.43",
       "state": "national-id-checksum",
       "label": "เลขประชาชนครบแต่เลขตรวจสอบผิด",
       "url": "/?screen=profile&state=national-id-checksum&splash=0"
     },
     {
-      "code": "C105.46",
-      "state": "map-ready",
-      "label": "ที่อยู่ครบ พร้อมยืนยันหมุด",
-      "url": "/?screen=profile&state=map-ready&splash=0"
-    },
-    {
-      "code": "C105.47",
-      "state": "map-outside",
-      "label": "หมุดอยู่นอกตำบล บันทึกไม่ได้",
-      "url": "/?screen=profile&state=map-outside&splash=0"
-    },
-    {
       "code": "C105.48",
-      "state": "map-error",
-      "label": "โหลดขอบเขตตำบลไม่ได้",
-      "url": "/?screen=profile&state=map-error&splash=0"
-    },
-    {
-      "code": "C105.49",
-      "state": "map-saved",
-      "label": "บันทึกหมุดแล้ว แก้ไขตำแหน่งได้เสมอ",
-      "url": "/?screen=profile&state=map-saved&splash=0"
-    },
-    {
-      "code": "C105.50",
       "state": "address-split",
       "label": "ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน",
       "url": "/?screen=profile&state=address-split&splash=0"
     },
     {
-      "code": "C105.51",
+      "code": "C105.49",
       "state": "address-legacy",
       "label": "ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ",
       "url": "/?screen=profile&state=address-legacy&splash=0"
     },
     {
-      "code": "C105.52",
+      "code": "C105.50",
       "state": "address-details-invalid",
       "label": "รายละเอียดอาคารยาวเกินกำหนด",
       "url": "/?screen=profile&state=address-details-invalid&splash=0"
     },
     {
-      "code": "C105.53",
+      "code": "C105.51",
       "state": "personal-edit",
       "label": "แก้ไขข้อมูลส่วนตัว",
       "url": "/?screen=profile&state=personal-edit&splash=0"
     },
     {
-      "code": "C105.54",
+      "code": "C105.52",
       "state": "personal-edit-invalid",
       "label": "แก้ไขข้อมูลส่วนตัวไม่ครบ",
       "url": "/?screen=profile&state=personal-edit-invalid&splash=0"
+    },
+    {
+      "code": "C105.53",
+      "state": "password-partial",
+      "label": "รหัสผ่านยังไม่ครบเงื่อนไข",
+      "url": "/?screen=profile&state=password-partial&splash=0"
+    },
+    {
+      "code": "C105.54",
+      "state": "password-mismatch",
+      "label": "รหัสผ่านยืนยันไม่ตรงกัน",
+      "url": "/?screen=profile&state=password-mismatch&splash=0"
+    },
+    {
+      "code": "C105.55",
+      "state": "google-new",
+      "label": "Google สมาชิกใหม่ อีเมลแก้ไม่ได้",
+      "url": "/?screen=profile&state=google-new&splash=0"
+    },
+    {
+      "code": "C105.56",
+      "state": "phone-entry",
+      "label": "กรอกเบอร์ ขอ SMS OTP",
+      "url": "/?screen=profile&state=phone-entry&splash=0"
+    },
+    {
+      "code": "C105.57",
+      "state": "phone-sent",
+      "label": "ส่ง SMS แล้ว กรอกรหัสในฟอร์ม",
+      "url": "/?screen=profile&state=phone-sent&splash=0"
+    },
+    {
+      "code": "C105.58",
+      "state": "phone-wrong",
+      "label": "รหัส OTP ไม่ถูกต้อง",
+      "url": "/?screen=profile&state=phone-wrong&splash=0"
+    },
+    {
+      "code": "C105.59",
+      "state": "phone-expired",
+      "label": "OTP หมดอายุ ขอใหม่ได้",
+      "url": "/?screen=profile&state=phone-expired&splash=0"
+    },
+    {
+      "code": "C105.60",
+      "state": "phone-locked",
+      "label": "OTP ผิดครบจำนวน ขอใหม่",
+      "url": "/?screen=profile&state=phone-locked&splash=0"
+    },
+    {
+      "code": "C105.61",
+      "state": "phone-resend",
+      "label": "ส่งรหัสใหม่ได้",
+      "url": "/?screen=profile&state=phone-resend&splash=0"
+    },
+    {
+      "code": "C105.62",
+      "state": "phone-verified",
+      "label": "ยืนยันเบอร์แล้ว ไปขั้นที่อยู่",
+      "url": "/?screen=profile&state=phone-verified&splash=0"
+    },
+    {
+      "code": "C105.63",
+      "state": "phone-change",
+      "label": "เปลี่ยนเบอร์ ต้องยืนยันใหม่",
+      "url": "/?screen=profile&state=phone-change&splash=0"
+    },
+    {
+      "code": "C105.64",
+      "state": "phone-send-error",
+      "label": "ส่ง SMS ไม่สำเร็จ ลองอีกครั้ง",
+      "url": "/?screen=profile&state=phone-send-error&splash=0"
     }
   ]
 }

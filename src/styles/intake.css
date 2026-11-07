@@ -2,7 +2,7 @@
 .scr[data-screen=intake] {background:var(--semantic-surface)}
 .scr[data-screen=intake] .app-page {display:flex;flex-direction:column;gap:var(--space-6)}
 .ik-intro {display:grid;gap:var(--space-2)}
-.ik-intro :is(h1,h2) {font-size:var(--type-h2-mobile-size);line-height:var(--type-h2-mobile-line);font-weight:var(--weight-semibold)}
+.ik-intro :is(h1,h2) {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line);font-weight:var(--type-h3-mobile-weight)}
 .ik-intro p,.ik-help {font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary);margin:0}
 .scr[data-screen=intake] .ik-sec {margin:0;min-width:0}
 .ik-block {display:grid;gap:var(--space-3);padding-top:var(--space-4);border-top:1px solid var(--semantic-border)}
@@ -127,10 +127,10 @@
 .sheet.rf .rf-confirm {margin-top:var(--space-5)}
 .phone .sheet.rf .sh-b {padding-bottom:calc(var(--space-6) + var(--sb))}
 
-/* Readable patient-facing questions and choices, using the shared 16/24 body scale. */
+/* Keep entered text, symptom choices and safety notices at the body size. */
 .scr[data-screen=intake] :where(#ikSymOptions,.ik-safety) .chip,
-.scr[data-screen=intake] :is(.ik-intro p,.ik-help,.ik-consent-copy,.ik-upload-title,.f-l,.field>label,.input,.note,.row .sub) {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line)}
-.scr[data-screen=intake] .ik-section-heading .ik-h {font-size:var(--type-h3-mobile-size);line-height:var(--type-h3-mobile-line)}
+.scr[data-screen=intake] :is(.input,.note) {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line)}
+.scr[data-screen=intake] .ik-photo-upload>.f-l {font-size:var(--type-label-mobile-size);line-height:var(--type-label-mobile-line)}
 .scr[data-screen=intake] .ik-upload-help {font-size:var(--type-body-sm-mobile-size);line-height:var(--type-body-sm-mobile-line)}
 .sheet.rf :is(.rf-symptoms p,.rf-advice p) {font-size:var(--type-body-mobile-size);line-height:var(--type-body-mobile-line)}
 
@@ -151,7 +151,7 @@
 .q-scr .q-stage {padding:var(--space-5) var(--space-4);border:1px solid var(--color-brand-100);border-radius:var(--radius-feature);background:var(--color-brand-50);color:var(--semantic-primary)}
 .q-scr .q-lbl {font-size:var(--text-body);line-height:var(--type-body-mobile-line);color:var(--semantic-primary);letter-spacing:0}
 .q-scr .q-ring {width:104px;height:104px;margin:var(--space-4) 0;border-radius:var(--radius-xl);background:var(--semantic-primary);box-shadow:var(--shadow-card)}
-.q-scr .q-num {font-size:56px;line-height:1;font-weight:var(--weight-semibold);min-height:0;color:var(--semantic-on-primary);font-variant-numeric:tabular-nums}
+.q-scr .q-num {font-size:var(--queue-number-size);line-height:1;font-weight:var(--weight-semibold);min-height:0;color:var(--semantic-on-primary);font-variant-numeric:tabular-nums}
 .q-scr .q-br {margin:0;font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-text-secondary)}
 .q-scr .q-st {width:100%;max-width:none;margin-top:var(--space-4);font-size:var(--text-body);line-height:var(--type-body-mobile-line);color:var(--semantic-text)}
 .q-scr .q-st .tag {background:var(--semantic-surface);color:var(--semantic-primary);border:1px solid var(--color-brand-100)}
@@ -191,7 +191,7 @@
 .q-scr .q-received {display:flex;align-items:center;justify-content:center;gap:var(--space-2);margin:0 0 var(--space-5);font-size:var(--text-small);line-height:var(--type-body-sm-mobile-line);color:var(--semantic-on-primary)}
 .q-scr .q-lbl {font-weight:var(--weight-medium);margin:0}
 .q-scr .q-ring {width:176px;height:176px;margin:var(--space-3) 0}
-.q-scr .q-num {font-size:64px;text-shadow:0 2px 20px rgb(255 255 255 / .15)}
+.q-scr .q-num {text-shadow:0 2px 20px rgb(255 255 255 / .15)}
 .q-scr .q-br {padding:var(--space-2) var(--space-3);background:rgb(255 255 255 / .1);border:1px solid rgb(255 255 255 / .15);border-radius:var(--radius-pill);gap:var(--space-2)}
 .q-scr .q-joined {border-left:1px solid rgb(255 255 255 / .25);padding-left:var(--space-2)}
 .q-scr .q-st {margin-top:var(--space-3);gap:var(--space-2)}

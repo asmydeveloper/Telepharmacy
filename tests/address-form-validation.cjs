@@ -3,6 +3,8 @@ const M=require('../public/runtime/address-map.js');
 const rows=[{province:'กรุงเทพมหานคร',amphoe:'ทวีวัฒนา',district:'ทวีวัฒนา',zipcode:10170}];
 const a={first:'สมใจ',last:'ใจดี',phone:'0812345678',house:'88/12 ซอยทวีวัฒนา',prov:'กรุงเทพมหานคร',amp:'ทวีวัฒนา',dist:'ทวีวัฒนา',zip:'10170'};
 assert.deepEqual(M.errors(a,rows),{});
+assert(M.errors({...a,label:"   "},rows,true).label);
+assert(!M.errors({...a,label:"บ้าน"},rows,true).label);
 for(const k of Object.keys(a))assert(M.errors({...a,[k]:''},rows)[k],k+' is required');
 for(const v of ['123','สมใจ123','<script>','   '])assert(M.errors({...a,first:v},rows).first);
 for(const v of ['081234567','08123456789','0212345678','081234567x','+66812345678'])assert(M.errors({...a,phone:v},rows).phone);

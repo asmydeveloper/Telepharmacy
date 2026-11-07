@@ -1,0 +1,15 @@
+{
+  "code": "C420",
+  "screen": "historyassessment",
+  "title": "ประเมินอาการ",
+  "group": "after",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C420",
+      "state": "normal",
+      "label": "เลือกอาการจากคำสั่งซื้อที่สำเร็จ",
+      "url": "/?screen=historyassessment&state=normal&splash=0"
+    }
+  ]
+}
