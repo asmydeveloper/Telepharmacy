@@ -99,7 +99,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.homeScenario(TP.S,'unknownarea');
   const unknownHtml=vm.runInContext('nearbyStoresHtml(TP.S)',context);
   assert.equal((unknownHtml.match(/data-sheet="storeinfo"/g)||[]).length,TP.BRANCHES.length);
-  assert.equal((unknownHtml.match(/ยังตรวจสอบระยะทางไม่ได้/g)||[]).length,TP.BRANCHES.length);
+  assert.equal((unknownHtml.match(/ตรวจสอบพื้นที่ไม่ได้/g)||[]).length,TP.BRANCHES.length);assert.equal((unknownHtml.match(/ไม่ทราบระยะทาง/g)||[]).length,TP.BRANCHES.length);assert(unknownHtml.includes('ร้านยาใกล้ฉัน'));assert(!unknownHtml.includes('ร้านยาทุกสาขา'));assert(!unknownHtml.includes('นอกพื้นที่ให้บริการ'));
   assert(!unknownHtml.includes('hm-empty'));
   assert(!unknownHtml.includes('storeactions'));
   const detailStart=source.indexOf("TP.sheetDef('storeinfo'");
@@ -111,20 +111,20 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   assert.equal(registrations.storeinfo.foot(detail),'','closed consultation has no action');
   assert(vm.runInContext('storeListHtml(TP.S,[TP.branch("on")])',context).includes('ปิดรับบริการ'));
   TP.S.sysOff=false;
-  // Central consult action: require known zero queue, open status and coverage; never create a case.
+  // Central consult action: join the shortest queue among open branches in coverage; never create a case.
   const savedStores=TP.homeStores,savedAddress=TP.homeAddress;
   TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[{id:'near',name:'ใกล้'},{id:'free',name:'ว่าง'},{id:'far',name:'ไกล'}];
   Object.assign(TP.S,{loggedIn:true,storeOpen:true,sysOff:false,branchState:{near:'open',free:'open',far:'open'},queueLen:{near:2,free:0,far:0},intake:{},case:null});
   assert.equal(TP.quickConsultBranch().branch.id,'free');
   TP.S.branchState.free='pause';assert.equal(TP.quickConsultBranch().branch.id,'far');
-  TP.S.branchState.far='closed';assert.equal(TP.quickConsultBranch().reason,'busy');
-  TP.S.branchState.free='open';TP.S.queueLen={};assert.equal(TP.quickConsultBranch().reason,'unknown','unknown is not a zero queue');
+  TP.S.branchState.far='closed';assert.equal(TP.quickConsultBranch().branch.id,'near','a busy branch still accepts the queue');
+  TP.S.branchState.free='open';TP.S.queueLen={near:null,free:3};assert.equal(TP.quickConsultBranch().branch.id,'free','a known queue is chosen before an unknown one');TP.S.queueLen={};assert.equal(TP.quickConsultBranch().branch.id,'near');TP.S.branchState={near:'pause',free:'pause',far:'closed'};assert.equal(TP.quickConsultBranch().reason,'unavailable');TP.S.branchState={near:'open',free:'open',far:'closed'};
   TP.S.queueLen={near:2,free:0,far:0};let routed=[],sheets=[],started=0;TP.go=(...x)=>routed.push(x);TP.sheet=(...x)=>sheets.push(x);TP.caseOpen=()=>false;TP.ACTS=actions;const previousHmStart=actions.hmStart;actions.hmStart=()=>started++;
   actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,1);assert.equal(TP.S.case,null);
   TP.caseOpen=()=>true;TP.S.case={status:'room',branch:'near'};actions.quickConsult();assert.equal(routed.at(-1)[0],'room');assert.equal(TP.S.branch,'free');assert.equal(started,1);
   TP.caseOpen=()=>false;TP.S.case=null;TP.homeAddress=()=>null;actions.quickConsult();assert.equal(sheets.at(-1)[0],'homeaddress');
   TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
-  TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
+  TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,2);assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.S.sysOff=true;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');
   TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;
   const shell=fs.readFileSync('src/app/Shell.jsx','utf8'),nav=shell.slice(shell.indexOf("id: 'tabbar'"),shell.indexOf('</nav>',shell.indexOf('"id": "tabbar"')));assert(nav.indexOf('history')<nav.indexOf('quickConsult'));assert(nav.indexOf('quickConsult')<nav.indexOf('inbox'));assert(nav.includes('aria-label="ปรึกษาเภสัชกร"'));

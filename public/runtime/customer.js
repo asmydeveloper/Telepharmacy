@@ -2505,18 +2505,19 @@ TP.homeDistance = b => { const a = TP.homeAddress(); return a ? TP.zoneOf(a, b.i
 TP.homeStores = () => TP.homeAddress() ? TP.BRANCHES.filter(b => TP.homeDistance(b) != null && TP.homeDistance(b) <= TP.ZONE_KM).sort((a,b) => TP.homeDistance(a) - TP.homeDistance(b)) : [];
 const homeBranchClosed = (S, b) => S.sysOff || S.storeOpen === false || (S.branchState[b.id] || (b.demo ? 'open' : 'closed')) === 'closed';
 const homeBranchOutside = b => !!TP.homeAddress() && (TP.homeDistance(b) ?? Infinity) > TP.ZONE_KM;
-const homeBranchStatus = (S, b) => homeBranchOutside(b) ? ['นอกพื้นที่ให้บริการ', 'muted']
+const homeBranchStatus = (S, b) => homeBranchOutside(b) ? [TP.homeDistance(b) == null ? 'ตรวจสอบพื้นที่ไม่ได้' : 'นอกพื้นที่ให้บริการ', 'muted']
   : homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted']
   : S.branchState[b.id] === 'pause' ? ['ปิดรับชั่วคราว', 'warn'] : ['เปิดรับบริการ', 'ok'];
-/* Selection uses the selected delivery address; unknown queue counts are never treated as zero. */
+/* Selection uses the selected delivery address. A busy branch never blocks: the customer joins the shortest known queue among open branches, nearest first. */
 TP.quickConsultBranch = () => {
   if (!TP.homeAddress()) return {reason:'address'};
   const stores=TP.homeStores();
   if (!stores.length) return {reason:'area'};
   if (TP.S.sysOff || TP.S.storeOpen===false) return {reason:'unavailable'};
-  if (stores.every(b => homeBranchClosed(TP.S,b))) return {reason:'unavailable'};
-  const branch=stores.find(b=>(TP.S.branchState[b.id]||(b.demo?'open':'closed'))==='open' && Number.isFinite(TP.S.queueLen?.[b.id]) && TP.S.queueLen[b.id]===0);
-  return branch?{branch}:{reason:stores.some(b=>!Number.isFinite(TP.S.queueLen?.[b.id]))?'unknown':'busy'};
+  const open=stores.filter(b=>!homeBranchClosed(TP.S,b)&&(TP.S.branchState[b.id]||(b.demo?'open':'closed'))==='open');
+  if (!open.length) return {reason:'unavailable'};
+  const queue=b=>Number.isFinite(TP.S.queueLen?.[b.id])?TP.S.queueLen[b.id]:Infinity;
+  return {branch:open.reduce((best,b)=>queue(b)<queue(best)?b:best)};
 };
 TP.act('quickConsult',()=>{
   const S=TP.S;
@@ -2526,7 +2527,7 @@ TP.act('quickConsult',()=>{
   if (!result.branch){
     if(result.reason==='address'){TP.notify('เลือกที่อยู่จัดส่งเพื่อหาร้านยาใกล้คุณ',{icon:'map-pin'});return TP.sheet('homeaddress');}
     if(result.reason==='unavailable') return TP.sheet('storeinfo', { branch: TP.homeStores()[0].id });
-    TP.notify(result.reason==='area'?'ยังไม่พบร้านในพื้นที่ที่เลือก':result.reason==='unknown'?'ยังตรวจสอบจำนวนคิวไม่ได้ เลือกดูข้อมูลสาขาได้':'ขณะนี้ไม่มีร้านที่ว่าง เลือกดูสาขาอื่นได้',{icon:'info'});
+    TP.notify('ยังไม่พบร้านในพื้นที่ที่เลือก',{icon:'info'});
     return TP.go('home',{root:true});
   }
   S.branch=result.branch.id;S.branchPicked=true;S.autoReason='';
@@ -2631,7 +2632,7 @@ function storeListHtml(S, stores) {
   return `<div class="hm-store-list">${stores.map(b => `<article class="hm-branch-tile">
       <button type="button" class="hm-branch-open" data-sheet="storeinfo" data-p='${esc(JSON.stringify({ branch: b.id }))}' aria-label="ดูข้อมูล${esc(b.name)}">
         <img src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="96" height="96" loading="lazy">
-        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span>${homeBranchOutside(b)&&TP.homeDistance(b)==null?'<span class="small hm-branch-range">ยังตรวจสอบระยะทางไม่ได้</span>':''}<span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ยังไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
+        <span class="hm-branch-copy"><strong>${esc(b.name)}</strong><span class="hm-branch-status">${ui.tag(...homeBranchStatus(S,b), {dot:true})}</span><span class="hm-branch-meta"><span class="hm-branch-distance">${ic('map-pin',14,2)}${TP.homeDistance(b) == null ? 'ไม่ทราบระยะทาง' : TP.homeDistance(b) + ' กม.'}</span><span class="hm-branch-hours">${ic('clock',14,2)}${esc(b.hours)} น.</span></span></span>
         ${ic('chevron-right',16,2)}
       </button>
     </article>`).join('')}</div>`;
@@ -2642,7 +2643,7 @@ function nearbyStoresHtml(S) {
   const unknown = !!address && TP.BRANCHES.length > 0 && !TP.BRANCHES.some(b => TP.homeDistance(b) != null);
   if (!address) return `<section class="hm-nearby"><div class="hm-section-head"><h2>ร้านยาใกล้ฉัน</h2></div><div class="hm-empty">${ui.emptyArt(!address?'map-pin':'store')}<h3>${!address ? 'เลือกที่อยู่จัดส่งก่อน' : 'ยังไม่มีร้านยาในบริเวณนี้'}</h3><p>${!address ? 'เพิ่มหรือเลือกที่อยู่เพื่อค้นหาร้านยาใกล้คุณ' : 'เลือกที่อยู่อื่น หรือแก้ไขข้อมูลในสมุดที่อยู่'}</p>${ui.btn(address ? 'เปลี่ยนที่อยู่' : 'เลือกที่อยู่จัดส่ง', { sheet: 'homeaddress', a: 'hmOpenAddress' })}</div></section>`;
   return `<section class="hm-nearby" aria-labelledby="hmNearbyTitle" data-in="1">
-    <div class="hm-section-head"><h2 id="hmNearbyTitle">${unknown ? 'ร้านยาทุกสาขา' : 'ร้านยาใกล้ฉัน'}</h2></div>
+    <div class="hm-section-head"><h2 id="hmNearbyTitle">ร้านยาใกล้ฉัน</h2></div>
     ${storeListHtml(S, unknown ? TP.BRANCHES : [...stores,...TP.BRANCHES.filter(x=>TP.homeDistance(x)>TP.ZONE_KM).sort((a,b)=>TP.homeDistance(a)-TP.homeDistance(b))])}
     ${S.autoReason ? `<p class="hm-store-notice">${ic('info', 16, 2)}<span>${esc(S.autoReason)}</span></p>` : ''}
 
@@ -2686,7 +2687,7 @@ TP.sheetDef('storeinfo', {
         <img class="bc-detail-photo" src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="1536" height="1024">
         <div class="bc-identity-head"><div class="bc-identity"><h3>${esc(b.name)}</h3><p>${esc(b.area)}</p></div></div>
         <div class="bc-availability">${ui.tag(status,tone,{dot:true})}<span>${outside ? (km == null ? 'ยังตรวจสอบระยะจากที่อยู่ที่เลือกไม่ได้' : 'สาขานี้อยู่ห่างเกิน 15 กม. จึงเริ่มปรึกษาไม่ได้') : closed ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้' : paused ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้ โปรดเลือกสาขาที่เปิดรับบริการ' : ''}</span></div>
-        <dl class="bc-facts"><div><dt>${ic('clock',16,2)}เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>${ic('map-pin',16,2)}ระยะจากที่อยู่จัดส่ง</dt><dd>${km == null ? 'ยังระบุระยะไม่ได้' : esc(km)+' กม.'}</dd></div></dl>
+        <dl class="bc-facts"><div><dt>${ic('clock',16,2)}เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>${ic('map-pin',16,2)}ระยะจากที่อยู่จัดส่ง</dt><dd>${km == null ? 'ไม่ทราบระยะทาง' : esc(km)+' กม.'}</dd></div></dl>
       </section>
       <section class="bc-section" aria-labelledby="bcLocationTitle"><h4 id="bcLocationTitle">ที่ตั้งและติดต่อร้าน</h4><p class="bc-address">${esc(b.addr)}</p>${b.demo ? '<p class="bc-muted">ข้อมูลจำลองสำหรับแสดงหน้าจอ</p>' : `<div class="hm-store-links"><a href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">${ic('map-pin',18,2)} ดูแผนที่</a><a href="tel:${esc(b.phone)}">${ic('phone',18,2)} โทรหาร้าน</a></div>`}</section>
       <section class="bc-section" aria-labelledby="bcPharmacistTitle"><h4 id="bcPharmacistTitle">เภสัชกรผู้ดูแล</h4><div class="bc-pharmacist-card">${ui.av('',{ini:ph.ini})}<div><b>${esc(ph.short)}</b><span>${closed ? 'ข้อมูลเภสัชกรประจำสาขา' : paused ? 'พักรับปรึกษาชั่วคราว' : 'ให้คำปรึกษาประจำสาขานี้'}</span><small>ใบประกอบวิชาชีพ ${esc(ph.lic)}</small></div></div></section>
@@ -2752,7 +2753,7 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง'], ['busy', 'สาขาใกล้สุดพัก'], ['closed', 'ร้านปิด'], ['address-alt', 'เลือกที่อยู่คลองเตย'], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง'],['quick-unknown','ยังไม่ทราบจำนวนคิว'],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room','การปรึกษา ยังไม่จบ'],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],["case-queue2", "จำลอง รออีก 2 คิว"],["case-queue1", "จำลอง รออีก 1 คิว"],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],["case-payment-soon","เหลือชำระ 1 นาที"],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],["case-video-request","เภสัชกรขอวิดีโอคอล"],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false],['branch-statuses','สาขาครบทุกสถานะ']],
+  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง', false], ['busy', 'สาขาใกล้สุดพัก', false], ['closed', 'ร้านปิด', false], ['address-alt', 'เลือกที่อยู่คลองเตย', false], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง', false],['quick-unknown','ยังไม่ทราบจำนวนคิว', false],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room', 'การปรึกษา ยังไม่จบ', false],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],['case-queue2', "จำลอง รออีก 2 คิว", false],['case-queue1', "จำลอง รออีก 1 คิว", false],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],['case-payment-soon', "เหลือชำระ 1 นาที", false],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],['case-video-request', "เภสัชกรขอวิดีโอคอล", false],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false],['branch-statuses', 'สาขาครบทุกสถานะ', false]],
   notes: ['สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; TP.homeScenario(S, st || 'normal'); if (!st) return;
@@ -2762,8 +2763,6 @@ TP.screen('home', {
     S.branchState = { ...TP.fresh().branchState, tw: st === 'busy' ? 'pause' : 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' };
     S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); S.branchPicked = false;
     S.queueLen={...TP.fresh().queueLen};S.sysOff=TP.flag('sysOff');
-    if(st==='quick-busy')for(const b of TP.BRANCHES)S.queueLen[b.id]=1;
-    if(st==='quick-unknown')S.queueLen={};
     if(st==='quick-address')TP.homeScenario(S,'noaddress');
     TP.emit('state');
   },
@@ -2793,7 +2792,6 @@ TP.screen('home', {
     return ui.page(`<div class="hm-content">${head}
       ${delivery}
       ${shortcuts}
-      ${['quick-busy','quick-unknown'].includes(st)?ui.note(st==='quick-busy'?'ขณะนี้ไม่มีร้านที่คิวว่าง เลือกสาขาเพื่อรอปรึกษาได้':'ยังตรวจสอบจำนวนคิวไม่ได้ เลือกดูข้อมูลสาขาก่อนได้',{icon:'info'}):''}
       ${TP.paymentReminderCard?.(S._homeEventPreview?{...S,history:[]}:S)||''}${TP.fulfillmentCard?.(S._homeEventPreview?{...S,history:[]}:S)||''}
       ${(st === 'active' || TP.caseOpen()) ? heroHtml(S,st)+homeConsultBanner(S)+nearbyStoresHtml(S) : homeConsultBanner(S)+heroHtml(S,st)}
       ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}

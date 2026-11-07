@@ -183,10 +183,6 @@
 
 - `EV-C201-normal` — ปกติ · [เปิดเคส](/?screen=home&state=normal&splash=0)
 - `EV-C201-loading` — กำลังโหลด · [เปิดเคส](/?screen=home&state=loading&splash=0)
-- `EV-C201-active` — มีเคสค้าง · [เปิดเคส](/?screen=home&state=active&splash=0)
-- `EV-C201-busy` — สาขาใกล้สุดพัก · [เปิดเคส](/?screen=home&state=busy&splash=0)
-- `EV-C201-closed` — ร้านปิด · [เปิดเคส](/?screen=home&state=closed&splash=0)
-- `EV-C201-address-alt` — เลือกที่อยู่คลองเตย · [เปิดเคส](/?screen=home&state=address-alt&splash=0)
 - `EV-C201-outarea` — ไม่พบร้านในพื้นที่ · [เปิดเคส](/?screen=home&state=outarea&splash=0)
 - `EV-C201-unknownarea` — ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา · [เปิดเคส](/?screen=home&state=unknownarea&splash=0)
 - `EV-C201-banner-edge` — แบนเนอร์เต็มขอบ · [เปิดเคส](/?screen=home&state=banner-edge&splash=0)
@@ -218,18 +214,13 @@
 - `EV-C201-glass-tabs` — เมนูล่าง Liquid Glass · [เปิดเคส](/?screen=home&state=glass-tabs&splash=0)
 - `EV-C201-female-pharmacist-banner` — ปกเภสัชกรหญิงหลังเคาน์เตอร์ · [เปิดเคส](/?screen=home&state=female-pharmacist-banner&splash=0)
 - `EV-C201-quick-consult` — ปุ่มกลาง เลือกร้านว่างใกล้สุด · [เปิดเคส](/?screen=home&state=quick-consult&splash=0)
-- `EV-C201-quick-busy` — ไม่มีร้านคิวว่าง · [เปิดเคส](/?screen=home&state=quick-busy&splash=0)
-- `EV-C201-quick-unknown` — ยังไม่ทราบจำนวนคิว · [เปิดเคส](/?screen=home&state=quick-unknown&splash=0)
 - `EV-C201-quick-address` — ปรึกษาโดยยังไม่มีที่อยู่ · [เปิดเคส](/?screen=home&state=quick-address&splash=0)
 - `EV-C201-consult-banner` — แบนเนอร์ชวนปรึกษาเหนือร้านยา · [เปิดเคส](/?screen=home&state=consult-banner&splash=0)
 - `EV-C201-active-next` — การปรึกษา คิวถัดไป · [เปิดเคส](/?screen=home&state=active-next&splash=0)
-- `EV-C201-active-room` — การปรึกษา ยังไม่จบ · [เปิดเคส](/?screen=home&state=active-room&splash=0)
 - `EV-C201-active-paused` — การปรึกษา พักรับคิว · [เปิดเคส](/?screen=home&state=active-paused&splash=0)
 - `EV-C201-active-payment` — การปรึกษา รอชำระ · [เปิดเคส](/?screen=home&state=active-payment&splash=0)
 - `EV-C201-active-idle` — การปรึกษา รอคำตอบ · [เปิดเคส](/?screen=home&state=active-idle&splash=0)
 - `EV-C201-case-queue3` — จำลอง รออีก 3 คิว · [เปิดเคส](/?screen=home&state=case-queue3&splash=0)
-- `EV-C201-case-queue2` — จำลอง รออีก 2 คิว · [เปิดเคส](/?screen=home&state=case-queue2&splash=0)
-- `EV-C201-case-queue1` — จำลอง รออีก 1 คิว · [เปิดเคส](/?screen=home&state=case-queue1&splash=0)
 - `EV-C201-case-next` — จำลอง คิวถัดไป · [เปิดเคส](/?screen=home&state=case-next&splash=0)
 - `EV-C201-case-paused` — จำลอง เภสัชกรพัก · [เปิดเคส](/?screen=home&state=case-paused&splash=0)
 - `EV-C201-case-matched` — จำลอง รับคิวแล้ว · [เปิดเคส](/?screen=home&state=case-matched&splash=0)
@@ -240,9 +231,7 @@
 - `EV-C201-case-cancelled` — จำลอง ยกเลิกคิว · [เปิดเคส](/?screen=home&state=case-cancelled&splash=0)
 - `EV-C201-case-expired` — จำลอง หมดเวลารอคำตอบ · [เปิดเคส](/?screen=home&state=case-expired&splash=0)
 - `EV-C201-case-closed-unpaid` — จบแชท รอชำระค่ายา · [เปิดเคส](/?screen=home&state=case-closed-unpaid&splash=0)
-- `EV-C201-case-payment-soon` — เหลือชำระ 1 นาที · [เปิดเคส](/?screen=home&state=case-payment-soon&splash=0)
 - `EV-C201-case-closed-payexpired` — จบแชท หมดเวลาชำระ · [เปิดเคส](/?screen=home&state=case-closed-payexpired&splash=0)
-- `EV-C201-case-video-request` — เภสัชกรขอวิดีโอคอล · [เปิดเคส](/?screen=home&state=case-video-request&splash=0)
 - `EV-C201-case-none` — ไม่มีปรึกษา · [เปิดเคส](/?screen=home&state=case-none&splash=0)
 - `EV-C201-case-delivery-preparing` — ชำระแล้ว · เตรียมยา · [เปิดเคส](/?screen=home&state=case-delivery-preparing&splash=0)
 - `EV-C201-case-delivery-calling` — กำลังเรียกไรเดอร์ · [เปิดเคส](/?screen=home&state=case-delivery-calling&splash=0)
@@ -1022,3 +1011,11 @@ C212 ยังเปิดดูข้อมูลร้านได้ แต�
 - เลิกใช้ชื่อที่อยู่ ลบฟิลด์ใน C515 ปิดเคส C210.3, C514.4, C515.4, C515.16
 - แถบที่อยู่บน C201 แสดงที่อยู่เต็มบรรทัดเดียว ยาวเกินแสดง ... ส่วนการ์ดใน C210 และ C514 แสดงชื่อผู้รับ เบอร์ และที่อยู่เต็ม
 - ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser
+
+## ยุบเหตุการณ์ C201 — 7 พฤศจิกายน 2569
+- C201.1 แสดงร้านยาใกล้ฉันคละสถานะ เปิด ปิด ปิดชั่วคราว และนอกพื้นที่ในหน้าเดียว
+- ปิดเคส C201.3, .4, .5, .6, .44, .49, .50, .61, .63, .76 เพราะซ้ำข้อมูลในเคสอื่น คงเลขเดิม
+- ร้านปิดทั้งหมดดูได้จากสวิตช์เวลาร้านในแผงพรีวิว การเปลี่ยนที่อยู่ดูได้จาก C210 คำขอวิดีโอดูได้จาก C303.15
+- ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser
+- ปุ่มปรึกษาเภสัชบน C201 พาเข้าคิวสาขาที่เปิดรับและคิวสั้นสุดเสมอ ไม่บล็อกเมื่อไม่มีคิวว่าง ปิดเคส C201.39 และ C201.40 ถ้าทุกสาขาในพื้นที่ไม่เปิดรับจะเปิดข้อมูลสาขา C212
+- C201.8 และ C201.9 ใช้หัวข้อร้านยาใกล้ฉันและแถวร้านแบบเดียวกัน ต่างกันที่แท็ก นอกพื้นที่ให้บริการ พร้อมระยะทาง กับ ตรวจสอบพื้นที่ไม่ได้ พร้อมไม่ทราบระยะทาง ไม่บอกว่านอกพื้นที่เมื่อยังไม่รู้ระยะ

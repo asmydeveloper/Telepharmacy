@@ -1622,6 +1622,3 @@
   background: var(--semantic-warning-background);
   color: var(--semantic-warning-text);
 }
-.phone .hm-branch-range {
-  color: var(--semantic-text-secondary);
-}
