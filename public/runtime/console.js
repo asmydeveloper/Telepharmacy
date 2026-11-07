@@ -1249,7 +1249,7 @@ SC.custSees = b => {
 /* the one line under the page title (replaces the branch card): "สาขาตลาดเวิลด์ · ภญ.ขวัญใจ ประจำ · ลูกค้าเห็น: เปิดรับ" */
 SC.queueLine = (bid = SC.S.branch) => {
   const S = SC.S, b = SC.branch(bid), d = SC.duty(bid), v = S.intake[bid];
-  const sees = S.sysOff ? 'ปิดรับปรึกษาชั่วคราว' : v === 'open' ? 'เปิดรับ' : v === 'pause' ? 'เภสัชกรพักชั่วคราว' : 'ปิดรับวันนี้';
+  const sees = S.sysOff ? 'ปิดรับบริการ' : v === 'open' ? 'เปิดรับบริการ' : v === 'pause' ? 'ปิดรับชั่วคราว' : 'ปิดรับบริการ';
   return `${b.name} · ${d ? `${d.short} ประจำ` : 'ไม่มีเภสัชกรเข้าสู่ระบบ'} · ลูกค้าเห็น: ${sees}`;
 };
 /* wait as minutes, never "3:00" (reads as a clock time); over 10 minutes an orange tag with icon + words */

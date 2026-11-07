@@ -61,7 +61,7 @@ export const journey = [
           ['A107', 'เพิ่มที่อยู่', 'C105', 'address'],
           ['A108', 'ระบุข้อมูลสุขภาพ', 'C105', 'health'],
           ['A109', 'ตรวจทานข้อมูลก่อนสมัคร', 'C105', 'review', ['consent-ready', 'save-error']],
-          ['A110', 'สมัครสมาชิกสำเร็จ', 'C108', 'normal', ['email']],
+          ['A110', 'สมัครสมาชิกสำเร็จ', 'C108', 'normal'],
         ],
       ],
       [
@@ -102,7 +102,7 @@ export const journey = [
       [
         'พูดคุยและสั่งจ่ายยา',
         [
-          ['A206', 'เข้าห้องและเริ่มสนทนา', 'C303', 'provider-joined', ['live']],
+          ['A206', 'เข้าห้องและเริ่มสนทนา', 'C303', 'live'],
           ['A207', 'การ์ดหน้าแรก · กลับเข้าห้องสนทนา', 'C201', 'case-chat', ['case-reply']],
           [
             'A208',
@@ -137,7 +137,7 @@ export const journey = [
             'เลือกวิธีรับยาและตรวจยอด',
             'C308',
             'normal',
-            ['express', 'parcel', 'noaddr', 'far', 'outzone'],
+            ['express', 'noaddr', 'far', 'outzone'],
           ],
           [
             'A214',
@@ -146,7 +146,7 @@ export const journey = [
             'qr',
             ['card', 'otp', 'checking', 'qrexp', 'order-expired'],
           ],
-          ['A215', 'ชำระสำเร็จและรอจัดยา', 'C309', 'express', ['pickup', 'parcel', 'night']],
+          ['A215', 'ชำระสำเร็จและรอจัดยา', 'C309', 'express', ['pickup', 'night']],
           ['A216', 'การ์ดหน้าแรก · ร้านกำลังเตรียมยา', 'C201', 'case-delivery-preparing'],
         ],
       ],
@@ -158,7 +158,7 @@ export const journey = [
             'การ์ดหน้าแรก · รับที่ร้าน',
             'C201',
             'case-pickup-preparing',
-            ['case-pickup-ready', 'case-pickup-complete'],
+            ['case-pickup-ready'],
           ],
           [
             'A219',
@@ -178,7 +178,7 @@ export const journey = [
             'การ์ดหน้าแรก · ส่งด่วน',
             'C201',
             'case-delivery-preparing',
-            ['case-delivery-calling', 'case-delivery-delivering', 'case-delivery-delivered'],
+            ['case-delivery-calling', 'case-delivery-delivering'],
           ],
           [
             'A218',
@@ -189,26 +189,6 @@ export const journey = [
           ],
         ],
         'ร้านเตรียมยา → เรียกไรเดอร์ → ไรเดอร์กำลังส่ง → จัดส่งสำเร็จ',
-      ],
-      [
-        'จัดส่งปกติ',
-        [
-          [
-            'A222',
-            'การ์ดหน้าแรก · จัดส่งปกติ',
-            'C201',
-            'case-parcel-preparing',
-            ['case-parcel-transit', 'case-parcel-out', 'case-parcel-delivered'],
-          ],
-          [
-            'A220',
-            'ดูไทม์ไลน์พัสดุและยืนยันรับยา',
-            'C414',
-            'prep',
-            ['transit', 'out', 'delivered', 'received'],
-          ],
-        ],
-        'ร้านเตรียมยา → ส่งให้ขนส่ง → กำลังขนส่ง → กำลังนำส่ง → ส่งถึงแล้ว → ลูกค้ายืนยันว่าได้รับยา',
       ],
     ],
   ],
@@ -227,7 +207,8 @@ export const journey = [
       [
         'ดูเอกสารการชำระเงิน',
         [
-          ['A303', 'ดูข้อมูลใบเสร็จ', 'C402', 'normal', ['parcel', 'missing']],
+          ['A303', 'ดูข้อมูลใบเสร็จ', 'C402', 'normal', ['missing', 'tax-selected']],
+          ['A306', 'เลือกข้อมูลใบกำกับภาษี', 'C421', 'person', ['company', 'empty']],
           ['A304', 'ติดตามใบกำกับภาษี', 'C402', 'taxpending', ['notax', 'taxdone', 'late']],
         ],
       ],

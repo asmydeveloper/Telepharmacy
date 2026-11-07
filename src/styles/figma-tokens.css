@@ -1,7 +1,7 @@
 /* Figma Telepharmacy foundations. Source: src/design-system/figma-tokens.json. */
 :root {
   --semantic-text:#171717;
-  --semantic-text-secondary:#737373;
+  --semantic-text-secondary:#666666;
   --semantic-on-primary:#ffffff;
   --space-2:8px;
   --space-8:32px;
@@ -41,7 +41,7 @@
   --color-info-soft:#c4ddfb;
   --color-info-default:#00458c;
   --color-info-deep:#00458c;
-  --semantic-text-muted:#737373;
+  --semantic-text-muted:#666666;
   --radius-none:0px;
   --semantic-surface-selected:#eff8f8;
   --radius-xs:4px;

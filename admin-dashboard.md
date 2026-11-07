@@ -212,3 +212,15 @@ C404 เปลี่ยนหน้าตาการ์ดแจ้งเตื
 - `/flow` embeds the real UI and loads each iframe only when it enters the viewport.
 - Keep loaded frames mounted to preserve edits. Pause canvas animation and expiry display polling offscreen or in hidden tabs. Reconcile against the original deadline on return; never extend order validity.
 - This changes preview scheduling only, not customer workflows or pharmacist/admin permissions. Production services must enforce deadlines independently.
+
+
+## ข้อมูลผู้รับใบกำกับภาษีร่วมกัน — 7 พฤศจิกายน 2026
+- C518 เป็นแหล่งรายการผู้รับบุคคลธรรมดาและนิติบุคคล C421 เลือกข้อมูลเพื่อแสดงสรุปใน C402 ต้องส่งคำขอแยกจากการเลือก
+- งานระบบจริง: ตรวจคำขอที่ผูกคำสั่งซื้อและ snapshot ผู้รับ ติดตามสถานะรอดำเนินการ/ออกใบแล้วและ PDF สิทธิ์แก้ไข/การเข้าถึงเลขผู้เสียภาษีต้องควบคุมและมีประวัติ
+- ชุดตรวจรับ: หลายผู้รับ สลับประเภท ไม่มีข้อมูล เพิ่มผู้รับ ปิดโดยไม่เลือก เลือกแล้วไม่ส่ง ส่งจากชำระเงินเดิม คำขอเกิน 7 วัน และเอกสารออกแล้ว
+- บริการส่ง e-Receipt ทางอีเมลยังไม่รวมในรอบนี้
+
+
+## Current event review — 7 November 2026
+
+Current prototype scope is pickup/express only. Retired event codes stay reserved; admin/system coverage must not infer shipping support from dormant handlers. Unknown coverage/distance differs from known out-of-range. Production must independently enforce session, payment, invoice eligibility, service failure and address-data retry; preview fixtures are not backend implementations. Invoice records are shared across account, checkout and receipt while submitted orders need a stable snapshot. See [event review](docs/customer-event-review.md) for tested and unverified cases.

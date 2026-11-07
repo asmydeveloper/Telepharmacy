@@ -18,8 +18,8 @@ const click=(pn,k)=>events.click({target:{closest:()=>({dataset:k==null?{pn}:{pn
 
 context.render();
 const codes=[...panel.innerHTML.matchAll(/data-pn="state"[^>]*><b class="pn-sc">([^<]+)</g)].map(m=>m[1]);
-assert.deepEqual(codes,manifest.cases.map(c=>c.code));assert.equal(codes[0],'C102.1');assert.equal(codes.at(-1),'C102.12');
-console.log('PASS: login panel lists C102.1 to C102.12, matching the screen manifest');
+assert.deepEqual(codes,manifest.cases.map(c=>c.code));assert.equal(codes[0],'C102.1');assert.equal(codes.at(-1),'C102.14');
+console.log('PASS: login panel lists visible login codes including filled and service errors, matching the screen manifest');
 
 for(const text of ['จอนี้','ลองสถานะของจอนี้','ทั้งแอป','ไปจอ · ทั้งหมด 3 จอ','data-pn="jump" data-k="home"','data-pn="g" data-k="storeOpen"','data-pn="restart"','pn-foot'])assert(panel.innerHTML.includes(text),text);
 assert(!panel.innerHTML.includes('data-k="registrationexit"'));for(const text of ['pnMainFlow','pnAutofill','EV-GLOBAL-'])assert(!panel.innerHTML.includes(text),text);

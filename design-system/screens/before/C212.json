@@ -26,20 +26,8 @@
     {
       "code": "C212.4",
       "state": "outside",
-      "label": "อยู่นอกระยะให้บริการ",
+      "label": "ยังตรวจสอบระยะทางไม่ได้",
       "url": "/?screen=storeinfo&state=outside&splash=0"
-    },
-    {
-      "code": "C212.5",
-      "state": "choose-mode",
-      "label": "เลือกสนทนาหรือวิดีโอ",
-      "url": "/?screen=storeinfo&state=choose-mode&splash=0"
-    },
-    {
-      "code": "C212.6",
-      "state": "grouped",
-      "label": "รายละเอียดแบ่งหมวด",
-      "url": "/?screen=storeinfo&state=grouped&splash=0"
     },
     {
       "code": "C212.7",
@@ -48,10 +36,10 @@
       "url": "/?screen=storeinfo&state=license&splash=0"
     },
     {
-      "code": "C212.8",
-      "state": "neutral-sections",
-      "label": "หมวดข้อมูลพื้นเทาอ่อน",
-      "url": "/?screen=storeinfo&state=neutral-sections&splash=0"
+      "code": "C212.9",
+      "state": "outside-known",
+      "label": "สาขาอยู่ไกลเกิน 15 กม.",
+      "url": "/?screen=storeinfo&state=outside-known&splash=0"
     }
   ]
 }

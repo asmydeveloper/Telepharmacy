@@ -951,3 +951,18 @@ C404 แสดงการ์ดมุมมน ไอคอนซ้าย ห�
 - `/flow` embeds the real UI and loads each iframe only when it enters the viewport.
 - Keep loaded frames mounted to preserve edits. Pause canvas animation and expiry display polling offscreen or in hidden tabs. Reconcile against the original deadline on return; never extend order validity.
 - This changes preview scheduling only, not customer workflows or pharmacist/admin permissions. Production services must enforce deadlines independently.
+
+
+## C402 / C421 เลือกผู้รับใบกำกับภาษี — 7 พฤศจิกายน 2026
+- C402 เริ่มเป็นกล่อง checkbox “ต้องการใบกำกับภาษี” พร้อมปุ่มเลือกข้อมูลด้านขวา กดแล้วเปิด C421 ไม่แสดงแท็บซ้อนในใบเสร็จ
+- C421 ใช้รายการเดียวกับ C518 แยกบุคคลธรรมดา/นิติบุคคล รองรับหลายรายการและ empty พร้อมเพิ่มข้อมูลผ่านฟอร์มเดิม ไม่มีปุ่มลบในจุดเลือก
+- เลือกการ์ดแล้วกลับ C402 แสดงชื่อ ที่อยู่ โทรศัพท์ อีเมล (ไม่มีแสดง —) เลขผู้เสียภาษีปิดบางส่วน และสาขาถ้ามี ปิดโดยไม่เลือกไม่เปลี่ยนข้อมูล
+- การเลือกยังไม่ส่งคำขอ ต้องกดส่งคำขออีกครั้ง หลังส่งแสดงรอดำเนินการ ออกใบแล้วแสดงปุ่ม PDF หากขอไว้ตอนชำระเงินข้ามขั้นเลือกไปสถานะเดิม
+- ยังไม่เปิดบริการส่งเอกสารทางอีเมล จึงไม่เพิ่มตัวเลือก e-Receipt จากภาพอ้างอิงโดยไม่มีบริการรองรับ
+- /flow A303 มีสถานะเลือกผู้รับแล้ว และ A306 ใช้ C421 จริง
+- หลักฐานออกแบบ: [GOV.UK Check answers](https://design-system.service.gov.uk/patterns/check-answers/) และ [NHS Check answers](https://service-manual.nhs.uk/design-system/patterns/check-answers/) สนับสนุนสรุปข้อมูลก่อนส่งและทางเปลี่ยนข้อมูลโดยคงค่าที่กรอก นำมาปรับกับการเลือกผู้รับ ยังไม่ได้ทดสอบกับผู้ป่วยจริง
+
+
+## Current event review — 7 November 2026
+
+Current checkout scope is pickup and express only. Retired parcel/cold-chain preview choices and duplicate/design-only events are hidden without renumbering. Unknown distance is not outside coverage. Login errors, queue notices, address validation/retry and follow-up fixtures now show their actual states. See [customer event review](docs/customer-event-review.md) for all reserved codes, browser evidence and limits. C402/C421 uses shared tax recipients; selecting a record is separate from submitting a request.

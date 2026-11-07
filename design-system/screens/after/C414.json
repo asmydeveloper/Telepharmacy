@@ -8,7 +8,7 @@
     {
       "code": "C414.1",
       "state": "transit",
-      "label": "จัดส่งปกติ · กำลังขนส่ง",
+      "label": "ส่งด่วน · กำลังจัดส่ง",
       "url": "/?screen=track&state=transit&splash=0"
     },
     {
@@ -28,12 +28,6 @@
       "state": "rider",
       "label": "ส่งด่วน · ไรเดอร์กำลังจัดส่ง",
       "url": "/?screen=track&state=rider&splash=0"
-    },
-    {
-      "code": "C414.6",
-      "state": "prep",
-      "label": "จัดส่งปกติ · ร้านกำลังเตรียมยา",
-      "url": "/?screen=track&state=prep&splash=0"
     },
     {
       "code": "C414.8",
@@ -58,12 +52,6 @@
       "state": "chat-delivered",
       "label": "สนทนา: จัดส่งเสร็จสิ้น",
       "url": "/?screen=track&state=chat-delivered&splash=0"
-    },
-    {
-      "code": "C414.12",
-      "state": "out",
-      "label": "จัดส่งปกติ · กำลังนำส่ง",
-      "url": "/?screen=track&state=out&splash=0"
     }
   ]
 }

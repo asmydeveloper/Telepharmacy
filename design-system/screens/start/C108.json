@@ -12,12 +12,6 @@
       "url": "/?screen=registrationsuccess&state=normal&splash=0"
     },
     {
-      "code": "C108.2",
-      "state": "email",
-      "label": "สมัครสำเร็จด้วยอีเมล",
-      "url": "/?screen=registrationsuccess&state=email&splash=0"
-    },
-    {
       "code": "C108.3",
       "state": "unavailable",
       "label": "ยังสมัครไม่เสร็จ",
@@ -34,12 +28,6 @@
       "state": "no-name",
       "label": "ไม่มีชื่อแสดง",
       "url": "/?screen=registrationsuccess&state=no-name&splash=0"
-    },
-    {
-      "code": "C108.6",
-      "state": "full-cover",
-      "label": "ปกเต็มจอและปุ่มใต้คำต้อนรับ",
-      "url": "/?screen=registrationsuccess&state=full-cover&splash=0"
     }
   ]
 }

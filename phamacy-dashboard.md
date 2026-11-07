@@ -220,3 +220,15 @@ C404 ฝั่งลูกค้าแสดงสถานะหลักแล
 - `/flow` embeds the real UI and loads each iframe only when it enters the viewport.
 - Keep loaded frames mounted to preserve edits. Pause canvas animation and expiry display polling offscreen or in hidden tabs. Reconcile against the original deadline on return; never extend order validity.
 - This changes preview scheduling only, not customer workflows or pharmacist/admin permissions. Production services must enforce deadlines independently.
+
+
+## ใบกำกับภาษี: ผู้รับที่เลือกจากข้อมูลบัญชี — 7 พฤศจิกายน 2026
+- ลูกค้าเลือกหนึ่งรายการจาก C518 ผ่าน C421 แล้วตรวจข้อมูลใน C402 ก่อนส่ง การเลือกเพียงอย่างเดียวยังไม่สร้างงานให้ร้าน
+- เมื่อส่งคำขอ ร้านเห็นข้อมูลผู้รับที่เลือก ณ เวลาส่ง พร้อมคำสั่งซื้อ สถานะรอดำเนินการ/ออกใบแล้ว และไฟล์ PDF ของรายการนั้น
+- ระบบจริงต้องเก็บ snapshot ผู้รับในคำขอ การแก้ไขสมุดผู้รับภายหลังไม่เปลี่ยนเอกสารหรือคำขอเดิมโดยอัตโนมัติ
+- หน้าลูกค้าตอนเลือกไม่มีลบข้อมูลผู้รับ และยังไม่มีการส่ง e-Receipt ทางอีเมล
+
+
+## Current event review — 7 November 2026
+
+Current customer fulfillment scope is pickup/express; no parcel or cold-chain choice is offered. Pharmacist simulation labels follow queue state. Queue safety warning and notification-off recovery are customer-visible fixtures, not proof of a production staff dashboard. Staff invoice processing must distinguish selected recipient, submitted request and issued PDF, retaining the order recipient snapshot. See [event review](docs/customer-event-review.md).

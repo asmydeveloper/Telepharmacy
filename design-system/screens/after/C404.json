@@ -12,22 +12,10 @@
       "url": "/?screen=inbox&state=normal&splash=0"
     },
     {
-      "code": "C404.2",
-      "state": "read",
-      "label": "รายการเดิม",
-      "url": "/?screen=inbox&state=read&splash=0"
-    },
-    {
       "code": "C404.3",
       "state": "empty",
       "label": "ยังไม่มี",
       "url": "/?screen=inbox&state=empty&splash=0"
-    },
-    {
-      "code": "C404.4",
-      "state": "many",
-      "label": "แจ้งเตือนหลายวัน",
-      "url": "/?screen=inbox&state=many&splash=0"
     },
     {
       "code": "C404.5",

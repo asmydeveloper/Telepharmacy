@@ -1631,10 +1631,6 @@
   background: var(--semantic-warning-background);
   color: var(--semantic-warning-text);
 }
-.phone :is(.hm-branch-status, .bc-availability) > .tag.muted {
-  background: var(--semantic-surface-muted);
-  color: var(--semantic-text-secondary);
-}
 .phone .hm-branch-range {
   color: var(--semantic-text-secondary);
 }

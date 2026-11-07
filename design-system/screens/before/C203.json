@@ -48,12 +48,6 @@
       "url": "/?screen=intake&state=outzone&splash=0"
     },
     {
-      "code": "C203.8",
-      "state": "search",
-      "label": "ตัวเลือกอาการ 2 คอลัมน์",
-      "url": "/?screen=intake&state=search&splash=0"
-    },
-    {
       "code": "C203.9",
       "state": "urgent",
       "label": "แจ้งเตือนอาการอันตราย",
@@ -82,12 +76,6 @@
       "state": "photo-error",
       "label": "แนบไฟล์ไม่รองรับ",
       "url": "/?screen=intake&state=photo-error&splash=0"
-    },
-    {
-      "code": "C203.14",
-      "state": "cover",
-      "label": "ปกเล่าอาการและฟอร์มซ้อน",
-      "url": "/?screen=intake&state=cover&splash=0"
     }
   ]
 }

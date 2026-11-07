@@ -72,12 +72,6 @@
       "url": "/?screen=room&state=waiting-paused&splash=0"
     },
     {
-      "code": "C303.14",
-      "state": "provider-joined",
-      "label": "เภสัชกรเข้าห้องแล้ว",
-      "url": "/?screen=room&state=provider-joined&splash=0"
-    },
-    {
       "code": "C303.15",
       "state": "video-request",
       "label": "เภสัชกรขอวิดีโอคอล",

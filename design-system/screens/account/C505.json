@@ -18,12 +18,6 @@
       "url": "/?screen=health&state=unknown&splash=0"
     },
     {
-      "code": "C505.3",
-      "state": "sfx",
-      "label": "ข้อมูลเดิมที่ผู้ใช้ระบุ",
-      "url": "/?screen=health&state=sfx&splash=0"
-    },
-    {
       "code": "C505.4",
       "state": "edit",
       "label": "แก้ไขข้อมูล",

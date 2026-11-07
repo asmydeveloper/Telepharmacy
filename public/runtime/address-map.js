@@ -24,7 +24,7 @@ function addressValues(scope){return Object.fromEntries(['label','first','last',
 function mountValidation(scope,ctx){
  if(scope._validateAddressForm)return;const touched=new Set();
  function validate(all=false){const a=addressValues(scope),e=errors(a,root.TP.thaiAddressData.rows,true);if(!root.TP.thaiAddressData.rows)e.prov='กำลังโหลดข้อมูลพื้นที่ กรุณาลองอีกครั้ง';
-  for(const k of Object.keys(a)){const input=scope.querySelector('#home-address-'+k),msg=scope.querySelector('#home-address-'+k+'-error');if(!input||!msg)continue;const text=(all||touched.has(k))?e[k]||'':'';input.setAttribute('aria-invalid',String(!!text));input.closest('[data-address-field]')?.classList.toggle('err',!!text);msg.textContent=text;msg.hidden=!text;}
+  for(const k of Object.keys(a)){if(all)touched.add(k);const input=scope.querySelector('#home-address-'+k),msg=scope.querySelector('#home-address-'+k+'-error');if(!input||!msg)continue;const text=(all||touched.has(k))?e[k]||'':'';input.setAttribute('aria-invalid',String(!!text));input.closest('[data-address-field]')?.classList.toggle('err',!!text);msg.textContent=text;msg.hidden=!text;}
   const summary=scope.querySelector('#home-address-error');if(summary)summary.textContent='';
   if(all&&Object.keys(e).length){const k=Object.keys(e)[0];(scope.querySelector('#home-address-'+k+'-trigger')||scope.querySelector('#home-address-'+k))?.focus();}
   return !Object.keys(e).length;

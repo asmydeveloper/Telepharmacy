@@ -78,12 +78,6 @@
       "url": "/?screen=profile&state=review&splash=0"
     },
     {
-      "code": "C105.13",
-      "state": "consent-partial",
-      "label": "ความยินยอมเก่าไม่แทนการเลือกฉบับใหม่",
-      "url": "/?screen=profile&state=consent-partial&splash=0"
-    },
-    {
       "code": "C105.14",
       "state": "consent-ready",
       "label": "เลือกยินยอมแล้ว พร้อมสมัคร",
@@ -102,12 +96,6 @@
       "url": "/?screen=profile&state=health-none&splash=0"
     },
     {
-      "code": "C105.17",
-      "state": "health-no-results",
-      "label": "ยาไม่อยู่ในลิสต์ ใช้อื่น ๆ",
-      "url": "/?screen=profile&state=health-no-results&splash=0"
-    },
-    {
       "code": "C105.18",
       "state": "health-documents",
       "label": "แนบเอกสารแพ้ยาแล้ว",
@@ -120,21 +108,9 @@
       "url": "/?screen=profile&state=health-doc-error&splash=0"
     },
     {
-      "code": "C105.20",
-      "state": "quick-fill",
-      "label": "ปุ่มมอคข้อมูลใต้ป้ายชื่อหน้า",
-      "url": "/?screen=profile&state=quick-fill&splash=0"
-    },
-    {
-      "code": "C105.21",
-      "state": "address-search",
-      "label": "ค้นหาที่อยู่และเติมอัตโนมัติ",
-      "url": "/?screen=profile&state=address-search&splash=0"
-    },
-    {
       "code": "C105.22",
       "state": "conditions-multi",
-      "label": "เลือกโรคได้หลายข้อ",
+      "label": "ระบุโรคประจำตัว",
       "url": "/?screen=profile&state=conditions-multi&splash=0"
     },
     {
@@ -148,18 +124,6 @@
       "state": "conditions-other-empty",
       "label": "เลือกอื่น ๆ แต่ยังไม่กรอก",
       "url": "/?screen=profile&state=conditions-other-empty&splash=0"
-    },
-    {
-      "code": "C105.25",
-      "state": "conditions-no-results",
-      "label": "โรคที่ไม่มีในลิสต์ ใช้อื่น ๆ",
-      "url": "/?screen=profile&state=conditions-no-results&splash=0"
-    },
-    {
-      "code": "C105.26",
-      "state": "registration-back",
-      "label": "ย้อนกลับเพื่อแก้ไขข้อมูล",
-      "url": "/?screen=profile&state=registration-back&splash=0"
     },
     {
       "code": "C105.27",
@@ -184,24 +148,6 @@
       "state": "dob-years",
       "label": "วันเกิด: ล้อหมุน",
       "url": "/?screen=profile&state=dob-years&splash=0"
-    },
-    {
-      "code": "C105.31",
-      "state": "dob-months",
-      "label": "วันเกิด: เลือกเดือน",
-      "url": "/?screen=profile&state=dob-months&splash=0"
-    },
-    {
-      "code": "C105.32",
-      "state": "dob-days",
-      "label": "วันเกิด: เลือกวัน",
-      "url": "/?screen=profile&state=dob-days&splash=0"
-    },
-    {
-      "code": "C105.33",
-      "state": "dob-selected",
-      "label": "วันเกิด: ค่าเดิม",
-      "url": "/?screen=profile&state=dob-selected&splash=0"
     },
     {
       "code": "C105.34",

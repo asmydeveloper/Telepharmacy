@@ -96,7 +96,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.homeScenario(TP.S,'unknownarea');
   const unknownHtml=vm.runInContext('nearbyStoresHtml(TP.S)',context);
   assert.equal((unknownHtml.match(/data-sheet="storeinfo"/g)||[]).length,TP.BRANCHES.length);
-  assert.equal((unknownHtml.match(/อยู่นอกระยะให้บริการ/g)||[]).length,TP.BRANCHES.length);
+  assert.equal((unknownHtml.match(/ยังตรวจสอบระยะทางไม่ได้/g)||[]).length,TP.BRANCHES.length);
   assert(!unknownHtml.includes('hm-empty'));
   assert(!unknownHtml.includes('storeactions'));
   const detailStart=source.indexOf("TP.sheetDef('storeinfo'");
@@ -106,7 +106,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.homeScenario(TP.S,'normal');
   TP.S.sysOff=true;
   assert.equal(registrations.storeinfo.foot(detail),'','closed consultation has no action');
-  assert(vm.runInContext('storeListHtml(TP.S,[TP.branch("on")])',context).includes('ร้านปิด'));
+  assert(vm.runInContext('storeListHtml(TP.S,[TP.branch("on")])',context).includes('ปิดรับบริการ'));
   TP.S.sysOff=false;
   // Central consult action: require known zero queue, open status and coverage; never create a case.
   const savedStores=TP.homeStores,savedAddress=TP.homeAddress;
@@ -115,7 +115,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   assert.equal(TP.quickConsultBranch().branch.id,'free');
   TP.S.branchState.free='pause';assert.equal(TP.quickConsultBranch().branch.id,'far');
   TP.S.branchState.far='closed';assert.equal(TP.quickConsultBranch().reason,'busy');
-  TP.S.branchState.free='open';TP.S.queueLen={};assert.equal(TP.quickConsultBranch().reason,'busy','unknown is not a zero queue');
+  TP.S.branchState.free='open';TP.S.queueLen={};assert.equal(TP.quickConsultBranch().reason,'unknown','unknown is not a zero queue');
   TP.S.queueLen={near:2,free:0,far:0};let routed=[],sheets=[],started=0;TP.go=(...x)=>routed.push(x);TP.sheet=(...x)=>sheets.push(x);TP.caseOpen=()=>false;TP.ACTS=actions;const previousHmStart=actions.hmStart;actions.hmStart=()=>started++;
   actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,1);assert.equal(TP.S.case,null);
   TP.caseOpen=()=>true;TP.S.case={status:'room',branch:'near'};actions.quickConsult();assert.equal(routed.at(-1)[0],'room');assert.equal(TP.S.branch,'free');assert.equal(started,1);
@@ -124,7 +124,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.S.sysOff=true;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');
   TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;
-  const shell=fs.readFileSync('src/app/Shell.jsx','utf8'),nav=shell.slice(shell.indexOf('"id": "tabbar"'),shell.indexOf('</nav>',shell.indexOf('"id": "tabbar"')));assert(nav.indexOf('history')<nav.indexOf('quickConsult'));assert(nav.indexOf('quickConsult')<nav.indexOf('inbox'));assert(nav.includes('aria-label="ปรึกษาเภสัชกร"'));
+  const shell=fs.readFileSync('src/app/Shell.jsx','utf8'),nav=shell.slice(shell.indexOf("id: 'tabbar'"),shell.indexOf('</nav>',shell.indexOf('"id": "tabbar"')));assert(nav.indexOf('history')<nav.indexOf('quickConsult'));assert(nav.indexOf('quickConsult')<nav.indexOf('inbox'));assert(nav.includes('aria-label="ปรึกษาเภสัชกร"'));
   console.log('PASS: selected address, nearby coverage, primary address, branch details, empty/outside/unknown cases and screen registrations');
 })().catch(e=>{console.error(e);process.exitCode=1});
 

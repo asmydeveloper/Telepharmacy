@@ -36,12 +36,6 @@
       "url": "/?screen=queue&state=notifoff&splash=0"
     },
     {
-      "code": "C207.6",
-      "state": "refined",
-      "label": "รอในห้องแชท",
-      "url": "/?screen=queue&state=refined&splash=0"
-    },
-    {
       "code": "C207.7",
       "state": "q4",
       "label": "รออีก 3 คิว",

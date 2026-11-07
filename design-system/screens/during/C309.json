@@ -12,12 +12,6 @@
       "url": "/?screen=paid&state=pickup&splash=0"
     },
     {
-      "code": "C309.2",
-      "state": "parcel",
-      "label": "จัดส่งปกติ",
-      "url": "/?screen=paid&state=parcel&splash=0"
-    },
-    {
       "code": "C309.3",
       "state": "express",
       "label": "ส่งด่วน",
@@ -34,12 +28,6 @@
       "state": "ready",
       "label": "ยาพร้อมรับแล้ว",
       "url": "/?screen=paid&state=ready&splash=0"
-    },
-    {
-      "code": "C309.6",
-      "state": "sent",
-      "label": "ส่งพัสดุแล้ว มีเลขพัสดุ",
-      "url": "/?screen=paid&state=sent&splash=0"
     },
     {
       "code": "C309.7",

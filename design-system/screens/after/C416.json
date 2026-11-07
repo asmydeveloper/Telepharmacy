@@ -8,14 +8,8 @@
     {
       "code": "C416.1",
       "state": "normal",
-      "label": "ข้อมูลของตัวเอง",
-      "url": "/?screen=adrcare&state=normal&splash=0"
-    },
-    {
-      "code": "C416.2",
-      "state": "empty",
       "label": "ยังไม่มีรายงาน",
-      "url": "/?screen=adrcare&state=empty&splash=0"
+      "url": "/?screen=adrcare&state=normal&splash=0"
     },
     {
       "code": "C416.3",
@@ -40,12 +34,6 @@
       "state": "grouped-days",
       "label": "หลายรายงาน แบ่งตามวัน",
       "url": "/?screen=adrcare&state=grouped-days&splash=0"
-    },
-    {
-      "code": "C416.7",
-      "state": "report-statuses",
-      "label": "ตัวอย่างสถานะรายงาน",
-      "url": "/?screen=adrcare&state=report-statuses&splash=0"
     }
   ]
 }

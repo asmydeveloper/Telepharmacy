@@ -12,12 +12,6 @@
       "url": "/?screen=pay&state=normal&splash=0"
     },
     {
-      "code": "C308.2",
-      "state": "parcel",
-      "label": "จัดส่งปกติ",
-      "url": "/?screen=pay&state=parcel&splash=0"
-    },
-    {
       "code": "C308.3",
       "state": "express",
       "label": "ส่งด่วน",
@@ -64,18 +58,6 @@
       "state": "qrexp",
       "label": "QR หมดอายุ",
       "url": "/?screen=pay&state=qrexp&splash=0"
-    },
-    {
-      "code": "C308.11",
-      "state": "bankon",
-      "label": "พร้อมเพย์ (แทนแอปธนาคารเดิม)",
-      "url": "/?screen=pay&state=bankon&splash=0"
-    },
-    {
-      "code": "C308.12",
-      "state": "bankapp",
-      "label": "QR พร้อมเพย์ (แทนแอปธนาคารเดิม)",
-      "url": "/?screen=pay&state=bankapp&splash=0"
     },
     {
       "code": "C308.13",
