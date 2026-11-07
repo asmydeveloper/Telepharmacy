@@ -1,0 +1,21 @@
+{
+  "code": "C115",
+  "screen": "forgotpassword",
+  "title": "ลืมรหัสผ่าน",
+  "group": "start",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C115.1",
+      "state": "normal",
+      "label": "กรอกอีเมลเพื่อขอลิงก์ตั้งรหัสผ่าน",
+      "url": "/?screen=forgotpassword&state=normal&splash=0"
+    },
+    {
+      "code": "C115.2",
+      "state": "sent",
+      "label": "ส่งคำขอตั้งรหัสผ่านแล้ว",
+      "url": "/?screen=forgotpassword&state=sent&splash=0"
+    }
+  ]
+}

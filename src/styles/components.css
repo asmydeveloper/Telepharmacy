@@ -346,16 +346,35 @@
 .auth-login-cover .auth-cover-photo {height:58%;object-position:center 25%;}
 .auth-cover.auth-login-cover::after {background:linear-gradient(to bottom,transparent 15%,#ffffff60 28%,#fff 50%);}
 .auth-login-cover .auth-login-panel {margin-top:auto;padding:var(--space-4) var(--space-6) calc(var(--sb) + var(--space-3));background:var(--semantic-surface);border:0;border-radius:var(--radius-xl) var(--radius-xl) 0 0;box-shadow:0 -4px 24px #004d5810;}
-.auth-login-panel h1 {font-size:var(--type-h2-mobile-size);margin-bottom:var(--space-4);}
-.auth-login-panel form {display:grid;gap:var(--space-3);text-align:left;}
-.auth-login-panel form .field {margin:0;}
-.auth-login-panel form label {display:block;margin-bottom:var(--space-2);font-size:var(--text-small);font-weight:600;}
+.auth-login-panel h1 {font-size:var(--type-h2-mobile-size);margin-bottom:var(--space-3);}
+.auth-login-panel form {display:grid;gap:var(--space-2);text-align:left;}
+.auth-login-panel form .field {margin:0;gap:var(--component-field-label-gap);}
+.auth-login-panel form label {display:block;margin:0;font-size:var(--text-small);font-weight:600;}
 .auth-login-panel .input {background:var(--semantic-surface);}
-.auth-login-panel #signInSubmit {margin-top:var(--space-2);width:100%;}
-.auth-login-divider {display:flex;align-items:center;gap:var(--space-3);margin:var(--space-3) 0;color:var(--ink-3);font-size:var(--text-small);}
+.auth-login-panel #signInSubmit {margin-top:var(--space-1);width:100%;}
+.auth-login-divider {display:flex;align-items:center;gap:var(--space-3);margin:var(--space-2) 0;color:var(--ink-3);font-size:var(--text-small);}
 .auth-login-divider::before,.auth-login-divider::after {content:"";height:1px;flex:1;background:var(--line);}
 .auth-login-panel .auth-cover-actions {margin-top:0;}
 .auth-login-panel .auth-cover-actions .btn {min-height:48px;}
-.auth-login-register {display:flex;justify-content:center;align-items:center;gap:var(--space-2);margin-top:var(--space-3);font-size:var(--text-small);color:var(--ink-3);}
-.auth-login-register .txtbtn {font-size:inherit;font-weight:600;padding:var(--space-2) 0;}
-.auth-login-panel .auth-cover-terms {font-size:var(--type-caption-mobile-size);margin-top:var(--space-3);}
+.auth-login-register {display:flex;justify-content:center;align-items:center;gap:var(--space-2);margin-top:var(--space-2);font-size:var(--text-small);color:var(--ink-3);}
+.auth-login-register .txtbtn {font-size:inherit;font-weight:600;padding:var(--space-1) 0;}
+.auth-login-panel .auth-cover-terms {font-size:var(--type-caption-mobile-size);margin-top:var(--space-2);}
+
+/* Shared login options: remember session and recovery */
+.auth-login-options {display:flex;align-items:center;justify-content:space-between;gap:var(--space-2);font-size:var(--text-small);}
+.auth-login-panel form .auth-remember {display:flex;align-items:center;gap:var(--space-2);min-height:var(--component-control-md);font-weight:var(--font-weight-regular);cursor:pointer;}
+.auth-remember input {width:20px;height:20px;margin:0;accent-color:var(--semantic-primary);flex-shrink:0;}
+.auth-login-options>.txtbtn {font-size:inherit;min-height:var(--component-control-md);padding:0;color:var(--semantic-primary);}
+.auth-recovery-form {display:grid;gap:var(--space-4);margin-top:var(--space-4);}
+
+/* C115 recovery confirmation: clear next steps with a shared CI illustration. */
+.auth-recovery-sent {display:flex;flex-direction:column;align-items:center;text-align:center;padding-block:var(--space-6);gap:var(--space-3);}
+.auth-recovery-art {width:168px;height:168px;object-fit:contain;margin-bottom:var(--space-2);}
+.auth-recovery-sent h2 {font-size:var(--type-h2-mobile-size);font-weight:var(--font-weight-semibold);margin:0;color:var(--semantic-text);}
+.auth-recovery-sent .body {margin:0;color:var(--ink-3);}
+.auth-recovery-hint {width:100%;padding:var(--space-4);margin-top:var(--space-3);background:var(--brand-soft);border-radius:var(--radius-md);}
+.auth-recovery-hint p {margin:0;}
+.auth-recovery-hint .small {margin-top:var(--space-1);color:var(--ink-3);}
+.auth-recovery-actions {display:grid;gap:var(--space-3);width:100%;margin-top:var(--space-3);}
+.auth-recovery-actions [role=status] {margin:0;color:var(--semantic-primary);}
+.auth-recovery-actions [role=status]:empty {display:none;}
