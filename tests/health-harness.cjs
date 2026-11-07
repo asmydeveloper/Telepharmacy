@@ -12,7 +12,7 @@ function harness(){
  env.MAX_FAMILY=6;
  const extraStart=source.indexOf('const EXTRA_FAMILY = '),extraEnd=source.indexOf('function memRow(',extraStart);
  const context=vm.createContext(env);vm.runInContext(source.slice(source.indexOf('TP.previewInbox ='),source.indexOf('TP.fresh =')),context);vm.runInContext(source.slice(extraStart,extraEnd),context);
- const initialFamily=JSON.parse(JSON.stringify(S.family));TP.fresh=()=>({family:JSON.parse(JSON.stringify(initialFamily)),history:JSON.parse(JSON.stringify(S.history))});
+ const initialFamily=JSON.parse(JSON.stringify(S.family));TP.fresh=()=>({addrs:[{id:'a1',house:'88/12',dist:'ทวีวัฒนา',amp:'ทวีวัฒนา',prov:'กรุงเทพมหานคร',zip:'10170',main:true}],family:JSON.parse(JSON.stringify(initialFamily)),history:JSON.parse(JSON.stringify(S.history))});
  const healthAdapterStart=source.indexOf('TP.healthRecord ='),healthAdapterEnd=source.indexOf('\n};',healthAdapterStart)+3;vm.runInContext(source.slice(healthAdapterStart,healthAdapterEnd),context);
  TP.esc=esc;TP.ic=env.ic;TP.brand={halo:()=>'<svg></svg>'};TP.demoProfiles={};TP.$$=()=>[];TP.$=env.$;
  const uiStart=source.indexOf('(() => {',source.indexOf('/* ===== 20-ui.js ===== */'));

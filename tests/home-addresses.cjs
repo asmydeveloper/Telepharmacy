@@ -42,7 +42,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   TP.homeScenario(TP.S,'noaddress');assert.equal(TP.homeAddress(),null);
   TP.homeScenario(TP.S,'normal');assert.equal(TP.homeAddress().id,'a2');
   const inputs = {};
-  for (const [key, value] of Object.entries({label:'บ้านแม่',first:'ทดสอบ',last:'ผู้รับ',phone:'0812345678',house:'15/2',building:'อาคารบี ห้อง 12',alley:'สุขุมวิท 1',road:'สุขุมวิท',dist:'อ่อนนุช',amp:'สวนหลวง',prov:'กรุงเทพมหานคร',zip:'10250'})) {
+  for (const [key, value] of Object.entries({first:'ทดสอบ',last:'ผู้รับ',phone:'0812345678',house:'15/2',building:'อาคารบี ห้อง 12',alley:'สุขุมวิท 1',road:'สุขุมวิท',dist:'อ่อนนุช',amp:'สวนหลวง',prov:'กรุงเทพมหานคร',zip:'10250'})) {
     inputs['home-address-'+key] = {value,checkValidity:()=>true,focus:()=>{},reportValidity:()=>{}};
   }
   inputs['home-address-main']={checked:true}; inputs['home-address-error']={textContent:''};
@@ -57,22 +57,22 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   assert.equal(TP.S.addrs.length,before+1);
   assert.equal(TP.homeAddress().house,'15/2');
   assert.equal(TP.homeAddress().road,'สุขุมวิท');
-  assert.equal(TP.addressName(TP.homeAddress()),'บ้านแม่');
-  assert.equal(JSON.parse(storage.get('mitraree.home.preferences.v1')).addrs.find(a=>a.main).label,'บ้านแม่');
-  const savedParts=TP.S.addrs.find(a=>a.label==='บ้านแม่');assert(savedParts);for(const k of ['house','building','alley','road'])assert.equal(savedParts[k],inputs['home-address-'+k].value,'persist '+k);
+  assert.equal(TP.addressName,undefined);
+  assert.equal(JSON.parse(storage.get('mitraree.home.preferences.v1')).addrs.find(a=>a.main).house,'15/2');
+  const savedParts=TP.homeAddress();assert(savedParts);for(const k of ['house','building','alley','road'])assert.equal(savedParts[k],inputs['home-address-'+k].value,'persist '+k);
   context.ui.nav=()=>'';context.ui.page=s=>s;context.ui.btn=s=>s;
   TP.S._homeEditAddress=savedParts.id;const editHtml=registrations.addressedit.render({S:TP.S});for(const k of ['house','building','alley','road'])assert(editHtml.includes('id="home-address-'+k+'"'));assert(editHtml.includes('value="อาคารบี ห้อง 12"'));assert(editHtml.includes('value="สุขุมวิท 1"'));
   savedParts.house='15/2 อาคารเก่า ซอยสุขุมวิท 1';savedParts.building='';savedParts.alley='';savedParts.road='';const oldHtml=registrations.addressedit.render({S:TP.S});assert(oldHtml.includes('value="15/2 อาคารเก่า ซอยสุขุมวิท 1"'));assert(oldHtml.includes('ข้อมูลเดิมยังอยู่ครบ'));
   Object.assign(savedParts,{house:'15/2',building:'อาคารบี ห้อง 12',alley:'สุขุมวิท 1',road:'สุขุมวิท'});
 
   TP.S._homeEditAddress=TP.homeAddress().id;
-  inputs['home-address-label'].value='ที่ทำงาน';
+  inputs['home-address-house'].value='15/3';
   actions.hmSaveAddress();
-  assert.equal(TP.S.addrs.length,before+1,'renaming must not add another address');
-  assert.equal(TP.addressName(TP.homeAddress()),'ที่ทำงาน');
-  assert.equal(TP.addressName({main:true}),'ที่อยู่หลัก');
+  assert.equal(TP.S.addrs.length,before+1,'editing must not add another address');
+  assert.equal(TP.homeAddress().house,'15/3');
   assert.equal(TP.homeAddress().main,true);
   assert.equal(TP.S.addrs.filter(a=>a.main).length,1);
+  assert(!registrations.addressedit.render({S:TP.S}).includes('home-address-label'));
   for(const id of ['homeaddress','addressbook','addressedit']) assert.ok(registrations[id].code && registrations[id].states.length>1);
   assert.equal(new Set(Object.values(registrations).map(d=>d.code)).size,3);
   const modeStart=source.indexOf("TP.act('hmConsultMode'");

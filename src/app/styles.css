@@ -3806,46 +3806,6 @@ button.row:hover .st-call {
   color: var(--brand);
 }
 
-/* ---------- face id ---------- */
-.st-fid {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding-top: var(--space-6);
-  margin-bottom: var(--space-6);
-}
-.st-fid-art {
-  position: relative;
-  width: 196px;
-  height: 196px;
-  display: grid;
-  place-items: center;
-  margin-bottom: var(--space-4);
-}
-.st-fid-art > .halo {
-  position: absolute;
-  inset: 0;
-  opacity: 0.6;
-}
-.st-fid-no {
-  display: flex;
-  gap: var(--space-1);
-  align-items: flex-start;
-  max-width: 320px;
-  margin: var(--space-3) auto 0;
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
-  background: rgb(var(--color-primary-rgb) / 0.05);
-  font-size: var(--type-body-sm-mobile-size);
-  line-height: 1.6;
-  color: var(--ink-2);
-  text-align: left;
-}
-.st-fid-no .ic {
-  flex: none;
-  margin-top: var(--space-1);
-  color: var(--brand);
-}
 .st-acct {
   margin: 0 0 var(--space-1);
   padding: var(--space-3) var(--space-3) var(--space-2);
@@ -3888,109 +3848,6 @@ button.row:hover .st-call {
 }
 .st-acct-b .btn.ghost {
   padding: 0 var(--space-2);
-}
-.st-fid-g {
-  position: relative;
-  width: 80px;
-  height: 80px;
-  padding: var(--space-1);
-  border-radius: var(--radius-xl);
-  background: var(--cream);
-  color: var(--brand);
-}
-.st-face {
-  display: block;
-  width: 100%;
-  height: 100%;
-  overflow: visible;
-}
-.st-face .ok {
-  opacity: 0;
-  stroke-dasharray: 40;
-  stroke-dashoffset: 40;
-}
-.st-hud {
-  position: absolute;
-  inset: 0;
-  z-index: 70;
-  display: grid;
-  place-items: center;
-  background: rgb(var(--color-ink-rgb) / 0.14);
-}
-.st-hud-b {
-  width: 168px;
-  height: 168px;
-  border-radius: var(--radius-xl);
-  background: rgba(250, 248, 244, 0.9);
-  -webkit-backdrop-filter: var(--blur);
-  backdrop-filter: var(--blur);
-  box-shadow:
-    0 0 0 1px var(--hair),
-    var(--e-4);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-3);
-  color: var(--brand);
-}
-.st-hud-b b {
-  font: 600 var(--type-body-sm-mobile-size)/var(--type-body-sm-mobile-line) var(--font);
-  color: var(--ink);
-}
-.st-hud-g {
-  position: relative;
-  width: 76px;
-  height: 76px;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-}
-.st-scan {
-  position: absolute;
-  left: 8%;
-  right: 8%;
-  top: 16%;
-  height: 2px;
-  border-radius: var(--radius-none);
-  background: linear-gradient(90deg, transparent, var(--brand), transparent);
-  opacity: 0;
-}
-.st-hud.scan .st-scan {
-  animation: st-scan 1.15s var(--ease-apple) infinite;
-}
-.st-hud.scan .cr {
-  animation: st-breath 1.15s var(--ease-apple) infinite;
-}
-.st-hud.scan .st-fp .ft path {
-  stroke-dasharray: 4 2;
-  animation: st-fp 1.15s linear infinite;
-}
-.st-hud .ft {
-  transition: opacity 0.25s var(--ease-apple);
-}
-.st-hud.done .ft {
-  opacity: 0;
-}
-.st-hud.done .ok {
-  opacity: 1;
-  stroke-dashoffset: 0;
-  transition:
-    stroke-dashoffset 0.5s var(--ease-out) 0.12s,
-    opacity 0.1s linear 0.1s;
-}
-@keyframes st-scan {
-  0% {
-    top: 14%;
-    opacity: 0;
-  }
-  15%,
-  85% {
-    opacity: 1;
-  }
-  100% {
-    top: 84%;
-    opacity: 0;
-  }
 }
 @keyframes st-breath {
   50% {
@@ -4406,41 +4263,6 @@ button.row:hover .st-call {
 .hm-auto .ic {
   margin-top: var(--space-1);
   color: var(--brand);
-}
-.hm-fid {
-  padding: var(--space-3) var(--space-4) var(--space-4);
-  margin-top: var(--space-4);
-}
-.hm-fid-h {
-  display: flex;
-  gap: var(--space-3);
-  align-items: flex-start;
-}
-.hm-fid-i {
-  flex: none;
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  display: grid;
-  place-items: center;
-  background: rgb(var(--color-primary-rgb) / 0.08);
-  color: var(--brand);
-}
-.hm-fid-h .grow b {
-  display: block;
-  font-size: var(--type-body-mobile-size);
-  line-height: 1.45;
-  color: var(--ink);
-}
-.hm-fid-h .grow span {
-  display: block;
-  margin-top: 0;
-  font-size: var(--type-body-sm-mobile-size);
-  line-height: 1.5;
-  color: var(--ink-3);
-}
-.hm-fid .btn-row .btn {
-  flex: 1;
 }
 .q-dg {
   margin-bottom: var(--space-4);

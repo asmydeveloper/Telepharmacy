@@ -24,12 +24,6 @@
       "url": "/?screen=addressedit&state=invalid&splash=0"
     },
     {
-      "code": "C515.4",
-      "state": "named",
-      "label": "แก้ไขชื่อที่อยู่",
-      "url": "/?screen=addressedit&state=named&splash=0"
-    },
-    {
       "code": "C515.8",
       "state": "form-required",
       "label": "ไม่กรอกข้อมูลบังคับ",
@@ -70,12 +64,6 @@
       "state": "form-details",
       "label": "รายละเอียดอาคารยาวเกินกำหนด",
       "url": "/?screen=addressedit&state=form-details&splash=0"
-    },
-    {
-      "code": "C515.16",
-      "state": "form-address-label",
-      "label": "ยังไม่กรอกชื่อที่อยู่",
-      "url": "/?screen=addressedit&state=form-address-label&splash=0"
     }
   ]
 }

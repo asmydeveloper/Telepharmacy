@@ -42,12 +42,6 @@
       "url": "/?screen=home&state=address-alt&splash=0"
     },
     {
-      "code": "C201.7",
-      "state": "noaddress",
-      "label": "ไม่มีที่อยู่",
-      "url": "/?screen=home&state=noaddress&splash=0"
-    },
-    {
       "code": "C201.8",
       "state": "outarea",
       "label": "นอกพื้นที่ให้บริการทุกสาขา",

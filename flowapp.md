@@ -166,15 +166,8 @@
 
 - `EV-C108-normal` — สมัครสำเร็จด้วยเบอร์โทร · [เปิดเคส](/?screen=registrationsuccess&state=normal&splash=0)
 - `EV-C108-email` — สมัครสำเร็จด้วยอีเมล · [เปิดเคส](/?screen=registrationsuccess&state=email&splash=0)
-- `EV-C108-unavailable` — ยังสมัครไม่เสร็จ · [เปิดเคส](/?screen=registrationsuccess&state=unavailable&splash=0)
 - `EV-C108-long-name` — ชื่อจริงยาว · [เปิดเคส](/?screen=registrationsuccess&state=long-name&splash=0)
-- `EV-C108-no-name` — ไม่มีชื่อแสดง · [เปิดเคส](/?screen=registrationsuccess&state=no-name&splash=0)
 - `EV-C108-full-cover` — ปกเต็มจอและปุ่มใต้คำต้อนรับ · [เปิดเคส](/?screen=registrationsuccess&state=full-cover&splash=0)
-
-### C110 · faceid (2 เหตุการณ์)
-
-- `EV-C110-ios` — iPhone (Face ID) · [เปิดเคส](/?screen=faceid&state=ios&splash=0)
-- `EV-C110-android` — Android (ลายนิ้วมือ) · [เปิดเคส](/?screen=faceid&state=android&splash=0)
 
 ### C111 · doc (1 เหตุการณ์)
 
@@ -194,7 +187,6 @@
 - `EV-C201-busy` — สาขาใกล้สุดพัก · [เปิดเคส](/?screen=home&state=busy&splash=0)
 - `EV-C201-closed` — ร้านปิด · [เปิดเคส](/?screen=home&state=closed&splash=0)
 - `EV-C201-address-alt` — เลือกที่อยู่คลองเตย · [เปิดเคส](/?screen=home&state=address-alt&splash=0)
-- `EV-C201-noaddress` — ไม่มีที่อยู่ · [เปิดเคส](/?screen=home&state=noaddress&splash=0)
 - `EV-C201-outarea` — ไม่พบร้านในพื้นที่ · [เปิดเคส](/?screen=home&state=outarea&splash=0)
 - `EV-C201-unknownarea` — ตรวจสอบพื้นที่ไม่ได้ · แสดงทุกสาขา · [เปิดเคส](/?screen=home&state=unknownarea&splash=0)
 - `EV-C201-banner-edge` — แบนเนอร์เต็มขอบ · [เปิดเคส](/?screen=home&state=banner-edge&splash=0)
@@ -316,7 +308,6 @@
 
 - `EV-C210-normal` — มีที่อยู่ · [เปิดเคส](/?screen=homeaddress&state=normal&splash=0)
 - `EV-C210-empty` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=homeaddress&state=empty&splash=0)
-- `EV-C210-named` — ที่อยู่ตั้งชื่อเอง · [เปิดเคส](/?screen=homeaddress&state=named&splash=0)
 
 ### C212 · storeinfo (8 เหตุการณ์)
 
@@ -664,14 +655,12 @@ C302 เลิกใช้: เมื่อเภสัชกรรับคิ�
 - `EV-C514-normal` — มีที่อยู่หลัก · [เปิดเคส](/?screen=addressbook&state=normal&splash=0)
 - `EV-C514-empty` — ยังไม่มีที่อยู่ · [เปิดเคส](/?screen=addressbook&state=empty&splash=0)
 - `EV-C514-alternate` — เปลี่ยนที่อยู่หลัก · [เปิดเคส](/?screen=addressbook&state=alternate&splash=0)
-- `EV-C514-named` — ชื่อที่อยู่ บ้านแม่ · [เปิดเคส](/?screen=addressbook&state=named&splash=0)
 
 ### C515 · addressedit (16 เหตุการณ์)
 
 - `EV-C515-normal` — เพิ่มที่อยู่ · [เปิดเคส](/?screen=addressedit&state=normal&splash=0)
 - `EV-C515-edit` — แก้ไขที่อยู่ · [เปิดเคส](/?screen=addressedit&state=edit&splash=0)
 - `EV-C515-invalid` — ข้อมูลไม่ครบ · [เปิดเคส](/?screen=addressedit&state=invalid&splash=0)
-- `EV-C515-named` — แก้ไขชื่อที่อยู่ · [เปิดเคส](/?screen=addressedit&state=named&splash=0)
 - `EV-C515-map-ready` — ที่อยู่ครบ พร้อมยืนยันหมุด · [เปิดเคส](/?screen=addressedit&state=map-ready&splash=0)
 - `EV-C515-map-outside` — หมุดนอกตำบล บันทึกไม่ได้ · [เปิดเคส](/?screen=addressedit&state=map-outside&splash=0)
 - `EV-C515-map-error` — โหลดขอบเขตตำบลไม่ได้ · [เปิดเคส](/?screen=addressedit&state=map-error&splash=0)
@@ -696,7 +685,6 @@ C302 เลิกใช้: เมื่อเภสัชกรรับคิ�
 - `EV-C517-none` — ระบุว่าไม่มี · [เปิดเคส](/?screen=healthfield&state=none&splash=0)
 - `EV-C517-invalid` — กรอกข้อมูลไม่ครบ · [เปิดเคส](/?screen=healthfield&state=invalid&splash=0)
 
-- `EV-C515-form-address-label` — ยังไม่กรอกชื่อที่อยู่ · [เปิดเคส](/?screen=addressedit&state=form-address-label&splash=0)
 
 ### C518 · taxprofile (6 เหตุการณ์)
 
@@ -1016,3 +1004,21 @@ C212 ยังเปิดดูข้อมูลร้านได้ แต�
 - `/card-status-all` แสดงเฉพาะก้อนการ์ดจริงตรงกลางบนพื้นอ่อน ไม่แสดงเมนูล่างหรือกรอบจอ ความสูงพรีวิวปรับตามเนื้อหาการ์ดและโหลดเมื่อเลื่อนถึง
 
 - ในภาพรวมการ์ด เมื่อกดแอคชั่นจะขยาย iframe เดิมเป็นป๊อปอัปทรง iPhone ให้ทำรายการต่อได้ คลิกพื้นหลัง dim ปุ่มปิด หรือ Escape เพื่อปิดและคืนตัวอย่างเริ่มต้น เฉพาะเครื่องมือรีวิว ไม่เปลี่ยน flow ในแอปจริง
+
+## สวิตช์ประเภทผู้ใช้ในแผงพรีวิว — 7 พฤศจิกายน 2569
+- เครื่องมือพรีวิวจำตัวเลือกใช้ครั้งแรก/เคยใช้แล้วแยกจากสถานะแอป สมัครสำเร็จแล้ว S.firstTime ของแอปเป็น false ตามเดิม แต่ปุ่มยังเลือกค่าเดิมและกดเริ่มใหม่จะเป็นผู้ใช้ครั้งแรกอีกครั้ง เลือกค่าใหม่ได้จากสวิตช์เท่านั้น ไม่เป็นส่วนของแอปจริง และโหลดหน้าใหม่แล้วค่าจะกลับเป็นค่าเริ่มต้น
+
+## หลังสมัครสมาชิก: ลบ Face ID และเข้าแนะนำแอป — 7 พฤศจิกายน 2569
+- ลำดับใหม่ C105 → C108 → กดเริ่มใช้งาน → C112 → ข้ามหรือเริ่มใช้งาน → หน้าหลัก C201
+- ลบหน้า C110 และการ์ดชวนเปิด Face ID บนหน้าแรก ไม่นำรหัส C110 ไปใช้ซ้ำ
+- เปิดเคส C112 โดยยังไม่เข้าสู่ระบบ ปุ่มเดิมไป C102
+- ลบสวิตช์ Face ID หรือลายนิ้วมือใน C501 ตามคำสั่งผู้ใช้ แอปไม่มีฟีเจอร์นี้แล้ว
+- ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser
+- ปิดเคส C108.3 ยังสมัครไม่เสร็จ และ C108.5 ไม่มีชื่อแสดง เพราะผู้ใช้จริงต้องผ่านการสมัครก่อนจึงถึงหน้านี้ คงรหัสเดิมไว้ ไม่เลื่อนเลขเคส
+
+## ที่อยู่หลังสมัครและการแสดงที่อยู่ — 7 พฤศจิกายน 2569
+- สมัครสำเร็จแล้วบัญชีมีที่อยู่หลักทันที C201 จึงไม่แสดงสถานะยังไม่มีที่อยู่ ปิดเคส C201.7
+- ต้นแบบใช้ที่อยู่จำลอง ไม่ได้ใช้ค่าที่กรอกใน C105 ระบบจริงต้องบันทึกที่อยู่ปัจจุบันจาก C105 เป็นที่อยู่หลัก
+- เลิกใช้ชื่อที่อยู่ ลบฟิลด์ใน C515 ปิดเคส C210.3, C514.4, C515.4, C515.16
+- แถบที่อยู่บน C201 แสดงที่อยู่เต็มบรรทัดเดียว ยาวเกินแสดง ... ส่วนการ์ดใน C210 และ C514 แสดงชื่อผู้รับ เบอร์ และที่อยู่เต็ม
+- ตรวจด้วย unit test ยังไม่ได้ตรวจใน Browser

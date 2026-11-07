@@ -22,12 +22,6 @@
       "state": "alternate",
       "label": "เปลี่ยนที่อยู่หลัก",
       "url": "/?screen=addressbook&state=alternate&splash=0"
-    },
-    {
-      "code": "C514.4",
-      "state": "named",
-      "label": "ชื่อที่อยู่ บ้านแม่",
-      "url": "/?screen=addressbook&state=named&splash=0"
     }
   ]
 }

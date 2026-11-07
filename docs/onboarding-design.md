@@ -21,3 +21,5 @@ Use case: photorealistic-natural. Asset: photo for MITRAREE pharmacy app onboard
 
 ### consultation
 Use case: photorealistic-natural. Asset: photo for MITRAREE pharmacy app onboarding card. A candid documentary photograph inside a real Bangkok pharmacy: a Thai female pharmacist wearing a white coat and teal blouse explaining a plain medicine box to a Thai adult woman across the counter. Both are real humans with natural skin texture, realistic anatomy, conversational expressions, natural hands. Medium two-person scene, shelves of medicines softly blurred behind them. Shot with a professional full-frame camera, 50mm lens, soft window daylight, subtle warm white and deep teal #035C67 accents, neutral true-to-life colors. Landscape 4:3 composition suitable for cropped portrait cards. MUST look like a real photograph. No cartoon, no illustration, no 3D render, no CGI, no clay, no plastic skin, no miniature, no floating objects, no drawn badges, no graphics, no UI, no readable text, no watermark.
+
+ลำดับล่าสุด (7 พฤศจิกายน 2569): C105 → C108 → C112 → C201 ผู้ใช้เห็นหน้านี้หลังสมัครสำเร็จ

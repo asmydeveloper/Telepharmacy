@@ -29,7 +29,7 @@ const homeStates=vm.runInContext(source.slice(property('states').value.start,pro
 context.homePrep=vm.runInContext('({'+source.slice(property('prep').start,property('prep').end)+'}).prep',context);
 context.homeRender=vm.runInContext('({'+source.slice(property('render').start,property('render').end)+'}).render',context);
 Object.assign(context,{esc:String,ic:()=>'',brand:{guilloche:()=>'',halo:()=>'',heroArt:()=>''},homeBanner:()=>'',homeConsultBanner:()=>'',nearbyStoresHtml:()=>'',ui:{av:()=>'',btn:(label,o)=>`<button>${label}</button>`,tag:s=>s,page:s=>s,group:()=>''}});
-Object.assign(TP,{homeScenario(S){S.branchState={tw:'open'};S.queueLen={tw:0}},homeAddress:()=>({}),addressName:()=> 'บ้าน',pickBranch:()=>({id:'tw',name:'ร้านตัวอย่าง'}),caseOpen:()=>!!TP.S.case&&isOpen(TP.S.case),money:n=>'฿'+n,orderTime:()=> '14:27',orderRemaining:()=> '15:00',orderPayable:o=>o.status==='pending',orderCases:()=>TP.S.case?[TP.S.case]:[]});
+Object.assign(TP,{homeScenario(S){S.branchState={tw:'open'};S.queueLen={tw:0}},homeAddress:()=>({}),fmtAddr:()=> '88/12 กรุงเทพมหานคร',pickBranch:()=>({id:'tw',name:'ร้านตัวอย่าง'}),caseOpen:()=>!!TP.S.case&&isOpen(TP.S.case),money:n=>'฿'+n,orderTime:()=> '14:27',orderRemaining:()=> '15:00',orderPayable:o=>o.status==='pending',orderCases:()=>TP.S.case?[TP.S.case]:[]});
 start=source.indexOf('function homeActiveCaseCard(');end=source.indexOf("TP.screen('home'",start);vm.runInContext(source.slice(start,end),context);
 start=source.indexOf('TP.pendingPaymentCase =');end=source.indexOf("TP.act('openOrderPayment'",start);vm.runInContext(source.slice(start,end),context);
 let current='home';TP.cur=()=>({id:current});
