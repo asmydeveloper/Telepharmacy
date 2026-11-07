@@ -1775,7 +1775,7 @@ select {
   display: inline-flex;
   align-items: center;
   gap: var(--space-1);
-  min-height: 44px;
+  min-height: 32px;
   padding: 0;
   border: 0;
   background: transparent;
@@ -2176,53 +2176,6 @@ select {
 
 /* C405 medication information: current cases first, prior records second. */
 
-/* Match the established segmented-control appearance while retaining tab semantics. */
-.fu-info-tabs {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--component-segment-gap);
-  padding: var(--component-segment-padding);
-  margin-bottom: var(--space-4);
-  border: 0;
-  border-radius: var(--component-segment-radius);
-  background: var(--component-segment-background);
-}
-.fu-info-tabs button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-  min-height: var(--component-segment-min-height);
-  padding: var(--space-2);
-  border: 0;
-  border-radius: var(--component-segment-radius);
-  background: transparent;
-  color: var(--component-segment-ink);
-  font-family: inherit;
-  font-size: var(--component-segment-font-size);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--component-segment-line-height);
-  text-align: center;
-  white-space: normal;
-  overflow-wrap: anywhere;
-  cursor: pointer;
-}
-.fu-info-tabs button[aria-selected='true'] {
-  background: var(--component-segment-active-background);
-  color: var(--component-segment-active-ink);
-  font-weight: var(--font-weight-semibold);
-  box-shadow: var(--shadow-sm);
-}
-@media (hover: hover) {
-  .fu-info-tabs button[aria-selected='false']:hover {
-    background: var(--component-segment-hover-background);
-    color: var(--semantic-primary);
-  }
-}
-.fu-info-section[hidden] {
-  display: none;
-}
-
 .fu-info-heading {
   margin-bottom: var(--space-3);
 }
@@ -2576,10 +2529,10 @@ select {
   display: block;
   padding: 0;
   gap: 0;
-  border: 1px solid var(--color-brand-100);
-  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-brand-200);
+  border-radius: var(--radius-xl);
   background: var(--semantic-surface);
-  box-shadow: var(--shadow-card);
+  box-shadow: none;
   overflow: hidden;
 }
 .phone .case-progress-head {
@@ -2587,22 +2540,22 @@ select {
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-brand-50);
-  border-bottom: 1px solid var(--color-brand-100);
-  color: var(--semantic-primary);
+  padding: var(--space-3) var(--space-4) var(--space-6);
+  background: radial-gradient(ellipse at 100% 0, color-mix(in srgb, var(--semantic-surface) 14%, transparent), transparent 65%), linear-gradient(120deg, var(--color-brand-800), var(--semantic-primary));
+  border-bottom: 0;
+  color: var(--semantic-surface);
   font-size: var(--type-label-mobile-size);
   font-weight: var(--weight-semibold);
 }
 .phone .case-progress-icon {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   flex: none;
-  border-radius: var(--radius-sm);
-  color: var(--semantic-primary);
-  background: var(--semantic-surface);
+  border-radius: var(--radius-md);
+  color: var(--semantic-surface);
+  background: color-mix(in srgb, var(--semantic-surface) 16%, transparent);
 }
 .phone .case-progress-head :is(.tag, .hm-active-status) {
   margin-left: auto;
@@ -2610,7 +2563,11 @@ select {
 .phone .case-progress-body {
   display: grid;
   gap: var(--space-3);
+  position: relative;
+  margin-top: calc(-1 * var(--space-3));
   padding: var(--space-4);
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--semantic-surface);
 }
 .phone .case-progress-body :is(h2, h3) {
   margin: 0;
@@ -2639,16 +2596,44 @@ select {
   overflow-wrap: anywhere;
 }
 .phone .case-progress-foot {
-  display: grid;
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
-  border-top: 1px solid var(--semantic-border);
-  background: var(--semantic-surface-muted);
+  padding: var(--space-3) var(--space-4) var(--space-4);
+  border-top: 0;
+  background: var(--semantic-surface);
 }
 .phone .case-progress-foot > .btn {
-  width: 100%;
+  width: auto;
+  max-width: 100%;
+  min-height: 44px;
   margin: 0;
+  padding-inline: var(--space-4);
+  font-size: var(--type-label-mobile-size);
 }
+.phone .case-progress-foot::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: var(--space-4);
+  right: var(--space-4);
+  border-top: 1px dashed var(--semantic-border);
+}
+.phone .case-progress-foot > .btn.primary {
+  background: var(--color-brand-800);
+}
+.phone .case-progress-foot > .btn.ghost {
+  order: -1;
+  margin-right: auto;
+  padding-inline: 0;
+}
+.phone .case-progress-icon > .ic { width: 18px; height: 18px; }
+.phone .case-progress-head.hm-active-top { justify-content: flex-start; }
+
+.phone .case-progress-head .hm-active-label { color: inherit; }
+.phone .case-progress-order span { font-weight: var(--weight-semibold); color: var(--semantic-primary); font-variant-numeric: tabular-nums; }
 .phone .case-progress-body .post-payment-total {
   margin: 0;
 }
@@ -3033,3 +3018,98 @@ body:has(.consultation-card-preview) nextjs-portal {
 .af-visit-section .af-medicine-list { padding: 0 var(--space-4); }
 .af-visit-section .af-medicine-list .mo-l { margin: 0; padding: 0; }
 .af-visit-section .af-medicine-list .medicine-copy { min-width: 0; flex: 1; }
+
+/* Individual medicine recording within a meal. */
+.fu-meal-body > .fu-multi-med { grid-template-columns: auto minmax(0, 1fr) 44px; }
+.fu-med-check { align-self: center; justify-self: end; display: grid; place-items: center; width: 44px; height: 44px; padding: 10px; border: 0; background: transparent; color: var(--semantic-primary); cursor: pointer; position: relative; }
+.fu-med-check::before { content: ''; position: absolute; inset: 10px; border: 2px solid var(--semantic-primary); border-radius: var(--radius-sm); background: var(--surface); }
+.fu-med-check[aria-checked='true']::before { background: var(--semantic-primary); border-color: var(--semantic-primary); }
+.fu-med-check svg { position: relative; color: var(--surface); }
+.fu-prn-record { grid-template-columns: 1fr; }
+.fu-report-action > .btn { width: 100%; }
+
+/* Compact order overview and shared medication-card spacing. */
+.fu-order-overview { min-width: 0; }
+.fu-order-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
+.fu-order-heading h2 { margin: 0; font-size: var(--text-body); }
+.fu-order-heading .small { white-space: nowrap; }
+.fu-order-carousel { display: flex; gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--space-2); }
+.fu-order-carousel > .fu-order-summary { flex: 0 0 90%; min-width: 0; margin: 0; scroll-snap-align: start; display: flex; flex-direction: column; }
+.fu-order-header { display: grid; gap: var(--space-2); padding: var(--space-1) var(--space-4) var(--space-4); }
+.fu-order-line { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); font-size: var(--text-small); }
+.fu-order-line > span { flex-shrink: 0; color: var(--ink-2); }
+.fu-order-line > strong { color: var(--semantic-primary); text-align: right; overflow-wrap: anywhere; }
+.fu-order-concern { align-items: start; }
+.fu-order-concern p { margin: 0; text-align: right; }
+.fu-order-summary .fu-plan-footer { margin-top: auto; padding: var(--space-4); background: var(--semantic-primary); color: var(--surface); border: 0; }
+.fu-order-summary .fu-multi-chip { background: var(--color-brand-50); font-size: var(--text-small); }
+.fu-order-summary .fu-multi-progress > div { font-size: var(--text-small); }
+.fu-order-carousel > .fu-order-summary { box-shadow: none; }
+.fu-multi > .fu-meal-card > .fu-multi-head,
+.fu-list > .fu-prn-card > .fu-multi-head { padding: var(--space-3); }
+.fu-meal-body { padding-inline: var(--space-3); }
+.fu-meal-body > .fu-multi-med { padding-block: var(--space-3); gap: var(--space-2); }
+.fu-prn-card .fu-prn-body { padding: var(--space-3); align-items: start; }
+.fu-prn-card .fu-prn-body p { margin: var(--space-1) 0 0; }
+.fu-prn-undo { padding: 0 var(--space-3) var(--space-2); }
+.fu-list > .fu-prn-card { margin: 0; }
+
+.fu-prn-card .fu-prn-body { display: grid; grid-template-columns: auto minmax(0, 1fr) 44px; gap: var(--space-2); }
+.fu-prn-card .fu-prn-body > .fu-med-check { align-self: center; }
+
+.fu-order-summary .fu-plan-footer .fu-multi-progress,
+.fu-order-summary .fu-plan-footer .fu-multi-progress > div { color: var(--surface); }
+.fu-order-summary .fu-plan-footer progress { display: block; width: 100%; margin-top: var(--space-2); border: 0; background: color-mix(in srgb, var(--surface) 18%, transparent); color: var(--surface); }
+.fu-order-summary .fu-plan-footer progress::-webkit-progress-bar { background: color-mix(in srgb, var(--surface) 18%, transparent); }
+.fu-order-summary .fu-plan-footer progress::-webkit-progress-value { background: var(--surface); }
+.fu-order-summary .fu-plan-footer progress::-moz-progress-bar { background: var(--surface); }
+
+.fu-medication-heading { margin: 0; flex-direction: column; align-items: flex-start; gap: var(--space-1); }
+.fu-medication-heading > p { margin: 0; color: var(--ink-2); }
+.fu-order-summary .fu-plan-footer progress,
+.fu-order-summary .fu-plan-footer progress::-webkit-progress-bar,
+.fu-order-summary .fu-plan-footer progress::-webkit-progress-value { border-radius: var(--radius-pill); overflow: hidden; }
+.fu-order-summary .fu-plan-footer progress::-moz-progress-bar { border-radius: var(--radius-pill); }
+
+/* Medicine artwork stays subtle over the solid primary card. */
+.phone .fu-order-carousel > .fu-order-summary {
+  position: relative;
+  isolation: isolate;
+  background: var(--semantic-primary);
+  color: var(--surface);
+}
+.phone .fu-order-carousel > .fu-order-summary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: url('/assets/follow-order-medicine-v3.webp') center / cover no-repeat;
+  opacity: 0.14;
+}
+
+/* Order identity stays separate from the consultation details. */
+.fu-order-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-1) var(--space-4) 0; border-bottom: 0; color: var(--semantic-primary); }
+.fu-order-card-head > strong { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-small); }
+.fu-order-card-head > .fu-order-view { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); flex-shrink: 0; min-height: 44px; color: var(--semantic-primary); font-size: var(--text-small); white-space: nowrap; }
+
+.fu-order-pagination { display: flex; align-items: center; justify-content: center; gap: var(--space-2); padding-block: var(--space-1); color: var(--ink-2); }
+.fu-order-dot { width: 6px; height: 6px; border-radius: var(--radius-pill); background: var(--color-brand-200); }
+.fu-order-dot.is-active { width: 18px; background: var(--semantic-primary); }
+
+.fu-order-concern > p { flex: 1; min-width: 0; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+
+.fu-order-concern > p { text-align: left; }
+
+
+/* New medication plans: cleared after opening medication information. */
+.hm-mini-art { position: relative; }
+.hm-medication-badge { position: absolute; top: 0; right: 0; width: 10px; height: 10px; border-radius: var(--radius-pill); background: var(--semantic-error-text); outline: 2px solid var(--semantic-surface); }
+
+.phone .fu-order-summary .fu-order-card-head,
+.phone .fu-order-summary .fu-order-view,
+.phone .fu-order-summary .fu-order-concern p { color: var(--surface); }
+.phone .fu-order-summary .fu-plan-footer { background: transparent; }
+
+.fu-course-assessment-copy { margin: 0 0 var(--space-2); font-size: var(--text-small); line-height: var(--type-body-mobile-line); }

@@ -8,6 +8,7 @@ const foreign={...report,id:'foreign-report',who:'mom',drug:'PRIVATE FAMILY MEDI
 h.TP.adrActiveMedicines=()=>[{v:'med-a',name:'ยาที่ยังใช้ A'},{v:'med-b',name:'ยาที่ยังใช้ B'}];
 const snapshot=JSON.stringify(S);for(const id of ['adrcare','adr'])for(const [state] of screens[id].states){Object.assign(S,JSON.parse(snapshot));S.st[id]=state;screens[id].prep(S);const html=screens[id].render({S,state,params:{}});assert(html.length>0,id+':'+state);if(id==='adr'){assert(!html.includes('adr-steps'));if(state==='filled'){assert(html.includes('adr-note-0'));assert(html.includes('adr-note-1'));}if(state==='no-active')assert(!html.includes('ยาที่ยังใช้ A'));}}
 const submit=harness();
+submit.TP.newCase=()=>submit.S.case={id:'adr-chat',status:'queue',msgs:[]};
 const draft=submit.run("adrDraft(TP.S,{who:'me'})");
 const entry=(drug,name,note)=>({...submit.run("adrNewDraft('me')"),drug,medicine:{name},selected:true,since:'today',level:'mild',note});
 draft.entries.a=entry('a','ยาตัวแรก','อาการแรก');
@@ -20,13 +21,37 @@ await Promise.all([submit.actions.afAdrSend(button),submit.actions.afAdrSend(but
 assert.equal(submit.S.adrReports.length,2);
 assert.deepEqual(Array.from(submit.S.adrReports,r=>[r.drug,r.note]),[['ยาตัวที่สอง','อาการที่สอง'],['ยาตัวแรก','อาการแรก']]);
 assert.equal(submit.S.adrReports[0].batchId,submit.S.adrReports[1].batchId);
-const batchHtml=submit.screens.adrsent.render({S:submit.S,state:'sent',params:submit.calls[0][1].params});
+assert.equal(submit.calls[0][0],'queue');
+assert.equal(submit.S.case.msgs.length,1);
+assert.equal(submit.S.case.msgs[0].kind,'adr-report');
+assert.equal(submit.S.case.msgs[0].adrReports.length,2);
+const fs=require('node:fs'),vm=require('node:vm');
+const customerSource=fs.readFileSync('public/runtime/customer.js','utf8');
+const renderReport=vm.runInNewContext('('+customerSource.slice(customerSource.indexOf('function adrChatMessage('),customerSource.indexOf('function msgHtml('))+')',{TP:submit.TP,esc:value=>String(value).replaceAll('<','&lt;')});
+const chatHtml=renderReport(submit.S.case.msgs[0]);
+assert(chatHtml.includes('- อาการ:'));
+assert(chatHtml.includes('ยาตัวแรก'));
+assert(chatHtml.includes('วันนี้'));
+assert(!chatHtml.includes('<img'));
+assert.equal((chatHtml.match(/class="msg me"/g)||[]).length,2);
+assert(!chatHtml.includes('rm-adr-report'));
+assert(chatHtml.includes('- ความรบกวน: เล็กน้อย'));
+assert(chatHtml.includes('ยาตัวแรก<br>- อาการ: อาการแรก'));
+
+assert(!('image' in submit.S.case.msgs[0].adrReports[0]));
+assert.match(submit.S.case.msgs[0].text,/ยาตัวแรก/);
+assert.match(submit.S.case.msgs[0].text,/อาการที่สอง/);
+assert(submit.S.adrReports.every(report=>report.chatCaseId==='adr-chat'));
+const batchHtml=submit.screens.adrsent.render({S:submit.S,state:'sent',params:{id:submit.S._adrSent.id}});
 assert(batchHtml.includes('2 รายการ'));
 assert.equal(batchHtml.match(/adr-result-drug/g).length,2);
 assert(batchHtml.indexOf('ยาตัวแรก')<batchHtml.indexOf('อาการแรก'));
 assert(batchHtml.indexOf('อาการแรก')<batchHtml.indexOf('ยาตัวที่สอง'));
 assert(batchHtml.indexOf('ยาตัวที่สอง')<batchHtml.indexOf('อาการที่สอง'));
 assert.equal(button.disabled,true);
+const details=submit.run("adrDetails(adrNewDraft('me'),0)");
+assert(!details.includes('adr-urgent'));
+assert(!details.includes('ข้อมูลการใช้ยาเพิ่มเติม'));
 const grouped=harness();
 grouped.S.adrReports=[
  {id:'r-old',who:'me',date:'17/10/2026',at:'18:00',drug:'ยาเก่า',sym:[]},

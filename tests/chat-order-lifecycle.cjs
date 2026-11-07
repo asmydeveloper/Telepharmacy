@@ -27,12 +27,28 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  const beforeRooms=routes.filter(x=>x==='room').length;await TP.go('room');assert.equal(routes.filter(x=>x==='room').length,beforeRooms);assert.equal(sheets.at(-1).id,'pay');
  vm.runInContext("hist.push({id:'room'})",context);await TP.back();assert.equal(routes.at(-1),'home');assert.equal(order.expiresAt,deadline);
  // Successful express payment starts the existing delivery view without reopening chat.
- vm.runInContext("const P=()=>({recv:'express',method:'promptpay'}),addr=()=>({first:'Test',last:'User',house:'123'}),totals=()=>({items:385,ship:89,fee:0,total:474});",context);
+ vm.runInContext("let selectedRecv='express';const P=()=>({recv:selectedRecv,method:'promptpay'}),addr=()=>({first:'Test',last:'User',house:'123'}),totals=()=>({items:385,ship:89,fee:0,total:474});",context);
  run('async function paid()','TP.payPaid = paid;');await vm.runInContext('paid()',context);
  assert.equal(order.status,'paid');assert.equal(c.status,'closed');assert.equal(order.fulfillment.status,'preparing');assert.equal(routes.at(-1),'paymentsuccess');assert.equal(order.items.length,3);
+ // Every checkout method must keep the same order and open its matching status page.
+ run('TP.fulfillmentScreen =', "TP.screen('paid',");
+ for (const [recv, destination] of [['pickup','paid'], ['express','track'], ['parcel','track']]) {
+   order.status='pending';order.fulfillment=null;order.expiresAt=deadline;
+   vm.runInContext(`selectedRecv='${recv}'`,context);
+   await vm.runInContext('paid()',context);
+   assert.equal(order.paid.recv,recv);assert.equal(routes.at(-1),'paymentsuccess');
+   const no=order.no, paidSnapshot=order.paid;
+   S.st.paid='rider';S.st.track='parcel-delivered';
+   await actions.paymentResultStatus();
+   assert.equal(routes.at(-1),destination);assert.equal(S._paymentCase,c);
+   assert.equal(order.no,no);assert.equal(order.paid,paidSnapshot);assert.equal(order.fulfillment.status,'preparing');
+   await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:c.id})}});
+   assert.equal(routes.at(-1),destination);
+ }
+ order.paid.recv='express';
  TP.orderStatusCard=(steps,no)=>steps.map(x=>x[1]).join(' ')+no;TP.fulfillmentDetails=c=>c.pharmacistAdvice;
- for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert.equal(order.expiresAt,deadline);}
- assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert.equal(order.picked,undefined);assert.equal(order.paid.got,undefined);assert(order.paid.deliv);assert(TP.fulfillmentCard(S).includes('เสร็จสิ้น'));order.paid.got='15:00';order.picked=true;assert.equal(TP.fulfillmentCard(S),'');
+ for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert.equal(TP.fulfillmentInfo(c).done,phase==='delivered');if(phase!=='delivered')assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert(!/tkGot|ได้รับยาแล้ว/.test(page));assert.equal(order.expiresAt,deadline);}
+ assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert.equal(order.picked,true);assert.equal(order.paid.got,undefined);assert(order.paid.deliv);assert.equal(TP.fulfillmentCard(S),'');assert(!source.includes("TP.act('tkGot'"));assert(!source.includes("TP.act('fuGot'"));assert(!source.includes("TP.sheetDef('gotask'"));
  await TP.go('room');assert.equal(routes.at(-1),'paid');assert.equal(c.status,'closed');
  const unpaid={id:'unpaid',status:'closed',mode:'chat',order:{status:'pending',expiresAt:Date.now()-1}};assert.equal(TP.closedChatRoute(unpaid).screen,'home');assert.equal(unpaid.order.status,'expired');assert.equal(TP.setFulfillment(unpaid,'preparing'),false);
  // Video-selected consultation retains its existing navigation behavior.

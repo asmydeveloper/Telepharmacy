@@ -2792,10 +2792,11 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง', false], ['busy', 'สาขาใกล้สุดพัก', false], ['closed', 'ร้านปิด', false], ['address-alt', 'เลือกที่อยู่คลองเตย', false], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง', false],['quick-unknown','ยังไม่ทราบจำนวนคิว', false],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room', 'การปรึกษา ยังไม่จบ', false],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],['case-queue2', "จำลอง รออีก 2 คิว", false],['case-queue1', "จำลอง รออีก 1 คิว", false],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],['case-payment-soon', "เหลือชำระ 1 นาที", false],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],['case-video-request', "เภสัชกรขอวิดีโอคอล", false],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา", false],['branch-statuses', 'สาขาครบทุกสถานะ', false]],
-  notes: ['สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
+  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง', false], ['busy', 'สาขาใกล้สุดพัก', false], ['closed', 'ร้านปิด', false], ['address-alt', 'เลือกที่อยู่คลองเตย', false], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง', false],['quick-unknown','ยังไม่ทราบจำนวนคิว', false],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room', 'การปรึกษา ยังไม่จบ', false],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],['case-queue2', "จำลอง รออีก 2 คิว", false],['case-queue1', "จำลอง รออีก 1 คิว", false],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก"],["case-matched", "จำลอง รับคิวแล้ว"],["case-chat", "สนทนา-จ่ายยา"],["case-reply", "จำลอง รอคำตอบจากคุณ"],["case-payment", "จำลอง รอชำระเงิน"],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],['case-payment-soon', "เหลือชำระ 1 นาที", false],["case-closed-payexpired","จบแชท หมดเวลาชำระ"],['case-video-request', "เภสัชกรขอวิดีโอคอล", false],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · จัดส่งสำเร็จ", false],['branch-statuses', 'สาขาครบทุกสถานะ', false], ['medication-new', 'ข้อมูลยาใหม่หลังจัดส่งสำเร็จ'], ['medication-read', 'เปิดข้อมูลยาแล้ว ไม่มี Badge']],
+  notes: ['ซ่อนแบนเนอร์ปรึกษาเภสัชเมื่อมีการ์ดสถานะการปรึกษา ชำระเงิน รับยา/จัดส่ง หรือการดูแลที่กำลังดำเนินการ และแสดงกลับเมื่อไม่มีการ์ดเหล่านี้', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; TP.homeScenario(S, st || 'normal'); if (!st) return;
+    if(st==='medication-new'||st==='medication-read'){TP.casePreview.seed('delivery-delivered');S.medicationSeenOrders=[];if(st==='medication-read')TP.readMedicationUpdates(S);S._homeEventPreview=true;return;}
     if(st.startsWith('case-')){if(st.startsWith('case-parcel-') && flowPreview && new URLSearchParams(location.search).get('cardPreview')==='1')TP.fulfillmentPreview(TP.newCase(),st.slice(5));else TP.casePreview.seed(st.slice(5));S._homeEventPreview=true;return;}
     S.case=null;S._paymentCase=null;S.pay=null;S.call=null;S._homeEventPreview=true;
     if (st === 'active' || st.startsWith('active-')) { TP.newCase(); S._homeEventPreview=true;const c=S.case;if(st==='active-next'){c.status='queue';c.pos=1;}if(st==='active-paused')c.status='paused';if(st==='active-room'||st==='active-payment'||st==='active-idle'){c.status='room';c.idle=st==='active-idle';if(st==='active-payment')c.order={...(c.order||{}),status:'pending'};} } else if (TP.caseOpen()) S.case = null;
@@ -2815,24 +2816,30 @@ TP.screen('home', {
     }
     const head = homeBanner(S);
     if (st === 'loading') {
-      return ui.page(`<div class="hm-content">${head}<div class="hm-loading" aria-busy="true" aria-label="กำลังโหลดหน้าหลัก"><div class="hm-loading-shortcuts">${Array.from({length:3}, () => '<span class="skel"></span>').join('')}</div><div class="skel hm-loading-card"></div><div class="skel hm-loading-card"></div></div></div>`, { nonav: true });
+      return ui.page(`<div class="hm-content">${head}<div class="hm-loading" aria-busy="true" aria-label="กำลังโหลดหน้าหลัก"><div class="hm-loading-shortcuts">${Array.from({length:4}, () => '<span class="skel"></span>').join('')}</div><div class="skel hm-loading-card"></div><div class="skel hm-loading-card"></div></div></div>`, { nonav: true });
     }
     const quick = [
       ['health', 'health', 'ข้อมูลสุขภาพ'],
-      ['medhub', 'medication', 'ข้อมูลยา'],
-      ['addressbook', 'addressbook', 'สมุดที่อยู่']
+      ['medhub', 'medication', 'การใช้ยา'],
+      ['addressbook', 'addressbook', 'สมุดที่อยู่'],
+      ['account', 'more', 'อื่นๆ']
     ];
     const updates = [TP.orderReadyRow?.(S, { din: 2 }) || '',
       S.ofPending ? ui.group([ui.row({ icon: 'message-square-text', title: 'คำถามที่ฝากไว้', sub: `${S.ofPending.whoName} · ฝากไว้ ${S.ofPending.at} · เภสัชกรจะตอบ${TP.OF_REPLY}`, chev: false })]) : ''
     ].filter(Boolean).join('');
+    const cardState = S._homeEventPreview ? {...S, history:[]} : S;
+    const paymentCard = TP.paymentReminderCard?.(cardState) || '';
+    const deliveryCard = TP.fulfillmentCard?.(cardState) || '';
+    const activeCase = st === 'active' || TP.caseOpen();
+    const consultBanner = paymentCard || deliveryCard || activeCase || updates ? '' : homeConsultBanner(S);
     const address=TP.homeAddress();
     const delivery=address?`<button type="button" class="hm-delivery-bar" data-sheet="homeaddress" aria-haspopup="dialog" aria-label="เลือกที่อยู่จัดส่ง: ${esc(TP.fmtAddr(address))}">${ic('map-pin',20,1.8)}<span>ที่อยู่จัดส่ง</span><b>${esc(TP.fmtAddr(address))}</b>${ic('chevron-down',18,2)}</button>`:'';
-    const shortcuts = `<nav class="hm-mini-menu" aria-label="ดูแลสุขภาพของคุณ">${quick.map(([go, icon, label]) => `<button type="button" class="hm-mini-item" data-go="${go}"><span class="hm-mini-icon hm-mini-art hm-mini-art-${icon}"><img src="/assets/menu-icons/${icon}-rounded-v3.svg" alt="" width="48" height="48" decoding="async"></span><span>${esc(label)}</span></button>`).join('')}</nav>`;
+    const shortcuts = `<nav class="hm-mini-menu" aria-label="ดูแลสุขภาพของคุณ">${quick.map(([go, icon, label]) => `<button type="button" class="hm-mini-item" ${go ? `data-go="${go}"` : 'aria-disabled="true"'}><span class="hm-mini-icon hm-mini-art hm-mini-art-${icon}"><img src="/assets/menu-icons/${icon}-rounded-v3.svg" alt="" width="48" height="48" decoding="async">${go==='medhub'&&TP.hasMedicationUpdates(S)?'<span class="hm-medication-badge" role="status" aria-label="มีข้อมูลยาใหม่"></span>':''}</span><span>${esc(label)}</span></button>`).join('')}</nav>`;
     return ui.page(`<div class="hm-content">${head}
       ${delivery}
       ${shortcuts}
-      ${TP.paymentReminderCard?.(S._homeEventPreview?{...S,history:[]}:S)||''}${TP.fulfillmentCard?.(S._homeEventPreview?{...S,history:[]}:S)||''}
-      ${(st === 'active' || TP.caseOpen()) ? heroHtml(S,st)+homeConsultBanner(S)+nearbyStoresHtml(S) : homeConsultBanner(S)+heroHtml(S,st)}
+      ${paymentCard}${deliveryCard}
+      ${activeCase ? heroHtml(S,st)+nearbyStoresHtml(S) : consultBanner+heroHtml(S,st)}
       ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}
 
       </div>`, { nonav: true });
@@ -2962,7 +2969,7 @@ TP.screen('intake', {
   group: 'before', title: 'แจ้งอาการ', code: 'C203', ref: 'C04', parent: 'home', cls:'intake-cover-screen', sb:'dark',
   states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["other", "พิมพ์อาการเอง"], ["noallergy", "ยังไม่ระบุแพ้ยา"], ["fail", "เข้าคิวไม่สำเร็จ"], ["ack", "ติ๊กรับทราบแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา"], ["search", "ตัวเลือกอาการ 2 คอลัมน์", false], ["urgent", "แจ้งเตือนอาการอันตราย", false], ["multi", "เลือกหลายอาการ"], ["custom-error", "ยังไม่ได้เล่ารายละเอียด"], ["photos", "แนบรูป 3 รูป"], ["photo-error", "แนบไฟล์ไม่รองรับ"], ["cover", "ปกเล่าอาการและฟอร์มซ้อน", false]],
   notes: ['C04: ตัวเลือก 2 คอลัมน์ มีช่องติ๊ก เลือกได้หลายอาการ ไม่มีช่องค้นหา',
-    'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'A11: แพ้ยาไม่บังคับ ดึงจากบัญชีมาให้ แก้ได้ในที่ · ไม่มีข้อมูล = "ยังไม่ได้ระบุ" ไม่ใช่ "ไม่แพ้"', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ลำดับฟอร์มคือ 1 วิธีปรึกษา 2 อาการที่ต้องการปรึกษา 3 ข้อมูลก่อนปรึกษา; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"',
+    'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'A11: แพ้ยาไม่บังคับ ดึงจากบัญชีมาให้ แก้ได้ในที่ · ไม่มีข้อมูล = "ยังไม่ได้ระบุ" ไม่ใช่ "ไม่แพ้"', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ไม่มีตัวเลือกวิธีปรึกษาในฟอร์ม ลำดับคือ 1 อาการที่ต้องการปรึกษา 2 ข้อมูลก่อนปรึกษา รับวิธีปรึกษาจากทางเข้าเดิมและเปิดวิดีโอในห้องได้; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"',
     'A2 (ประกาศ อย. ข้อ 2.1(3) "ก่อนการให้บริการ" = ทุกเคส): ติ๊ก รับทราบขั้นตอนและความเสี่ยง ก่อนกดเข้าคิว · ครั้งแรกเปิดข้อความเต็มให้อ่าน ครั้งต่อไปพับไว้ แตะเปิดอ่านได้ · ไม่ติ๊กแล้วกดเข้าคิว = พาไปที่ช่องติ๊ก บอกว่าต้องติ๊กก่อน · เก็บเวลาและเลขฉบับข้อความกับเคส ส่งให้คอนโซล (B8) · อ่านซ้ำได้ที่ C207 (C203.7)',
     'A1 (C203.8): ที่อยู่หลักอยู่นอกเขตส่งยา บอกก่อนเข้าคิวว่าถ้าต้องซื้อยา รับที่ร้านได้อย่างเดียว ปรึกษาได้ตามปกติ · ไม่บังคับเปลี่ยนที่อยู่'],
   wait: ['ข้อความขั้นตอนและความเสี่ยง (A2) ให้เภสัชกรและฝ่ายกฎหมายตรวจก่อนใช้จริง', 'ฝากคำถามตอนร้านปิด ต้องติ๊กรับทราบด้วยไหม (ต้นแบบยังไม่ให้ติ๊ก)', 'ปรึกษาใหม่ต่อจากเคสที่ระบบปิดเพราะเงียบ และย้ายคิวไปสาขาอื่น ใช้การรับทราบของเคสเดิมได้ไหม (ต้นแบบใช้ของเคสเดิม ไม่ถามซ้ำ)'],
@@ -2993,11 +3000,10 @@ TP.screen('intake', {
     return `<div class="auth-form-scene ik-scene"><img class="auth-form-cover ik-cover" src="/assets/banners/intake-consultation-cover-v1.png" alt="" width="1536" height="1024"><button type="button" class="auth-form-back" data-back aria-label="ย้อนกลับ">${ic('arrow-left',22,2)}<span>กลับ</span></button><section class="auth-form-panel ik-form-panel" aria-labelledby="ikPageTitle">` + ui.page(`<header class="ik-intro"><h1 id="ikPageTitle">อยากปรึกษาเภสัชเรื่องอะไร</h1><p>บอกอาการหรือคำถามเรื่องยา ก่อนเริ่มคุยกับเภสัชกร</p></header>
       ${ctx.state === 'fail' ? ui.note('<b>ยังส่งข้อมูลไม่สำเร็จ</b><br>ข้อมูลยังอยู่ครบ ลองเข้าคิวอีกครั้งได้เลย', { tone: 'danger' }) : ''}
       ${shut ? ui.note('<b>ร้านปิดรับปรึกษาอยู่</b><br>คุณยังฝากคำถามให้เภสัชกรตอบเมื่อร้านเปิดได้', {tone:'warn',icon:'moon'}) : ''}
-      <section class="ik-sec ik-block ik-mode-section"><div class="ik-section-heading"><span>1</span><h3 class="ik-h" id="ikModeTitle">ต้องการปรึกษาแบบไหน <span class="reg-required" aria-hidden="true">*</span></h3></div><div class="ik-mode-options" role="radiogroup" aria-labelledby="ikModeTitle">${[['chat','สนทนา','message-square-text'],['video','วิดีโอคอล','video']].map(([value,label,icon])=>`<label class="ik-mode-option"><input type="radio" name="ikConsultMode" required value="${value}" ${I.mode===value?'checked':''}><span>${ic(icon,24,1.8)}<b>${label}</b></span></label>`).join('')}</div></section>
-      <section class="ik-sec ik-block"><div class="ik-section-heading"><span>2</span><h3 class="ik-h"><label for="ikNote">อาการที่ต้องการปรึกษา <span class="reg-required" aria-hidden="true">*</span></label></h3></div>
+      <section class="ik-sec ik-block"><div class="ik-section-heading"><span>1</span><h3 class="ik-h"><label for="ikNote">อาการที่ต้องการปรึกษา <span class="reg-required" aria-hidden="true">*</span></label></h3></div>
         <div class="ik-extra-fields"><div class="field"><textarea class="input" id="ikNote" rows="4" required data-bind="intake.note" data-a="symChange" placeholder="เช่น เจ็บคอมา 2 วัน กลืนแล้วเจ็บ มีไอเล็กน้อย หรือพิมพ์คำถามเรื่องยาที่ต้องการปรึกษา">${esc(I.note||'')}</textarea></div>${ctx.state==='custom-error'?ui.note('กรุณาบอกอาการหรือคำถามเรื่องยาก่อนปรึกษาเภสัชกร',{tone:'danger',icon:'triangle-alert'}):''}${intakePhotosHtml(I)}</div>
       </section>
-      <section class="ik-sec ik-block"><div class="ik-section-heading"><span>3</span><h3 class="ik-h">ข้อมูลก่อนปรึกษา</h3></div>
+      <section class="ik-sec ik-block"><div class="ik-section-heading"><span>2</span><h3 class="ik-h">ข้อมูลก่อนปรึกษา</h3></div>
         ${p.allergyState !== 'none' && !p.allergies?.length ? ui.note('<b>ยังไม่ได้ระบุประวัติแพ้ยา</b><br>แจ้งเภสัชกรได้แม้จำชื่อยาไม่ได้', {tone:'warn',icon:'triangle-alert'}) : ''}
         <div class="ik-health-summary">${healthRows.map(([key,title,icon,none])=>healthRow(key,title,icon,record[key].mode==='set'?record[key].text:record[key].mode==='none'?none:'ยังไม่ทราบ')).join('')}</div>
 
@@ -3007,7 +3013,6 @@ TP.screen('intake', {
       ui.dock(shut ? ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', disabled: !ready, id: 'ikGo' }) : ui.btn('ปรึกษาเภสัช', { a: 'joinQueue', disabled: !ready || !I.ack, id: 'ikGo' }));
   },
   mount(el,ctx) {
-    el.addEventListener('change',e=>{if(e.target.name==='ikConsultMode'&&['chat','video'].includes(e.target.value))ctx.S.intake.mode=e.target.value;});
     $('#ikAck',el)?.addEventListener('change',e=>TP.ACTS.ikAck(e.target));
     $('#ikPhotos',el)?.addEventListener('change',e=>{const files=Array.from(e.target.files||[]);e.target.value='';if(!files.length)return;const I=ctx.S.intake,error=TP.intakePhotoBatch(I,files);if(error){I.photoError=error;const message=$('#ikPhotoError',el);if(message){message.hidden=false;message.textContent=error;}return;}TP.refresh({anim:false});});
   }
@@ -3067,7 +3072,6 @@ TP.act('joinQueue', async t => {
     if (ck) { ck.focus({ preventScroll: true }); ck.classList.remove('flash'); void ck.offsetWidth; ck.classList.add('flash'); }
     TP.live(ACK_NEED); TP.notify(ACK_NEED, { icon: 'info' }); return;
   }
-  if (S.intake.urgent.length && !S._urgentOk) return TP.sheet('redflag');
   if (!S.consent && !S.user.name && TP.SCREENS.profile) return TP.go('profile', { via: 'cover', params: { phone: (S.user.phone || '').replace(/\D/g, '') } });
   if (!S.notifAsked) return TP.sheet('pushask');
   S._urgentOk = false; S.st.queue = undefined;
@@ -3079,54 +3083,9 @@ TP.act('joinQueue', async t => {
 });
 TP.resumeJoin = () => { const go = $('#ikGo', TP.cur()?.el); if (TP.cur()?.id === 'intake' && go) TP.ACTS.joinQueue(go); };
 
-/* ---------- allergy + regular meds (edit in place) ---------- */
-TP.sheetDef('allergy', {
-  group: 'before', title: 'แพ้ยาและยาประจำ', code: 'C204', ref: 'C04', host: 'intake',
-  notes: ['แก้ในที่ ไม่ต้องออกจากหน้าแจ้งอาการ · บันทึกกลับเข้าบัญชีของคนนั้น', '"ไม่มีประวัติแพ้ยา" ต้องกดยืนยันเอง ระบบไม่เดาให้'],
-  render(ctx) {
-    const p = TP.person(TP.S.intake.who);
-    const al = p.allergies || [], md = p.meds || [];
-    return `<p class="small" style="margin:0 4px 12px">${p.id === 'me' ? 'ข้อมูลของคุณเอง' : 'ข้อมูลของ ' + esc(p.name)}</p>
-      <h3 class="ik-h">แพ้ยา</h3>
-      <div class="chips" id="algList">${al.map(a => `<span class="chip" style="cursor:default">${esc(a)}<button type="button" class="chip-x" data-a="rmAlg" data-v="${esc(a)}" aria-label="ลบ ${esc(a)}">${ic('x', 14, 2.4)}</button></span>`).join('') || `<span class="small">${p.allergyState === 'none' ? 'ไม่มีประวัติแพ้ยา' : 'ยังไม่ได้ระบุ'}</span>`}</div>
-      <div class="hrow mt12"><input class="input grow" id="algIn" placeholder="พิมพ์ชื่อยาที่แพ้" aria-label="ชื่อยาที่แพ้">${ui.btn('เพิ่ม', { kind: 'tint', sm: true, a: 'addAlg' })}</div>
-      ${ui.check('ไม่มีประวัติแพ้ยา', { on: p.allergyState === 'none', a: 'noAlg' })}
-      <h3 class="ik-h mt16">ยาที่ใช้ประจำ</h3>
-      ${ui.field({ id: 'medIn', label: 'ชื่อยาที่ทานประจำ (หลายตัวใส่ , คั่น)', value: md.join(', '), placeholder: 'เช่น ยาความดัน ยาเบาหวาน', autofocus: ctx.params.focus === 'meds' })}`;
-  },
-  foot: () => ui.btn('บันทึก', { a: 'saveAlg' }),
-  mount(el, ctx) { if (ctx.params.focus === 'meds') setTimeout(() => $('#medIn', el)?.focus(), 80); }
-});
-TP.act('addAlg', () => {
-  const v = $('#algIn').value.trim(); if (!v) { A($('#algIn'), [{ transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'none' }], { d: 260 }); return; }
-  const p = TP.person(TP.S.intake.who), tgt = p.id === 'me' ? TP.S.user : TP.S.family.find(f => f.id === p.id);
-  tgt.allergies = [...(tgt.allergies || []), v]; tgt.allergyState = 'set';
-  TP.closeSheet({ instant: true }).then(() => TP.sheet('allergy'));
-});
-TP.act('rmAlg', t => { const p = TP.person(TP.S.intake.who), tgt = p.id === 'me' ? TP.S.user : TP.S.family.find(f => f.id === p.id); tgt.allergies = tgt.allergies.filter(a => a !== t.dataset.v); if (!tgt.allergies.length) tgt.allergyState = 'unknown'; TP.closeSheet({ instant: true }).then(() => TP.sheet('allergy')); });
-TP.act('noAlg', t => { const p = TP.person(TP.S.intake.who), tgt = p.id === 'me' ? TP.S.user : TP.S.family.find(f => f.id === p.id); if (t.getAttribute('aria-checked') === 'true') { tgt.allergies = []; tgt.allergyState = 'none'; const l = document.getElementById('algList'); if (l) l.innerHTML = ''; } else tgt.allergyState = 'unknown'; });
-TP.act('saveAlg', () => {
-  const p = TP.person(TP.S.intake.who), tgt = p.id === 'me' ? TP.S.user : TP.S.family.find(f => f.id === p.id);
-  tgt.meds = $('#medIn').value.split(',').map(s => s.trim()).filter(Boolean);
-  TP.closeSheet().then(() => { TP.refresh({ anim: false }); TP.notify('บันทึกแล้ว'); });
-});
-
-/* ---------- red flag (C05 / A7: continue with urgent flag allowed) ---------- */
-TP.sheetDef('redflag', {
-  group: 'before', title: 'อาการที่ควรไปโรงพยาบาล', code: 'C205', ref: 'C05', host: 'intake', cls: 'rf',
-  prep(S) { if (!S.intake.urgent.length) S.intake.urgent = ['หายใจลำบาก']; },
-  notes: ['ขึ้นตอนกดเข้าคิว ไม่ขัดจังหวะตอนแตะชิป', 'ปุ่มโทร 1669 อยู่ที่จอนี้ (ไม่อยู่หน้าแรก ตาม A8) · ไม่มีปุ่มโรงพยาบาลใกล้ฉัน (เจ้าของตัดออก 19/10/2026)', 'คงธงอาการอันตรายส่งให้เภสัชกร ปุ่มปรึกษาเป็น outline แยกจากการโทรฉุกเฉิน ไม่รับรองว่าจะได้รับบริการก่อน'],
-  wait: ['รายการอาการรุนแรงจริงจากเภสัชกร (ตอนนี้เป็นรายการตัวอย่าง)'],
-  render(ctx) {
-    const u = TP.S.intake.urgent;
-    return `<div class="rf-content"><section class="rf-symptoms" aria-labelledby="rfSymptomsLabel"><p id="rfSymptomsLabel">อาการที่คุณเลือก</p><ul>${u.map(sym=>`<li>${esc(sym)}</li>`).join('')}</ul></section>
-      <div class="rf-message" role="alert"><div class="rf-advice">${ic('triangle-alert',24,2)}<div><h3>ควรรับการดูแลทันที</h3><p>ไปโรงพยาบาลหรือโทร 1669<br>อย่ารอการตอบในแอป</p></div></div>
-      <a class="btn danger" href="tel:1669" data-a="call1669">${ic('phone',20,2)}<span>โทร 1669 สายด่วนฉุกเฉิน</span></a></div></div><div class="rf-confirm">${ui.btn('ยืนยันปรึกษาเภสัช', { kind: 'secondary', a: 'urgentGo' })}</div>`;
-  }
-});
+// C204 and C205 retired: health data is edited through the shared health form.
 TP.act('call1669', (t, c, e) => { e.preventDefault(); TP.notify('กำลังโทร 1669', { icon: 'phone' }); });
 
-TP.act('urgentGo', async () => { TP.S._urgentOk = true; await TP.closeSheet(); TP.resumeJoin(); });
 
 /* ---------- notification ask (first queue join, not at app open) ---------- */
 TP.sheetDef('pushask', {
@@ -3188,7 +3147,6 @@ TP.passHtml = (p, b, o = {}) => `<div class="pass${o.cls ? ' ' + o.cls : ''}" da
 /* the FDA's licensed-pharmacy search; the real app opens it with this number (build time: confirm the FDA page and how it takes the number) */
 TP.act('verifyStore', t => TP.notify('เปิดหน้าตรวจใบอนุญาตร้านขายยาของ อย. เลขที่ ' + (t.dataset.v || ''), { icon: 'external-link' }));
 /* a red flag in the queue: say again what to do if it gets worse while waiting (QA R3-7) */
-const qDanger = TP.queueDanger = () => `<div class="note danger q-dg" role="alert" data-in="4">${ic('octagon-alert', 18, 2)}<div><b>คุณแจ้งอาการรุนแรงไว้</b><p class="mt8">ถ้าแย่ลงระหว่างรอ ไม่ต้องรอเภสัชกร ไปโรงพยาบาลทันที</p></div></div>`;
 TP.act('qNotifOn', () => { TP.S.notif = true; TP.notify('เปิดการแจ้งเตือนแล้ว', { icon: 'bell' }); TP.refresh({ anim: false }); });
 /* the Pharmacy Council search only answers its own form (POST), a link cannot carry the number:
    send that form into a new tab so the result page opens like a manual search.
@@ -3205,9 +3163,9 @@ TP.act('verifyLic', t => {
 
 TP.screen('queue', {
   group:'before',title:'ห้องแชท · รอเภสัชกร',code:'C207',ref:'C08',parent:'home',
-  states:[['q2','รออีก 1 คิว'],['q1','คิวถัดไป'],['paused','เภสัชกรพัก'],['urgent','มีธงด่วน'],['notifoff','ปิดการแจ้งเตือนไว้'],['refined','รอในห้องแชท', false],['q4','รออีก 3 คิว'],['message','พิมพ์ข้อมูลระหว่างรอ'],['joined','เภสัชกรพร้อมให้บริการ'],['offline','อินเทอร์เน็ตขาดระหว่างรอ'],['video-wait','รอเภสัชกรวิดีโอคอล'],['video-next','วิดีโอคอล · คิวถัดไป']],
-  notes:['ระหว่างค้นหาและรอคิวแชท แสดงหัวข้อแชทกับเภสัชกร แถบสถานะสี Primary พร้อมแสงไล่ผ่านเบา ๆ และไอคอนค้นหา ไม่แสดงชื่อเภสัชกรก่อนรับเคส ใช้จำนวนคิวจริง ไม่ประมาณเวลารอ ปุ่มกล้องอยู่ล่างซ้าย ไม่มีปุ่มแจ้งอาการลอย','เข้าห้องแชททันทีหลังแจ้งอาการ พิมพ์ข้อมูลไว้ระหว่างรอได้ เภสัชกรยังไม่ได้อ่านข้อความจนรับเคส','แถบบนแสดงคิวปัจจุบันและข้อความระบบบอกเมื่อคิวขยับ ไม่ประมาณเวลารอ','ย่อห้องแล้วกลับมาได้ คิว ข้อความ และร่างข้อความยังอยู่','เมื่อรับเคสคุยต่อในห้องเดิม ไม่แสดงการ์ดข้อมูลก่อนปรึกษา เปิดวิดีโอคอลหลังรับเคสเท่านั้น'],
-  prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode=['video-wait','video-next'].includes(st)?'video':'chat';c.pos=['q1','video-next'].includes(st)?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=st==='urgent'?['หายใจลำบาก']:[];S.netOff=st==='offline';S.notif=st!=='notifoff';if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ส่งข้อมูลเบื้องต้นแล้ว คุณสามารถพิมพ์อาการเพิ่มเติมไว้ระหว่างรอเภสัชกรได้'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
+  states:[['q2','รออีก 1 คิว'],['q1','คิวถัดไป'],['paused','เภสัชกรพัก'],['urgent','มีธงด่วน',false],['notifoff','ปิดการแจ้งเตือนไว้',false],['refined','รอในห้องแชท', false],['q4','รออีก 3 คิว'],['message','พิมพ์ข้อมูลระหว่างรอ'],['joined','ย้ายไป C300 เภสัชกรพร้อมให้บริการ',false],['offline','อินเทอร์เน็ตขาดระหว่างรอ'],['video-wait','รอเภสัชกรวิดีโอคอล'],['video-next','วิดีโอคอล · คิวถัดไป',false]],
+  notes:['ยกเลิก C207.4 มีธงด่วน และ C207.5 ปิดการแจ้งเตือนไว้แล้ว ไม่แสดงกล่องเตือนทั้งสองแบบระหว่างรอคิว','ระหว่างค้นหาและรอคิวแชท แสดงหัวข้อแชทกับเภสัชกร แถบสถานะสี Primary พร้อมแสงไล่ผ่านเบา ๆ และไอคอนค้นหา ไม่แสดงชื่อเภสัชกรก่อนรับเคส ใช้จำนวนคิวจริง ไม่ประมาณเวลารอ ปุ่มกล้องอยู่ล่างซ้าย ไม่มีปุ่มแจ้งอาการลอย','เข้าห้องแชททันทีหลังแจ้งอาการ พิมพ์ข้อมูลไว้ระหว่างรอได้ เภสัชกรยังไม่ได้อ่านข้อความจนรับเคส','แถบบนแสดงคิวปัจจุบันและข้อความระบบบอกเมื่อคิวขยับ ไม่ประมาณเวลารอ','ย่อห้องแล้วกลับมาได้ คิว ข้อความ และร่างข้อความยังอยู่','เมื่อรับเคสคุยต่อในห้องเดิม ไม่แสดงการ์ดข้อมูลก่อนปรึกษา เปิดวิดีโอคอลหลังรับเคสเท่านั้น'],
+  prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode=['video-wait','video-next'].includes(st)?'video':'chat';c.pos=['q1','video-next'].includes(st)?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=[];S.netOff=st==='offline';if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ส่งข้อมูลเบื้องต้นแล้ว คุณสามารถพิมพ์อาการเพิ่มเติมไว้ระหว่างรอเภสัชกรได้'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
   render(ctx){return TP.SCREENS.room.render(ctx);},
   mount(el,ctx){TP.SCREENS.room.mount(el,ctx);}
 });
@@ -3220,7 +3178,6 @@ TP.sheetDef('cancelq', {
 });
 TP.act('cancelQueue', async () => { TP.S.case.status = 'cancelled'; TP.emit('state'); await TP.closeSheet(); TP.go('home', { via: 'uncover', root: true }); TP.notify('ยกเลิกคิวแล้ว', { icon: 'x' }); });
 
-TP.act('queueEnableNotifications',()=>{TP.S.notif=true;TP.emit('state');return TP.refresh({anim:false});});
 /* ---------- pharmacist simulation (panel + auto) ---------- */
 const onQueue = () => TP.cur()?.id === 'queue' && !TP.sheetOpen();
 TP.sim = {
@@ -3233,7 +3190,7 @@ TP.sim = {
     const c=C();if(!c||!['queue','paused'].includes(c.status))return;
     c.waitedInChat=true;c.status='room';c.pos=0;TP.emit('state');
     if(['queue','room'].includes(TP.cur()?.id)&&!TP.sheetOpen()){
-      await TP.go('room',{via:'fade',replace:true});
+      await TP.go('providerready',{via:'fade',replace:true});
       TP.live('เภสัชกรเข้าห้องและพร้อมให้บริการแล้ว');
     }else{
       if(TP.cur()?.id==='home'&&!TP.sheetOpen())TP.refresh({anim:false});
@@ -3283,6 +3240,20 @@ TP.simAction({ id: 'lock', label: 'รับคิวตอนจอล็อก
 /* =====================================================================
    Lock screen notification (ใหม่)
    ===================================================================== */
+// Former C207.9 now belongs to the consultation phase. Keep its old suffix reserved.
+TP.screen('providerready', {
+  group: 'during', title: 'เภสัชกรพร้อมให้บริการ', code: 'C300', parent: 'home',
+  states: [['normal', 'เภสัชกรเข้าห้องแล้ว']],
+  notes: ['ย้ายจาก C207.9 มา C300 เมื่อเภสัชกรรับคิวและเข้าห้องแล้ว', 'ใช้ห้องสนทนาเดียวกับ C303 คงข้อความที่ส่งระหว่างรอ แสดงข้อมูลเภสัชกรและปุ่มวิดีโอคอล'],
+  prep(S) {
+    const c = ensureCase('room');
+    c.waitedInChat = true; c.pos = 0; c.order = null; c.idle = null;
+    c.urgent = []; c.msgs = []; c.draft = ''; S.netOff = false;
+  },
+  render(ctx) { return TP.SCREENS.room.render(ctx); },
+  mount(el, ctx) { TP.SCREENS.room.mount(el, ctx); }
+});
+
 TP.screen('lock', {
   group: 'during', title: 'แจ้งเตือนบนจอล็อก', code: 'C301', cls: 'dark lock-scr', sb: 'light',
   states: [['accept', 'รับคิว'], ['msg', 'ข้อความใหม่'], ['order', 'รายการยา'], ['payexp', 'รายการใกล้หมดเวลา'], ['paused', 'เภสัชกรพัก'], ['summary', 'ใบสรุป'], ['adr', 'ตอบเรื่องอาการหลังใช้ยา'], ['fudose', 'เตือนกินยา'], ['fucheck', 'ถามอาการระหว่างใช้ยา']],
@@ -3551,6 +3522,13 @@ TP.orderNumber = c => {
 };
 TP.makeOrder = () => { const k=TP.casePlan(C()).items,items=k.length?k:[TP.ORDER_ITEMS[1]],issuedAt=Date.now();C().order={status:'pending',items,total:items.reduce((sum,i)=>sum+i.price,0),issuedAt,awaitingCheckout:(C().mode||'chat')==='chat',expiresAt:(C().mode||'chat')==='chat'?null:issuedAt+TP.ORDER_PAYMENT_MS,no:TP.orderNumber(C())};C().order.expires=TP.orderTime(C().order);TP.emit('state'); };
 TP.orderCases = S => [...new Map([S.case,...(S.history||[]).map(h=>h._case)].filter(Boolean).map(c=>[c.id,c])).values()];
+TP.medicationCompletedOrders = S => TP.orderCases(S).filter(c => {
+  const o = c.order;
+  return (!c.who || c.who === 'me') && o?.status === 'paid' && (o.picked || o.paid?.deliv || o.fulfillment?.status === 'delivered');
+}).map(c => TP.orderNumber(c));
+TP.hasMedicationUpdates = S => TP.medicationCompletedOrders(S).some(no => !(S.medicationSeenOrders || []).includes(no));
+TP.readMedicationUpdates = S => { S.medicationSeenOrders = [...new Set([...(S.medicationSeenOrders || []), ...TP.medicationCompletedOrders(S)])]; };
+
 TP.pendingPaymentCase = S => TP.orderCases(S).find(c=>c.order?.status==='pending');
 /* Chat consultation: the existing order continues after the room is closed. */
 TP.chatConsult = c => !!c && (c.mode||'chat')==='chat';
@@ -3579,16 +3557,16 @@ TP.fulfillmentInfo = c => {
  if(o.paid?.recv==='parcel'){
   const pd=o.paid;
   const [key,title,icon]=pd.deliv?['delivered','ขนส่งแจ้งว่าส่งถึงแล้ว','package-check']:pd.out?['out','กำลังนำส่ง','truck']:pd.stage?['transit','กำลังขนส่ง','truck']:TP.FULFILLMENT_PHASES[0];
-  return {key,title,icon,done:!!(pd.got||o.picked),pickup:false};
+  return {key,title,icon,done:!!(pd.deliv||o.picked),pickup:false};
  }
  const phase=TP.FULFILLMENT_PHASES.find(x=>x[0]===o.fulfillment.status)||TP.FULFILLMENT_PHASES[0];
- return {key:phase[0],title:phase[1],icon:phase[2],done:!!(o.paid?.got||o.picked),pickup:o.paid?.recv==='pickup'};
+ return {key:phase[0],title:phase[1],icon:phase[2],done:!!(o.paid?.deliv||o.picked||o.fulfillment.status==='delivered'),pickup:o.paid?.recv==='pickup'};
 };
 TP.setFulfillment = (c,status) => {
  if(c?.order?.status!=='paid'||!TP.FULFILLMENT_PHASES.some(x=>x[0]===status))return false;
  const current=TP.FULFILLMENT_PHASES.findIndex(x=>x[0]===c.order.fulfillment?.status),next=TP.FULFILLMENT_PHASES.findIndex(x=>x[0]===status);if(current>=0&&next<=current)return false;
  c.order.fulfillment={...c.order.fulfillment,status,updatedAt:new Date().toISOString()};
- if(status==='delivered'){c.order.paid.deliv=TP.NOW.time;}
+ if(status==='delivered'){c.order.paid.deliv=TP.NOW.time;c.order.picked=true;}
  TP.emit('state');return true;
 };
 TP.fulfillmentPreview = (c,key) => {
@@ -3606,7 +3584,7 @@ TP.fulfillmentCard = S => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo
  return `<article class="post-consult-payment fulfillment-card case-progress-card"><header class="post-payment-heading case-progress-head"><span class="case-progress-icon" aria-hidden="true">${TP.ic(f.pickup?'store':['calling','delivering','out','transit'].includes(f.key)?'truck':'package',22,1.8)}</span><span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</header><div class="case-progress-body"><h3>${TP.esc(title)}</h3><p class="case-progress-meta">${TP.ic('map-pin',16)}<span>${TP.esc(b.name)}</span></p><p class="case-progress-order">เลขคำสั่งซื้อ <span>${TP.esc(c.order.no)}</span></p></div><footer class="case-progress-foot">${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</footer></article>`;
 
 }).join('');
-TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||TP.S.case;if(!TP.fulfillmentInfo(c))return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(c.order.paid?.recv==='parcel'?'track':'paid',{via:'cover'});});
+TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||TP.S.case;if(!TP.fulfillmentInfo(c))return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(TP.fulfillmentScreen(c),{via:'cover'});});
 TP.chatDeliveryPage = c => {
   const f = TP.fulfillmentInfo(c), o = c.order;
   const phase = TP.FULFILLMENT_PHASES.findIndex(([key]) => key === f.key);
@@ -3618,7 +3596,7 @@ TP.chatDeliveryPage = c => {
     }
   );
   return TP.ui.nav({ title: 'สถานะการจัดส่งยา', right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${TP.ic('x',22,2)}</button>` }) +
-    TP.ui.page(status + (f.key === 'delivered' ? (o.paid.got ? '<p class="tk-got" role="status">คุณยืนยันว่าได้รับยาแล้ว</p>' : TP.ui.btn('ได้รับยาแล้ว', { a: 'tkGot', icon: 'circle-check', cls: 'mb16' })) : '') + TP.fulfillmentDetails(c));
+    TP.ui.page(status + TP.fulfillmentDetails(c));
 };
 /* End chat order lifecycle */
 
@@ -3720,7 +3698,23 @@ function orderCard(o) {
   </article>`;
 }
 
+function adrChatMessage(m) {
+  const reports = m.adrReports || (m.adrReportIds || []).map(id => (TP.S.adrReports || []).find(report => report.id === id)).filter(Boolean);
+  return reports.map(report => {
+    const symptoms = (report.sym || []).join(', ');
+    const lines = [
+      report.drug,
+      `- อาการ: ${symptoms || report.note || 'ไม่ได้ระบุ'}`,
+      `- เริ่มมีอาการ: ${TP.adrSinceLabel(report.since)}`,
+      `- ความรบกวน: ${TP.adrLevelLabel(report.level)}`,
+      report.note && symptoms ? `- รายละเอียดเพิ่มเติม: ${report.note}` : ''
+    ].filter(Boolean);
+    return `<div class="msg me"><p>${lines.map(line => esc(line)).join('<br>')}</p><time>${esc(m.time || '')}</time></div>`;
+  }).join('');
+}
+
 function msgHtml(m) {
+  if (m.adrReportIds?.length || m.kind === 'adr-report') { const report = adrChatMessage(m); if (report) return report; }
   if(m.kind==='provider-ready')return '<div class="msg-sys rm-provider-ready" role="status"><span>เภสัชกรเข้าร่วมห้องแล้ว<br>พิมพ์ข้อความเพื่อปรึกษาเภสัชกรได้เลย</span></div>';
   if(m.kind==='video-request'){
     const c=C(),pending=m.status==='pending'&&c.status==='room'&&!TP.S.call,inCall=m.status==='accepted'&&!!TP.S.call;
@@ -3848,7 +3842,7 @@ TP.screen('room', {
       ${!waiting?`<div class="rm-provider-bar"><button type="button" class="rm-who" data-sheet="chatprovider" aria-label="ดูข้อมูลเภสัชกร" aria-haspopup="dialog">${ui.av('', {ini:p.ini,img:p.id==='tp'?TP.demoProfiles?.pharmacist_m:'/assets/profiles/pharmacist-chat-v2.png',size:'sm',solid:true})}<span><b>${esc(p.short)} <span class="rm-provider-license">· ${esc(p.lic)}</span></b><small>${esc(b.name)}</small></span></button>${closed?'':`<button type="button" class="ibtn" data-a="chatVideo" aria-label="วิดีโอคอล">${ic('video',24,1.8)}</button>`}</div>`:''}
       ${waiting&&!videoWaiting?`<div class="rm-queue-bar" role="status" aria-live="polite" aria-atomic="true"><span class="rm-queue-icon" aria-hidden="true">${ic(c.status==='paused'?'clock':'search',24,2)}</span><span class="rm-queue-copy"><b>${c.status==='paused'?'รอเภสัชกรกลับมารับบริการ':'กำลังหาเภสัชกร...'}</b><small id="rmQueueLabel">${esc(queueChatLabel(c))}</small></span></div>`:''}
       ${call}${TP.S.netOff ? `<div class="rm-net" role="status">${ic('wifi-off', 16, 2)}<span>ไม่มีอินเทอร์เน็ต ข้อความจะส่งเมื่อกลับมาออนไลน์</span></div>` : ''}
-      <div class="scroll rm-scroll${!waiting?' has-provider':''}${call ? ' has-call' : ''}${waiting&&!videoWaiting?' has-queue':''}${TP.S.netOff ? ' has-net' : ''}${closed ? (c.endWhy === 'noreply' ? ' end2' : ' ended') : ''}" id="rmScroll">${waiting&&c.urgent?.length?`<div class="rm-wait-safety">${TP.queueDanger()}</div>`:''}${videoWaiting?videoQueueCard(c):''}${waiting&&!TP.S.notif?ui.note('ปิดการแจ้งเตือนอยู่ เปิดไว้เพื่อรับแจ้งเมื่อถึงคิว',{icon:'bell-off'})+ui.btn('เปิดการแจ้งเตือน',{a:'queueEnableNotifications',kind:'secondary',icon:'bell'}):''}${waiting&&!videoWaiting?'':`<div class="rm-day">${esc(c.day0 || 'วันนี้')}</div>`}<div class="rm-list" id="rmList">${c.msgs.map(msgHtml).join('')}</div><div class="rm-quick" id="rmQuick"></div>${idleHtml(c)}</div>
+      <div class="scroll rm-scroll${!waiting?' has-provider':''}${call ? ' has-call' : ''}${waiting&&!videoWaiting?' has-queue':''}${TP.S.netOff ? ' has-net' : ''}${closed ? (c.endWhy === 'noreply' ? ' end2' : ' ended') : ''}" id="rmScroll">${videoWaiting?videoQueueCard(c):''}${waiting&&!videoWaiting?'':`<div class="rm-day">${esc(c.day0 || 'วันนี้')}</div>`}<div class="rm-list" id="rmList">${c.msgs.map(msgHtml).join('')}</div><div class="rm-quick" id="rmQuick"></div>${idleHtml(c)}</div>
       ${closed && TP.checkoutHandoffRemaining(c) ? ui.dock(ui.btn(`ขั้นตอนต่อไป ชำระค่ายา (${TP.checkoutHandoffRemaining(c)} วิ)`,{a:'continueCheckout'})) : closed && c.order?.status==='pending' ? ui.dock(`${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',icon:'credit-card'})}${ui.btn('เปิดใบสรุป',{kind:'ghost',go:'summary',p:{id:c.id}})}`,{note:`ปรึกษาเสร็จแล้ว · ชำระค่ายาภายใน ${esc(TP.orderTime(c.order))} น.`}) : closed && c.endWhy === 'noreply' ? ui.dock(`${TP.S.storeOpen ? ui.btn('ปรึกษาใหม่', { a: 'requeue', icon: 'message-circle' }) : ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', icon: 'message-circle' })}${ui.btn('เปิดใบสรุป', { kind: 'ghost', go: 'summary', p: { id: c.id } })}`, { note: TP.S.storeOpen ? 'ยังมีอาการ ปรึกษาใหม่ได้ทันทีที่สาขาเดิม ไม่ต้องกรอกอาการใหม่ · ไม่มีค่าปรึกษา' : `ร้านปิดแล้ว ฝากคำถามไว้ เภสัชกรตอบ${TP.OF_REPLY}` }) :
       closed ? ui.dock(`<p class="dock-note" style="margin:0">เคสนี้ปิดแล้ว · ดูย้อนหลังได้ในประวัติ 1 ปีนับจากวันปิดเคส</p>${ui.btn('เปิดใบสรุป', { go: 'summary', p: { id: c.id } })}`) :
       `<div id="rmBasket" class="rm-basket-strip"${TP.chatBasketBar(c.order) ? '' : ' hidden'}>${TP.chatBasketBar(c.order)}</div><div class="dock rm-comp"><div class="rm-compose-row"><button type="button" class="ibtn" data-a="sendPhoto" aria-label="ส่งรูป">${ic('camera', 22, 1.8)}</button><label class="sr" for="rmIn">พิมพ์ข้อความ</label><textarea id="rmIn" class="rm-in" rows="1" placeholder="${waiting?'พิมพ์อาการเพิ่มเติมไว้ระหว่างรอ':'พิมพ์ข้อความ'}">${esc(c.draft||'')}</textarea><button type="button" class="rm-send" data-a="sendMsg" aria-label="ส่ง" disabled>${ic('arrow-up', 20, 2.4)}</button></div></div>`}`;
@@ -3877,7 +3871,7 @@ TP.screen('room', {
     if (TP.S.call) { const t = $('#rmCallT', el); const tick = () => { if (!TP.S.call) return; if (TP.S.call.waitingProvider || !TP.S.call.t0) { t.textContent = ''; return; } const s = Math.floor((Date.now() - TP.S.call.t0) / 1000); t.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }; tick(); ctx.every(tick, 1000); }
     if (c.quick) showQuick(el, c.quick);
     if (c.idle) { const t = $('#rmIdleT', el); ctx.every(() => { if (!c.idle) return; const s = idleLeft(c); if (t) t.textContent = mmss(s); if (!s) TP.sim.idleClose(); }, 1000); }
-    if (!waitingForPharmacist(c)&&c.status!=='closed')ctx.later(()=>play(el,ctx),700);
+    if (ctx.id!=='providerready'&&!waitingForPharmacist(c)&&c.status!=='closed')ctx.later(()=>play(el,ctx),700);
   }
 });
 
@@ -3995,12 +3989,12 @@ TP.act('idleStay', () => {
 TP.sheetDef('medicinebasket', {
   group: 'during', title: 'ตะกร้ายา', code: 'C303.3', host: 'room', tall: true,
   states: [['normal', 'รายการยาจากเภสัชกร'], ['empty', 'ยังไม่มีรายการยา · กรณีสำรอง']],
-  notes: ['ซ่อนแถบตะกร้าเมื่อยังไม่เพิ่มยาหรือลบยาทั้งหมด ไม่เปิดตะกร้าว่างในโฟลว์ปกติ หน้าว่างเป็นกรณีสำรองสำหรับ preview เท่านั้น', 'เปิดจากแถบตะกร้ายาเหนือช่องพิมพ์ใน C303 หลังเภสัชกรเพิ่มยา ใช้ order.items เดียวกับการ์ดแชทและใบเสร็จ', 'แสดงรูป ชื่อ จำนวน วิธีใช้ ราคา และยอดรวม อ่านอย่างเดียว ไม่มีปุ่มชำระเงินหรือแก้จำนวน ผู้ใช้แจ้งเภสัชกรในแชทหากต้องการแก้รายการ', 'ปิดด้วยปุ่มปิด กากบาท พื้นหลัง หรือ Escape แล้วกลับห้องเดิมพร้อมข้อความร่าง'],
+  notes: ['ข้อความแจ้งแก้ไขรายการยาใช้กล่องสีเทาอ่อน เป็นข้อมูลทั่วไป','ซ่อนแถบตะกร้าเมื่อยังไม่เพิ่มยาหรือลบยาทั้งหมด ไม่เปิดตะกร้าว่างในโฟลว์ปกติ หน้าว่างเป็นกรณีสำรองสำหรับ preview เท่านั้น', 'เปิดจากแถบตะกร้ายาเหนือช่องพิมพ์ใน C303 หลังเภสัชกรเพิ่มยา ใช้ order.items เดียวกับการ์ดแชทและใบเสร็จ', 'แสดงรูป ชื่อ จำนวน วิธีใช้ ราคา และยอดรวม อ่านอย่างเดียว ไม่มีปุ่มชำระเงินหรือแก้จำนวน ผู้ใช้แจ้งเภสัชกรในแชทหากต้องการแก้รายการ', 'ปิดด้วยปุ่มปิด กากบาท พื้นหลัง หรือ Escape แล้วกลับห้องเดิมพร้อมข้อความร่าง'],
   prep(S) { S.st.room = S.st.medicinebasket === 'empty' ? 'live' : 'order'; TP.SCREENS.room.prep(S); },
   render() {
     const o = C()?.order;
     if (!o?.items?.length || o.status === 'cancelled') return `<div class="rm-basket-empty"><img class="rm-basket-empty-illustration" src="/assets/illustrations/medicine-basket-empty-v1.png" alt=""><h3 class="h3">ยังไม่มีรายการยา</h3><p class="small">รายการยาจะแสดงเมื่อเภสัชกรเพิ่มยาให้คุณ</p></div>`;
-    return `<section class="rm-basket-content"><header class="rm-basket-intro"><div><span class="rm-basket-eyebrow">ตะกร้ายาของคุณ</span><b>รายการยาที่เภสัชกรเพิ่มให้</b><p class="small">${o.items.length} รายการ</p></div></header><div class="rm-basket-items">${TP.orderMedicineList(o)}</div><div class="rm-basket-total"><span>รวมค่ายา</span><b class="num">${TP.money(o.total)}</b></div><div class="note warn">${ic('info',18,1.8)}<span>โปรดแจ้งเภสัชกร หากต้องการแก้ไขรายการยา</span></div></section>`;
+    return `<section class="rm-basket-content"><header class="rm-basket-intro"><div><span class="rm-basket-eyebrow">ตะกร้ายาของคุณ</span><b>รายการยาที่เภสัชกรเพิ่มให้</b><p class="small">${o.items.length} รายการ</p></div></header><div class="rm-basket-items">${TP.orderMedicineList(o)}</div><div class="rm-basket-total"><span>รวมค่ายา</span><b class="num">${TP.money(o.total)}</b></div><div class="note neutral">${ic('info',18,1.8)}<span>โปรดแจ้งเภสัชกร หากต้องการแก้ไขรายการยา</span></div></section>`;
   },
   foot: () => ui.btn('ปิด', { closeSheet: true })
 });
@@ -5073,14 +5067,14 @@ TP.fulfillmentDetails = c => {
     ])) +
     paidCard('รายการยา', TP.orderMedicineList(o) + '<div class="hr"></div>' + totKv(pd)) +
     (c.pharmacistAdvice ? paidCard('คำแนะนำจากเภสัชกร', `<p>${esc(c.pharmacistAdvice)}</p>`) : '') +
-    `<div class="group ic-rows mt16">${ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบเสร็จรับเงินและใบกำกับภาษี',go:'receipt'})}</div>`;
+    `<div class="group ic-rows mt16">${ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบเสร็จรับเงินและใบกำกับภาษี',go:'receipt',p:{id:c.id}})}</div>`;
 };
 
 /* ---------- paid (C12) ---------- */
 TP.screen('paymentsuccess', {
   group: 'during', title: 'ชำระเงินสำเร็จ', code: 'C311', parent: 'home',
   states: [['pickup','รับที่ร้าน'],['express','ส่งด่วน'],['parcel','จัดส่งปกติ']],
-  notes: ['แสดงหลังระบบยืนยันชำระสำเร็จ พร้อมเลขคำสั่งซื้อจากรายการจริง', 'ดูสถานะยาเปิด C309 หรือ C414 ตามวิธีรับยา กลับหน้าหลักยังติดตามคำสั่งซื้อเดิมได้'],
+  notes: ['แสดงหลังระบบยืนยันชำระสำเร็จ พร้อมเลขคำสั่งซื้อจากรายการจริง', 'ปุ่มดูสถานะจัดส่งยาอ่านวิธีรับยาที่บันทึกตอนชำระของคำสั่งซื้อเดิม: รับที่ร้านไป C309 ส่งด่วนและจัดส่งปกติไป C414 โดยไม่ใช้สถานะตัวอย่างเก่า กลับหน้าหลักยังติดตามคำสั่งซื้อเดิมได้'],
   prep(S) { mockPaid(S.st.paymentsuccess || 'pickup'); },
   render() {
     const o = C()?.order;
@@ -5092,7 +5086,14 @@ TP.screen('paymentsuccess', {
     </section>`);
   }
 });
-TP.act('paymentResultStatus', () => { const recv=C()?.order?.paid?.recv || 'pickup'; TP.S.st.paid=recv; return TP.go(recv==='parcel'?'track':'paid',{root:true}); });
+// Route from the paid order snapshot, never a stale preview state or checkout choice.
+TP.fulfillmentScreen = c => c?.order?.paid?.recv === 'pickup' ? 'paid' : 'track';
+TP.act('paymentResultStatus', () => {
+  const c = C();
+  if (!c?.order?.paid) return;
+  TP.S._paymentCase = c;
+  return TP.go(TP.fulfillmentScreen(c), { root: true });
+});
 TP.screen('paid', {
   group: 'during', title: 'สถานะยา', code: 'C309', ref: 'C12', parent: 'room',
   states: [['pickup', 'รับที่ร้าน'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['night', 'จ่ายตอนร้านปิด'], ['ready', 'ยาพร้อมรับแล้ว'], ['sent', 'ส่งพัสดุแล้ว มีเลขพัสดุ', false], ['rider', 'ไรเดอร์รับยาแล้ว'], ['cold', '', false], ['overdue', 'เลยกำหนดรับยา'], ['pickup-complete', 'รับยาที่สาขาแล้ว']],
@@ -5177,7 +5178,7 @@ const pickRemind = day => ({
 TP.simAction(pickRemind(15)); TP.simAction(pickRemind(30));
 TP.act('callStore', () => { const b = caseBranch(); TP.notify(`กำลังโทรหา${b.name} ${b.phone}`, { icon: 'phone' }); });
 
-/* ---------- C414 parcel tracking (A6, FDA notice 2.2(4): traceable the whole way, the customer confirms it arrived) ---------- */
+/* ---------- C414 parcel tracking (A6, FDA notice 2.2(4): traceable the whole way, completion is reported by the carrier) ---------- */
 const TRK_AT = { hand: '18/10/2026 16:10', hub: '18/10/2026 22:40', out: '19/10/2026 09:15', deliv: '19/10/2026 11:20', got: '19/10/2026 11:42' };
 TP.previewParcelStatus = (pd, state) => {
   setStage(pd);
@@ -5196,17 +5197,17 @@ function trkSteps(pd, st) {
 }
 TP.screen('track', {
   group: 'after', title: 'สถานะการจัดส่งยา', code: 'C414', parent: 'paid',
-  states: [['transit', 'ส่งด่วน · กำลังจัดส่ง'], ['delivered', 'ขนส่งแจ้งว่าส่งถึงแล้ว'], ['received', 'ลูกค้ายืนยันว่าได้รับยาแล้ว'], ['cold', '', false], ['rider', 'ส่งด่วน · ไรเดอร์กำลังจัดส่ง'], ['prep', 'จัดส่งปกติ · ร้านกำลังเตรียมยา', false], ['coldlink', '', false],['chat-preparing','สนทนา: กำลังเตรียมยา'],['chat-calling','สนทนา: กำลังเรียกไรเดอร์'],['chat-delivering','สนทนา: ไรเดอร์กำลังส่งยา'],['chat-delivered','สนทนา: จัดส่งเสร็จสิ้น'], ['out', 'จัดส่งปกติ · กำลังนำส่ง', false],['parcel-preparing','จัดส่งปกติ · กำลังเตรียมยา'],['parcel-transit','จัดส่งปกติ · กำลังขนส่ง'],['parcel-out','จัดส่งปกติ · กำลังนำส่ง'],['parcel-delivered','จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา'],['pickup-preparing','กำลังเตรียมยา'],['pickup-ready','พร้อมรับยาที่สาขา'],['pickup-complete','รับยาที่สาขาแล้ว'],['pickup-overdue','เลยกำหนดรับยา'],['pickup-night','รอร้านเปิดเพื่อเตรียมยา'],['parcel-received','ยืนยันได้รับยาแล้ว']],
+  states: [['transit', 'ส่งด่วน · กำลังจัดส่ง'], ['delivered', 'ขนส่งแจ้งว่าส่งถึงแล้ว'], ['received', 'เลิกใช้: ยืนยันรับยา', false], ['cold', '', false], ['rider', 'ส่งด่วน · ไรเดอร์กำลังจัดส่ง'], ['prep', 'จัดส่งปกติ · ร้านกำลังเตรียมยา', false], ['coldlink', '', false],['chat-preparing','สนทนา: กำลังเตรียมยา'],['chat-calling','สนทนา: กำลังเรียกไรเดอร์'],['chat-delivering','สนทนา: ไรเดอร์กำลังส่งยา'],['chat-delivered','สนทนา: จัดส่งเสร็จสิ้น'], ['out', 'จัดส่งปกติ · กำลังนำส่ง', false],['parcel-preparing','จัดส่งปกติ · กำลังเตรียมยา'],['parcel-transit','จัดส่งปกติ · กำลังขนส่ง'],['parcel-out','จัดส่งปกติ · กำลังนำส่ง'],['parcel-delivered','จัดส่งปกติ · จัดส่งสำเร็จ'],['pickup-preparing','กำลังเตรียมยา'],['pickup-ready','พร้อมรับยาที่สาขา'],['pickup-complete','รับยาที่สาขาแล้ว'],['pickup-overdue','เลยกำหนดรับยา'],['pickup-night','รอร้านเปิดเพื่อเตรียมยา'],['parcel-received','เลิกใช้: ยืนยันรับยา',false]],
   stateGroups: [
     {label:'รับยาที่ร้าน',keys:['pickup-preparing','pickup-night','pickup-ready','pickup-complete','pickup-overdue']},
-    {label:'ส่งด่วน',keys:['chat-preparing','chat-calling','chat-delivering','chat-delivered','transit','rider','delivered','received']},
-    {label:'จัดส่งปกติ',keys:['parcel-preparing','parcel-transit','parcel-out','parcel-delivered','parcel-received']}
+    {label:'ส่งด่วน',keys:['chat-preparing','chat-calling','chat-delivering','chat-delivered','transit','rider','delivered']},
+    {label:'จัดส่งปกติ',keys:['parcel-preparing','parcel-transit','parcel-out','parcel-delivered']}
   ],
-  notes: ['A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึง ส่งถึงแล้ว · ลูกค้ากด ได้รับยาแล้ว (ร้านเห็นในคอนโซล) · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
+  notes: ['A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
     'รองรับรับที่ร้าน ส่งด่วน และจัดส่งปกติ ใช้ภาพสถานะล่าสุดกับแถบไอคอนแนวนอนร่วมกัน ส่งด่วนใช้ภาพไรเดอร์ จัดส่งปกติใช้ภาพพัสดุและรถขนส่ง',
     '21/10 เจ้าของ "เอาเลขติดตามพัสดุหรือลิ้งติดตามพัสดุมาแปะ": เลข = แสดงเลขพร้อมปุ่มคัดลอก (C414.4) · ลิงก์ = ปุ่ม เปิดหน้าติดตามพัสดุ ไม่โชว์ลิงก์ยาว (C414.7 คอนโซลลิงก์มาที่นี่) · C309.8 ใช้ตัวอย่างแบบเลข',
-    'ปุ่มได้รับยาแล้วแสดงเมื่อขนส่งแจ้งว่าส่งถึงแล้ว · กดแล้วแถวยาบนหน้าแรกหายไป'],
-  wait: ['ลูกค้าไม่กด ได้รับยาแล้ว ระบบถือว่าได้รับเมื่อขนส่งแจ้งส่งถึงหลังกี่วัน (ต้นแบบยังไม่ปิดเอง)'],
+    'ไม่มีปุ่มยืนยันรับยาหรือแผ่น C415 เมื่อร้านบันทึกส่งมอบหรือขนส่งแจ้งส่งสำเร็จ รายการย้ายไปประวัติทันที'],
+  wait: [],
   prep(S) {
     if(S.st.track?.startsWith('pickup-')){S.st.paid={'pickup-preparing':'pickup','pickup-ready':'ready','pickup-complete':'pickup-complete','pickup-overdue':'overdue','pickup-night':'night'}[S.st.track];TP.SCREENS.paid.prep(S);return;}
     if(S.st.track?.startsWith('parcel-')){TP.ensureCase('closed');TP.fulfillmentPreview(C(),S.st.track==='parcel-received'?'parcel-delivered':S.st.track);if(S.st.track==='parcel-received'){C().order.paid.got=TRK_AT.got;C().order.picked=true;}return;}
@@ -5220,7 +5221,7 @@ TP.screen('track', {
   render() {
     if(C()?.order?.paid?.recv==='pickup')return TP.SCREENS.paid.render();
     if(C()?.order?.paid?.recv==='express'&&TP.fulfillmentInfo(C()))return TP.chatDeliveryPage(C());
-    const o = order(), pd = o.paid, cr = courierOf(pd), ex = pd.recv === 'express', cold = pd.recv === 'cold', st = trkState(pd), { steps, cur } = trkSteps(pd, st), a = pd.addr;
+    const o = order(), pd = o.paid, cr = courierOf(pd), ex = pd.recv === 'express', cold = pd.recv === 'cold', st = trkState(pd), { steps, cur } = trkSteps(pd, st);
     const head = ui.card(`<div class="tk-h"><span class="tk-i">${ic(ex ? 'zap' : cold ? 'snowflake' : 'package', 22, 2)}</span><div class="grow"><b>${esc(ex ? 'ส่งด่วน Lalamove' : pd.courier ? cr.name : TP.DELIVERY.find(d => d.id === 'parcel').name)}</b><small>${pd.track ? `<span class="num">${esc(pd.track)}</span>` : pd.trackUrl ? 'ร้านแปะลิงก์ติดตามพัสดุแล้ว' : ex ? 'ไรเดอร์ส่งถึงบ้าน' : 'เลขพัสดุขึ้นเมื่อร้านส่งของ'}</small></div>${pd.track ? `<button type="button" class="ibtn" data-a="copyTrack" aria-label="คัดลอกรหัสพัสดุ" title="คัดลอกรหัสพัสดุ">${ic('copy', 20, 2)}</button>` : ''}</div>
       ${cold ? `<p class="tk-n">${ic('snowflake', 14, 2)}<span>ยาอยู่ในกล่องคุมความเย็น 2-8 องศา · สถานะระหว่างทาง โทรถามร้านได้</span></p>${pd.track ? `<button type="button" class="link tk-web" data-a="trackShip">ติดตามบนเว็บ ${esc(TP.COLD.short)} ${ic('external-link', 14, 2)}</button>` : pd.trackUrl ? ui.btn('เปิดหน้าติดตามพัสดุ', { kind: 'secondary', sm: true, icon: 'external-link', a: 'openTrackLink', cls: 'mt12' }) : ''}` : ''}`, { din: 1, cls: 'mt8' });
     const current = Math.min(cur, steps.length - 1);
@@ -5229,26 +5230,13 @@ TP.screen('track', {
       icons:steps.length===6?['receipt','pill','package','truck','truck','check']:['receipt','pill',ex?'motorcycle':'truck','check']
     });
     const coldTip = cold && st !== 'prep' ? ui.card(`<div class="tk-cold">${ic('snowflake', 20, 2)}<div><b>ถึงแล้วเก็บเข้าตู้เย็นทันที</b><p>ถ้ากล่องไม่เย็นแล้ว อย่าใช้ยา โทรหาร้าน ${esc(caseBranch().phone)}</p></div></div>${ui.btn('โทรหาร้าน', { kind: 'secondary', sm: true, icon: 'phone', a: 'callStore', cls: 'mt8' })}`, { din: 2, cls: 'mt16' }) : '';
-    const got = pd.got ? `<div class="tk-got mt16" data-in="2" role="status">${ic('circle-check', 22, 2)}<span><b>คุณยืนยันว่าได้รับยาแล้ว</b>${esc(pd.got)} · ร้านเห็นแล้ว</span></div>` : '';
-    const to = a ? ui.card(ui.kv([['ส่งไปที่', esc(TP.fmtAddr ? TP.fmtAddr(a) : a.dist)], ['ผู้รับ', esc(`${a.first} ${a.last}`.trim())], ['เลขคำสั่งซื้อ', `<span class="num">${esc(o.no)}</span>`]]), { din: 3, cls: 'mt16' }) : '';
-    const ask = pd.deliv && !pd.got ? `<p class="tk-ask" data-in="3">${ic('package', 15, 2)}<span>${esc(cr.name || 'ขนส่ง')} แจ้งว่าส่งถึงแล้ว ได้รับยาครบแล้ว กด ได้รับยาแล้ว · ยังไม่ได้รับ โทรถามร้านได้</span></p>` : '';
-    const side = ex ? ui.btn('ดูตำแหน่งไรเดอร์ (Lalamove)', { kind: 'ghost', a: 'trackShip', icon: 'external-link' }) : cold ? ui.btn('ถามสถานะกับร้าน', { kind: 'ghost', a: 'callStore', icon: 'phone' }) : ui.btn(`เปิดหน้าติดตามของ ${cr.name}`, { kind: 'ghost', a: 'trackShip', icon: 'external-link' });
-    const dock = pd.got ? ui.btn('กลับหน้าแรก', { a: 'goHome' }) : pd.deliv ? ui.btn('ได้รับยาแล้ว', { a: 'tkGot', icon: 'circle-check' }) + side : st === 'prep' ? ui.btn('กลับ', { kind: 'secondary', a: 'tkBack' }) : side;
-    return ui.nav({ title: 'ติดตามพัสดุ', right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>` }) + ui.page(`${tl}${head}${got}${coldTip}${ask}${to}<div class="mt16">${ui.callHelp({ din: 4, branch: C().branch })}</div>`) + ui.dock(dock);
+    return ui.nav({ title: 'สถานะการจัดส่งยา', right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>` }) +
+      ui.page(`${tl}${head}${coldTip}${TP.fulfillmentDetails(C())}`);
   }
 });
 for(const [key,label,from,to]of [['chatCalling','ร้านเตรียมยาเสร็จ · เรียกไรเดอร์','preparing','calling'],['chatDelivering','ไรเดอร์รับยาแล้ว','calling','delivering'],['chatDelivered','ไรเดอร์ส่งยาสำเร็จ','delivering','delivered']])TP.simAction({id:key,label,when:S=>S.case?.order?.paid?.recv==='express'&&S.case?.order?.fulfillment?.status===from,run(){if(TP.setFulfillment(TP.S.case,to))TP.refresh({anim:false});}});
 TP.act('tkBack', () => (TP.canBack() ? TP.back() : TP.go('paid')));
-TP.act('tkGot', () => { const pd = C()?.order?.paid; if (pd?.deliv && !pd.got) return TP.sheet('gotask'); });
-TP.sheetDef('gotask', {
-  group: 'after', title: 'ยืนยันได้รับยา', code: 'C415', host: 'track',
-  notes: ['ผู้ใช้จริง 21/10: กดได้รับยาแล้วพลาดได้ จึงถามก่อน · เวลาได้รับต้องหลังส่งของ (เดิมใช้เวลาตอนนี้ของต้นแบบ ซึ่งก่อนเวลาชำระ)'],
-  render: () => `<p class="body">ได้รับยาครบแล้วใช่ไหม</p><p class="body mt8">กดยืนยันแล้ว ร้านจะเห็นว่าคุณได้รับยาแล้ว · ถ้าของไม่ครบหรือกล่องเสียหาย โทรหาร้านก่อน</p>`,
-  foot: () => ui.btn('ได้รับครบแล้ว', { a: 'tkGotOk', icon: 'circle-check' }) + ui.btn('ยังไม่ได้รับ', { kind: 'ghost', closeSheet: true })
-});
-TP.act('tkGotOk', () => {
-  const o = C()?.order, pd = o?.paid; if (!pd?.deliv || pd.got) return; pd.got = TRK_AT.got; o.picked = true; TP.emit('state'); TP.closeSheet().then(() => { TP.refresh({ anim: false }); TP.notify('บันทึกว่าได้รับยาแล้ว', { icon: 'circle-check' }); });
-});
+// C415 retired: delivery completion comes from the carrier or branch, never a customer confirmation.
 
 /* ---------- receipt (ใหม่) ---------- */
 /* every receipt is an abbreviated tax invoice; the full one downloads in one tap (owner 19/10: "ผมไม่ต้องการให้กดขอ")
@@ -5858,6 +5846,8 @@ const ADR_SYM = ['ผื่น คัน', 'บวม', 'คลื่นไส�
 const ADR_SEV = ['หายใจลำบาก', 'ปาก หน้า หรือตาบวม', 'ผื่นลามทั้งตัว หรือเป็นตุ่มน้ำ', 'หน้ามืด จะเป็นลม'];
 const SINCE = [['today', 'วันนี้'], ['yday', 'เมื่อวาน'], ['few', '2-3 วันก่อน'], ['long', 'นานกว่านั้น']];
 const LEVEL = [['mild', 'เล็กน้อย'], ['mid', 'ปานกลาง'], ['high', 'มาก']];
+TP.adrSinceLabel = value => SINCE.find(option => option[0] === value)?.[1] || value || 'ไม่ได้ระบุ';
+TP.adrLevelLabel = value => LEVEL.find(option => option[0] === value)?.[1] || value || 'ไม่ได้ระบุ';
 const ADR_OK = 'เภสัชกรจะติดต่อกลับเพื่อประเมินอาการก่อนเสมอ';
 function medsFor(S, who) {
   if(who && who!=='me')return [];
@@ -6112,14 +6102,7 @@ function adrDetails(entry, index) {
       ${field('note','เล่าอาการเพิ่มเติม',{optional:true,textarea:true,rows:2,max:500,placeholder:'เช่น ผื่นขึ้นที่แขนทั้งสองข้าง'})}</fieldset>
     <fieldset>${question(2,'เริ่มมีอาการเมื่อไร?')}${ui.seg('adrSince', SINCE, entry.since, {a:'adrEntrySegment',label:'เริ่มมีอาการเมื่อไร'})}</fieldset>
     <fieldset>${question(3,'อาการรบกวนมากแค่ไหน?')}${ui.seg('adrLevel', LEVEL, entry.level, {a:'adrEntrySegment',label:'อาการรบกวนมากแค่ไหน'})}</fieldset>
-    <fieldset class="adr-urgent"><legend>อาการเร่งด่วน (เลือกถ้ามี)</legend>${ui.chips('adrUrgent', ADR_SEV, entry.sev, {a:'adrEntryCheck',red:true,label:'อาการเร่งด่วน'})}</fieldset>
-    <div data-adr-danger ${entry.sev.length?'':'hidden'}>${ui.note('<b>ไปโรงพยาบาลทันที อย่ารอส่งรายงาน</b> <a href="tel:1669">โทร 1669</a>',{tone:'danger',icon:'octagon-alert'})}</div>
-    <details><summary>ข้อมูลการใช้ยาเพิ่มเติม (ไม่บังคับ)</summary>
-      ${field('onset','วันและเวลาที่เริ่มมีอาการ',{type:'datetime-local',optional:true})}
-      ${field('reason','ใช้ยาเพราะอาการอะไร',{max:160,optional:true})}
-      ${field('doses','ใช้ไปกี่ครั้งหรือกี่วันก่อนมีอาการ',{max:160,optional:true})}
-      ${field('route','วิธีใช้ยา เช่น กิน ทา หยอด',{max:160,optional:true})}
-    </details>
+
   </div>`;
 }
 function adrFormStatus(el, d) {
@@ -6134,8 +6117,8 @@ function adrProgress(d) {
 }
 TP.screen('adr',{
   group:'after',title:'แจ้งอาการหลังใช้ยา',code:'C412',ref:'C15',parent:'adrcare',
-  states:[["normal","เลือกยาที่ใช้อยู่"],["filled","กรอกครบหลายรายการ"],["severe","อาการเร่งด่วน"],["search","ค้นหายา"],["no-results","ค้นหาไม่พบ"],["symptoms","กรอกอาการในกล่องยา"],["submit-error","ส่งไม่สำเร็จ ข้อมูลยังอยู่"],["no-active","ไม่มียาที่ใช้อยู่"]],
-  notes:['เลือกยาได้หลายรายการและกรอกอาการในกล่องยาแต่ละตัวบนหน้าเดียว','แสดงยาจากแผนที่ยังใช้อยู่ เท่านั้น','รายงานเป็นของเจ้าของบัญชีและไม่เพิ่มประวัติแพ้ยาอัตโนมัติ','แสดงคำเตือนฉุกเฉินก่อนกรอกและเมื่อเลือกอาการเร่งด่วน'],
+  states:[["normal","เลือกยาที่ใช้อยู่"],["filled","กรอกครบหลายรายการ"],["severe","อาการเร่งด่วน",false],["search","ค้นหายา"],["no-results","ค้นหาไม่พบ"],["symptoms","กรอกอาการในกล่องยา"],["submit-error","ส่งไม่สำเร็จ ข้อมูลยังอยู่"],["no-active","ไม่มียาที่ใช้อยู่"]],
+  notes:['เลือกยาได้หลายรายการและกรอกอาการในกล่องยาแต่ละตัวบนหน้าเดียว','แสดงยาจากแผนที่ยังใช้อยู่ เท่านั้น','รายงานเป็นของเจ้าของบัญชีและไม่เพิ่มประวัติแพ้ยาอัตโนมัติ','คงคำเตือนฉุกเฉินด้านบน แต่ไม่มีหมวดเลือกอาการเร่งด่วนและข้อมูลการใช้ยาเพิ่มเติม', 'ปุ่มปรึกษาเภสัชเปิดห้องรอคิวหรือห้องเดิมที่ยังเปิด พร้อมข้อความยา อาการ เวลาเริ่ม และระดับความรบกวนอัตโนมัติ แสดงเป็นข้อความบับเบิ้ลละยา ชื่อยาและรายการอาการเรียงลงมา ไม่มีการ์ดรายงานหรือรูปยา รายงานทุกตัวเชื่อมกับเคสสนทนาเดียวกัน'],
   prep(S) {
     S._adrDrafts={};
     const d=adrDraft(S);
@@ -6176,7 +6159,7 @@ TP.screen('adr',{
       <div id="adrSendError" role="alert" ${d.error?'':'hidden'}>${ui.note('ยังส่งรายงานไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองส่งอีกครั้ง',{tone:'danger'})}</div>
       <section class="adr-block">${ui.seg('adrMedTab',[['current','ยาที่ใช้อยู่'],['history','ยาที่ใช้ใน 7 วัน']],d.medTab,{a:'adrMedTab',label:'รายการยา'})}<header class="adr-med-heading"><p class="adr-help">เลือกยาที่สงสัยได้หลายตัว</p></header>
       ${meds.length?`<div class="history-search-panel" id="adrSearchPanel" ${searchOpen?'':'hidden'}><label class="history-search" for="adrMedSearch">${ic('search',20,1.8)}<span class="sr">ค้นหายาที่ใช้อยู่</span><input type="search" id="adrMedSearch" placeholder="ค้นหาชื่อยา" value="${esc(d.query)}" autocomplete="off" enterkeyhint="search"></label></div>`:''}
-      <p id="adrNoMatches" class="adr-empty" role="status" ${meds.length&&meds.some(m=>m.name.toLocaleLowerCase('th').includes(d.query.trim().toLocaleLowerCase('th'))||d.entries[m.v]?.selected)?'hidden':''}>${ui.emptyArt(meds.length?'search':'pill')}<span>${meds.length?'ไม่พบยาที่ค้นหา':'ไม่มียาที่กำลังติดตาม'}</span></p><div class="adr-medicines">${cards}</div></section></div>`)+ui.dock(ui.btn('ส่งให้เภสัชกร',{a:'afAdrSend',id:'afAdrGo',disabled:!selected.length||!selected.every(adrReady),iconRight:'send'}),{note:adrProgress(d)});
+      <p id="adrNoMatches" class="adr-empty" role="status" ${meds.length&&meds.some(m=>m.name.toLocaleLowerCase('th').includes(d.query.trim().toLocaleLowerCase('th'))||d.entries[m.v]?.selected)?'hidden':''}>${ui.emptyArt(meds.length?'search':'pill')}<span>${meds.length?'ไม่พบยาที่ค้นหา':'ไม่มียาที่กำลังติดตาม'}</span></p><div class="adr-medicines">${cards}</div></section></div>`)+ui.dock(ui.btn('ปรึกษาเภสัช',{a:'afAdrSend',id:'afAdrGo',disabled:!selected.length||!selected.every(adrReady),iconRight:'send'}),{note:adrProgress(d)});
   },
   mount(el,ctx) {
     const d=ctx.S._adr;
@@ -6235,8 +6218,7 @@ TP.act('adrEntryToggle',t=>{
 TP.act('adrEntryCheck',t=>{
   const d=TP.S._adr,card=t.closest('.adr-entry'),entry=d.entries[card.dataset.adrKey];
   entry.sym=ui.chipVals(card,'adrSymptoms');
-  entry.sev=ui.chipVals(card,'adrUrgent');
-  $('[data-adr-danger]',card).hidden=!entry.sev.length;
+  entry.sev=[];
   if (entry.sev.length) {
     entry.level='high';
     $$('[data-segname="adrLevel"] button',card).forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.v==='high')));
@@ -6253,6 +6235,31 @@ TP.act('adrEntrySegment',t=>{
   }
   adrFormStatus(curEl(),d);
 });
+// Reports and the chat message share the same snapshots; never confirm an allergy here.
+function adrOpenConsultation(S, reports) {
+  const text = ['แจ้งอาการหลังใช้ยา', ...reports.map(report => {
+    const since = SINCE.find(option => option[0] === report.since)?.[1] || report.since;
+    const level = LEVEL.find(option => option[0] === report.level)?.[1] || report.level;
+    return [`ยา: ${report.drug}`, `อาการ: ${report.sym.join(', ') || report.note}`, `เริ่มมีอาการ: ${since}`, `ความรบกวน: ${level}`, report.note && `รายละเอียด: ${report.note}`].filter(Boolean).join('\n');
+  })].join('\n\n');
+  let consultation = S.case;
+  if (!consultation || !['queue','paused','matched','room'].includes(consultation.status)) {
+    Object.assign(S.intake, {who:'me', mode:'chat', symptoms:['ถามเรื่องยา'], urgent:[], note:text, attachments:[]});
+    consultation = TP.newCase();
+  }
+  consultation.msgs ||= [];
+  const ids = reports.map(report => report.id);
+  if (!consultation.msgs.some(message => message.adrReportIds?.some(id => ids.includes(id)))) {
+    consultation.msgs.push({who:'me', kind:'adr-report', text, time:TP.NOW.time, adrReportIds:ids, adrReports:reports.map(report => ({id:report.id, drug:report.drug, sym:[...report.sym], since:report.since, level:report.level, note:report.note}))});
+  }
+  reports.forEach(report => { report.chatCaseId = consultation.id; });
+  consultation.waitedInChat = true;
+  S.st.queue = undefined;
+  S.st.room = undefined;
+  TP.emit('state');
+  TP.live('บันทึกข้อมูลแล้ว กำลังเปิดห้องปรึกษาพร้อมรายละเอียดอาการ');
+  return TP.go(['queue','paused'].includes(consultation.status) ? 'queue' : 'room', {replace:true});
+}
 TP.act('afAdrSend',async t=>{
   const S=TP.S,d=S._adr;
   if (!d||d.sending) return;
@@ -6279,7 +6286,7 @@ TP.act('afAdrSend',async t=>{
   S._adrSent=report;
   S.st.adrsent=report.severe?'severe':S.storeOpen?'sent':'closed';
   TP.emit('state');
-  TP.go('adrsent',{replace:true,params:{id:report.id}});
+  return adrOpenConsultation(S,reports);
 });
 
 /* =====================================================================
@@ -7190,7 +7197,7 @@ const moodTag = (k, pre = '') => ui.tag(pre + MOOD[k][0], MOOD[k][1]);
    Plan model. log "day|slot|med" -> {t}; prn "day|med" -> [times];
    checks [{at: mid|end|self, day, date, time, mood}]
    ===================================================================== */
-const SRC = { id: 'TC-261016-0058', date: '16/10/2026', time: '10:20', note: 'มีไข้ ไอ และน้ำมูกมา 2 วัน', topic: 'ไข้ ไอ น้ำมูก', sym: ['ไข้', 'ไอ', 'น้ำมูก คัดจมูก'], branch: 'tw', pharm: 'kj', who: 'me', bought: 190 };
+const SRC = { id: 'TC-261016-0058', date: '16/10/2026', time: '10:20', note: 'มีไข้ ไอ และน้ำมูกมา 2 วัน รู้สึกระคายคอและไอมากขึ้นช่วงกลางคืน พักผ่อนไม่ค่อยเพียงพอ ต้องการปรึกษาวิธีใช้ยาและการดูแลตัวเองระหว่างมีอาการ', topic: 'ไข้ ไอ น้ำมูก', sym: ['ไข้', 'ไอ', 'น้ำมูก คัดจมูก'], branch: 'tw', pharm: 'kj', who: 'me', bought: 190 };
 /* the summary for the mock consult, so its document matches the plan (registered only if missing) */
 if (TP.SUMMARY && !TP.SUMMARY[SRC.id]) TP.SUMMARY[SRC.id] = {
   sym: 'ไข้ต่ำ ๆ ไอมีเสมหะ น้ำมูกใส เป็นมา 2 วัน · ไม่มีหอบเหนื่อย',
@@ -7264,7 +7271,7 @@ function dayOnePlan(c) {
   const src = c ? { id: c.id, caseCode: TP.caseCode(c), note: c.note, date: TP.NOW.date, time: c.joinedAt || TP.NOW.time, topic: (c.symptoms || []).join(' ') || 'ถามเรื่องยา', sym: [...(c.symptoms || [])], branch: c.branch || 'tw', pharm: c.pharm || 'kj', who: c.who || 'me' }
     : { id: 'TC-261018-0142', date: TP.NOW.date, time: TP.NOW.time, note: 'มีไข้และเจ็บคอมา 2 วัน', topic: 'ไข้ เจ็บคอ', sym: ['ไข้', 'เจ็บคอ'], branch: 'tw', pharm: 'kj', who: 'me' };
   const pl = basePlan(src, items.map(medFrom), { today: 1, startAt: TP.NOW.time, ask: c?.followAsk || 'end' });
-  const recv = c?.order?.paid?.recv; if (recv && recv !== 'pickup') pl.waitRecv = recv;
+  const recv = c?.order?.paid?.recv; if (recv && !c.order.picked && !c.order.paid.deliv) pl.waitRecv = recv;
   return pl;
 }
 /* the active plan; a newly closed + paid consult replaces it once (the pharmacist sets it on close) */
@@ -7276,6 +7283,11 @@ function F() {
     else if (c.followAsk === 'd1' || c.followAsk === 'd3') { S._fuSeen = c; S.follow = symPlan(srcOf(c), c.followAsk); }
   }
   if (S.follow === undefined) S.follow = S.firstTime || !S.user?.name ? null : mockPlan('normal');
+  if (S.follow?.waitRecv && S.follow.src?.id === c?.id && (c.order?.picked || c.order?.paid?.deliv)) {
+    S.follow.waitRecv = '';
+    S.follow.start = TP.NOW.date;
+    S.follow.startAt = c.order.paid.deliv || TP.NOW.time;
+  }
   return S.follow?.src?.who && S.follow.src.who!=='me' ? null : S.follow;
 }
 const ensure = S => F() || (S.follow = mockPlan('normal'));
@@ -7493,11 +7505,11 @@ function prnRow(p, m) {
   const k = `${p.today}|${m.id}`, list = p.prn[k] || [], last = list[list.length - 1];
   const nextT = last ? addH(last, m.gap) : '', full = list.length >= m.max, wait = !!last && (!nextT || toM(nextT) > toM(now()));
   const why = full ? `ครบ ${m.max} ครั้งของวันนี้แล้ว` : wait ? (nextT ? `กินครั้งถัดไปได้หลัง ${nextT}` : 'กินครั้งถัดไปได้พรุ่งนี้') : '';
-  return `<section class="card pad0 fu-prn-card">
-    <header class="fu-prn-header"><span class="fu-slot-i">${ic('pill',18,2)}</span><b>${esc(m.name)}</b></header>
-    <div class="fu-prn-body">${TP.medicineImage(m) || ic('pill',20,2)}<div><p>${esc(`${m.dose} ${m.prn}`)}</p><p>${esc(`ห่างกันอย่างน้อย ${m.gap} ชั่วโมง ไม่เกิน ${m.max} ครั้งต่อวัน`)}</p>
-    <p class="small">${ic('clock',15,2)} ${list.length ? `วันนี้กิน ${list.length} ครั้ง · ล่าสุด ${esc(last)}` : 'วันนี้ยังไม่ได้กิน'}${why ? ` · ${esc(why)}` : ''}</p></div></div>
-    ${list.length ? `<div class="fu-prn-body"><button type="button" class="fu-undo" data-a="fuPrnUndo" data-v="${esc(k)}">ลบครั้งล่าสุด</button></div>` : ''}<footer class="fu-multi-actions">${ui.btn('แจ้งอาการ', { go: 'adr', kind: 'secondary', icon: 'triangle-alert' })}<button type="button" class="btn secondary" data-a="fuPrn" data-v="${esc(k)}"${full || wait ? ' disabled' : ''} aria-label="${esc(`${m.name} ${why || 'แตะเมื่อกินแล้ว'}`)}"><span>กินแล้ว</span></button></footer></section>`;
+  return `<section class="card pad0 fu-multi-card fu-meal-card fu-prn-card">
+    <header class="fu-multi-head"><span class="fu-multi-icon">${ic('pill',20,2)}</span><div><h2>กินเมื่อมีอาการ</h2><p class="small">บันทึกแต่ละครั้งที่ใช้ยา</p></div></header>
+    <div class="fu-prn-body">${TP.medicineImage(m) || ic('pill',20,2)}<div><b>${esc(m.name)}</b><p class="small">${esc(`${m.dose} ${m.prn}`)}</p><p>${esc(`ห่างกันอย่างน้อย ${m.gap} ชั่วโมง ไม่เกิน ${m.max} ครั้งต่อวัน`)}</p>
+    <p class="small">${ic('clock',15,2)} ${list.length ? `วันนี้กิน ${list.length} ครั้ง · ล่าสุด ${esc(last)}` : 'วันนี้ยังไม่ได้กิน'}${why ? ` · ${esc(why)}` : ''}</p></div>
+    <button type="button" class="fu-med-check" role="checkbox" aria-checked="${full || wait}" data-a="${full || wait ? 'fuPrnUndo' : 'fuPrn'}" data-v="${esc(k)}" aria-label="${esc(`${full || wait ? 'ยกเลิกบันทึกครั้งล่าสุด' : 'บันทึกการใช้'} ${m.name}`)}">${full || wait ? ic('check',16,2) : ''}</button></div></section>`;
 }
 function todayHtml(p) {
   const slots = slotsOn(p, p.today), prn = p.meds.filter(m => m.prn), info = p.meds.filter(m => m.info);
@@ -7556,7 +7568,7 @@ function bodyHtml(S, p, ctx) {
     if (!S.notif) out.push(remNote('<b>การแจ้งเตือนของแอปปิดอยู่</b><br>ตั้งเวลาไว้แล้ว แต่จะไม่มีแจ้งเตือนกินยา', 'เปิดการแจ้งเตือน', 'fuNotifOn'));
     else if (hasSched(p) && !p.remind) out.push(remNote('<b>ปิดเตือนกินยาอยู่</b><br>กด กินแล้ว ได้ตามปกติ แต่จะไม่มีแจ้งเตือน', 'เปิดเตือนกินยา', 'fuRemOn'));
     const bad = recentBad(p), tk = recentTalked(p); if (bad) out.push(worseCard(S, p, bad)); else if (tk) out.push(talkedCard(S, p, tk));
-    if (p.waitRecv) out.push(`<div class="card fu-wait" data-in="2"><p class="fu-exp">${ic('package', 18, 2)}<span>รอรับยา · เริ่มนับวันที่ 1 และเตือนกินยาเมื่อได้รับยา</span></p>${ui.btn('ได้รับยาแล้ว', { a: 'fuGot', icon: 'check', cls: 'mt12' })}</div>`);
+    if (p.waitRecv) out.push(`<div class="card fu-wait" data-in="2"><p class="fu-exp">${ic('package', 18, 2)}<span>รอรับยา · เริ่มนับวันที่ 1 และเตือนกินยาเมื่อได้รับยา</span></p></div>`);
     else {
       out.push(followMultiHtml(ctx));
     }
@@ -7595,11 +7607,13 @@ function symBodyHtml(S, p) {
 function followPreviewPlans() {
   const { meds, times } = mockPlan('normal');
   return [
-    { id: 'preview-follow-1', date: '16/10/2026', days: 5, today: 3, note: 'ไอมีเสมหะมา 2 วัน รู้สึกระคายคอ', topic: 'ไอมีเสมหะ', med: meds[0] },
+    { id: 'preview-follow-1', date: '16/10/2026', days: 5, today: 3, note: 'ไอมีเสมหะมา 2 วัน รู้สึกระคายคอ ไอมากช่วงกลางคืนและหลังตื่นนอน ต้องการคำแนะนำเรื่องการใช้ยา การพักผ่อน และอาการที่ควรสังเกตเพิ่มเติม', topic: 'ไอมีเสมหะ', med: meds[0] },
     { id: 'preview-follow-2', date: '17/10/2026', days: 3, today: 2, note: 'เจ็บคอ เวลากลืนแล้วเจ็บ อยากปรึกษาวิธีใช้ยา', topic: 'เจ็บคอ', med: meds[1] },
-    { id: 'preview-follow-3', date: '18/10/2026', days: 4, today: 1, note: 'มีน้ำมูกใสและจามตั้งแต่เช้า', topic: 'น้ำมูกไหล', med: meds[2] }
+    { id: 'preview-follow-3', date: '18/10/2026', days: 4, today: 1, note: 'มีน้ำมูกใสและจามตั้งแต่เช้า', topic: 'น้ำมูกไหล', med: meds[2] },
+    { id: 'preview-follow-4', date: '17/10/2026', days: 7, today: 2, note: 'ไอแห้งช่วงกลางคืน ต้องการคำแนะนำการใช้ยา', topic: 'ไอแห้ง', med: meds[0] },
+    { id: 'preview-follow-5', date: '18/10/2026', days: 3, today: 1, note: 'ระคายคอหลังตื่นนอน', topic: 'ระคายคอ', med: meds[1] }
   ].map(plan => ({
-    ...SRC, ...plan, times, bought: ({'preview-follow-1':90,'preview-follow-2':225,'preview-follow-3':60})[plan.id],
+    ...SRC, ...plan, times, bought: ({'preview-follow-1':90,'preview-follow-2':225,'preview-follow-3':60,'preview-follow-4':90,'preview-follow-5':225})[plan.id],
     previewSummary: {
       sym: plan.topic, advice: 'จากอาการที่เล่ามา แนะนำให้พักผ่อนให้เพียงพอและดื่มน้ำสม่ำเสมอ ใช้ยาตามฉลากที่ได้รับ หากมีข้อสงสัยเกี่ยวกับการใช้ยา สามารถสอบถามเภสัชกรได้ค่ะ\nหากอาการไม่ดีขึ้นหรือแย่ลง ควรปรึกษาเภสัชกรหรือพบแพทย์เพื่อประเมินเพิ่มเติมค่ะ',
       meds: [{ ...plan.med, how: [plan.med.dose, plan.med.meal, plan.med.tip, `แผน ${plan.days} วัน`].filter(Boolean).join(' · ') }],
@@ -7652,106 +7666,128 @@ function followMedicationHistory(ctx, displayed) {
   return [...ended, ...previous].sort((a,b) => toD(b.date) - toD(a.date));
 }
 TP.adrHistoryMedicines = ctx => followMedicationHistory(ctx, followDisplayPlans(ctx)).filter(plan => { const last = plan.endDate || (plan.days && plan.date ? addD(plan.date, plan.days - 1) : plan.date); const elapsed = (toD(TP.NOW.date) - toD(last)) / 86400000; return Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 7; }).flatMap(plan => plan.meds.map((med,index)=>({...med,v:`history:${plan.id}:${index}`,hid:plan.id,followPreview:!!plan.preview,pharm:plan.pharm,branch:plan.branch,sub:`ปรึกษา ${plan.date || ''}`})));
-function followPlanCard(plan, historical = false) {
-  return `<section class="card pad0 fu-multi-card fu-multi-plan">
-    <header class="fu-multi-head"><span class="fu-multi-icon">${ic('file-text', 20, 2)}</span>
-      <div class="fu-plan-identity"><h2>รหัสเคส ${esc(TP.caseCode(plan))}</h2><p class="small">ปรึกษา ${esc(plan.date)}</p></div>
+const followCourseCompleted = plan => !!plan.completed || !!plan.savedPlan?.end || (!!plan.savedPlan?.on && plan.today > plan.days);
+function followPlanCard(plan, historical = false, compact = false) {
+  const completed = followCourseCompleted(plan);
+  return `<section class="card pad0 fu-multi-card fu-multi-plan${compact ? ' fu-order-summary' : ''}${completed ? ' fu-course-completed' : ''}">
+    ${compact ? `<header class="fu-order-card-head"><strong class="num">#${esc(TP.orderNumber(plan))}</strong><button type="button" class="txtbtn fu-order-view" ${ui.route({ go: 'summary', p: { id: plan.id, ...(plan.preview ? { followPreview: true } : {}) } })} aria-label="ดูรายละเอียดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}">${ic('eye',18,2)}<span>ดูข้อมูล</span></button></header><div class="fu-order-header">
+      <div class="fu-order-line fu-order-concern"><p>${esc(TP.consultationText(plan) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p></div>
+    </div>` : `<header class="fu-multi-head"><span class="fu-multi-icon">${ic('file-text', 20, 2)}</span>
+      <div class="fu-plan-identity"><h2>${compact ? `คำสั่งซื้อ #${esc(TP.orderNumber(plan))}` : `รหัสเคส ${esc(TP.caseCode(plan))}`}</h2><p class="small">ปรึกษา ${esc(plan.date)}</p></div>
       <b class="fu-multi-chip">${historical ? (plan.historyLabel || 'เคยได้รับ') : `เหลือ ${Math.max(0, plan.days - plan.today + 1)} วัน`}</b>
       <p class="consultation-note"><span>เรื่องที่ปรึกษา</span>${esc(TP.consultationText(plan) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p>
-    </header>
-    <div class="fu-plan-body">${plan.meds.map(med => `<div class="fu-multi-plan-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b>
+    </header>`}
+    ${compact ? '' : `<div class="fu-plan-body">${plan.meds.map(med => `<div class="fu-multi-plan-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b>
       <p class="small">${esc([followDirections(med), (med.slots || []).map(slot => SLOT[slot][0]).join(' / ')].filter(Boolean).join(' · '))}</p>
-    </div></div>`).join('')}</div>
+    </div></div>`).join('')}</div>`}
     <footer class="fu-plan-footer">${plan.days ? `<div class="fu-multi-progress">
-      <div><b>${historical ? `ระยะเวลาตามแผน ${plan.days} วัน` : `วันที่ ${plan.today} จาก ${plan.days}`}</b><span>สิ้นสุด ${esc(plan.endDate || addD(plan.date, plan.days - 1))}</span></div>
-      ${historical ? '' : `<progress aria-label="วันที่ของแผนการใช้ยา" value="${plan.today}" max="${plan.days}"></progress>`}
+      <div><b>${completed ? 'จบคอร์สแล้ว' : historical ? `ระยะเวลาตามแผน ${plan.days} วัน` : `วันที่ ${plan.today} จาก ${plan.days}`}</b><span>สิ้นสุด ${esc(plan.endDate || addD(plan.date, plan.days - 1))}</span></div>
+      ${historical || completed ? '' : `<progress aria-label="วันที่ของแผนการใช้ยา" value="${plan.today}" max="${plan.days}"></progress>`}
     </div>` : ''}
-    ${ui.btn('ดูใบสรุปการปรึกษา', { go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) }, kind: 'tint', sm: true, icon: 'file-text' })}
+    ${completed ? '<p class="fu-course-assessment-copy">หลังจบคอร์ส อาการของคุณเป็นอย่างไรบ้าง?</p>' + ui.btn('ประเมินอาการ', {kind:'secondary', sheet:'historyassessment', p:{id:plan.id, ...(plan.preview ? {followPreview:true} : {})}, icon:'clipboard-list'}) : ''}
+    ${compact ? '' : ui.btn('ดูใบสรุปการปรึกษา', { go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) }, kind: 'tint', sm: true, icon: 'file-text' })}
   </footer></section>`;
+}
+// The showcase adapter adds mock orders without changing the saved medication plan.
+function followCompletedPreview() {
+  const source = followPreviewPlans()[4];
+  return {...source, id:'preview-follow-completed', date:'12/10/2026', days:5, today:6,
+    completed:true, preview:true, meds:[source.med], note:'ระคายคอและไอหลังตื่นนอน ได้รับคำแนะนำและใช้ยาตามแผนแล้ว'};
+}
+TP.followCompletedPreview = followCompletedPreview;
+function followOrderOverview(ctx, plans) {
+  if (!plans.length) return '';
+  const orders = ctx.state === 'multi-plan' ? plans : [plans[0], ...followPreviewPlans().slice(0, 4).map(plan => ({...plan, meds:[plan.med], preview:true}))];
+  orders.push(followCompletedPreview());
+  const visibleOrders = orders
+    .filter(plan => !ctx.S.historyAssessmentPlans?.[plan.id]?.checks?.length)
+    .sort((a, b) => Number(followCourseCompleted(b)) - Number(followCourseCompleted(a)));
+  if (!visibleOrders.length) return '';
+  return `<section class="fu-order-overview" aria-label="คำสั่งซื้อที่ติดตาม"><div class="fu-order-heading"><h2>คำสั่งซื้อที่ติดตาม</h2><span class="small">${visibleOrders.length} คำสั่งซื้อ</span></div><div class="fu-order-carousel" tabindex="0" aria-label="เลื่อนดูคำสั่งซื้อ">${visibleOrders.map(plan => followPlanCard(plan,followPastPlan(plan),true)).join('')}</div><div class="fu-order-pagination" role="status" aria-label="คำสั่งซื้อที่ 1 จาก ${visibleOrders.length}">${visibleOrders.map((_,index)=>`<span class="fu-order-dot${index===0?' is-active':''}" aria-hidden="true"></span>`).join('')}</div></section>`;
+}
+function mountFollowOrderPagination(el) {
+  const carousel = $('.fu-order-carousel', el), pagination = $('.fu-order-pagination', el);
+  if (!carousel || !pagination) return;
+  const cards = [...carousel.children], dots = [...pagination.querySelectorAll('.fu-order-dot')];
+  let current = -1;
+  const update = () => {
+    const viewport = carousel.getBoundingClientRect();
+    const index = cards.reduce((best, card, i) => Math.abs(card.getBoundingClientRect().left - viewport.left) < Math.abs(cards[best].getBoundingClientRect().left - viewport.left) ? i : best, 0);
+    if (index === current) return;
+    current = index;
+    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
+    pagination.setAttribute('aria-label', `คำสั่งซื้อที่ ${index + 1} จาก ${cards.length}`);
+  };
+  carousel.addEventListener('scroll', update, { passive: true });
+  update();
 }
 function followMedicationSections(ctx) {
   const plans = followDisplayPlans(ctx);
   const current = plans.filter(plan => !followPastPlan(plan));
   const history = followMedicationHistory(ctx, plans);
-  const selected = ctx.params.medInfoTab === 'history' ? 'history' : 'current';
-  const section = (key,id,title,sub,items,past,empty) => `<section class="fu-info-section" id="fuMedPanel-${key}" role="tabpanel" aria-labelledby="fuMedTab-${key}" tabindex="0" ${selected === key ? '' : 'hidden'}>
-    ${items.length ? items.map(plan => followPlanCard(plan,past)).join('') : `<p class="fu-info-empty small">${empty}</p>`}
-  </section>`;
-  const tabs = [['current','ยาที่ใช้อยู่'],['history','ประวัติการใช้ยา']].map(([key,label]) => `<button type="button" role="tab" id="fuMedTab-${key}" aria-controls="fuMedPanel-${key}" aria-selected="${selected === key}" tabindex="${selected === key ? '0' : '-1'}" data-a="fuMedInfoTab" data-v="${key}">${label}</button>`).join('');
-  return `<div class="fu-multi fu-medication-sections"><div class="fu-info-tabs" role="tablist" aria-label="ข้อมูลใช้ยา">${tabs}</div>${section('current','fuCurrentTitle','ยาที่ใช้อยู่','แยกตามเคส พร้อมวิธีใช้และระยะเวลาตามแผน',current,false,'ยังไม่มีรายการยาที่ใช้อยู่')}
-    ${section('history','fuHistoryTitle','ประวัติการใช้ยา','รายการยาที่เคยได้รับจากการปรึกษา',history,true,'ยังไม่มีประวัติการใช้ยา')}</div>`;
+  return `<div class="fu-multi fu-medication-sections">
+    <section class="fu-info-section" aria-label="ยาที่ใช้อยู่">
+      ${current.length ? current.map(plan => followPlanCard(plan)).join('') : '<p class="fu-info-empty small">ยังไม่มีรายการยาที่ใช้อยู่</p>'}
+    </section>
+    ${history.length ? `<section class="fu-info-section" aria-labelledby="fuHistoryTitle"><header class="fu-info-heading"><h2 id="fuHistoryTitle">ประวัติการใช้ยา</h2></header>${history.map(plan => followPlanCard(plan,true)).join('')}</section>` : ''}
+  </div>`;
 }
 function followMultiHtml(ctx) {
   if (ctx.params.medInfo) return followMedicationSections(ctx);
   const plans = followDisplayPlans(ctx);
   const log = ctx.params.multiLog || {};
-  const entries = plans.flatMap(plan => plan.meds.map(med => ({ plan, med })));
+  const entries = plans.flatMap(plan => plan.meds.map((med,index) => ({ plan, med, index })));
+  const isTaken = ({plan,med,index},slot) => plan.preview ? !!log[`${plan.id}|${slot}|${med.id || index}`] : !!plan.savedPlan.log[lk(plan.today,slot,med)]?.t;
   const slots = SLOTS.filter(slot => entries.some(({med}) => med.slots?.includes(slot)));
   const summary = plan => ({ go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) } });
   const directions = followDirections;
   const today = slots.map(slot => {
     const due = entries.filter(({med}) => med.slots?.includes(slot));
-    const count = due.filter(({plan,med}) => plan.preview ? log[slot] : plan.savedPlan.log[lk(plan.today, slot, med)]?.t).length;
-    const taken = count === due.length;
+    const count = due.filter(entry => isTaken(entry,slot)).length;
     const plan = due[0].plan;
     const time = plan.preview ? multiReminderSettings(ctx).times[slot] : plan.times[slot];
-    const action = plan.preview ? 'fuMultiTake' : 'fuTake';
-    const value = plan.preview ? slot : `${plan.today}|${slot}`;
     return `<section class="card pad0 fu-multi-card fu-meal-card"><header class="fu-multi-head">
       <span class="fu-multi-icon">${ic(SLOT[slot][1], 20, 2)}</span>
-      <div><h2>มื้อ${SLOT[slot][0]}</h2><p class="small">บันทึกแล้ว ${count} จาก ${due.length} รายการ</p></div>
+      <div><h2>${SLOT[slot][0]}</h2><p class="small">บันทึกแล้ว ${count} จาก ${due.length} รายการ</p></div>
       <b class="fu-multi-chip">${esc(time)}</b>
     </header><div class="fu-meal-body">
-      ${due.map(({plan,med}) => `<div class="fu-multi-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b><p class="small">${esc(directions(med))}</p>
-        <button type="button" class="fu-multi-origin" ${ui.route(summary(plan))} aria-label="ดูสรุปการปรึกษา ${esc(TP.caseCode(plan))}">${ic('file-text', 14, 2)}<span>ดูสรุปการปรึกษา · ${esc(TP.caseCode(plan))}</span>${ic('chevron-right', 14, 2)}</button>
-      </div></div>`).join('')}
-      </div><footer class="fu-multi-actions">
-        ${ui.btn('แจ้งอาการ', { go: 'adr', p: plan.preview ? { multiPlan: true } : {}, kind: 'secondary', icon: 'triangle-alert' })}
-        <button type="button" class="btn ${taken ? 'primary' : 'secondary'}" data-a="${action}" data-v="${value}" aria-pressed="${taken}" aria-label="${taken ? 'ยกเลิกบันทึก' : 'บันทึกว่าทานแล้ว'}ทั้งมื้อ${SLOT[slot][0]}">${taken ? ic('check', 16, 2) : ''}<span>ทานแล้ว</span></button>
-      </footer></section>`;
+      ${due.map(({plan,med,index}) => `<div class="fu-multi-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b><p class="small">${esc(directions(med))}</p>
+        <button type="button" class="fu-multi-origin" ${ui.route(summary(plan))} aria-label="ดูข้อมูลคำสั่งซื้อ">${ic('file-text', 14, 2)}<span>ดูข้อมูลคำสั่งซื้อ</span>${ic('chevron-right', 14, 2)}</button>
+      </div><button type="button" class="fu-med-check" role="checkbox" aria-checked="${isTaken({plan,med,index},slot)}" aria-label="ทาน ${esc(med.name)} มื้อ${SLOT[slot][0]}แล้ว" data-a="fuMedicationTake" data-plan="${esc(plan.id)}" data-med="${index}" data-slot="${slot}">${isTaken({plan,med,index},slot) ? ic('check',16,2) : ''}</button></div>`).join('')}
+      </div></section>`;
   }).join('');
   const saved = plans.find(plan => plan.savedPlan)?.savedPlan;
   const prn = saved?.meds.filter(med => med.prn) || [];
-  return `<div class="fu-multi">${today}${!ctx.params.medInfo && prn.length ? `<h3>กินเมื่อมีอาการ</h3><div class="fu-list">${prn.map(med => prnRow(saved,med)).join('')}</div>` : ''}</div>`;
+  return `<div class="fu-multi">${followOrderOverview(ctx, plans)}${entries.length ? '<header class="fu-order-heading fu-medication-heading"><h2>บันทึกการกินยา</h2><p class="small">เช็กลิสต์การกินยาเริ่มใหม่ทุกวันเวลา 00:00 น.</p></header>' : ''}${today}${!ctx.params.medInfo && prn.length ? `<div class="fu-list">${prn.map(med => prnRow(saved,med)).join('')}</div>` : ''}${entries.length ? `<div class="fu-report-action">${ui.btn('แจ้งอาการ', { go: 'adr', p: plans.some(plan => plan.preview) ? {multiPlan:true} : {}, kind: 'danger', icon: 'triangle-alert' })}</div>` : ''}</div>`;
 }
-TP.act('fuMedInfoTab', (button, ctx) => {
-  const key = button.dataset.v;
-  if (!['current','history'].includes(key)) return;
-  ctx.params.medInfoTab = key;
-  return TP.refresh({anim:false}).then(() => TP.cur()?.el?.querySelector(`#fuMedTab-${key}`)?.focus({preventScroll:true}));
-});
-function mountMedicationTabs(el) {
-  el.addEventListener('keydown', event => {
-    const tab = event.target.closest('[data-a="fuMedInfoTab"]');
-    if (!tab || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
-    event.preventDefault();
-    const key = event.key === 'Home' ? 'current' : event.key === 'End' ? 'history' : tab.dataset.v === 'current' ? 'history' : 'current';
-    el.querySelector(`#fuMedTab-${key}`)?.click();
-  });
-}
-TP.act('fuMultiTake', (button, ctx) => {
-  const log = ctx.params.multiLog ||= {};
-  const key = button.dataset.v;
-  log[key] = !log[key];
-  TP.refresh({ anim: false });
+TP.act('fuMedicationTake', (button, ctx) => {
+  const plan = followDisplayPlans(ctx).find(plan => plan.id === button.dataset.plan);
+  const index = Number(button.dataset.med), med = plan?.meds[index], slot = button.dataset.slot;
+  if (!med || !med.slots?.includes(slot)) return;
+  if (plan.preview) {
+    const log = ctx.params.multiLog ||= {}, key = `${plan.id}|${slot}|${med.id || index}`;
+    if (log[key]) delete log[key]; else log[key] = true;
+  } else {
+    const log = plan.savedPlan.log, key = lk(plan.today,slot,med);
+    if (log[key]?.t) delete log[key]; else log[key] = {t:now()};
+    TP.emit('state');
+  }
+  return TP.refresh({anim:false});
 });
 
 TP.screen('medhub', {
-  group: 'after', title: 'เมนูยา', code: 'C418', parent: 'home',
-  states: [['normal', 'เมนูยา 3 รายการ']],
-  notes: ['เข้าจากทางลัดข้อมูลยาบนหน้าแรก แตะแบนเนอร์เพื่อเปิดหน้าที่เกี่ยวข้อง'],
-  render() {
-    const items = [
-      {title:'การกินยา', subtitle:'ดูมื้อยาและบันทึกการกิน', go:'follow', image:'schedule'},
-      {title:'ข้อมูลใช้ยา', subtitle:'ดูวิธีใช้ยาตามแผน', go:'follow', p:{medInfo:true}, image:'instructions'},
-      {title:'บันทึกการแพ้ยา', subtitle:'ดูประวัติและแจ้งอาการ', go:'adrcare', image:'allergy'}
-    ];
-    return ui.nav({back:backL('home'),title:'เมนูยา'})+ui.page(`<nav class="medhub-banners" aria-label="เมนูยา">${items.map(item=>`
-      <button type="button" class="medhub-banner" ${ui.route(item)}>
-        <img src="/assets/photos/medhub-${item.image}-v1.jpg" alt="" width="1080" height="360">
-        <span class="medhub-copy"><strong>${item.title}</strong><span>${item.subtitle}</span>
-      </button>`).join('')}</nav>`);
-  }
+  group: 'after', title: 'ติดตามการใช้ยา', code: 'C418', parent: 'home',
+  states: [['normal', 'แผนยาและบันทึกการกินยา'], ['empty', 'ยังไม่มีแผนยา'], ['loading', 'กำลังโหลด'], ['multi-plan', 'หลายคำสั่งซื้อ']],
+  notes: ['เข้าจากข้อมูลยาบนหน้าแรกแล้วแสดงคำสั่งซื้อที่ติดตามและบันทึกการกินยาทั้งหน้า ใช้หน้าจอและการทำงานเดียวกับ C405 ไม่มีแบนเนอร์เมนู 3 ก้อน', 'ติ๊กบันทึกรายตัวยา ตั้งเวลาเตือน แจ้งอาการ และประเมินอาการหลังจบคอร์สได้ตามแผนเดิม'],
+  prep(S) {
+    if (!S.st.medhub || S.st.medhub === 'normal') return;
+    const previous = S.st.follow;
+    S.st.follow = S.st.medhub;
+    try { TP.def('follow').prep(S); }
+    finally { if (previous === undefined) delete S.st.follow; else S.st.follow = previous; }
+  },
+  render(ctx) { return TP.def('follow').render(ctx); },
+  mount(el, ctx) { TP.readMedicationUpdates(ctx.S); return TP.def('follow').mount(el, ctx); }
 });
 function followMedicineInfo(ctx) {
   const nav = ui.nav({back:backL('medhub'),title:'ข้อมูลใช้ยา'});
@@ -7761,10 +7797,12 @@ function followMedicineInfo(ctx) {
 TP.screen('follow', {
   group: 'after', title: 'ติดตามการใช้ยา', code: 'C405', parent: 'home',
   states: [['normal', 'วันที่ 3 ปกติ'], ['missed', 'ลืมมื้อกลางวัน'], ['checked', 'ตอบกลางคอร์สแล้ว'], ['endonly', 'เภสัชกรเลือกถามหลังครบคอร์สอย่างเดียว'], ['worse', 'แจ้งว่าแย่ลง'], ['day1', 'เพิ่งเริ่มวันนี้'], ['done', 'ครบคอร์ส'], ['remoff', 'ปิดเตือนกินยา'], ['off', 'หยุดติดตาม'], ['offline', 'ไม่มีเน็ต'], ['empty', 'ไม่มีแผน'], ['loading', 'กำลังโหลด'],
-    ['sym', 'ไม่มียา ถามอีก 3 วัน'], ['symdue', 'ไม่มียา ถึงวันถามอาการ'], ['symworse', 'ไม่มียา แจ้งว่าแย่ลง'], ['symdone', 'ไม่มียา ตอบแล้ว'], ['talked', 'แจ้งว่าแย่ลง คุยในการปรึกษาใหม่แล้ว'], ['multi-plan', '3 แผนยา ระยะเวลาแตกต่างกัน']],
-  notes: ['19/10 เจ้าของสั่ง "ทำให้ simple กว่านี้": เหลือ 3 อย่าง คือ มื้อถัดไปและเวลาเตือน · เภสัชกรจะถามอาการเมื่อไร · ยาวันนี้ แตะ "กินแล้ว" มื้อละครั้งเดียว',
+    ['sym', 'ไม่มียา ถามอีก 3 วัน'], ['symdue', 'ไม่มียา ถึงวันถามอาการ'], ['symworse', 'ไม่มียา แจ้งว่าแย่ลง'], ['symdone', 'ไม่มียา ตอบแล้ว'], ['talked', 'แจ้งว่าแย่ลง คุยในการปรึกษาใหม่แล้ว'], ['multi-plan', '5 คำสั่งซื้อ ระยะเวลาแตกต่างกัน']],
+  notes: ['มีการ์ดจบคอร์สพร้อมปุ่มประเมินอาการ C420 ตามคำสั่งซื้อ ไม่เพิ่มยาในบันทึกมื้อปัจจุบัน และไม่ถือว่าทานยาครบจากการจบแผนเวลาเพียงอย่างเดียว', 'ด้านบนเป็นการ์ดหัวและท้ายแผนยา 5 คำสั่งซื้อ เลื่อนแนวนอน ไม่มีรายการยาในแถบนี้ ไม่มีปุ่มดูใบสรุปในการ์ดภาพรวม ข้อมูลจำลองแยกจากบันทึกยาจริง การ์ดยาตามอาการใช้แพทเทิร์นเดียวกับมื้อยา ระยะห่างกระชับ แยกหัวข้อบันทึกการกินยา ยาตามอาการใช้ checkbox ด้านข้าง ท้ายภาพรวมพื้น primary กับหลอดปลายมน และมีปุ่มแจ้งอาการสีแดงเพียงปุ่มเดียวท้ายรายการ',
+    '19/10 เจ้าของสั่ง "ทำให้ simple กว่านี้": เหลือ 3 อย่าง คือ มื้อถัดไปและเวลาเตือน · เภสัชกรจะถามอาการเมื่อไร · ยาวันนี้ ติ๊ก checkbox รายตัวยา',
     '19/10 เจ้าของสั่ง "ตั้งเวลาเตือนต้องมีผลแจ้งเตือนในแอปได้จริง": ตั้งเวลาที่ C410 แล้วกด "จำลองว่าถึงเวลากินยา" ในแผง จะมีแจ้งเตือนบนจอพร้อมปุ่ม กินแล้ว แตะแล้วจอนี้อัปเดตทันที กดซ้ำได้ เวลาเดินไปมื้อถัดไป',
-    '"กินแล้ว" ต่อมื้อ บันทึกยาทุกตัวของมื้อนั้นพร้อมกัน · แตะซ้ำเพื่อยกเลิก · เลยเวลา 1 ชั่วโมง = บอกวิธีทำเมื่อลืมกิน',
+    'มีปุ่มแจ้งอาการเพียงปุ่มเดียวใต้การ์ดยาทั้งหมด ไม่มีปุ่มแจ้งอาการซ้ำในแต่ละมื้อหรือยาตามอาการ',
+    'การ์ดมื้อยาใช้ checkbox รายตัวยา บันทึกตามแผน วัน และมื้อ เอาปุ่มทานแล้วทั้งมื้อออก ติ๊กซ้ำยกเลิกเฉพาะตัวนั้น ช่องว่างพื้นขาวขอบ primary ชัดเจน',
     '19/10 เจ้าของสั่ง "ตามระหว่างทาง หรือตามทีเดียวตอนจบคอร์สก็ได้": ไม่ถามทุกวันแล้ว · บอกเองได้ทุกเมื่อจาก "บอกอาการเอง"',
     '19/10 เจ้าของเคาะ "ให้เภสัชเลือกได้ตั้งแต่ต้น": ตอนปิดเคส (S305) เภสัชกรเลือก ถามหลังครบคอร์สอย่างเดียว (ค่าตั้งต้น) หรือ ถามกลางคอร์สด้วย · จอนี้บอกจำนวนครั้งตามที่เลือก (ดูสถานะ เภสัชกรเลือกถามหลังครบคอร์สอย่างเดียว)',
     'ตัดออก: รายการยาในแผน (ดูในใบสรุป) · ข้ามมื้อ · ปุ่มนาฬิกาบนแถบบน',
@@ -7809,7 +7847,7 @@ TP.screen('follow', {
     const checkNote=ctx.state==='checked'?ui.note('ตอบประเมินอาการกลางคอร์สแล้ว',{icon:'circle-check'}):ctx.state==='endonly'?ui.note('เภสัชกรนัดประเมินอาการหลังครบคอร์สเท่านั้น',{icon:'calendar'}):'';
     return nav + ui.page(checkNote+(p.sym ? symBodyHtml(S, p) : bodyHtml(S, p, ctx)));
   },
-  mount(el, ctx) { if (ctx.params.medInfo) mountMedicationTabs(el); if (ctx.state === 'loading') ctx.later(() => { ctx.S.st.follow = 'normal'; TP.refresh(); }, 1200); }
+  mount(el, ctx) { mountFollowOrderPagination(el); if (ctx.state === 'loading') ctx.later(() => { ctx.S.st[ctx.id || 'follow'] = 'normal'; TP.refresh(); }, 1200); }
 });
 const refreshPop = sel => TP.refresh({ anim: false }).then(() => { const el = curEl(); if (el && !RM()) pop($(sel, el)); });
 /* one tap per meal time: every medicine of that time, at the follow clock */
@@ -7826,7 +7864,11 @@ TP.act('fuTake', t => {
 });
 TP.act('fuPrn', t => {
   const p = F(), k = t.dataset.v; if (!p || !k) return;
-  p.prn[k] = [...(p.prn[k] || []), now()]; TP.emit('state');
+  const med = p.meds.find(m => `${p.today}|${m.id}` === k && m.prn);
+  if (!med) return;
+  const doses = p.prn[k] || [], last = doses[doses.length - 1], next = last ? addH(last, med.gap) : '';
+  if (doses.length >= med.max || (last && (!next || toM(next) > toM(now())))) return;
+  p.prn[k] = [...doses, now()]; TP.emit('state');
   TP.notify('บันทึกเวลากินยาแล้ว', { icon: 'check' }); refreshPop(`.fu-take[data-v="${k}"]`);
 });
 TP.act('fuPrnUndo', t => {
@@ -7834,7 +7876,6 @@ TP.act('fuPrnUndo', t => {
   p.prn[k] = p.prn[k].slice(0, -1); TP.emit('state');
   TP.notify('ลบครั้งล่าสุดแล้ว', { icon: 'rotate-ccw' }); TP.refresh({ anim: false });
 });
-TP.act('fuGot', () => { const p = F(); if (!p) return; p.waitRecv = ''; p.start = TP.NOW.date; p.startAt = TP.NOW.time; TP.emit('state'); TP.refresh({ anim: false }); TP.notify('เริ่มติดตามการใช้ยาแล้ว', { icon: 'circle-check' }); });
 TP.act('fuOn', () => { const p = F(); if (!p) return; p.on = true; TP.emit('state'); TP.notify('เปิดติดตามอีกครั้งแล้ว', { icon: 'bell' }); TP.refresh({ anim: false }); });
 TP.act('fuRemOn', () => { const p = F(); if (!p) return; p.remind = true; TP.emit('state'); TP.notify('เปิดเตือนกินยาแล้ว', { icon: 'bell' }); TP.refresh({ anim: false }); });
 TP.act('fuNotifOn', t => {
@@ -7878,7 +7919,11 @@ TP.act('fuConsult', () => {
 const ansBtn = (k, at, map = ANS, a = 'fuAns') => `<button type="button" class="fu-ans ${k}" data-a="${a}" data-v="${k}" data-at="${at}">
   <span class="fu-ans-i">${ic(map[k][1], 26, 1.8)}</span><span class="fu-ans-t"><b>${esc(map[k][0])}</b><span>${esc(map[k][2])}</span></span><span class="chev">${ic('chevron-right', 18, 2)}</span></button>`;
 const checkNote = (S, p) => (S.storeOpen ? `แตะคำตอบเดียว ส่งถึง ${ph(p).short} ทันที · ถ้าแย่ลง ร้านจะติดต่อกลับ${BACK}` : 'ร้านปิดอยู่ เภสัชกรจะเห็นคำตอบเมื่อร้านเปิด 09:00 ถ้าอาการรุนแรง ไปโรงพยาบาลได้เลย');
-function assessmentPlan(S, id) {
+function assessmentPlan(S, id, preview = false) {
+  if (preview && id === 'preview-follow-completed') {
+    S.historyAssessmentPlans ||= {};
+    return S.historyAssessmentPlans[id] ||= {...dayOnePlan({...followCompletedPreview(), order:{items:followCompletedPreview().meds}}), src:followCompletedPreview(), days:5, today:6};
+  }
   const record = TP.consultationHistory(S).find(h => h.id === id);
   const order = record && TP.completedMedicationOrder(S, record);
   if (!order) return null;
@@ -7901,7 +7946,7 @@ TP.sheetDef('historyassessment', {
   states: [['normal', 'เลือกอาการจากคำสั่งซื้อที่สำเร็จ']],
   render(ctx) {
     const id = ctx.params.id || TP.cur()?.ctx.h?.id;
-    const p = assessmentPlan(ctx.S, id);
+    const p = assessmentPlan(ctx.S, id, !!ctx.params.followPreview);
     ctx.assessmentPlan = p;
     if (!p) return '<p>ไม่พบคำสั่งซื้อที่ประเมินอาการได้</p>';
     return `<div class="history-assessment"><p class="body">ตอนนี้อาการเป็นอย่างไร</p>
@@ -8146,7 +8191,7 @@ TP.sheetDef('fureminder', {
   },
   render() {
     const S = TP.S, host = TP.cur()?.ctx;
-    const multi = host?.id === 'follow' && host.state === 'multi-plan';
+    const multi = ['follow','medhub'].includes(host?.id) && host.state === 'multi-plan';
     const p = multi ? multiReminderSettings(host) : ensure(S);
     const used = SLOTS.filter(s => multi ? followPreviewPlans().some(plan => plan.med.slots.includes(s)) : medsAt(p, s).length);
     const timeRows = used.map(slot => {
@@ -8237,7 +8282,7 @@ TP.act('fuRemSw', t => {
 });
 TP.act('fuRemSave', async t => {
   const S = TP.S, host = TP.cur()?.ctx;
-  const multi = host?.id === 'follow' && host.state === 'multi-plan';
+  const multi = ['follow','medhub'].includes(host?.id) && host.state === 'multi-plan';
   const p = multi ? multiReminderSettings(host) : F(), sh = $('#sheet'); if (!p || !sh || t.classList.contains('busy')) return;
   const on = $('#fuR-on', sh)?.getAttribute('aria-checked') === 'true';
   const ok = on ? checkTimes(sh) : { used: [], vals: [] }; if (!ok) return;
@@ -8247,7 +8292,7 @@ TP.act('fuRemSave', async t => {
   TP.emit('state'); await TP.closeSheet();
   const nx = multi ? null : upNext(p);
   TP.notify(!on ? 'ปิดเตือนกินยาแล้ว' : nx ? `ตั้งเวลาแล้ว จะเตือนมื้อ${SLOT[nx.s][0]} ${p.times[nx.s]}` : 'บันทึกเวลาเตือนแล้ว', { icon: on ? 'alarm-clock' : 'bell-off' });
-  if (TP.cur()?.id === 'follow') TP.refresh({ anim: false });
+  if (['follow','medhub'].includes(TP.cur()?.id)) TP.refresh({ anim: false });
 });
 TP.sheetDef('fuoff', {
   group: 'after', title: 'หยุดติดตาม', code: 'C411', host: 'follow',
@@ -8263,7 +8308,7 @@ TP.act('fuOff', async t => {
   t.classList.add('busy'); await TP.wait(RM() ? 50 : 450);
   p.on = false; TP.emit('state'); await TP.closeSheet();
   TP.notify('หยุดติดตามแล้ว', { icon: 'bell-off' });
-  if (TP.cur()?.id === 'follow') TP.refresh({ anim: false });
+  if (['follow','medhub'].includes(TP.cur()?.id)) TP.refresh({ anim: false });
 });
 
 /* =====================================================================
@@ -8277,7 +8322,7 @@ function hideBan(instant) {
   const a = A(el, [{ transform: 'none', opacity: 1 }, { transform: 'translateY(-130%)', opacity: 0 }], { d: 320, e: E.in, fill: 'forwards' });
   if (a?.finished) a.finished.then(() => el.remove(), () => el.remove()); else el.remove();
 }
-const reRender = () => { const id = TP.cur()?.id; if (!TP.sheetOpen() && ['follow', 'home', 'fulog'].includes(id)) return TP.refresh({ anim: false }); return Promise.resolve(); };
+const reRender = () => { const id = TP.cur()?.id; if (!TP.sheetOpen() && ['follow', 'medhub', 'home', 'fulog'].includes(id)) return TP.refresh({ anim: false }); return Promise.resolve(); };
 function doseBanner(p, day, s) {
   hideBan(true);
   const at = p.times[s], el = document.createElement('div');
@@ -8291,8 +8336,8 @@ function doseBanner(p, day, s) {
     if (what === 'take') {
       if (!medsAt(p, s).every(m => p.log[lk(day, s, m)]?.t)) takeSlot(p, day, s, at);
       TP.emit('state'); TP.notify(`บันทึกแล้ว กินยามื้อ${SLOT[s][0]} ${at}`, { icon: 'check' });
-      await reRender(); if (TP.cur()?.id === 'follow' && !RM()) pop($(`.fu-take[data-v="${day}|${s}"]`, curEl()));
-    } else if (what === 'open') { if (TP.cur()?.id === 'follow') reRender(); else TP.go('follow', { via: 'cover' }); }
+      await reRender(); if (['follow','medhub'].includes(TP.cur()?.id) && !RM()) pop($(`.fu-take[data-v="${day}|${s}"]`, curEl()));
+    } else if (what === 'open') { if (['follow','medhub'].includes(TP.cur()?.id)) reRender(); else TP.go('follow', { via: 'cover' }); }
     else TP.notify('กด กินแล้ว ได้ที่หน้าติดตามการใช้ยา', { icon: 'info' });
   });
   ($('#banner')?.parentElement || TP.phone).appendChild(el); banEl = el;
@@ -8338,7 +8383,7 @@ TP.simAction?.({
     p.contact = { at: '14:40', text: 'ได้รับคำตอบแล้วค่ะ ขอสอบถามอาการเพิ่มอีกนิด จะโทรหาภายใน 15 นาที หรือเริ่มปรึกษาในแอปได้เลยค่ะ' };
     const n = { id: 'n' + Date.now().toString(36), kind: 'msg', title: 'มีข้อความใหม่จากเภสัชกร', body: 'แตะเพื่ออ่าน', time: `${TP.NOW.date} 14:40`, read: false, go: 'follow' };
     S.inbox.unshift(n); TP.emit('state');
-    if (TP.cur()?.id === 'follow') { n.read = true; TP.refresh({ anim: false }); TP.notify('เภสัชกรตอบแล้ว', { icon: 'message-circle' }); }
+    if (['follow','medhub'].includes(TP.cur()?.id)) { n.read = true; TP.refresh({ anim: false }); TP.notify('เภสัชกรตอบแล้ว', { icon: 'message-circle' }); }
     else TP.banner({ title: n.title, body: n.body, onTap: () => { n.read = true; TP.emit('state'); TP.go('follow'); } });
   }
 });

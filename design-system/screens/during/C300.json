@@ -1,0 +1,15 @@
+{
+  "code": "C300",
+  "screen": "providerready",
+  "title": "เภสัชกรพร้อมให้บริการ",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C300",
+      "state": "normal",
+      "label": "เภสัชกรเข้าห้องแล้ว",
+      "url": "/?screen=providerready&state=normal&splash=0"
+    }
+  ]
+}

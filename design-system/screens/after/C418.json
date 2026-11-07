@@ -1,15 +1,33 @@
 {
   "code": "C418",
   "screen": "medhub",
-  "title": "เมนูยา",
+  "title": "ติดตามการใช้ยา",
   "group": "after",
   "kind": "screen",
   "cases": [
     {
-      "code": "C418",
+      "code": "C418.1",
       "state": "normal",
-      "label": "เมนูยา 3 รายการ",
+      "label": "แผนยาและบันทึกการกินยา",
       "url": "/?screen=medhub&state=normal&splash=0"
+    },
+    {
+      "code": "C418.2",
+      "state": "empty",
+      "label": "ยังไม่มีแผนยา",
+      "url": "/?screen=medhub&state=empty&splash=0"
+    },
+    {
+      "code": "C418.3",
+      "state": "loading",
+      "label": "กำลังโหลด",
+      "url": "/?screen=medhub&state=loading&splash=0"
+    },
+    {
+      "code": "C418.4",
+      "state": "multi-plan",
+      "label": "หลายคำสั่งซื้อ",
+      "url": "/?screen=medhub&state=multi-plan&splash=0"
     }
   ]
 }

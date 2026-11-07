@@ -18,12 +18,6 @@
       "url": "/?screen=track&state=delivered&splash=0"
     },
     {
-      "code": "C414.3",
-      "state": "received",
-      "label": "ลูกค้ายืนยันว่าได้รับยาแล้ว",
-      "url": "/?screen=track&state=received&splash=0"
-    },
-    {
       "code": "C414.5",
       "state": "rider",
       "label": "ส่งด่วน · ไรเดอร์กำลังจัดส่ง",
@@ -74,7 +68,7 @@
     {
       "code": "C414.16",
       "state": "parcel-delivered",
-      "label": "จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา",
+      "label": "จัดส่งปกติ · จัดส่งสำเร็จ",
       "url": "/?screen=track&state=parcel-delivered&splash=0"
     },
     {
@@ -106,12 +100,6 @@
       "state": "pickup-night",
       "label": "รอร้านเปิดเพื่อเตรียมยา",
       "url": "/?screen=track&state=pickup-night&splash=0"
-    },
-    {
-      "code": "C414.22",
-      "state": "parcel-received",
-      "label": "ยืนยันได้รับยาแล้ว",
-      "url": "/?screen=track&state=parcel-received&splash=0"
     }
   ]
 }

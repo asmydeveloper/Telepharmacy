@@ -18,12 +18,6 @@
       "url": "/?screen=adr&state=filled&splash=0"
     },
     {
-      "code": "C412.3",
-      "state": "severe",
-      "label": "อาการเร่งด่วน",
-      "url": "/?screen=adr&state=severe&splash=0"
-    },
-    {
       "code": "C412.4",
       "state": "search",
       "label": "ค้นหายา",
