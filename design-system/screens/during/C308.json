@@ -12,6 +12,12 @@
       "url": "/?screen=pay&state=normal&splash=0"
     },
     {
+      "code": "C308.2",
+      "state": "parcel",
+      "label": "จัดส่งปกติ",
+      "url": "/?screen=pay&state=parcel&splash=0"
+    },
+    {
       "code": "C308.3",
       "state": "express",
       "label": "ส่งด่วน",

@@ -1,7 +1,7 @@
 {
   "code": "C305",
   "screen": "endcase",
-  "title": "จบการปรึกษานี้ไหม",
+  "title": "ผู้ใช้กดจบสนทนา",
   "group": "during",
   "kind": "sheet",
   "cases": [

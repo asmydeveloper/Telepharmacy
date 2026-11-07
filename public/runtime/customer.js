@@ -149,6 +149,7 @@ TP.PATH = {
   baby: '<path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/>',
   weight: '<circle cx="12" cy="5" r="3"/><path d="M6.5 8a2 2 0 0 0-1.905 1.46L2.1 18.5A2 2 0 0 0 4 21h16a2 2 0 0 0 1.925-2.54L19.4 9.5A2 2 0 0 0 17.48 8Z"/>',
   receipt: '<path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/>',
+  motorcycle: '<circle cx="5" cy="17" r="3"/><circle cx="19" cy="17" r="3"/><path d="m5 17 4-7h5l5 7M9 10l4 7H5m9-7-2-5h4m-8 5H5"/>',
   truck: '<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
   store: '<path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M15 22v-4a2 2 0 0 0-2-2h-2a2 2 0 0 0-2 2v4"/><path d="M2 7h20"/><path d="M22 7v3a2 2 0 0 1-2 2a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 16 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 12 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 8 12a2.7 2.7 0 0 1-1.59-.63.7.7 0 0 0-.82 0A2.7 2.7 0 0 1 4 12a2 2 0 0 1-2-2V7"/>',
   zap: '<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
@@ -177,6 +178,7 @@ TP.PATH = {
   ellipsis: '<circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/>',
   sliders: '<line x1="21" x2="14" y1="4" y2="4"/><line x1="10" x2="3" y1="4" y2="4"/><line x1="21" x2="12" y1="12" y2="12"/><line x1="8" x2="3" y1="12" y2="12"/><line x1="21" x2="16" y1="20" y2="20"/><line x1="12" x2="3" y1="20" y2="20"/><line x1="14" x2="14" y1="2" y2="6"/><line x1="8" x2="8" y1="10" y2="14"/><line x1="16" x2="16" y1="18" y2="22"/>',
   ticket: '<path d="M4 5h16a1 1 0 0 1 1 1v3a3 3 0 0 0 0 6v3a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-3a3 3 0 0 0 0-6V6a1 1 0 0 1 1-1Z"/><path d="M15 5v2m0 3v4m0 3v2"/>',
+  basket: '<path d="m8 3-4 7m12-7 4 7"/><path d="M2 10h20l-2 10H4L2 10Z"/><path d="M9 14v3m6-3v3"/>',
   loader: '<path d="M21 12a9 9 0 1 1-6.219-8.56"/>'
 };
 TP.ic = (n, s = 20, sw = 1.75, cls = 'ic') => {
@@ -517,7 +519,10 @@ async function doGo(id, o) {
   await swap(from, entry, via, o);
 }
 TP.back = () => {
-  if(!sheet&&hist.at(-1)?.id==='room'&&TP.closedChatRoute?.())return TP.finishChatNavigation(TP.S.case);
+  if(!sheet&&hist.at(-1)?.id==='room'&&TP.closedChatRoute?.()){
+    if(cur?.id==='paid'&&TP.closedChatRoute().screen==='paid')return TP.go('home',{root:true,via:'uncover'});
+    return TP.finishChatNavigation(TP.S.case);
+  }
   if (sheet) return TP.closeSheet();
   if (!hist.length) {
     const parent=SCREENS[cur?.id]?.parent;
@@ -1421,12 +1426,23 @@ function render() {
       ${def.notes?.length ? `<ul class="pn-list">${def.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
       ${def.wait?.length ? `<p class="pn-wait-h">รอเจ้าของเคาะ</p><ul class="pn-list wait">${def.wait.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
     </div></section>` : ''}
-    ${def?.states?.length > 1 && states.length ? `<section class="pn-sec"><h2 class="pn-h">ลองสถานะของจอนี้</h2><div class="pn-row">${states.map(([k, l]) => `<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id) === k}"><b class="pn-sc">${esc(stateCode(def, k))}</b>${esc(l)}</button>`).join('')}</div></section>` : ''}
+    ${def?.states?.length > 1 && states.length ? `<section class="pn-sec"><h2 class="pn-h">ลองสถานะของจอนี้</h2><div class="gap12">${(def.stateGroups || [{label: "", keys: states.map(([key]) => key)}]).map(group => `${group.label ? `<h3 class="pn-h">${esc(group.label)}</h3>` : ""}<div class="pn-row">${states.filter(([key]) => group.keys.includes(key)).map(([k, l]) => `<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id) === k}"><b class="pn-sc">${esc(stateCode(def, k))}</b>${esc(l)}</button>`).join('')}</div>`).join('')}</div></section>` : ''}
     ${canMock ? '<section class="pn-sec"><button type="button" class="pn-btn wide" data-pn="mock">มอคข้อมูล</button></section>' : ''}
     ${sims.length ? `<section class="pn-sec"><h2 class="pn-h">${ic('stethoscope', 15, 2)}จำลองฝั่งเภสัชกร</h2><div class="pn-grid">${sims.map(a => `<button type="button" class="pn-btn ph" data-pn="sim" data-k="${esc(a.id)}">${esc(a.label)}</button>`).join('')}</div></section>` : ''}
     <section class="pn-sec"><h2 class="pn-h">ทั้งแอป</h2><div class="gap8">${GLOBAL.map(([k, l, opts]) => `<div><p class="small" style="margin:0 2px 4px">${esc(l)}</p><div class="pn-row">${opts.map(([v, t]) => `<button type="button" class="pn-btn" data-pn="g" data-k="${k}" data-v="${v}" aria-pressed="${(k === 'firstTime' ? TP.flag(k) : TP.S[k]) === v}">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div></section>
     <section class="pn-sec"><h2 class="pn-h">ไปจอ · ทั้งหมด ${visible.length} จอ</h2>
-      ${TP.GROUPS.map(([g, gl]) => { const ids = visible.filter(i => TP.def(i).group === g).sort(byCode); if (!ids.length) return ''; return `<div class="pn-grp"><b>${esc(gl)}</b><div class="pn-grid">${ids.map(i => { const d = TP.def(i); return `<button type="button" class="pn-btn" data-pn="jump" data-k="${i}" aria-current="${i === id}"><b class="pn-sc">${esc(d.code || '')}</b>${esc(typeof d.title === 'function' ? d.title({ S: TP.S, params: {} }) : d.title)}${d.kind === 'sheet' ? '<small>แผ่นเลื่อนขึ้น</small>' : ''}</button>`; }).join('')}</div></div>`; }).join('')}
+      ${TP.GROUPS.map(([g, gl]) => { const ids = visible.filter(i => TP.def(i).group === g).sort(byCode); if (!ids.length) return ''; return `<div class="pn-grp"><b>${esc(gl)}</b><div class="pn-grid">${ids.flatMap(i => {
+        const d = TP.def(i);
+        const title = typeof d.title === 'function' ? d.title({ S: TP.S, params: {} }) : d.title;
+        const entries = [{ code: d.code || '', html: `<button type="button" class="pn-btn" data-pn="jump" data-k="${i}" aria-current="${i === id}"><b class="pn-sc">${esc(d.code || '')}</b>${esc(title)}${d.kind === 'sheet' ? '<small>แผ่นเลื่อนขึ้น</small>' : ''}</button>` }];
+        for (const state of d.previewShortcuts || []) {
+          const index = d.states.findIndex(([key]) => key === state);
+          if (index < 0) continue;
+          const code = `${d.code}.${index + 1}`;
+          entries.push({ code, html: `<button type="button" class="pn-btn" data-pn="jump-state" data-k="${i}" data-state="${esc(state)}" aria-current="${i === id && TP.stateOf(i) === state}"><b class="pn-sc">${esc(code)}</b>${esc(d.states[index][1])}</button>` });
+        }
+        return entries;
+      }).sort((a, b) => a.code.localeCompare(b.code, undefined, { numeric: true })).map(entry => entry.html).join('')}</div></div>`; }).join('')}
     </section>
     <section class="pn-sec"><button type="button" class="pn-btn wide" data-pn="restart">${ic('rotate-ccw', 15, 2)} เริ่มใหม่ตั้งแต่เปิดแอป</button></section>
     <p class="pn-foot">กดในจอได้เหมือนแอปจริง · แผงนี้ไม่ใช่ส่วนของแอป · สี โลโก้ ฟอนต์จากชุด CI</p>`;
@@ -1466,7 +1482,14 @@ panel.addEventListener('click', async e => {
       if (WHERE[k] && shown() === was) TP.notify(WHERE[k][v], { icon: 'info' });
       break;
     }
-    case 'jump': if (mob) toggle(false); TP.jump(k); break;
+    case 'jump-state': TP.S.st[k] = b.dataset.state; if (mob) toggle(false); TP.jump(k); break;
+    case 'jump': {
+      const defaultState = TP.def(k)?.previewDefaultState;
+      if (defaultState) TP.S.st[k] = defaultState;
+      if (mob) toggle(false);
+      TP.jump(k);
+      break;
+    }
     case 'restart': restart(mob); break;
   }
 });
@@ -3183,7 +3206,7 @@ TP.act('verifyLic', t => {
 TP.screen('queue', {
   group:'before',title:'ห้องแชท · รอเภสัชกร',code:'C207',ref:'C08',parent:'home',
   states:[['q2','รออีก 1 คิว'],['q1','คิวถัดไป'],['paused','เภสัชกรพัก'],['urgent','มีธงด่วน'],['notifoff','ปิดการแจ้งเตือนไว้'],['refined','รอในห้องแชท', false],['q4','รออีก 3 คิว'],['message','พิมพ์ข้อมูลระหว่างรอ'],['joined','เภสัชกรพร้อมให้บริการ'],['offline','อินเทอร์เน็ตขาดระหว่างรอ'],['video-wait','รอเภสัชกรวิดีโอคอล'],['video-next','วิดีโอคอล · คิวถัดไป']],
-  notes:['เข้าห้องแชททันทีหลังแจ้งอาการ พิมพ์ข้อมูลไว้ระหว่างรอได้ เภสัชกรยังไม่ได้อ่านข้อความจนรับเคส','แถบบนแสดงคิวปัจจุบันและข้อความระบบบอกเมื่อคิวขยับ ไม่ประมาณเวลารอ','ย่อห้องแล้วกลับมาได้ คิว ข้อความ และร่างข้อความยังอยู่','เมื่อรับเคสแสดงข้อมูลก่อนปรึกษาในห้องเดิม เปิดวิดีโอคอลหลังรับเคสเท่านั้น'],
+  notes:['ระหว่างค้นหาและรอคิวแชท แสดงหัวข้อแชทกับเภสัชกร แถบสถานะสี Primary พร้อมแสงไล่ผ่านเบา ๆ และไอคอนค้นหา ไม่แสดงชื่อเภสัชกรก่อนรับเคส ใช้จำนวนคิวจริง ไม่ประมาณเวลารอ ปุ่มกล้องอยู่ล่างซ้าย ไม่มีปุ่มแจ้งอาการลอย','เข้าห้องแชททันทีหลังแจ้งอาการ พิมพ์ข้อมูลไว้ระหว่างรอได้ เภสัชกรยังไม่ได้อ่านข้อความจนรับเคส','แถบบนแสดงคิวปัจจุบันและข้อความระบบบอกเมื่อคิวขยับ ไม่ประมาณเวลารอ','ย่อห้องแล้วกลับมาได้ คิว ข้อความ และร่างข้อความยังอยู่','เมื่อรับเคสคุยต่อในห้องเดิม ไม่แสดงการ์ดข้อมูลก่อนปรึกษา เปิดวิดีโอคอลหลังรับเคสเท่านั้น'],
   prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode=['video-wait','video-next'].includes(st)?'video':'chat';c.pos=['q1','video-next'].includes(st)?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=st==='urgent'?['หายใจลำบาก']:[];S.netOff=st==='offline';S.notif=st!=='notifoff';if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ส่งข้อมูลเบื้องต้นแล้ว คุณสามารถพิมพ์อาการเพิ่มเติมไว้ระหว่างรอเภสัชกรได้'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
   render(ctx){return TP.SCREENS.room.render(ctx);},
   mount(el,ctx){TP.SCREENS.room.mount(el,ctx);}
@@ -3285,6 +3308,15 @@ TP.act('lockOpen', async t => {
   if (to !== 'home') TP.go(to, { via: 'zoom' });
 });
 
+TP.act('chatVideo', () => {
+  const c = C();
+  if (!c || c.status !== 'room') return;
+  if (TP.S.call || c.msgs?.some(m => m.kind === 'video-request' && m.status === 'accepted')) return TP.ACTS.startVideo();
+  TP.S.call = { t0: null, mic: true, cam: true, waitingProvider: true };
+  TP.emit('state');
+  return TP.go(TP.S.camDenied ? 'nocam' : 'video', { via: 'zoom', replace: true });
+});
+TP.simAction({ id: 'joinCustomerVideo', label: 'เภสัชกรเข้าห้องวิดีโอ', when: S => !!S.call?.waitingProvider, run: () => { TP.S.call.waitingProvider = false; TP.S.call.t0 = Date.now(); TP.emit('state'); if (TP.cur()?.id === 'video') TP.refresh({ anim: false }); } });
 TP.act('startVideo', () => {
   const c=C();if(!c||c.status!=='room'||(!TP.S.call&&!c.msgs?.some(m=>m.kind==='video-request'&&m.status==='accepted')))return;
   TP.emit('state');return TP.go(TP.S.camDenied?'nocam':'video',{via:'zoom',replace:true});
@@ -3508,14 +3540,31 @@ TP.expireOrder = c => {
   (TP.S.history||[]).filter(h=>h.id===c.id).forEach(h=>h.orderStatus='expired');
   return true;
 };
-TP.makeOrder = () => { const k=TP.casePlan(C()).items,items=k.length?k:[TP.ORDER_ITEMS[1]],issuedAt=Date.now();C().order={status:'pending',items,total:items.reduce((sum,i)=>sum+i.price,0),issuedAt,awaitingCheckout:(C().mode||'chat')==='chat',expiresAt:(C().mode||'chat')==='chat'?null:issuedAt+TP.ORDER_PAYMENT_MS,no:'MT'+issuedAt.toString(36).toUpperCase()};C().order.expires=TP.orderTime(C().order);TP.emit('state'); };
+// One order number per consultation/order, reused by all customer surfaces.
+TP.orderNumber = c => {
+  if(c?.order?.no) return c.order.no;
+  if(c?.orderNo) return c.orderNo;
+  const key=String(c?.id || 'preview-order');
+  const hash=[...key].reduce((n,ch)=>(n*31+ch.charCodeAt(0))%10000,0);
+  const [day,month,year]=String(c?.date || TP.NOW.date).split('/');
+  return 'MT'+year+month+day+String(hash).padStart(4,'0');
+};
+TP.makeOrder = () => { const k=TP.casePlan(C()).items,items=k.length?k:[TP.ORDER_ITEMS[1]],issuedAt=Date.now();C().order={status:'pending',items,total:items.reduce((sum,i)=>sum+i.price,0),issuedAt,awaitingCheckout:(C().mode||'chat')==='chat',expiresAt:(C().mode||'chat')==='chat'?null:issuedAt+TP.ORDER_PAYMENT_MS,no:TP.orderNumber(C())};C().order.expires=TP.orderTime(C().order);TP.emit('state'); };
 TP.orderCases = S => [...new Map([S.case,...(S.history||[]).map(h=>h._case)].filter(Boolean).map(c=>[c.id,c])).values()];
 TP.pendingPaymentCase = S => TP.orderCases(S).find(c=>c.order?.status==='pending');
 /* Chat consultation: the existing order continues after the room is closed. */
 TP.chatConsult = c => !!c && (c.mode||'chat')==='chat';
+TP.checkoutHandoffRemaining = c => Math.max(0, Math.ceil(((c?.checkoutHandoffUntil || 0) - Date.now()) / 1000));
+TP.act('continueCheckout', () => {
+ const c = TP.S.case;
+ if (!c || c.status !== 'closed' || !TP.orderPayable(c.order) || !c.checkoutHandoffUntil) return;
+ c.checkoutHandoffUntil = null;
+ return TP.finishChatNavigation(c);
+});
 TP.closedChatRoute = c => {
  c ||= TP.S.case;if(!TP.chatConsult(c)||c.status!=='closed')return null;
  TP.expireOrder(c);
+ if (TP.checkoutHandoffRemaining(c) && TP.orderPayable(c.order)) return null;
  return c.order?.status==='pending'?{screen:'home',pay:true,case:c}:c.order?.status==='paid'?{screen:'paid',case:c}:{screen:'home',case:c};
 };
 TP.finishChatNavigation = async c => {
@@ -3533,17 +3582,17 @@ TP.fulfillmentInfo = c => {
   return {key,title,icon,done:!!(pd.got||o.picked),pickup:false};
  }
  const phase=TP.FULFILLMENT_PHASES.find(x=>x[0]===o.fulfillment.status)||TP.FULFILLMENT_PHASES[0];
- return {key:phase[0],title:phase[1],icon:phase[2],done:phase[0]==='delivered'||!!o.picked,pickup:o.paid?.recv==='pickup'};
+ return {key:phase[0],title:phase[1],icon:phase[2],done:!!(o.paid?.got||o.picked),pickup:o.paid?.recv==='pickup'};
 };
 TP.setFulfillment = (c,status) => {
  if(c?.order?.status!=='paid'||!TP.FULFILLMENT_PHASES.some(x=>x[0]===status))return false;
  const current=TP.FULFILLMENT_PHASES.findIndex(x=>x[0]===c.order.fulfillment?.status),next=TP.FULFILLMENT_PHASES.findIndex(x=>x[0]===status);if(current>=0&&next<=current)return false;
  c.order.fulfillment={...c.order.fulfillment,status,updatedAt:new Date().toISOString()};
- if(status==='delivered'){c.order.picked=true;c.order.paid.got=TP.NOW.time;c.order.paid.deliv=TP.NOW.time;}
+ if(status==='delivered'){c.order.paid.deliv=TP.NOW.time;}
  TP.emit('state');return true;
 };
 TP.fulfillmentPreview = (c,key) => {
- c.mode='chat';c.status='closed';const issuedAt=Date.now(),items=TP.ORDER_ITEMS.map(i=>({...i}));c.order={status:'pending',items,total:items.reduce((n,i)=>n+i.price,0),issuedAt,expiresAt:issuedAt+TP.ORDER_PAYMENT_MS,no:'MT'+issuedAt.toString(36).toUpperCase()};c.order.paid={recv:'express',method:'promptpay',items:c.order.total,ship:89,fee:0,total:c.order.total+89,date:TP.NOW.date,at:TP.NOW.time,addr:{...(TP.S.addrs?.[0]||{})}};c.order.status='paid';
+ c.mode='chat';c.status='closed';const issuedAt=Date.now(),items=TP.ORDER_ITEMS.map(i=>({...i}));c.order={status:'pending',items,total:items.reduce((n,i)=>n+i.price,0),issuedAt,expiresAt:issuedAt+TP.ORDER_PAYMENT_MS,no:TP.orderNumber(c)};c.order.paid={recv:'express',method:'promptpay',items:c.order.total,ship:89,fee:0,total:c.order.total+89,date:TP.NOW.date,at:TP.NOW.time,addr:{...(TP.S.addrs?.[0]||{})}};c.order.status='paid';
  c.pharmacistAdvice='โปรดอ่านวิธีใช้ยาและคำแนะนำบนฉลาก หากมีข้อสงสัยให้ติดต่อสาขาที่ให้คำปรึกษา';
  if(key.startsWith('parcel-')){
   const pd=c.order.paid;
@@ -3559,8 +3608,17 @@ TP.fulfillmentCard = S => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo
 }).join('');
 TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||TP.S.case;if(!TP.fulfillmentInfo(c))return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(c.order.paid?.recv==='parcel'?'track':'paid',{via:'cover'});});
 TP.chatDeliveryPage = c => {
- const f=TP.fulfillmentInfo(c),o=c.order,b=TP.branch(c.branch),phase=TP.FULFILLMENT_PHASES.findIndex(x=>x[0]===f.key),a=o.paid.addr;
- return TP.ui.nav({title:'สถานะการจัดส่งยา',back:true})+TP.ui.page(`<div class="chat-delivery"><article class="post-consult-payment fulfillment-card"><div class="post-payment-heading">${TP.ic(f.icon,24,1.8)}<span>${f.done?'จัดส่งสำเร็จ':'ชำระเงินแล้ว'}</span></div><h2>${TP.esc(f.title)}</h2><p>${TP.esc(b.name)}</p><small>เลขคำสั่งซื้อ ${TP.esc(o.no)}</small></article><section class="chat-delivery-section"><h3>ความคืบหน้าการจัดส่ง</h3><ol class="tl">${TP.FULFILLMENT_PHASES.map(([key,label],i)=>`<li class="${i<phase?'done':i===phase?'cur':''}"><b>${TP.esc(label)}</b>${i===phase?'<span>สถานะปัจจุบัน</span>':''}</li>`).join('')}</ol></section>${c.pharmacistAdvice?`<section class="chat-delivery-section"><h3>${TP.ic('message-circle',20,1.8)} คำแนะนำจากเภสัชกร</h3><p>${TP.esc(c.pharmacistAdvice)}</p></section>`:''}<section class="chat-delivery-section"><h3>ข้อมูลการรับยา</h3><b>${TP.esc(((a?.first||'')+' '+(a?.last||'')).trim()||TP.S.user?.full||'')}</b><p>${TP.esc(a?TP.fmtAddr(a):'รับยาที่สาขา')}</p></section><section class="chat-delivery-section"><h3>รายการยา</h3>${TP.orderMedicineList(o)}</section></div>`)+TP.ui.dock(TP.ui.btn('กลับหน้าแรก',{go:'home',kind:'secondary'})+TP.ui.btn('ติดต่อสาขา',{a:'callStore',kind:'ghost',icon:'phone'}));
+  const f = TP.fulfillmentInfo(c), o = c.order;
+  const phase = TP.FULFILLMENT_PHASES.findIndex(([key]) => key === f.key);
+  const status = TP.orderStatusCard(
+    TP.FULFILLMENT_PHASES.map(([key, label], i) => [i < phase ? 'done' : i === phase ? 'cur' : '', label, '']),
+    o.no, false, '', {
+      artwork: f.key === 'preparing' ? 'preparing' : f.key === 'calling' ? 'calling' : f.key === 'delivered' ? 'delivered' : 'delivery',
+      icons: ['pill', 'search', 'motorcycle', 'check']
+    }
+  );
+  return TP.ui.nav({ title: 'สถานะการจัดส่งยา', right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${TP.ic('x',22,2)}</button>` }) +
+    TP.ui.page(status + (f.key === 'delivered' ? (o.paid.got ? '<p class="tk-got" role="status">คุณยืนยันว่าได้รับยาแล้ว</p>' : TP.ui.btn('ได้รับยาแล้ว', { a: 'tkGot', icon: 'circle-check', cls: 'mb16' })) : '') + TP.fulfillmentDetails(c));
 };
 /* End chat order lifecycle */
 
@@ -3571,7 +3629,6 @@ TP.paymentReminderCard = (S,c) => {
   return `<article class="post-consult-payment case-progress-card"><header class="post-payment-heading case-progress-head"><span class="case-progress-icon" aria-hidden="true">${ic(pending?'credit-card':'clock',22,1.8)}</span><span>${pending?'รอชำระค่ายา':'หมดเวลาชำระค่ายา'}</span>${ui.tag(pending?'รอชำระ':'สิ้นสุด',pending?'warn':'muted')}</header><div class="case-progress-body"><h3>${pending?'รายการยาของคุณพร้อมชำระแล้ว':'รายการยานี้ชำระไม่ได้แล้ว'}</h3><p>${esc(b.name)} · ${o.items?.length||0} รายการ</p><div class="post-payment-total"><span>รวมค่ายา</span><b>${esc(TP.money(o.total))}</b></div>${pending?`<p class="post-payment-deadline">${ic('clock',16,2)}<span>${o.awaitingCheckout?'เริ่มนับเวลา 15 นาทีเมื่อเปิดหน้าชำระเงิน':`ชำระภายใน ${esc(TP.orderTime(o))} น. · เหลือ <b data-order-countdown data-order-case="${esc(c.id)}">${TP.orderRemaining(o)}</b>`}</span></p></div><footer class="case-progress-foot">${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',p:{caseId:c.id},icon:'credit-card'})}`:`<p class="post-payment-expired">ครบเวลาชำระ 15 นาทีแล้ว หากยังต้องการยา ให้เภสัชกรตรวจสอบรายการใหม่</p></div><footer class="case-progress-foot">${ui.btn('ปรึกษาเภสัชอีกครั้ง',{a:'requeue',kind:'secondary',icon:'message-circle'})}`}${ui.btn('ดูใบสรุปการปรึกษา',{go:'summary',p:{id:c.id},kind:'ghost'})}</footer></article>`;
 };
 TP.act('openOrderPayment',async (t,ctx)=>{
-  if(TP.sheetOpen?.()?.id==='roommenu')await TP.closeSheet({instant:true});
 
   let params=ctx?.params||{};try{params={...params,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const id=params.caseId,c=id?TP.orderCases(TP.S).find(c=>c.id===id):(TP.pendingPaymentCase(TP.S)||C());TP.expireOrder(c);
   if(TP.chatConsult(c)&&c.status!=='closed'){TP.notify('สอบถามเพิ่มเติมกับเภสัชกรได้ เมื่อสรุปการปรึกษาแล้วจึงชำระเงิน',{icon:'message-circle'});return;}
@@ -3632,32 +3689,48 @@ if (TP.previewActivity) {
 
 
 
-TP.orderMedicineList = o => `<ul class="mo-l">${o.items.map(i => `<li>${TP.medicineImage(i)}<span class="medicine-copy"><b>${esc(i.name)}</b><small>${esc(i.qty)}${i.type ? ` · <i class="mo-ty">${esc(i.type === 'ยาอันตราย' ? 'ต้องจ่ายโดยเภสัชกร' : i.type)}</i>` : ''}</small><small>${esc(i.how)}</small></span><span class="num">${TP.money(i.price)}</span></li>`).join('')}</ul>`;
+TP.orderMedicineList = (o, { showPrice = true } = {}) => `<ul class="mo-l">${o.items.map(i => `<li>${TP.medicineImage(i)}<span class="medicine-copy"><b>${esc(i.name)}</b><small>จำนวน: ${esc(i.qty || "—")}</small><small>วิธีใช้: ${esc(i.how || "ใช้ตามคำแนะนำบนฉลาก")}</small></span>${showPrice && i.price != null ? `<span class="num">${TP.money(i.price)}</span>` : ""}</li>`).join('')}</ul>`;
+/* The chat basket reads the same order snapshot as the proposal and receipt. */
+TP.chatBasketBar = order => order?.items?.length && order.status !== 'cancelled' ? `<button type="button" class="rm-basket-bar" data-a="openMedicineBasket" aria-label="ดูตะกร้ายา ${order.items.length} รายการ">${ic('basket', 21, 1.8)}<span>ตะกร้ายา <b>${order.items.length} รายการ</b></span><span class="rm-basket-open">ดูรายการ ${ic('chevron-right',16,2)}</span></button>` : '';
+TP.updateChatBasket = el => {
+  const slot = $('#rmBasket', el);
+  if (!slot) return;
+  slot.innerHTML = TP.chatBasketBar(C()?.order);
+  slot.hidden = !slot.firstElementChild;
+  TP.icons(slot);
+};
+
+TP.act('openMedicineBasket', () => {
+  if (TP.chatBasketBar(C()?.order)) return TP.sheet('medicinebasket');
+});
+TP.on?.('state', () => {
+  const screen = TP.cur();
+  if (screen?.id === 'room' && screen.el) TP.updateChatBasket(screen.el);
+});
+
 /* ---------- message html ---------- */
 TP.orderMedicineDetails = o => `<div class="mo-h"><span class="mo-i">${ic('receipt',18,1.9)}</span><b>รายการยาจากเภสัชกร</b>${ui.tag(o.status==='paid'?'ชำระแล้ว':o.status==='expired'?'หมดอายุ':'รอชำระ',o.status==='paid'?'ok':o.status==='expired'?'muted':'warn')}</div>${TP.orderMedicineList(o)}<div class="mo-t"><span>รวมค่ายา</span><b class="num">${TP.money(o.total)}</b></div>`;
 function orderCard(o) {
-  TP.expireOrder?.(C());const st = o.status;
-  return `<div class="msg-order${st === 'paid' ? ' paid' : st === 'cancelled' ? ' exp' : ''}">
-    <div class="mo-h"><span class="mo-i">${ic('receipt', 18, 1.9)}</span><b>รายการยาจากเภสัชกร</b>${st === 'cancelled' ? ui.tag('ยกเลิกแล้ว', 'muted') : st === 'paid' ? ui.tag('ชำระแล้ว', 'ok') : ui.tag('รายการที่เสนอ', 'muted')}</div>
-    ${TP.orderMedicineList(o)}
-    <div class="mo-t"><span>รวมค่ายา</span><b class="num">${TP.money(o.total)}</b></div>
-    ${st === 'paid' ? ui.btn('ดูสถานะคำสั่งซื้อ', { kind: 'tint', go: 'paid', via: 'cover' }) : st === 'cancelled' ? '<p class="mo-x">ยกเลิกรายการยาแล้ว ไม่มีการตัดเงิน</p>' : ''}
-  </div>`;
+  TP.expireOrder?.(C());
+  const cancelled = o.status === 'cancelled';
+  return `<article class="msg-order rm-medicine-card${cancelled ? ' exp' : ''}" aria-label="รายการยาจากเภสัชกร">
+    <header class="mo-h"><div><b>รายการยาจากเภสัชกร</b><small>${o.items.length} รายการ · รายการที่เสนอ</small></div></header>
+    <div class="rm-medicine-body">${TP.orderMedicineList(o)}</div>
+    <footer class="rm-medicine-footer"><div class="mo-t"><span>รวมค่ายา</span><b class="num">${TP.money(o.total)}</b></div><p class="${cancelled ? '' : 'rm-medicine-notice'}">${cancelled ? 'ยกเลิกรายการยาแล้ว ไม่มีการตัดเงิน' : 'โปรดแจ้งเภสัชกร หากต้องการแก้ไขรายการยา'}</p></footer>
+  </article>`;
 }
+
 function msgHtml(m) {
-  if(m.kind==='provider-ready')return '';
+  if(m.kind==='provider-ready')return '<div class="msg-sys rm-provider-ready" role="status"><span>เภสัชกรเข้าร่วมห้องแล้ว<br>พิมพ์ข้อความเพื่อปรึกษาเภสัชกรได้เลย</span></div>';
   if(m.kind==='video-request'){
     const c=C(),pending=m.status==='pending'&&c.status==='room'&&!TP.S.call,inCall=m.status==='accepted'&&!!TP.S.call;
     const labels={declined:'คุณเลือกคุยทางแชทต่อ',withdrawn:'เภสัชกรยกเลิกคำขอนี้แล้ว',ended:'วิดีโอคอลจบแล้ว',accepted:inCall?'กำลังวิดีโอคอล':'รับคำขอแล้ว'};
     return `<article class="rm-video-request"><header><span class="rm-video-icon">${ic('video',24,1.8)}</span><div><h3>คำขอวิดีโอคอล</h3><p>${esc(P().short)} ขอคุยกับคุณผ่านวิดีโอ</p></div></header>${pending?`<p class="rm-video-help">กล้องและไมค์จะเริ่มใช้งานเมื่อคุณกดเข้าร่วม<br>ระหว่างคอล ย่อกลับมาพิมพ์แชทได้</p><div class="rm-video-actions"><button type="button" class="btn primary" data-a="acceptVideoRequest" data-request="${esc(m.id)}">${ic('video',18,2)}เข้าวิดีโอคอล</button><button type="button" class="btn secondary" data-a="declineVideoRequest" data-request="${esc(m.id)}">คุยแชทต่อ</button></div>`:m.status==='accepted'&&c.status==='room'?ui.btn('กลับเข้าวิดีโอคอล',{a:'startVideo',kind:'secondary',icon:'video'}):`<p class="rm-video-result">${esc(labels[m.status]||'คำขอนี้สิ้นสุดแล้ว')}</p>`}</article>`;
   }
   if (m.who === 'sys') return `<div class="msg-sys${m.move ? ' move' : ''}"><span>${m.move ? ic('map-pin', 14, 2) : ''}${esc(m.text)}</span></div>`;
-  if (m.kind === 'intake') {
-    const c=C(),p=TP.casePlan(c).p;
-    const row=(icon,label,value,tone='')=>`<div class="msg-intake-row ${tone}"><dt>${ic(icon,18,1.8)}<span>${esc(label)}</span></dt><dd>${esc(value)}</dd></div>`;
-    return `<div class="msg me wide"><article class="msg-intake"><header>${ic('clipboard-list',20,1.8)}<b>ข้อมูลก่อนปรึกษา</b></header><dl>${c.symptoms.length?row('file-text','อาการที่เลือก',c.symptoms.join(', ')):''}${p.allergies?.length?row('triangle-alert','ประวัติแพ้ยา',p.allergies.join(', '),'msg-intake-allergy'):''}${p.meds?.length?row('pill','ยาที่ใช้ประจำ',p.meds.join(', ')):''}${c.urgent?.length?row('triangle-alert','อาการที่ควรดูแลทันที',c.urgent.join(', '),'msg-intake-allergy'):''}</dl></article></div>`;
-  }
+  if (m.kind === 'intake') return '';
   if (m.kind === 'order') return `<div class="msg ph wide">${orderCard(C().order)}</div>`;
+  if (m.kind === 'summary' && C()?.checkoutHandoffUntil) return `<div class="msg-sys"><span>เภสัชกรสิ้นสุดสนทนาแล้ว ${esc(m.time || '')}</span></div>`;
   if (m.kind === 'summary') return `${m.by === 'auto' ? `<div class="msg-sys auto" role="status"><span>${ic('clock', 14, 2)}${esc(`ระบบปิดการปรึกษาให้ ${m.time || ''} เพราะไม่มีข้อความจากคุณ 5 นาที · ไม่มีค่าปรึกษา`)}</span></div>` : `<div class="msg-sys"><span>${m.by === 'me' ? 'คุณจบการปรึกษาแล้ว' : 'เภสัชกรปิดเคสแล้ว'} ${esc(m.time || '')}</span></div>`}<div class="msg ph wide"><button type="button" class="msg-sum" data-go="summary" data-p='{"id":"${C().id}"}'>${brand.halo(46, { check: true, still: true })}<span><b>ใบสรุปการปรึกษา</b><small class="consultation-note">${esc(TP.consultationText(C()) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</small><small>${C().noAdvice ? 'ปิดก่อนได้รับคำแนะนำ · อาการที่ต้องไปพบแพทย์' : C().order?.status === 'paid' ? 'คำแนะนำ ยาที่ได้รับ และอาการที่ต้องไปพบแพทย์' : 'คำแนะนำ และอาการที่ต้องไปพบแพทย์'}</small></span>${ic('chevron-right', 18, 2)}</button></div>${TP.followCloseLine?.(C()) || ''}`;
   if (m.kind === 'image') return `<div class="msg ${m.who}"><div class="msg-img" role="img" aria-label="รูปที่ส่ง">${ic('image', 28, 1.5)}<small>รูปที่ส่ง</small></div><time>${esc(m.time || '')}</time></div>`;
   if (m.kind === 'call') return `<div class="msg-sys"><span>${ic('video', 14, 2)} ${esc(m.text)}</span></div>`;
@@ -3716,13 +3789,14 @@ TP.queueChatUpdate = text => {
    ===================================================================== */
 TP.screen('room', {
   group: 'during', title: 'ห้องปรึกษา (แชท)', code: 'C303', ref: 'C09', parent: 'home',
-  states: [['live', 'เล่นบทสนทนา'], ['order', 'มีรายการยารอชำระ'], ['paid', 'ชำระแล้ว'], ['expired', 'ยกเลิกเคสทดสอบหมดเวลาชำระในแชท', false], ['offline', 'ไม่มีอินเทอร์เน็ต'], ['closed', 'ปิดเคส + ใบสรุป'], ['call', 'คุยวิดีโออยู่'], ['idle', 'เงียบ 3 นาที ใกล้ปิดเอง'], ['idleclosed', 'ปิดเองเพราะเงียบ 5 นาที'], ['moved', 'ยกเลิกเคสทดสอบย้ายสาขา', false],['waiting','รอในแชท อีก 3 คิว'],['waiting-message','ส่งอาการไว้ระหว่างรอ'],['waiting-paused','พักชั่วคราวในห้องแชท'],['provider-joined','เภสัชกรเข้าห้องแล้ว', false],['video-request','เภสัชกรขอวิดีโอคอล'],['video-declined','เลือกคุยแชทต่อ'],['video-withdrawn','เภสัชกรถอนคำขอวิดีโอ'],['closed-unpaid','จบแชท รอชำระค่ายา'],['payment-soon','จบแชท เหลือชำระ 1 นาที'],['closed-payexpired','ยกเลิกเคสทดสอบหมดเวลาชำระหลังจบแชท', false]],
-  notes: ['เภสัชกรส่งการ์ดคำขอวิดีโอคอล ลูกค้ากดเข้าร่วมเอง ย่อคอลมาพิมพ์แชทและกลับเข้าคอลได้โดยสายไม่หลุด', 'แชทแสดงรายการยาที่เสนอ เมื่อจบแชทจึงเปิดหน้าชำระเงินและเริ่มนับเวลา', 'ออกจากห้อง = เคสยังเปิด กลับเข้าได้จากหน้าแรก แถบด้านล่าง และประวัติ', 'ข้อความใหม่ตอนออกจากแอป = แจ้งเตือนแบบคำกลาง ๆ', 'A4 + A9 (20/10): แชทเก็บ 1 ปีนับจากวันปิดเคส',
+  previewShortcuts: ['order', 'checkout-handoff'],
+  states: [['live', 'เล่นบทสนทนา'], ['order', 'เภสัชกรส่งรายละเอียดรายการยา'], ['paid', 'ย้ายสถานะชำระแล้วไปหน้าคำสั่งซื้อ', false], ['expired', 'ยกเลิกเคสทดสอบหมดเวลาชำระในแชท', false], ['checkout-handoff', 'เภสัชกรสิ้นสุดสนทนา · ไปชำระค่ายาใน 30 วินาที'], ['closed', 'ปิดเคส + ใบสรุป'], ['call', 'คุยวิดีโออยู่'], ['idle', 'เงียบ 3 นาที ใกล้ปิดเอง'], ['idleclosed', 'ปิดเองเพราะเงียบ 5 นาที'], ['moved', 'ยกเลิกเคสทดสอบย้ายสาขา', false],['waiting','รอในแชท อีก 3 คิว'],['waiting-message','ส่งอาการไว้ระหว่างรอ'],['waiting-paused','พักชั่วคราวในห้องแชท'],['provider-joined','เภสัชกรเข้าห้องแล้ว', false],['video-request','เภสัชกรขอวิดีโอคอล'],['video-declined','เลือกคุยแชทต่อ'],['video-withdrawn','เภสัชกรถอนคำขอวิดีโอ'],['closed-unpaid','จบแชท รอชำระค่ายา'],['payment-soon','จบแชท เหลือชำระ 1 นาที'],['closed-payexpired','ยกเลิกเคสทดสอบหมดเวลาชำระหลังจบแชท', false],['offline','ไม่มีอินเทอร์เน็ต']],
+  notes: ['เภสัชกรจบสนทนาและมียารอชำระ: ช่องพิมพ์เปลี่ยนเป็นปุ่มชำระค่ายานับถอยหลัง 30 วินาที กดทันทีหรือเปิดชำระอัตโนมัติเมื่อครบ เวลา 15 นาทีเริ่มเมื่อเข้าชำระจริง', 'เมื่อเภสัชกรส่งรายการยา แสดงแถบตะกร้ายาเหนือช่องพิมพ์ กดเปิด C303.3 เพื่อดูรูปยา จำนวน วิธีใช้ ราคา และยอดรวมจาก order เดียวกัน ไม่มีปุ่มจ่ายเงินในตะกร้า', 'หัวห้องแชทมีปุ่มจบสนทนาสีแดง เปิดยืนยันจบโดยตรง ไม่มีเมนูตัวเลือก C304; ขณะรอเภสัชแสดงยกเลิกสีแดงและยืนยันยกเลิกคิว', 'ไม่แสดงการ์ดข้อมูลก่อนปรึกษาในแชท ข้อมูลอาการและสุขภาพยังเก็บในเคสให้เภสัชกรใช้ดูแล', 'แตะรูปหรือชื่อเภสัชกรเปิดข้อมูลในป๊อปอัป C303.4 แล้วกลับแชทเดิมได้', 'ส่วนบนห้องแชทแสดงชื่อ ใบอนุญาต และสาขาจากเคส พร้อมปุ่มวิดีโอคอล ไม่มีปุ่มโทร ข้อความผู้ใช้สี Primary ข้อความเภสัชกรสีขาวบนพื้นเทาอ่อน ใช้ภาษาไทยทุกปุ่ม', 'เภสัชกรส่งการ์ดคำขอวิดีโอคอล ลูกค้ากดเข้าร่วมเอง ย่อคอลมาพิมพ์แชทและกลับเข้าคอลได้โดยสายไม่หลุด', 'แชทแสดงการ์ดรายการยารูปแบบหัว เนื้อหา ท้าย: รูปยา ชื่อ จำนวน วิธีใช้ ราคา และรวมค่ายา ใช้รายการเดียวกับบิลและใบสรุป ไม่มีปุ่มจ่ายเงินหรือปุ่มคำสั่งซื้อในการ์ด เมื่อจบแชทจึงเปิดหน้าชำระเงินและเริ่มนับเวลา', 'ออกจากห้อง = เคสยังเปิด กลับเข้าได้จากหน้าแรก แถบด้านล่าง และประวัติ', 'ข้อความใหม่ตอนออกจากแอป = แจ้งเตือนแบบคำกลาง ๆ', 'A4 + A9 (20/10): แชทเก็บ 1 ปีนับจากวันปิดเคส',
     'นโยบายล่าสุด: ไม่มีการตอบกลับ 3 นาที แจ้งเตือนอีก 2 นาที ก่อนสิ้นสุดเมื่อครบ 5 นาที; แยกจากเวลาชำระยา 15 นาที และไม่ยกเลิกรายการยารอชำระเมื่อจบแชท'],
   wait: ['ลูกค้าเงียบระหว่างไปจ่ายเงิน (มีรายการรอชำระ) นับเวลาเงียบไหม · ต้นแบบนับเหมือนกัน ปิดแล้วรายการยกเลิก'],
   prep(S) {
     const st = S.st.room === 'moved' ? (S.st.room='live') : ['expired','closed-payexpired'].includes(S.st.room) ? (S.st.room='order') : S.st.room || 'live';
-    if(['closed-unpaid','payment-soon','closed-payexpired'].includes(st)){TP.casePreview.seed(st);return;}
+    if(['closed-unpaid','payment-soon','closed-payexpired','checkout-handoff'].includes(st)){TP.casePreview.seed(st==='checkout-handoff'?'closed-unpaid':st);if(st==='checkout-handoff'){S.case.checkoutHandoffUntil=Date.now()+30000;Object.assign(S.case.order,{awaitingCheckout:true,paymentStartedAt:null,expiresAt:null});}return;}
     if(['waiting','waiting-message','waiting-paused','provider-joined'].includes(st)){S.st.queue=({'waiting':'q4','waiting-message':'message','waiting-paused':'paused','provider-joined':'joined'})[st];TP.SCREENS.queue.prep(S);return;}
     const c = TP.ensureCase('room');
     S.netOff = st === 'offline'; S.call = null; c.idle = null; c.endWhy = null; c.noAdvice = false;
@@ -3769,28 +3843,38 @@ TP.screen('room', {
     const videoWaiting=waiting&&c.mode==='video';
     seed(c);
     const closed = c.status === 'closed';
-    const call = TP.S.call ? `<button type="button" class="rm-call" data-a="startVideo">${ic('video', 16, 2)}<span>กำลังวิดีโอคอล <b class="num" id="rmCallT">01:14</b></span><span class="rm-call-go">แตะเพื่อกลับ</span></button>` : '';
-    return `<header class="nav solid rm-nav${waiting?' rm-waiting-nav':''}"><div class="nb-l"><button type="button" class="back" data-a="queueMin">${ic('chevron-down', 22, 2.2)}<span class="sr">ย่อห้อง</span></button></div>
-      <div class="rm-who">${ui.av('', { ini: p.ini, img: TP.demoProfiles?.[p.id==='tp'?'pharmacist_m':'pharmacist_f'], size: 'sm', solid: true })}<span><b>${esc(p.short)}</b><small>${esc(p.lic+' · '+b.short)}</small></span></div>
-      <div class="nb-r">${closed ? '' : waiting ? `<button type="button" class="txtbtn rm-cancel-wait" data-sheet="cancelq">ยกเลิกคิว</button>` : `<button type="button" class="ibtn" data-sheet="roommenu" aria-label="ตัวเลือกเพิ่มเติม">${ic('ellipsis', 22, 1.9)}</button>`}</div></header>
-      ${waiting&&!videoWaiting?`<div class="rm-queue-bar" role="status" aria-live="polite"><span class="rm-queue-icon" aria-hidden="true">${TP.miniStatusIcon(c.status==='paused'?'paused':'waiting')}</span><span class="rm-queue-copy"><small>รอเภสัชกร</small><b id="rmQueueLabel">${esc(queueChatLabel(c))}</b></span></div>`:''}
+    const call = TP.S.call ? `<button type="button" class="rm-call" data-a="startVideo">${ic('video', 16, 2)}<span>${TP.S.call.waitingProvider ? 'รอเภสัชกรเข้าห้องวิดีโอ' : 'กำลังวิดีโอคอล'} <b class="num" id="rmCallT">${TP.S.call.waitingProvider ? '' : '00:00'}</b></span><span class="rm-call-go">แตะเพื่อกลับ</span></button>` : '';
+    return `<header class="nav solid rm-nav rm-waiting-nav"><div class="nb-l"><button type="button" class="back" data-a="queueMin" aria-label="ย่อห้อง">${ic('chevron-left',22,2)}</button></div><h1>แชทกับเภสัชกร</h1><div class="nb-r">${waiting?'<button type="button" class="txtbtn rm-cancel-wait" data-sheet="cancelq">ยกเลิก</button>':closed?'':'<button type="button" class="txtbtn rm-cancel-wait" data-sheet="endcase">จบสนทนา</button>'}</div></header>
+      ${!waiting?`<div class="rm-provider-bar"><button type="button" class="rm-who" data-sheet="chatprovider" aria-label="ดูข้อมูลเภสัชกร" aria-haspopup="dialog">${ui.av('', {ini:p.ini,img:p.id==='tp'?TP.demoProfiles?.pharmacist_m:'/assets/profiles/pharmacist-chat-v2.png',size:'sm',solid:true})}<span><b>${esc(p.short)} <span class="rm-provider-license">· ${esc(p.lic)}</span></b><small>${esc(b.name)}</small></span></button>${closed?'':`<button type="button" class="ibtn" data-a="chatVideo" aria-label="วิดีโอคอล">${ic('video',24,1.8)}</button>`}</div>`:''}
+      ${waiting&&!videoWaiting?`<div class="rm-queue-bar" role="status" aria-live="polite" aria-atomic="true"><span class="rm-queue-icon" aria-hidden="true">${ic(c.status==='paused'?'clock':'search',24,2)}</span><span class="rm-queue-copy"><b>${c.status==='paused'?'รอเภสัชกรกลับมารับบริการ':'กำลังหาเภสัชกร...'}</b><small id="rmQueueLabel">${esc(queueChatLabel(c))}</small></span></div>`:''}
       ${call}${TP.S.netOff ? `<div class="rm-net" role="status">${ic('wifi-off', 16, 2)}<span>ไม่มีอินเทอร์เน็ต ข้อความจะส่งเมื่อกลับมาออนไลน์</span></div>` : ''}
-      <div class="scroll rm-scroll${call ? ' has-call' : ''}${waiting&&!videoWaiting?' has-queue':''}${TP.S.netOff ? ' has-net' : ''}${closed ? (c.endWhy === 'noreply' ? ' end2' : ' ended') : ''}" id="rmScroll">${waiting&&c.urgent?.length?`<div class="rm-wait-safety">${TP.queueDanger()}</div>`:''}${videoWaiting?videoQueueCard(c):''}${waiting&&!TP.S.notif?ui.note('ปิดการแจ้งเตือนอยู่ เปิดไว้เพื่อรับแจ้งเมื่อถึงคิว',{icon:'bell-off'})+ui.btn('เปิดการแจ้งเตือน',{a:'queueEnableNotifications',kind:'secondary',icon:'bell'}):''}<div class="rm-day">${esc(c.day0 || 'วันนี้')}</div><div class="rm-list" id="rmList">${c.msgs.map(msgHtml).join('')}</div><div class="rm-quick" id="rmQuick"></div>${idleHtml(c)}</div>
-      ${closed && c.order?.status==='pending' ? ui.dock(`${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',icon:'credit-card'})}${ui.btn('เปิดใบสรุป',{kind:'ghost',go:'summary',p:{id:c.id}})}`,{note:`ปรึกษาเสร็จแล้ว · ชำระค่ายาภายใน ${esc(TP.orderTime(c.order))} น.`}) : closed && c.endWhy === 'noreply' ? ui.dock(`${TP.S.storeOpen ? ui.btn('ปรึกษาใหม่', { a: 'requeue', icon: 'message-circle' }) : ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', icon: 'message-circle' })}${ui.btn('เปิดใบสรุป', { kind: 'ghost', go: 'summary', p: { id: c.id } })}`, { note: TP.S.storeOpen ? 'ยังมีอาการ ปรึกษาใหม่ได้ทันทีที่สาขาเดิม ไม่ต้องกรอกอาการใหม่ · ไม่มีค่าปรึกษา' : `ร้านปิดแล้ว ฝากคำถามไว้ เภสัชกรตอบ${TP.OF_REPLY}` }) :
+      <div class="scroll rm-scroll${!waiting?' has-provider':''}${call ? ' has-call' : ''}${waiting&&!videoWaiting?' has-queue':''}${TP.S.netOff ? ' has-net' : ''}${closed ? (c.endWhy === 'noreply' ? ' end2' : ' ended') : ''}" id="rmScroll">${waiting&&c.urgent?.length?`<div class="rm-wait-safety">${TP.queueDanger()}</div>`:''}${videoWaiting?videoQueueCard(c):''}${waiting&&!TP.S.notif?ui.note('ปิดการแจ้งเตือนอยู่ เปิดไว้เพื่อรับแจ้งเมื่อถึงคิว',{icon:'bell-off'})+ui.btn('เปิดการแจ้งเตือน',{a:'queueEnableNotifications',kind:'secondary',icon:'bell'}):''}${waiting&&!videoWaiting?'':`<div class="rm-day">${esc(c.day0 || 'วันนี้')}</div>`}<div class="rm-list" id="rmList">${c.msgs.map(msgHtml).join('')}</div><div class="rm-quick" id="rmQuick"></div>${idleHtml(c)}</div>
+      ${closed && TP.checkoutHandoffRemaining(c) ? ui.dock(ui.btn(`ขั้นตอนต่อไป ชำระค่ายา (${TP.checkoutHandoffRemaining(c)} วิ)`,{a:'continueCheckout'})) : closed && c.order?.status==='pending' ? ui.dock(`${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',icon:'credit-card'})}${ui.btn('เปิดใบสรุป',{kind:'ghost',go:'summary',p:{id:c.id}})}`,{note:`ปรึกษาเสร็จแล้ว · ชำระค่ายาภายใน ${esc(TP.orderTime(c.order))} น.`}) : closed && c.endWhy === 'noreply' ? ui.dock(`${TP.S.storeOpen ? ui.btn('ปรึกษาใหม่', { a: 'requeue', icon: 'message-circle' }) : ui.btn('ฝากคำถามถึงเภสัชกร', { go: 'offline', icon: 'message-circle' })}${ui.btn('เปิดใบสรุป', { kind: 'ghost', go: 'summary', p: { id: c.id } })}`, { note: TP.S.storeOpen ? 'ยังมีอาการ ปรึกษาใหม่ได้ทันทีที่สาขาเดิม ไม่ต้องกรอกอาการใหม่ · ไม่มีค่าปรึกษา' : `ร้านปิดแล้ว ฝากคำถามไว้ เภสัชกรตอบ${TP.OF_REPLY}` }) :
       closed ? ui.dock(`<p class="dock-note" style="margin:0">เคสนี้ปิดแล้ว · ดูย้อนหลังได้ในประวัติ 1 ปีนับจากวันปิดเคส</p>${ui.btn('เปิดใบสรุป', { go: 'summary', p: { id: c.id } })}`) :
-      `<div class="dock rm-comp"><button type="button" class="ibtn" data-a="sendPhoto" aria-label="ส่งรูป">${ic('camera', 22, 1.8)}</button><label class="sr" for="rmIn">พิมพ์ข้อความ</label><textarea id="rmIn" class="rm-in" rows="1" placeholder="${waiting?'พิมพ์อาการเพิ่มเติมไว้ระหว่างรอ':'พิมพ์ข้อความ'}">${esc(c.draft||'')}</textarea><button type="button" class="rm-send" data-a="sendMsg" aria-label="ส่ง" disabled>${ic('arrow-up', 20, 2.4)}</button></div>`}`;
+      `<div id="rmBasket" class="rm-basket-strip"${TP.chatBasketBar(c.order) ? '' : ' hidden'}>${TP.chatBasketBar(c.order)}</div><div class="dock rm-comp"><div class="rm-compose-row"><button type="button" class="ibtn" data-a="sendPhoto" aria-label="ส่งรูป">${ic('camera', 22, 1.8)}</button><label class="sr" for="rmIn">พิมพ์ข้อความ</label><textarea id="rmIn" class="rm-in" rows="1" placeholder="${waiting?'พิมพ์อาการเพิ่มเติมไว้ระหว่างรอ':'พิมพ์ข้อความ'}">${esc(c.draft||'')}</textarea><button type="button" class="rm-send" data-a="sendMsg" aria-label="ส่ง" disabled>${ic('arrow-up', 20, 2.4)}</button></div></div>`}`;
   },
   mount(el, ctx) {
     const c = C(), sc = $('#rmScroll', el), inp = $('#rmIn', el), send = $('.rm-send', el);
     const bottom = (smooth = true) => sc.scrollTo({ top: sc.scrollHeight, behavior: smooth && !TP.RED() ? 'smooth' : 'auto' });
     el._bottom = bottom;
     requestAnimationFrame(() => { if (!$('.rm-video-wait',el)) bottom(false); });
+    if (c.status === 'closed' && c.checkoutHandoffUntil) {
+      const next = el.querySelector('[data-a="continueCheckout"]');
+      let navigating = false;
+      const tickCheckout = () => {
+        if (navigating || TP.cur()?.el !== el || TP.S.case !== c) return;
+        const seconds = TP.checkoutHandoffRemaining(c);
+        if (next) next.textContent = `ขั้นตอนต่อไป ชำระค่ายา (${seconds} วิ)`;
+        if (!seconds) { navigating = true; TP.ACTS.continueCheckout(); }
+      };
+      tickCheckout(); ctx.every(tickCheckout, 1000);
+    }
     if (inp) {
       send.disabled=!inp.value.trim();
       inp.addEventListener('input', () => { c.draft=inp.value;send.disabled = !inp.value.trim(); inp.style.height = 'auto'; inp.style.height = Math.min(110, inp.scrollHeight) + 'px'; });
       inp.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); if (inp.value.trim()) TP.ACTS.sendMsg(send); } });
     }
-    if (TP.S.call) { const t = $('#rmCallT', el); const tick = () => { if (!TP.S.call) return; const s = Math.floor((Date.now() - TP.S.call.t0) / 1000); t.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }; tick(); ctx.every(tick, 1000); }
+    if (TP.S.call) { const t = $('#rmCallT', el); const tick = () => { if (!TP.S.call) return; if (TP.S.call.waitingProvider || !TP.S.call.t0) { t.textContent = ''; return; } const s = Math.floor((Date.now() - TP.S.call.t0) / 1000); t.textContent = String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0'); }; tick(); ctx.every(tick, 1000); }
     if (c.quick) showQuick(el, c.quick);
     if (c.idle) { const t = $('#rmIdleT', el); ctx.every(() => { if (!c.idle) return; const s = idleLeft(c); if (t) t.textContent = mmss(s); if (!s) TP.sim.idleClose(); }, 1000); }
     if (!waitingForPharmacist(c)&&c.status!=='closed')ctx.later(()=>play(el,ctx),700);
@@ -3821,6 +3905,7 @@ async function typing(el, ms) {
 }
 function push(el, m) {
   C().msgs.push(m);
+  if (m.kind === 'order') TP.updateChatBasket(el);
   const list = $('#rmList', el);
   list.insertAdjacentHTML('beforeend', msgHtml(m));
   const n = list.lastElementChild; TP.icons(n);
@@ -3836,6 +3921,7 @@ function showQuick(el, q) {
 }
 /* the bubble flies up out of the composer */
 async function sendText(text) {
+  if (C()?.status === 'closed') return;
   const el = TP.cur().el, c = C();
   $('#rmQuick', el).innerHTML = ''; c.quick = null; wake(el);
   const inp = $('#rmIn', el);
@@ -3868,6 +3954,7 @@ TP.sim.closeCase = (by = 'ph', at) => {
   c.outcome=by==='me'?'customer-ended':by==='auto'||c.endWhy==='noreply'?'no-response':'completed';
   if(TP.chatConsult(c)&&by==='ph'&&!c.pharmacistAdvice)c.pharmacistAdvice=(TP.casePlan(c).adv||[]).join('\n');
   c.status = 'closed'; c.quick = null;c.idle=null;TP.S.call=null;
+  if (by === 'ph' && TP.chatConsult(c) && TP.cur()?.id === 'room' && c.order?.items?.length && TP.orderPayable(c.order)) c.checkoutHandoffUntil = Date.now() + 30000;
   c.msgs.filter(m=>m.kind==='video-request'&&['pending','accepted'].includes(m.status)).forEach(m=>m.status='ended');
   if(c.order?.status==='pending')TP.orderDeadline(c.order);
   TP.S._disSeen = true;
@@ -3878,6 +3965,7 @@ TP.sim.closeCase = (by = 'ph', at) => {
   TP.S.inbox.unshift({ id: 'n' + Date.now(), kind: 'summary', title: 'ใบสรุปการปรึกษาพร้อมแล้ว', body: 'แตะเพื่อเปิดดู', time: TP.NOW.date + ' 14:41', read: false, go: 'summary' });
   if(c.order?.status==='pending')TP.S.inbox.unshift({id:'order-pending-'+c.order.no,kind:'order',title:'มีรายการยารอชำระ',body:'การปรึกษาจบแล้ว เปิดแอปเพื่อดูรายการและเวลาชำระ',time:TP.NOW.date+' '+now(),read:false,go:'summary',p:{id:c.id}});
   TP.emit('state');
+  if(TP.checkoutHandoffRemaining(c)){TP.refresh({anim:false});return;}
   if(TP.chatConsult(c)&&['room','queue'].includes(TP.cur()?.id)){TP.finishChatNavigation(c);return;}
   if (TP.cur()?.id === 'room') TP.refresh();
   else {
@@ -3904,20 +3992,35 @@ TP.act('idleStay', () => {
   push(el, { who: 'me', text: 'ยังคุยอยู่', time: now() });
   setTimeout(async () => { if (TP.cur()?.el !== el) return; await typing(el, 900); if (TP.cur()?.el === el) push(el, { who: 'ph', text: c.quick ? 'ขอบคุณค่ะ เลือกคำตอบหรือพิมพ์บอกได้เลยนะคะ ไม่ต้องรีบค่ะ' : 'ขอบคุณค่ะ มีอะไรเพิ่มเติมพิมพ์บอกได้เลยนะคะ', time: now() }); }, 300);
 });
-/* customer ends the consult (old FL C12): menu in the room header, then a confirm sheet */
-TP.sheetDef('roommenu', {
-  group: 'during', title: 'ตัวเลือกในห้องปรึกษา', code: 'C304', ref: 'C09', host: 'room',
-  render: () => { const c = C(), b = TP.branch(c?.branch); return ui.group([
-    ui.row({ icon: 'phone', title: 'โทรหา' + b.name, sub: b.phone, a: 'callHelp', p: { tel: b.phone } }),
-    ui.row({ icon: 'badge-check', title: 'ตรวจใบอนุญาตเภสัชกร', sub: P().lic, a: 'verifyLic', p: { lic: P().lic } }),
-    ...(!TP.chatConsult(c) && TP.orderPayable(c?.order) ? [
-      ui.row({ icon: 'credit-card', title: 'ดูและชำระเงิน', a: 'openOrderPayment', p: { caseId: c.id } })
-    ] : []),
-    ui.row({ icon: 'log-out', iconCls: 'danger', title: 'จบการปรึกษา', sub: 'เคสจะปิด และได้ใบสรุปทันที', a: 'askEnd' })
-  ]); }
+TP.sheetDef('medicinebasket', {
+  group: 'during', title: 'ตะกร้ายา', code: 'C303.3', host: 'room', tall: true,
+  states: [['normal', 'รายการยาจากเภสัชกร'], ['empty', 'ยังไม่มีรายการยา · กรณีสำรอง']],
+  notes: ['ซ่อนแถบตะกร้าเมื่อยังไม่เพิ่มยาหรือลบยาทั้งหมด ไม่เปิดตะกร้าว่างในโฟลว์ปกติ หน้าว่างเป็นกรณีสำรองสำหรับ preview เท่านั้น', 'เปิดจากแถบตะกร้ายาเหนือช่องพิมพ์ใน C303 หลังเภสัชกรเพิ่มยา ใช้ order.items เดียวกับการ์ดแชทและใบเสร็จ', 'แสดงรูป ชื่อ จำนวน วิธีใช้ ราคา และยอดรวม อ่านอย่างเดียว ไม่มีปุ่มชำระเงินหรือแก้จำนวน ผู้ใช้แจ้งเภสัชกรในแชทหากต้องการแก้รายการ', 'ปิดด้วยปุ่มปิด กากบาท พื้นหลัง หรือ Escape แล้วกลับห้องเดิมพร้อมข้อความร่าง'],
+  prep(S) { S.st.room = S.st.medicinebasket === 'empty' ? 'live' : 'order'; TP.SCREENS.room.prep(S); },
+  render() {
+    const o = C()?.order;
+    if (!o?.items?.length || o.status === 'cancelled') return `<div class="rm-basket-empty"><img class="rm-basket-empty-illustration" src="/assets/illustrations/medicine-basket-empty-v1.png" alt=""><h3 class="h3">ยังไม่มีรายการยา</h3><p class="small">รายการยาจะแสดงเมื่อเภสัชกรเพิ่มยาให้คุณ</p></div>`;
+    return `<section class="rm-basket-content"><header class="rm-basket-intro"><div><span class="rm-basket-eyebrow">ตะกร้ายาของคุณ</span><b>รายการยาที่เภสัชกรเพิ่มให้</b><p class="small">${o.items.length} รายการ</p></div></header><div class="rm-basket-items">${TP.orderMedicineList(o)}</div><div class="rm-basket-total"><span>รวมค่ายา</span><b class="num">${TP.money(o.total)}</b></div><div class="note warn">${ic('info',18,1.8)}<span>โปรดแจ้งเภสัชกร หากต้องการแก้ไขรายการยา</span></div></section>`;
+  },
+  foot: () => ui.btn('ปิด', { closeSheet: true })
 });
+
+TP.sheetDef('chatprovider', {
+  group: 'during', title: 'ข้อมูลเภสัชกร', code: 'C303.4', host: 'room', cls: 'rm-provider-popup',
+  states: [['normal', 'ข้อมูลเภสัชกรผู้ให้คำปรึกษา']],
+  notes: ['แตะรูปหรือชื่อเภสัชกรในหัวห้องแชท เปิดป๊อปอัปกลางจอพร้อมพื้นหลังมืด', 'รูป ชื่อ เลขใบอนุญาต และสาขาอ้างอิงเภสัชกรและสาขาในเคสเดียวกัน ไม่สร้างเลขใบอนุญาตร้านหรือคุณวุฒิเพิ่มเอง', 'ปิดแล้วกลับห้องเดิม ข้อความร่างและการสนทนายังคงอยู่'],
+  prep(S) { S.st.room = 'live'; TP.SCREENS.room.prep(S); },
+  render() {
+    const c = C(), p = P(), b = TP.branch(c?.branch);
+    const img = p.id === 'tp' ? TP.demoProfiles.pharmacist_m : '/assets/profiles/pharmacist-chat-v2.png';
+    return `<article class="rm-provider-profile"><img class="rm-provider-portrait" src="${esc(img)}" alt="${esc(p.name)}"><h3 class="h3">${esc(p.name)}</h3><dl><div><dt>ตำแหน่ง</dt><dd>เภสัชกร</dd></div><div><dt>เลขใบอนุญาต</dt><dd>${esc(p.lic)}</dd></div><div><dt>สาขา</dt><dd>${esc(b.name)}</dd></div>${b.lic ? `<div><dt>ใบอนุญาตร้านยา</dt><dd>${esc(b.lic)}</dd></div>` : ''}</dl></article>`;
+  },
+  foot: () => ui.btn('ปิด', { closeSheet: true })
+});
+
+/* End consultation directly from the header, then confirm. */
 TP.sheetDef('endcase', {
-  group: 'during', title: 'จบการปรึกษานี้ไหม', code: 'C305', ref: 'C09', host: 'room',
+  group: 'during', title: 'ผู้ใช้กดจบสนทนา', code: 'C305', ref: 'C09', host: 'room',
   render: () => { const o = C()?.order; return `<p class="body">${o?.status === 'pending' ? 'รายการยายังชำระได้ภายในเวลาที่กำหนด แม้จบการสนทนาแล้ว ' : ''}เคสนี้จะปิด และคุณจะได้ใบสรุปจากเภสัชกร ถ้ายังมีอาการ ปรึกษาใหม่ได้ทุกเมื่อ</p>`; },
   foot: () => ui.btn('จบการปรึกษา', { kind: 'danger', a: 'endCase' }) + ui.btn('คุยต่อ', { kind: 'ghost', closeSheet: true })
 });
@@ -3979,6 +4082,17 @@ TP.sim.order = () => {
 };
 TP.simAction({ id: 'msg', label: 'ส่งข้อความ', when: S => ['matched', 'room'].includes(S.case?.status), run: () => TP.sim.msg() });
 TP.simAction({ id: 'order', label: 'ส่งรายการยา', when: S => ['matched', 'room'].includes(S.case?.status) && !S.case.order, run: () => TP.sim.order() });
+TP.simAction({
+  id: 'removeOrder', label: 'ลบยาทั้งหมดออกจากตะกร้า',
+  when: S => ['matched', 'room'].includes(S.case?.status) && S.case.order?.status === 'pending' && !!S.case.order.items?.length,
+  run() {
+    const c = TP.S.case;
+    c.order = null;
+    c.msgs = c.msgs.filter(message => message.kind !== 'order');
+    TP.emit('state');
+    if (TP.cur()?.id === 'room') TP.refresh({ anim: false });
+  }
+});
 TP.simAction({ id: 'idle', label: 'ลูกค้าเงียบ 3 นาที (ข้อ 63)', when: S => ['matched', 'room'].includes(S.case?.status) && !S.case.idle && !S.case.hold && !S.call, run: () => TP.sim.idleWarn() });
 TP.simAction({ id: 'idleEnd', label: 'เงียบครบ 5 นาที ระบบปิดเคส', when: S => !!S.case?.idle && S.case.status !== 'closed', run: () => TP.sim.idleClose() });
 TP.simAction({ id: 'close', label: 'ปิดเคส + ใบสรุป', when: S => ['matched', 'room'].includes(S.case?.status), run: () => TP.sim.closeCase() });
@@ -3995,18 +4109,20 @@ TP.simAction({ id: 'camDeny', label: 'ลูกค้าไม่อนุญา
 const fmt = s => String(Math.floor(s / 60)).padStart(2, '0') + ':' + String(s % 60).padStart(2, '0');
 TP.act('pcamWait', () => { TP.notify('แจ้งเภสัชกรแล้ว รอสักครู่', { icon: 'video' }); setTimeout(() => { if (TP.cur()?.id === 'video') { TP.S.st.video = 'on'; TP.refresh({ anim: false }); TP.S.st.video = undefined; } }, 2200); });
 TP.screen('video', {
+  previewDefaultState: 'waiting-provider',
   group: 'during', title: 'วิดีโอคอล', code: 'C306', ref: 'C10', cls: 'dark vd-scr', sb: 'light', parent: 'room',
-  states: [['on', 'คุยอยู่'], ['connecting', 'กำลังเชื่อมต่อ'], ['camoff', 'ปิดกล้องตัวเอง'], ['weak', 'สัญญาณอ่อน'], ['pcam', 'กล้องเภสัชกรใช้ไม่ได้']],
-  notes: ['ปุ่มไทย 3 ปุ่มตำแหน่งเดิม: ไมค์ · กล้อง · วางสาย · สลับกล้องอยู่ที่ภาพตัวเอง', 'แอปขอสิทธิ์กล้องเอง ไม่ต้องพาออกเบราว์เซอร์', 'ปุ่ม "แชท" = สายยังไม่วาง มีแถบกลับเข้าสาย (A15)', 'วางสายต้องถามยืนยันก่อน (A15) · ไม่มีการบันทึกวิดีโอ (A4)', 'ลากภาพตัวเองไปมุมไหนก็ได้', 'A3 (20/10): ตอนกำลังเชื่อมต่อ (C306.2) บัตรเภสัชกรขึ้นกลางจอ รูปจากกล้องร้านตอนเข้ากะ ชื่อ เลขใบอนุญาต และใบอนุญาตร้านของสาขา'],
-  prep(S) { TP.ensureCase('room'); S.call = null; },
+  states: [['on', 'คุยอยู่'], ['connecting', 'กำลังเชื่อมต่อ'], ['camoff', 'ปิดกล้องตัวเอง'], ['weak', 'สัญญาณอ่อน'], ['pcam', 'กล้องเภสัชกรใช้ไม่ได้'], ['waiting-provider', 'รอเภสัชกรเข้าห้องวิดีโอ']],
+  notes: ['ปุ่มไปจอ C306 เปิดหน้ารอเภสัชกรพร้อมคลื่นน้ำเสมอ เลือกคุยอยู่แยกได้จาก C306.1 โดยคงรหัสสถานะเดิม', 'หน้ารอสายแสดงรูปเภสัชกร วงแสงเคลื่อนไหว สาขา และสถานะกำลังโทร โดยไม่มีการ์ดยืนยันตัวตนกลางจอ', 'กดวิดีโอในหัวแชทเข้าห้องรอทันที ไม่ต้องรอคำขอจากเภสัชกร เริ่มจับเวลาเมื่อเภสัชกรเข้าร่วม ย่อไปแชทแล้วกลับมารอได้', 'ปุ่มไทย 3 ปุ่มตำแหน่งเดิม: ไมค์ · กล้อง · วางสาย · สลับกล้องอยู่ที่ภาพตัวเอง', 'แอปขอสิทธิ์กล้องเอง ไม่ต้องพาออกเบราว์เซอร์', 'ปุ่ม "แชท" = สายยังไม่วาง มีแถบกลับเข้าสาย (A15)', 'วางสายต้องถามยืนยันก่อน (A15) · ไม่มีการบันทึกวิดีโอ (A4)', 'ลากภาพตัวเองไปมุมไหนก็ได้', 'ไม่แสดงการ์ดข้อมูลเภสัชกรกลางวิดีโอ ดูข้อมูลผู้ให้บริการได้จากป๊อปอัปในหัวแชท C303.4'],
+  prep(S) { TP.ensureCase('room'); S.call = S.st.video === 'waiting-provider' ? { t0: null, mic: true, cam: true, waitingProvider: true } : null; },
   render(ctx) {
-    const c = TP.ensureCase(null), p = P(), st = ctx.state, call = TP.S.call || (TP.S.call = { t0: Date.now(), mic: true, cam: st !== 'camoff' });
+    const c = TP.ensureCase(null), p = P(), st = TP.S.call?.waitingProvider ? 'waiting-provider' : ctx.state, call = TP.S.call || (TP.S.call = { t0: Date.now(), mic: true, cam: st !== 'camoff' });
     if (st === 'camoff') call.cam = false;
-    return `<div class="vd-remote${st === 'connecting' ? ' conn' : ''}" aria-label="ภาพจาก${esc(p.short)}"><canvas class="field" aria-hidden="true"></canvas><span class="vd-face">${esc(p.ini)}</span></div>
+    const dialing = call.waitingProvider || st === 'connecting';
+    const portrait = p.id === 'tp' ? TP.demoProfiles.pharmacist_m : '/assets/profiles/pharmacist-chat-v2.png';
+    return `<div class="vd-remote${dialing ? ' vd-dialing' : ''}" aria-label="${dialing ? 'กำลังโทรหา' : 'ภาพตัวอย่างจาก'}${esc(p.short)}"><canvas class="field" aria-hidden="true"></canvas><div class="vd-call-cover"><div class="vd-call-avatar">${dialing ? '<span class="vd-ripples" aria-hidden="true"><i></i><i></i><i></i><i></i></span>' : ''}<img src="${esc(portrait)}" alt="${esc(p.short)}"><span class="vd-call-mark" aria-hidden="true">${ic('video',20,1.8)}</span></div><h2>${esc(p.short)}</h2><p>${esc(TP.branch(c.branch).name)}</p>${dialing ? `<div class="vd-dial-status" role="status"><span aria-hidden="true"></span>${call.waitingProvider ? 'กำลังโทรหาเภสัชกร' : 'กำลังเชื่อมต่อ'}</div><small>รอเภสัชกรรับสายสักครู่</small>` : '<small>ภาพตัวอย่างสำหรับต้นแบบ</small>'}</div></div>
       <div class="vd-top"><button type="button" class="vd-chat" data-a="toChat">${ic('message-circle', 18, 2)}<span>ย่อไปแชท</span></button>
         <div class="vd-meta"><b>${esc(p.short)}</b><span>${esc(p.lic)}</span></div>
-        <span class="vd-t" id="vdT">${st === 'connecting' ? 'กำลังเชื่อมต่อ' : '00:00'}</span></div>
-      ${st === 'connecting' ? `<div class="vd-pass">${TP.passHtml(p, TP.branch(c.branch), { label: 'กำลังต่อสายกับ' })}</div>` : ''}
+        <span class="vd-t" id="vdT">${call.waitingProvider ? 'รอเภสัชกร' : st === 'connecting' ? 'กำลังเชื่อมต่อ' : '00:00'}</span></div>
       ${st === 'weak' ? `<div class="vd-weak" role="status">${ic('wifi-off', 16, 2)}<span>สัญญาณอ่อน ภาพอาจกระตุก</span><button type="button" class="vd-weak-c" data-a="callHelp" data-p='{"tel":"${TP.branch(C().branch).phone}"}'>โทรหาร้าน</button></div>` : ''}
       ${st === 'pcam' ? `<div class="vd-pcam" role="alert">${ic('video-off', 28, 1.6)}<b>กล้องของเภสัชกรใช้ไม่ได้ตอนนี้</b><p>คุณควรเห็นหน้าเภสัชกรเพื่อยืนยันว่าเป็นตัวจริง ระหว่างนี้ยังไม่ต้องตัดสินใจเรื่องยา</p><div class="gap8">${ui.btn('รอเภสัชกรเปิดกล้อง', { kind: 'white', sm: true, a: 'pcamWait' })}${ui.btn('คุยทางแชทแทน', { kind: 'glass', sm: true, a: 'toChat' })}${ui.btn('โทรหาร้าน', { kind: 'glass', sm: true, icon: 'phone', a: 'callHelp', p: { tel: TP.branch(c.branch).phone } })}</div></div>` : ''}
       <div class="vd-self${call.cam ? '' : ' off'}" id="vdSelf" tabindex="0" aria-label="ภาพของคุณ ลากเพื่อย้าย">${call.cam ? '<span>คุณ</span>' : ic('video-off', 24, 1.8)}<button type="button" class="vd-flip" data-a="flipCam" aria-label="สลับกล้องหน้าหลัง">${ic('switch-camera', 16, 2)}</button></div>
@@ -4022,7 +4138,7 @@ TP.screen('video', {
     ctx.onLeave(f.stop);
     const t = $('#vdT', el);
     if (st === 'connecting') ctx.later(() => { TP.S.st.video = 'on'; TP.refresh(); TP.S.st.video = undefined; }, 2600);
-    else { const tick = () => { if (TP.S.call) t.textContent = fmt(Math.floor((Date.now() - TP.S.call.t0) / 1000)); }; tick(); ctx.every(tick, 1000); }
+    else { const tick = () => { if (TP.S.call && !TP.S.call.waitingProvider) t.textContent = fmt(Math.floor((Date.now() - TP.S.call.t0) / 1000)); }; tick(); ctx.every(tick, 1000); }
     /* drag self view, snap to the nearest corner on a spring */
     const s = $('#vdSelf', el); let sx = 0, sy = 0, ox = 0, oy = 0, drag = false;
     s.addEventListener('pointerdown', e => { if (e.target.closest('button')) return; drag = true; sx = e.clientX; sy = e.clientY; const r = s.getBoundingClientRect(); ox = r.left; oy = r.top; s.setPointerCapture(e.pointerId); TP.kill(s); });
@@ -4138,7 +4254,7 @@ const EXP_ADDR = { id: 'a4', first: 'สมใจ', last: 'ใจดี', phone:
 TP.EXP_ADDR = EXP_ADDR;
 /* item 71: the pharmacist closes a way per list with a reason the customer sees · A7: a cold-chain list offers pickup + cold only */
 const hasCold = o => (o?.items || []).some(i => i.cold);
-const recvKeys = () => {const o=C().order,off=o?.recvOff||{};return ['pickup','express'].filter(k=>!off[k]&&(k==='pickup'||!hasCold(o)));};
+const recvKeys = () => {const o=C().order,off=o?.recvOff||{};return ['pickup','express','parcel'].filter(k=>!off[k]&&(k==='pickup'||!hasCold(o)));};
 const RECV_NAME = { pickup: 'รับที่ร้าน', express: 'ส่งด่วน', cold: 'ส่งแบบควบคุมความเย็น' };
 const addrs = () => TP.S.addrs || (TP.S.addrs = []);
 /* same order as CustomerAddress::getFormattedAddressAttribute (ต./อ./จ. even in Bangkok, like the website) */
@@ -4211,7 +4327,7 @@ function requote() {
 const ensureOrder = () => { if(!C())TP.ensureCase('room');if(!C().order&&C().status!=='closed')TP.makeOrder();TP.expireOrder(C());return TP.orderPayable(C().order); };
 
 /* ---------- blocks (PL order: 1 รายการยา · 2 การรับสินค้า + ที่อยู่ + ปักหมุด + สรุปยอด · 3 วิธีชำระเงิน) ---------- */
-const sec = (n, t) => `<h3 class="pay-sec">${n===4?ic('receipt',21,1.8):''}${esc(t)}</h3>`;
+const sec = (n, t) => `<h3 class="pay-sec">${esc(t)}</h3>`;
 const medHtml = i => `<div class="pay-med"><div class="pm-h">${TP.medicineImage(i)}<p class="pm-t"><b>${esc(i.name)}</b> <small>×${esc(i.qty)}</small>${i.cold ? `<span class="pm-cold">${ic('snowflake', 13, 2)}ยาเก็บเย็น</span>` : ''}</p><b class="num pm-p">${TP.money(i.price)}</b></div>${i.how ? `<p class="pm-n"><b>โน้ตจากเภสัช</b> ${esc(i.how)}</p>` : ''}</div>`;
 /* radio card with a fee on the right (PL .opt: radio · icon · title + line · fee) */
 const optCard = o => `<button type="button" class="opt po" role="radio" data-radio="${o.group}" data-v="${o.v}" data-a="${o.a}" aria-checked="${!!o.on}"${o.off ? ' disabled' : ''}>${ui.radioMark}${o.icon ? `<span class="po-i">${ic(o.icon, 20, 1.9)}</span>` : ''}<span class="tx"><b>${esc(o.title)}</b><span>${o.sub}</span></span>${o.fee ? `<span class="po-f ${o.tone || ''}">${o.fee}</span>` : ''}</button>`;
@@ -4329,11 +4445,11 @@ TP.taxChoose = (kind,key,S=TP.S) => {const r=TP.taxRecords(kind,S).find(r=>r.pro
 TP.taxRecipientPicker = (kind,action) => {const rows=TP.taxRecords(kind),selected=TP.taxSelected(kind);return rows.length>1?`<div class="tax-recipient-picker" role="group" aria-label="เลือกผู้รับใบกำกับภาษี">${rows.map(r=>`<button type="button" class="rc-tax-type-option${r.profileKey===selected?.profileKey?' selected':''}" data-a="${action}" data-key="${esc(r.profileKey)}" data-v="${kind}" aria-pressed="${r.profileKey===selected?.profileKey}">${esc(r.name)} · ${esc(String(r.id).slice(-4))}</button>`).join('')}</div>`:'';};
 const maskCheckoutTax = v => 'xxxxxxxxx' + String(v).slice(-4);
 function payTaxHtml() {
-  const p=P(), who=p.taxWho||'me', record=TP.taxSelected(who);
-  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${TP.taxRecipientPicker(who,'payTaxSelectProfile')}${record?`<section class="pay-tax-recipient" aria-label="ข้อมูลผู้รับใบกำกับภาษี"><header class="pay-tax-recipient-head"><h4>ข้อมูลผู้รับใบกำกับภาษี</h4><button type="button" class="pay-tax-edit" data-a="payTaxEditProfile">แก้ไขข้อมูล</button></header><dl>${[[who==='co'?'ชื่อนิติบุคคล':'ชื่อผู้รับ',record.name||[record.first,record.last].filter(Boolean).join(' ')],...(who==='co'?[['ชื่อธุรกิจ',record.business]]:[]),[who==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน',record.id?maskCheckoutTax(record.id):null],['เบอร์โทรศัพท์',record.phone],['ที่อยู่',TP.taxAddress(record)]].filter(([,value])=>value).map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${who==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับเพื่อขอใบกำกับภาษี</p>${ui.btn('เพิ่มข้อมูลใบกำกับภาษี',{a:'payTaxAddProfile'})}</div>`}`:''}`;
+  const p=P(), who=p.taxWho||'me', record=p.taxWant?TP.taxSelected(who):null;
+  return `<section class="rc-tax rc-tax-request-card"><header class="rc-tax-request-head rc-tax-choice-head"><button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!p.taxWant}" data-a="payTaxWant" data-v="${p.taxWant?'no':'yes'}" aria-label="ต้องการใบกำกับภาษี"><span class="rc-tax-choice-icon" aria-hidden="true">${ic('file-text',22)}</span><span class="rc-tax-choice-copy"><b>ต้องการใบกำกับภาษี</b></span><span class="rc-tax-choice-check" aria-hidden="true">${p.taxWant?ic('check',16):''}</span></button></header>${record?`<div class="rc-tax-recipient-heading"><b>ข้อมูลผู้รับ</b><button type="button" class="txtbtn" data-a="payTaxPickOpen">${ic('pencil',16)} เปลี่ยนผู้รับ</button></div><div class="rc-tax-selected"><b>ชื่อและที่อยู่ใบกำกับภาษี</b><p>${esc(record.name||[record.first,record.last].filter(Boolean).join(' '))}</p><p>${esc(TP.taxAddress(record))}</p>${who==='co'&&record.business?`<p>ชื่อธุรกิจ : ${esc(record.business)}</p>`:''}<p>โทรศัพท์ : ${esc(record.phone||'—')}</p><p>${who==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(maskCheckoutTax(record.id||''))}</p></div>`:''}</section>`;
 }
 function redrawPayTax(){const el=$('#payTax');if(el){el.innerHTML=payTaxHtml();TP.icons(el)}}
-TP.act('payTaxWant',b=>{P().taxWant=b.dataset.v==='yes';redrawPayTax()});
+TP.act('payTaxWant',b=>{if(b.dataset.v==='no'){P().taxWant=false;redrawPayTax();return;}return TP.ACTS.payTaxPickOpen();});
 TP.act('payTaxSelectProfile',b=>{TP.taxChoose(b.dataset.v,b.dataset.key);redrawPayTax()});
 TP.act('payTaxWho',b=>{P().taxWho=b.dataset.v;redrawPayTax()});
 TP.act('payTaxAddProfile',async()=>{const who=P().taxWho||'me';await TP.closeSheet({instant:true});TP.S.st.taxprofile=who==='co'?'company':undefined;await TP.go('taxprofile');});
@@ -4342,10 +4458,10 @@ TP.act('payTaxAddProfile',async()=>{const who=P().taxWho||'me';await TP.closeShe
 TP.sheetDef('pay', {
   group: 'during', title: 'ชำระเงิน', code: 'C308', ref: 'C11', host: 'room', tall: true, fullPage:true,
   /* C308.1-13 keep the numbers the owner already reviewed; states added 19/10 night go after them (14-17), 20/10 night 18-20 */
-  states: [['normal', 'รับที่ร้าน (ค่าเริ่มต้น)'], ['parcel', 'จัดส่งปกติ', false], ['express', 'ส่งด่วน'], ['noaddr', 'ยังไม่มีที่อยู่'], ['form', 'กำลังเพิ่มที่อยู่'], ['closed', 'ร้านปิด'], ['card', 'จ่ายด้วยบัตร'], ['otp', 'บัตร: หน้ายืนยันของธนาคาร'], ['qr', 'หน้า QR พร้อมเพย์'], ['qrexp', 'QR หมดอายุ'], ['bankon', 'พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['bankapp', 'QR พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['checking', 'กำลังตรวจสอบการชำระ'],
+  states: [['normal', 'รับที่ร้าน (ค่าเริ่มต้น)'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['noaddr', 'ยังไม่มีที่อยู่'], ['form', 'กำลังเพิ่มที่อยู่'], ['closed', 'ร้านปิด'], ['card', 'จ่ายด้วยบัตร'], ['otp', 'บัตร: หน้ายืนยันของธนาคาร'], ['qr', 'หน้า QR พร้อมเพย์'], ['qrexp', 'QR หมดอายุ'], ['bankon', 'พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['bankapp', 'QR พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['checking', 'กำลังตรวจสอบการชำระ'],
     ['expmap', '', false], ['exppin', '', false], ['locdeny', '', false], ['far', 'กรุงเทพแต่เกิน 15 กม.'],
     ['outzone', 'ที่อยู่นอกเขตส่งยา'], ['recvoff', 'เภสัชกรปิดบางทาง'], ['cold', 'มียาเก็บเย็น'], ['unlock', 'ส่งด่วนเกินระยะ รับที่ร้านแทน'], ['map-ready', '', false], ['map-outside', '', false], ['map-error', '', false],['map-saved', '', false], ['coupon-valid','โค้ดส่วนลดใช้ได้'], ['coupon-invalid','โค้ดส่วนลดไม่ถูกต้อง'], ['coupon-expired','โค้ดส่วนลดหมดอายุ'], ['order-expired','หมดเวลาชำระค่ายา']],
-  notes:['เลือกได้ระหว่างรับที่ร้าน ส่งด่วน และจัดส่งปกติ โดยจัดส่งปกติร้านจัดขนส่งให้ ได้รับสินค้าภายใน 1-3 วันทำการ','ลำดับ: ตรวจรายการยา เลือกวิธีรับยาและที่อยู่ เลือกวิธีชำระ ตรวจยอดรวมก่อนยืนยัน','การจัดส่งต้องมีที่อยู่ในเขตบริการและทราบค่าส่งก่อนชำระ ส่งด่วนต้องอยู่ในระยะส่งด่วน ยาเก็บเย็นรับที่ร้านเท่านั้น','โหมดสนทนาเริ่มเวลาชำระ 15 นาทีเมื่อเปิดหน้าชำระครั้งแรก ไม่เริ่มใหม่เมื่อเปิดซ้ำหรือเปลี่ยนวิธีรับ','ต้นแบบจำลองราคาและการจ่ายเงินจริงยังไม่เชื่อม gateway'],
+  notes:['วิธีรับยาเรียงแนวตั้งแบบ radio 3 แถว แสดงเวลาและค่าส่ง ไม่มีเส้นคั่นท้ายส่วนรับยาและใบกำกับภาษี','ใบกำกับภาษีใช้การ์ดเลือกผู้รับรูปแบบเดียวกับใบเสร็จ เปิดรายชื่อที่บันทึกไว้ก่อนเลือก ไม่มีแท็บซ้อนในหน้าชำระ และไม่แสดงลิงก์ยกเลิกรายการหรือนโยบายท้ายฟอร์ม','เลือกได้ระหว่างรับที่ร้าน ส่งด่วน และจัดส่งปกติ โดยจัดส่งปกติร้านจัดขนส่งให้ ได้รับสินค้าภายใน 1-3 วันทำการ','ลำดับ: ตรวจรายการยา เลือกวิธีรับยาและที่อยู่ เลือกวิธีชำระ ตรวจยอดรวมก่อนยืนยัน','การจัดส่งต้องมีที่อยู่ในเขตบริการและทราบค่าส่งก่อนชำระ ส่งด่วนต้องอยู่ในระยะส่งด่วน ยาเก็บเย็นรับที่ร้านเท่านั้น','โหมดสนทนาเริ่มเวลาชำระ 15 นาทีเมื่อเปิดหน้าชำระครั้งแรก ไม่เริ่มใหม่เมื่อเปิดซ้ำหรือเปลี่ยนวิธีรับ','ต้นแบบจำลองราคาและการจ่ายเงินจริงยังไม่เชื่อม gateway'],
   prep(S) {
     ensureOrder(); const st = S.st.pay || 'normal';
     S.payFailNext = false; S.locFailNext = false; S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen');
@@ -4373,26 +4489,29 @@ TP.sheetDef('pay', {
   render(ctx) {
     if(!ensureOrder())return ui.note(C()?.order?.status==='expired'?'รายการนี้หมดเวลาชำระแล้ว':'รายการนี้ชำระไม่ได้แล้ว',{icon:'clock'});
     const o = C().order, p = P(), b = TP.branch(C().branch);
+    const summary = TP.consultationSummary?.({ id: C().id, _case: C() });
+    const advice = C().pharmacistAdvice || summary?.advice;
+    const adviceText = Array.isArray(advice) ? advice.join("\n") : (advice || "");
     TP.startOrderPayment(o);
     requote();
     return `<div class="payw"><p class="pay-store" data-in="1">${ic('store', 18, 2)}<b>${esc(b.name)}</b></p>
       <p class="pay-exp">${ic('clock', 13, 2)}<span>${expLine(o)}</span></p>
       <section class="checkout-block checkout-order-section"><div class="msg-order checkout-order-card">${TP.orderMedicineDetails(o)}</div>
+      ${adviceText ? `<section class="card af-visit-section checkout-advice"><h3>${ic('file-text',20,1.8)} คำแนะนำจากเภสัชกร</h3><p class="af-advice-text">${esc(adviceText)}</p></section>` : ''}
       <div id="payCouponBox">${couponHtml()}</div>
-      </section><section class="checkout-block">${sec(2, 'เลือกวิธีรับยา')}
+      </section><section class="checkout-block checkout-delivery">${sec(2, 'เลือกวิธีรับยา')}
       <div class="opts" data-radio-scope role="radiogroup" aria-label="เลือกวิธีรับยา" id="payRecv">${recvOpts()}</div>
       <div id="payWhy">${whyHtml()}</div>
       <div id="payRecvX">${recvExtra()}</div>
       <div id="payAddrSec"${p.recv === 'pickup' ? ' hidden' : ''}>
-        <div class="pay-adc"><p class="pay-lb">ที่อยู่จัดส่ง</p><div id="payCards">${cardsHtml()}</div>
-          </div>
+        <section class="card af-visit-section checkout-address"><h3>${ic('map-pin',20,1.8)} ที่อยู่จัดส่ง</h3><div id="payCards">${cardsHtml()}</div></section>
         <div id="payForm"></div>
         <div id="payGeo">${geoHtml()}</div></div>
-      </section><section class="checkout-block">${sec(3, 'ใบกำกับภาษีเต็มรูป')}<div id="payTax">${payTaxHtml()}</div></section><section class="checkout-block">${sec(4, 'เลือกวิธีชำระเงิน')}
+      </section><section class="checkout-block checkout-tax"><div id="payTax">${payTaxHtml()}</div></section><section class="checkout-block">${sec(4, 'เลือกวิธีชำระเงิน')}
       <div class="opts" data-radio-scope role="radiogroup" aria-label="วิธีชำระเงิน" id="payMeth">${methodOpts()}</div>
       <div id="payExtra">${p.method === 'bank' ? bankRow() : ''}</div>
       </section><section class="checkout-block checkout-review">${sec(5, 'สรุปยอดชำระ')}<div class="pay-sum" id="paySum">${sumHtml(totals())}</div></section>
-      <div class="pay-cx"><button type="button" class="link" data-a="payCancel">ยกเลิกรายการยานี้</button></div><p class="checkout-privacy"><button type="button" class="link" data-a="payPdpa">นโยบายความเป็นส่วนตัว</button></p></div>`;
+      </div>`;
   },
   foot: () => !TP.orderPayable(C()?.order)?ui.btn('ปิด',{kind:'secondary',closeSheet:true}):`<button type="button" class="btn primary pay-go" data-a="payGo" id="payGo"><span id="payLbl"></span></button>`,
   mount(el) {
@@ -4689,16 +4808,20 @@ const qrSvg = () => { let seed = qrSeed, cells = ''; const rnd = () => (seed = (
   return cells; };
 function qrStep() {
   const t = totals(), b = TP.branch(C().branch);
-  return `<div class="qr-box"><p class="qr-mer"><span class="qr-av">${ic('store', 16, 2)}</span>${esc(b.name)}</p>
-    <p class="small qr-via">${ic(VIA_IC[P().recv], 14, 2)} ${esc(viaText())}</p><p class="small">ยอดที่ต้องชำระ</p><p class="qr-amt num">${TP.money(t.total)}</p>
-    <details class="qr-why"><summary>ยอดนี้มาจากไหน</summary>${ui.kv([['ยอดค่ายา', TP.money(t.items)], ...(t.discount?[['ส่วนลด ('+t.coupon+')','−'+TP.money(t.discount)]]:[]), ['ค่าจัดส่ง', t.ship ? TP.money(t.ship) : 'ไม่มีค่าจัดส่ง'], ...(t.fee ? [['ค่าธรรมเนียมบัตร (3.65%)', TP.money(t.fee)]] : [])])}</details>
-    <p class="small">สแกนด้วยแอปธนาคารเพื่อจ่าย</p>
-    <div class="qr-code" id="qrCode"><svg viewBox="-1 -1 27 27" aria-label="QR พร้อมเพย์ สำหรับชำระ ${TP.money(t.total)}" role="img">${qrSvg()}</svg><p class="qr-dead" role="status">QR หมดอายุแล้ว กรุณาขอ QR ใหม่เพื่อสแกนอีกครั้ง</p></div>
-    <p class="qr-cd">หมดอายุใน <b class="num" id="qrCd">10:00</b></p>
-    ${ui.btn('บันทึก QR', { kind: 'secondary', sm: true, auto: true, icon: 'download', a: 'qrSave', id: 'qrSaveBtn' })}
-    <p class="small">อยู่บนมือถือเครื่องเดียว? กด "บันทึก QR" แล้วเปิดแอปธนาคาร เลือกสแกนจากรูปในเครื่อง</p></div>
-    <div class="qr-wait" role="status"><i class="spin" aria-hidden="true"></i><b>รอชำระเงิน...</b></div><p class="small qr-c">ยืนยันอัตโนมัติเมื่อได้รับเงิน</p>
-    <p class="small qr-c" id="qrSlow" hidden>จ่ายแล้วแต่หน้ายังไม่เปลี่ยน? บอกเภสัชกรในห้องปรึกษา</p>`;
+  return `<section class="card qr-box" aria-label="ชำระเงินด้วยพร้อมเพย์">
+    <header class="qr-bill-head"><span class="qr-av">${ic('store',20,1.8)}</span><div><h3>${esc(b.name)}</h3><p>${esc(viaText())}</p></div>${ui.tag('รอชำระ','warn')}</header>
+    <div class="qr-bill-summary"><p class="small">ยอดที่ต้องชำระ</p><p class="qr-amt num">${TP.money(t.total)}</p><p class="qr-order-number">เลขคำสั่งซื้อ ${esc(C().order.no || '—')}</p>
+      <div class="qr-breakdown">${ui.kv([['ยอดค่ายา', TP.money(t.items)], ...(t.discount?[['ส่วนลด ('+t.coupon+')','−'+TP.money(t.discount)]]:[]), ['ค่าจัดส่ง', t.ship ? TP.money(t.ship) : 'ไม่มีค่าจัดส่ง'], ...(t.fee ? [['ค่าธรรมเนียมบัตร (3.65%)', TP.money(t.fee)]] : [])])}</div>
+    </div>
+    <div class="qr-scan-body"><h4>สแกนจ่ายด้วยแอปธนาคาร</h4><p class="small">พร้อมเพย์</p>
+      <div class="qr-code" id="qrCode"><svg viewBox="-1 -1 27 27" aria-label="QR พร้อมเพย์ สำหรับชำระ ${TP.money(t.total)}" role="img">${qrSvg()}</svg><p class="qr-dead" role="status">QR หมดอายุแล้ว กรุณาขอ QR ใหม่เพื่อสแกนอีกครั้ง</p></div>
+      <p class="qr-cd">${ic('clock',16,1.8)} QR หมดอายุใน <b class="num" id="qrCd">10:00</b></p>
+      ${ui.btn('บันทึก QR', { kind: 'secondary', sm: true, icon: 'download', a: 'qrSave', id: 'qrSaveBtn' })}
+    </div>
+    <footer class="qr-bill-foot"><h4>ชำระบนมือถือเครื่องเดียวกัน</h4><ol><li>บันทึก QR แล้วเปิดแอปธนาคาร</li><li>เลือกสแกนจากรูป และตรวจสอบผู้รับกับยอดเงินก่อนยืนยัน</li></ol></footer>
+    </section>
+    <div class="qr-payment-status"><div class="qr-wait" role="status"><i class="spin" aria-hidden="true"></i><b>รอการชำระเงิน</b></div><p class="small qr-c">ระบบจะอัปเดตเมื่อธนาคารยืนยันการชำระเงิน</p></div>
+    <p class="small qr-c" id="qrSlow" hidden>ชำระแล้วแต่สถานะยังไม่เปลี่ยน กรุณาติดต่อร้านเพื่อตรวจสอบ</p>`;
 }
 const qrFoot = dead => (dead ? ui.btn('ขอ QR ใหม่', { a: 'qrNew', icon: 'refresh-cw' }) : '') + ui.btn('เปลี่ยนวิธีชำระเงิน', { kind: dead ? 'ghost' : 'secondary', a: 'qrBack' });
 function showQR(dead) {
@@ -4797,7 +4920,7 @@ async function paid() {
   TP.S.inbox.unshift({ id: 'r' + Date.now(), kind: 'pay', title: 'ชำระค่ายาแล้ว', body: 'ดูใบเสร็จ', time: TP.NOW.date + ' ' + TP.NOW.time, read: false, go: 'receipt', p: { id: c.id } });
   TP.emit('state');
   await TP.closeSheet();
-  TP.go(TP.chatConsult(c)&&c.status==='closed'&&p.recv==='express'?'track':'paid', { via: 'cover',root:TP.chatConsult(c)&&c.status==='closed' });
+  TP.go('paymentsuccess', { via: 'cover', root: true });
 }
 TP.payPaid = paid;
 TP.simAction({ id: 'qrpaid', label: 'จำลองว่าจ่าย QR แล้ว', when: () => TP.sheetOpen()?.id === 'pay' && !!$('.qr-box') && !$('.qr-code.dead'), run: () => paid() });
@@ -4812,21 +4935,24 @@ TP.screen('payfail', {
   notes: ['หัวเรื่อง ป้าย และรายละเอียดคำสั่งซื้อตามหน้าเว็บ payment_failed.blade.php:85-145',
     'เว็บไม่บอกสาเหตุ ทั้งที่ระบบมีข้อความ "ชำระเงินไม่สำเร็จ กรุณาตรวจสอบข้อมูลบัตรหรือติดต่อธนาคารผู้ออกบัตร" (CartController:3365) แอปแสดงข้อความนี้',
     'QR หมดเวลาไม่มาหน้านี้แล้ว อยู่ในหน้า QR เอง มีปุ่ม ขอ QR ใหม่ ตามหน้าจ่ายบิลเภสัชกร',
-    'ยังไม่ถูกตัดเงิน รายการยายังอยู่ในห้องจนหมดเวลา'],
+    'ลองชำระใหม่จากรายการเดิมโดยคง expiresAt เดิม ไม่เพิ่มเวลา และไม่กลับแชท หากหมดเวลาใช้โฟลว์หมดเวลาชำระเดิม'],
   prep() { ensureOrder(); },
   render(ctx) {
     const why = ctx.params?.why || ctx.state, o = C().order, p = P(), d = TP.DELIVERY.find(x => x.id === p.recv), a = addr();
     const msg = why === 'bank' ? 'ยกเลิกการชำระในแอปธนาคาร ยังไม่มีการตัดเงิน ลองอีกครั้ง หรือเลือกพร้อมเพย์' : 'ชำระเงินไม่สำเร็จ กรุณาตรวจสอบข้อมูลบัตรหรือติดต่อธนาคารผู้ออกบัตร หรือเลือกพร้อมเพย์แทน';
     const meth = why === 'bank' ? 'ชำระผ่านแอปธนาคาร' : 'บัตรเครดิต/เดบิต';
-    return ui.nav({ close: true }) + ui.page(`<div class="ec-top" data-in="0"><span class="ec-ic warn">${ic('circle-x', 40, 1.5)}</span><h2 class="h2">การชำระเงินไม่สำเร็จ</h2><p class="body">${esc(msg)}</p>${ui.tag('การชำระเงินล้มเหลว', 'danger', { dot: true })}</div>
-      ${ui.card(`<h3 class="h3">รายละเอียดคำสั่งซื้อ</h3>${ui.kv([['ร้านค้า', esc(TP.branch(C().branch).name)], ['หมายเลขคำสั่งซื้อ', `<span class="num">${esc(o.no)}</span>`], ['วันที่สั่งซื้อ', TP.NOW.date], ['สถานะการชำระเงิน', ui.tag('ไม่สำเร็จ', 'danger')], ['ยอดรวม', TP.money(totals().total)], ['วิธีการชำระเงิน', meth], ['วิธีการจัดส่ง', esc(d ? d.name : RECV_NAME[p.recv])], ...(p.recv !== 'pickup' && a ? [['ที่อยู่จัดส่ง', esc(fmtAddr(a))]] : [])], { cls: 'pay-fk' })}`, { din: 1, cls: 'mt24 gap12' })}
-      ${ui.note(`รายการนี้ยังไม่เสร็จสมบูรณ์ คุณลองชำระเงินได้อีกครั้งทันที · ชำระได้ถึง ${o.expires}`, { icon: 'clock', din: 2 })}<div class="mt24">${ui.callHelp({ din: 3 })}</div>`) +
-      ui.dock(ui.btn('ลองชำระเงินอีกครั้ง', { a: 'payRetry' }) + ui.btn(TP.closedChatRoute?.(C())?'กลับหน้าแรก':'กลับไปที่ห้องปรึกษา', { kind: 'ghost', a: 'backRoom' }));
+    return ui.nav({right: ''}) + ui.page(`<section class="payment-result payment-result-failed">
+      <img class="payment-result-art" src="/assets/illustrations/payment-failed-v1.png" alt="ตะกร้ายาพร้อมสัญลักษณ์แจ้งเตือน">
+      <h1>ชำระเงินไม่สำเร็จ</h1><p class="payment-result-message">${esc(msg)}</p>
+      <p class="payment-result-order">เลขคำสั่งซื้อ <strong class="num">${esc(o.no)}</strong></p>
+      <p class="small">ลองใหม่ได้ภายในเวลาชำระเงินที่เหลือของรายการเดิม</p>
+      <div class="payment-result-actions">${ui.btn('ชำระเงินอีกครั้ง',{a:'payRetry'})}${ui.btn('กลับสู่หน้าหลัก',{kind:'ghost',go:'home'})}</div>
+    </section>`);
   }
 });
 /* the room is usually right under paid / payfail: go back to it, so back from the room then leaves the room (QA E1) */
 const toRoom = () => TP.closedChatRoute?.()?TP.go('home',{root:true}):TP.hist.length && TP.hist[TP.hist.length - 1].id === 'room' ? TP.back() : TP.go('room', { via: 'uncover', replace: true });
-TP.act('payRetry', async () => { TP.S.st.pay = undefined; await toRoom(); TP.sheet('pay'); });
+TP.act('payRetry', async () => { if(!TP.orderPayable(C()?.order)){TP.orderExpiryTick(); return;} TP.S.st.pay = undefined; await TP.go('home',{root:true}); TP.sheet('pay'); });
 TP.act('backRoom', () => toRoom());
 })();
 
@@ -4856,8 +4982,7 @@ function mockPaid(recv, method = 'promptpay', date = TP.NOW.date) {
 const RC = () => TP.S.receipts || (TP.S.receipts = {});
 TP.saveReceipt = c => { if (c?.order?.paid) RC()[c.id] = c.order; };
 /* website order codes: 11 random characters without look-alikes (mock: seeded by the consult id) */
-const codeOf = id => { let h = [...id].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) % 233280, 7); const AB = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  return Array.from({ length: 11 }, () => AB[(h = (h * 9301 + 49297) % 233280) % AB.length]).join(''); };
+const codeOf = id => TP.orderNumber(TP.orderCases(TP.S).find(c=>c.id===id) || (TP.S.history||[]).find(h=>h.id===id) || {id});
 const addMin = (t, m) => { const [h, mm] = String(t || '00:00').split(':').map(Number), x = h * 60 + mm + m; return `${String(Math.floor(x / 60) % 24).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`; };
 /* past consults have no order in the mask: rebuild it from the summary medicines, priced so it adds up to "ซื้อยา ฿x" in history */
 function priced(meds, bought) {
@@ -4916,13 +5041,62 @@ const trackTxt = pd => pd.track ? `เลขพัสดุ ${pd.track}` : pd.tr
 const SHIP_L = pd => pd.recv === 'cold' ? 'ค่าส่งแบบเย็น (กล่องเก็บความเย็น)' : 'ค่าจัดส่ง';
 TP.act('paidClose',()=>{TP.S._paidFromHome=false;return TP.canBack()?TP.back():TP.go('home',{root:true,via:'uncover'});});
 const paidCard = (title,body,footer='') => `<section class="card pad0 pd-section"><h3 class="pd-section-head">${title}</h3><div class="pd-section-body">${body}</div>${footer ? `<div class="pd-section-foot">${footer}</div>` : ''}</section>`;
+const paidStatusCard = (steps, orderNumber, pickup, footer = '', visual = {}) => {
+  const active = Math.max(0, steps.findIndex(([state]) => state === 'cur'));
+  const [, title, detail] = steps[active];
+  const icons = visual.icons || ['receipt', 'pill', pickup ? 'store' : 'motorcycle', 'check'];
+  const artwork = visual.artwork || (active === steps.length - 1 ? 'delivered' : active < 2 ? 'preparing' : pickup ? 'ready' : 'delivery');
+  return `<section class="pd-status-card" aria-label="${esc(title)}"><div class="pd-status-content">
+    <img class="pd-status-art" src="/assets/illustrations/order-status-${artwork}-v1.png" alt="">
+    <h2 class="pd-status-title" role="status">${esc(title)}</h2>
+    <p class="pd-status-order">เลขคำสั่งซื้อ <strong class="num">${esc(orderNumber)}</strong></p>
+    ${detail ? `<p class="pd-status-description">${esc(detail)}</p>` : ''}
+    <ol class="pd-status-steps" style="--status-steps:${steps.length}">${steps.map(([state, label], index) => `
+      <li class="${state}" aria-label="${esc(label)}" ${index === active ? 'aria-current="step"' : ''}>
+        <span class="pd-step-marker" aria-hidden="true">${ic(icons[index], 22, 1.8)}</span>
+      </li>`).join('')}</ol>
+    </div>${footer ? `<footer class="pd-section-foot">${footer}</footer>` : ''}</section>`;
+};
+TP.orderStatusCard = paidStatusCard;
 const totKv = pd => ui.kv([['ยอดค่ายา', TP.money(pd.items)], [SHIP_L(pd), pd.ship ? TP.money(pd.ship) : 'ไม่มีค่าจัดส่ง'], ...(pd.fee ? [['ค่าธรรมเนียมบัตร (3.65%)', TP.money(pd.fee)]] : []), ['ยอดชำระ', TP.money(pd.total), 'tot']]);
 
+/* Shared order information uses the same header/body cards as C309. */
+TP.fulfillmentDetails = c => {
+  const o = c.order, pd = o.paid, a = pd.addr;
+  const address = a ? `<div class="pd-branch"><b>${esc([a.first,a.last].filter(Boolean).join(' ') || TP.S.user.full)}</b><p>${esc(TP.fmtAddr(a))}</p>${a.phone ? `<p>โทร ${esc(a.phone)}</p>` : ''}</div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>';
+  return paidCard('ที่อยู่จัดส่ง', address, pd.recv === 'express' ? ui.btn('ติดตามไรเดอร์', {kind:'secondary', sm:true, icon:'external-link', a:'openRiderTracking'}) : '') +
+    paidCard('ข้อมูลคำสั่งซื้อ', ui.kv([
+      ['เลขคำสั่งซื้อ', `<span class="num">${esc(o.no)}</span>`],
+      ['เวลาชำระ', esc(pd.date + ' ' + pd.at)],
+      ['วิธีชำระ', methName(pd.method)],
+      ['การรับสินค้า', esc(recvName(pd))]
+    ])) +
+    paidCard('รายการยา', TP.orderMedicineList(o) + '<div class="hr"></div>' + totKv(pd)) +
+    (c.pharmacistAdvice ? paidCard('คำแนะนำจากเภสัชกร', `<p>${esc(c.pharmacistAdvice)}</p>`) : '') +
+    `<div class="group ic-rows mt16">${ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบเสร็จรับเงินและใบกำกับภาษี',go:'receipt'})}</div>`;
+};
+
 /* ---------- paid (C12) ---------- */
+TP.screen('paymentsuccess', {
+  group: 'during', title: 'ชำระเงินสำเร็จ', code: 'C311', parent: 'home',
+  states: [['pickup','รับที่ร้าน'],['express','ส่งด่วน'],['parcel','จัดส่งปกติ']],
+  notes: ['แสดงหลังระบบยืนยันชำระสำเร็จ พร้อมเลขคำสั่งซื้อจากรายการจริง', 'ดูสถานะยาเปิด C309 หรือ C414 ตามวิธีรับยา กลับหน้าหลักยังติดตามคำสั่งซื้อเดิมได้'],
+  prep(S) { mockPaid(S.st.paymentsuccess || 'pickup'); },
+  render() {
+    const o = C()?.order;
+    return ui.page(`<section class="payment-result">
+      <img class="payment-result-art" src="/assets/illustrations/payment-success-v1.png" alt="ตะกร้ายาพร้อมพลุฉลองชำระเงินสำเร็จ">
+      <h1>ชำระเงินสำเร็จ</h1><p class="payment-result-message">ร้านได้รับคำสั่งซื้อของคุณแล้ว</p>
+      <p class="payment-result-order">เลขคำสั่งซื้อ <strong class="num">${esc(o?.no || '')}</strong></p>
+      <div class="payment-result-actions">${ui.btn('ดูสถานะจัดส่งยา',{a:'paymentResultStatus'})}${ui.btn('กลับสู่หน้าหลัก',{kind:'ghost',go:'home'})}</div>
+    </section>`);
+  }
+});
+TP.act('paymentResultStatus', () => { const recv=C()?.order?.paid?.recv || 'pickup'; TP.S.st.paid=recv; return TP.go(recv==='parcel'?'track':'paid',{root:true}); });
 TP.screen('paid', {
-  group: 'during', title: 'ชำระสำเร็จ', code: 'C309', ref: 'C12', parent: 'room',
-  states: [['pickup', 'รับที่ร้าน'], ['parcel', 'จัดส่งปกติ', false], ['express', 'ส่งด่วน'], ['night', 'จ่ายตอนร้านปิด'], ['ready', 'ยาพร้อมรับแล้ว'], ['sent', 'ส่งพัสดุแล้ว มีเลขพัสดุ', false], ['rider', 'ไรเดอร์รับยาแล้ว'], ['cold', '', false], ['overdue', 'เลยกำหนดรับยา'], ['pickup-complete', 'รับยาที่สาขาแล้ว']],
-  notes: ['ลำดับและคำตามหน้าหลังจ่ายบิลเภสัชกรของเว็บ pay/receipt.blade.php: ชำระเงินสำเร็จ · สถานะ (ชำระแล้ว > กำลังเตรียมยา > พร้อมรับที่สาขา > รับแล้ว / จัดส่งแล้ว > สำเร็จ ป้าย "ตอนนี้") · เลขออเดอร์ · เวลาชำระ · วิธีชำระ · รายการยา · ยอด',
+  group: 'during', title: 'สถานะยา', code: 'C309', ref: 'C12', parent: 'room',
+  states: [['pickup', 'รับที่ร้าน'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['night', 'จ่ายตอนร้านปิด'], ['ready', 'ยาพร้อมรับแล้ว'], ['sent', 'ส่งพัสดุแล้ว มีเลขพัสดุ', false], ['rider', 'ไรเดอร์รับยาแล้ว'], ['cold', '', false], ['overdue', 'เลยกำหนดรับยา'], ['pickup-complete', 'รับยาที่สาขาแล้ว']],
+  notes: ['สถานะยาแสดงภาพตรงกลางตามขั้นตอน ใต้ภาพเป็นสถานะล่าสุดและเลขคำสั่งซื้อ ตามด้วยแถบไอคอนแนวนอน ไม่มีข้อความใต้ไอคอน ใช้ข้อมูลคำสั่งซื้อเดิม', 'ลำดับและคำตามหน้าหลังจ่ายบิลเภสัชกรของเว็บ pay/receipt.blade.php: ชำระเงินสำเร็จ · สถานะ (ชำระแล้ว > กำลังเตรียมยา > พร้อมรับที่สาขา > รับแล้ว / จัดส่งแล้ว > สำเร็จ ป้าย "ตอนนี้") · เลขออเดอร์ · เวลาชำระ · วิธีชำระ · รายการยา · ยอด',
     'รับที่ร้าน: รหัสรับยาที่เคาน์เตอร์ (กติกาแอป) + การ์ดสาขา นำทาง (Google Maps) และโทร ตามเว็บ',
     '19/10 เจ้าของสั่ง: ที่อยู่ เบอร์ และหมุด Google Maps ของสาขาจริง (ตลาดเวิลด์ 082-053-9915 · อ่อนนุช 080-235-3950 เบอร์ที่เจ้าของให้ 01/10) · นำทาง เปิดหมุดจริงในแท็บใหม่',
     'เว็บบอก "ร้านจะแจ้งในแชท LINE" แอปเปลี่ยนเป็นแจ้งในแอป · 20/10 A6: ปุ่ม ติดตามการจัดส่ง ขึ้นทุกครั้งที่เลือกส่ง (C309.2 C309.3 C309.6-8) เปิดจอติดตามพัสดุ C414',
@@ -4951,23 +5125,19 @@ TP.screen('paid', {
       : pick
       ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', night ? 'เริ่มเตรียมยาเมื่อร้านเปิด 09:00' : 'โดยปกติพร้อมรับใน 15-30 นาที เมื่อพร้อมร้านจะแจ้งในแอป'], ['', 'พร้อมรับที่สาขา', ''], ['', 'รับแล้ว', '']]
       : [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', night ? 'เริ่มเตรียมวันทำการถัดไป 19/10/2026' : 'วันนี้'], ['', 'จัดส่งแล้ว', pd.recv === 'express' ? 'ไรเดอร์ Lalamove ถึงใน 1-4 ชม. หลังร้านเตรียมยาเสร็จ' : pd.recv === 'cold' ? `ร้านโทรจองรถ ${TP.COLD.short} ให้ เลขพัสดุขึ้นในแอปเมื่อร้านส่งของ` : 'เลขพัสดุจะขึ้นในแอปเมื่อส่งของแล้ว'], ['', 'สำเร็จ', '']];
-    return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(`<div class="pd-top"><span class="pd-ok${late ? ' late' : ''}">${ic(late ? 'clock' : 'check', 46, 2.4)}</span>
-        <h2 class="h2" data-in="1">${late ? 'เลยกำหนดรับยาแล้ว' : !pick && ['calling','delivering'].includes(fulfillment?.key) ? fulfillment.title : st ? (pick ? 'ยาพร้อมรับแล้ว' : 'ส่งยาแล้ว') : 'ชำระเงินสำเร็จ'}</h2><p class="pd-amt num" data-in="2" id="pdAmt"></p><p class="small" data-in="2">${esc(b.name)}</p></div>
+    return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(`
+      ${paidStatusCard(steps,o.no,pick,!pick && pd.recv!=='express'?`${ui.btn('ติดตามการจัดส่ง',{kind:'secondary',sm:true,icon:'map-pin',go:'track'})}${pd.track?ui.btn('คัดลอกเลขพัสดุ',{kind:'ghost',sm:true,icon:'copy',a:'copyTrack'}):pd.trackUrl?ui.btn('เปิดหน้าติดตามพัสดุ',{kind:'ghost',sm:true,icon:'external-link',a:'openTrackLink'}):''}`:'',{icons:!pick&&pd.recv!=='express'?['receipt','pill','truck','check']:undefined,artwork:fulfillment?.key==='calling'?'calling':pd.recv==='parcel'&&pd.stage?(pd.deliv?'delivered':'parcel'):undefined})}
       ${late ? paidCard('การรับยา',`<p class="pd-late" id="pdLate">${ic('clock',18,2)}<span><b>ร้านเก็บยาไว้ให้ถึงวันที่ <span class="num">${holdUntil(pd)}</span></b>ร้านจะโทรหาคุณเพื่อตกลงเรื่องยาและการคืนเงิน</span></p>`,ui.btn('โทรหาร้าน',{icon:'phone',a:'callStore'})) : pick ? paidCard('รหัสรับยา',`<div class="pd-code"><div><b class="num">${esc(o.no.slice(-4))}</b><span>แสดงรหัสนี้ที่เคาน์เตอร์${esc(b.name)} พร้อมบอกชื่อผู้สั่งซื้อ (${esc(TP.S.user.full)})</span></div></div>${st ? `<p class="pd-hold" id="pdHold">${ic('clock',16,2)}<span>ร้านเก็บยาไว้ให้ ${HOLD_DAYS} วัน มารับได้ถึงวันที่ <b class="num">${holdUntil(pd)}</b> · ถ้าเลยกำหนด ร้านจะโทรหา</span></p>` : ''}`) : ''}
-      ${paidCard('สถานะ',`<ol class="tl">${steps.map(([s,t,d])=>`<li class="${s}"><b>${esc(t)}${s==='cur'?' '+now:''}</b>${d?`<span>${esc(d)}</span>`:''}</li>`).join('')}</ol>`,!pick && pd.recv!=='express'?`${ui.btn('ติดตามการจัดส่ง',{kind:'secondary',sm:true,icon:'map-pin',go:'track'})}${pd.track?ui.btn('คัดลอกเลขพัสดุ',{kind:'ghost',sm:true,icon:'copy',a:'copyTrack'}):pd.trackUrl?ui.btn('เปิดหน้าติดตามพัสดุ',{kind:'ghost',sm:true,icon:'external-link',a:'openTrackLink'}):''}`:'')}
+
       ${pd.recv==='express'?paidCard('ที่อยู่จัดส่ง',pd.addr ? `<div class="pd-branch"><b>${esc([pd.addr.first,pd.addr.last].filter(Boolean).join(' ') || TP.S.user.full)}</b>${pd.addr.phone?`<p>${esc(pd.addr.phone)}</p>`:''}<p>${esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))}</p></div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>',ui.btn('ติดตามไรเดอร์',{kind:'secondary',sm:true,icon:'external-link',a:'openRiderTracking'})):''}
       ${pick?paidCard('รับที่สาขา',`<div class="pd-branch"><b>${esc(b.name)}</b><p>${esc(b.addr)} · เปิด ${esc(b.hours)}</p></div>`,`${ui.btn('โทรหาร้าน',{kind:'secondary',icon:'phone',a:'callStore'})}${late?'':ui.btn('นำทางไปร้าน',{icon:'navigation',a:'navStore'})}`):''}
       ${paidCard('ข้อมูลคำสั่งซื้อ',ui.kv([['เลขคำสั่งซื้อ',`<span class="num">${esc(o.no)}</span>`],['เวลาชำระ',`${pd.date} ${pd.at}`],['วิธีชำระ',methName(pd.method)],['การรับสินค้า',esc(recvName(pd))],...(pd.addr && pd.recv!=='express'?[['ส่งไปที่',esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))]]:[])]))}
-      ${paidCard('รายการยา',`<table class="rc-items rc-short-items pd-receipt-items"><thead><tr><th scope="col">รายการ</th><th scope="col">จำนวนเงิน</th></tr></thead><tbody>${o.items.map(i=>`<tr><td><div class="rc-med">${TP.medicineImage(i)||`<span class="rc-med-placeholder">${ic('pill',20,1.8)}</span>`}<span><b>${esc(i.name)}</b><small>จำนวน ${esc(i.qty)}</small></span></div></td><td class="num">${TP.money(i.price)}</td></tr>`).join('')}</tbody></table><div class="hr"></div>${totKv(pd)}`)}
+      ${paidCard('รายการยา',`${TP.orderMedicineList(o)}<div class="hr"></div>${totKv(pd)}`)}
       <div class="mt16">${ui.group([ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบกำกับภาษีอย่างย่อ · ดาวน์โหลดตัวเต็มได้เอง',go:'receipt',p:{id:c.id}})],{din:5})}</div>
       <details class="pd-consultation mt16"><summary style="cursor:pointer;font-weight:600;padding:8px 0">สรุปการปรึกษา</summary><div class="mt16">${TP.summaryForCase?.(c,{hideHero:true,hideReceipt:true}) || ''}</div></details>
-      <div class="pd-page-actions">${TP.chatConsult(C())&&C().status==='closed'?ui.btn('กลับหน้าแรก',{go:'home'}):(ui.btn('กลับไปที่ห้องปรึกษา',{a:'backRoom'})+ui.btn('กลับหน้าแรก',{kind:'ghost',a:'goHome'}))}</div>`);
+      `);
   },
-  mount(el) {
-    const pd = order().paid;
-    setTimeout(() => TP.odo($('#pdAmt', el), TP.money(pd.total)), 360);
-    const ok = $('.pd-ok', el); if (ok) A(ok, [{ transform: 'scale(.4)', opacity: 0 }, { transform: 'none', opacity: 1 }], { d: TP.SP.bounce.d, e: TP.SP.bounce.e });
-  }
+
 });
 const caseBranch = () => TP.branch(C()?.branch || TP.S.branch);
 TP.act('navStore', () => { const b = caseBranch(); window.open(b.map, '_blank', 'noopener'); TP.notify('เปิด Google Maps ไปที่' + b.name, { icon: 'navigation' }); });
@@ -5026,13 +5196,20 @@ function trkSteps(pd, st) {
 }
 TP.screen('track', {
   group: 'after', title: 'สถานะการจัดส่งยา', code: 'C414', parent: 'paid',
-  states: [['transit', 'ส่งด่วน · กำลังจัดส่ง'], ['delivered', 'ขนส่งแจ้งว่าส่งถึงแล้ว'], ['received', 'ลูกค้ายืนยันว่าได้รับยาแล้ว'], ['cold', '', false], ['rider', 'ส่งด่วน · ไรเดอร์กำลังจัดส่ง'], ['prep', 'จัดส่งปกติ · ร้านกำลังเตรียมยา', false], ['coldlink', '', false],['chat-preparing','สนทนา: กำลังเตรียมยา'],['chat-calling','สนทนา: กำลังเรียกไรเดอร์'],['chat-delivering','สนทนา: ไรเดอร์กำลังส่งยา'],['chat-delivered','สนทนา: จัดส่งเสร็จสิ้น'], ['out', 'จัดส่งปกติ · กำลังนำส่ง', false]],
+  states: [['transit', 'ส่งด่วน · กำลังจัดส่ง'], ['delivered', 'ขนส่งแจ้งว่าส่งถึงแล้ว'], ['received', 'ลูกค้ายืนยันว่าได้รับยาแล้ว'], ['cold', '', false], ['rider', 'ส่งด่วน · ไรเดอร์กำลังจัดส่ง'], ['prep', 'จัดส่งปกติ · ร้านกำลังเตรียมยา', false], ['coldlink', '', false],['chat-preparing','สนทนา: กำลังเตรียมยา'],['chat-calling','สนทนา: กำลังเรียกไรเดอร์'],['chat-delivering','สนทนา: ไรเดอร์กำลังส่งยา'],['chat-delivered','สนทนา: จัดส่งเสร็จสิ้น'], ['out', 'จัดส่งปกติ · กำลังนำส่ง', false],['parcel-preparing','จัดส่งปกติ · กำลังเตรียมยา'],['parcel-transit','จัดส่งปกติ · กำลังขนส่ง'],['parcel-out','จัดส่งปกติ · กำลังนำส่ง'],['parcel-delivered','จัดส่งปกติ · ส่งถึงแล้ว รอยืนยันรับยา'],['pickup-preparing','กำลังเตรียมยา'],['pickup-ready','พร้อมรับยาที่สาขา'],['pickup-complete','รับยาที่สาขาแล้ว'],['pickup-overdue','เลยกำหนดรับยา'],['pickup-night','รอร้านเปิดเพื่อเตรียมยา'],['parcel-received','ยืนยันได้รับยาแล้ว']],
+  stateGroups: [
+    {label:'รับยาที่ร้าน',keys:['pickup-preparing','pickup-night','pickup-ready','pickup-complete','pickup-overdue']},
+    {label:'ส่งด่วน',keys:['chat-preparing','chat-calling','chat-delivering','chat-delivered','transit','rider','delivered','received']},
+    {label:'จัดส่งปกติ',keys:['parcel-preparing','parcel-transit','parcel-out','parcel-delivered','parcel-received']}
+  ],
   notes: ['A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึง ส่งถึงแล้ว · ลูกค้ากด ได้รับยาแล้ว (ร้านเห็นในคอนโซล) · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
-    'ปัจจุบันรองรับรับที่ร้านและส่งด่วนเท่านั้น · ส่งด่วนเปิดลิงก์ผู้ให้บริการเมื่อมีลิงก์',
+    'รองรับรับที่ร้าน ส่งด่วน และจัดส่งปกติ ใช้ภาพสถานะล่าสุดกับแถบไอคอนแนวนอนร่วมกัน ส่งด่วนใช้ภาพไรเดอร์ จัดส่งปกติใช้ภาพพัสดุและรถขนส่ง',
     '21/10 เจ้าของ "เอาเลขติดตามพัสดุหรือลิ้งติดตามพัสดุมาแปะ": เลข = แสดงเลขพร้อมปุ่มคัดลอก (C414.4) · ลิงก์ = ปุ่ม เปิดหน้าติดตามพัสดุ ไม่โชว์ลิงก์ยาว (C414.7 คอนโซลลิงก์มาที่นี่) · C309.8 ใช้ตัวอย่างแบบเลข',
     'ปุ่มได้รับยาแล้วแสดงเมื่อขนส่งแจ้งว่าส่งถึงแล้ว · กดแล้วแถวยาบนหน้าแรกหายไป'],
   wait: ['ลูกค้าไม่กด ได้รับยาแล้ว ระบบถือว่าได้รับเมื่อขนส่งแจ้งส่งถึงหลังกี่วัน (ต้นแบบยังไม่ปิดเอง)'],
   prep(S) {
+    if(S.st.track?.startsWith('pickup-')){S.st.paid={'pickup-preparing':'pickup','pickup-ready':'ready','pickup-complete':'pickup-complete','pickup-overdue':'overdue','pickup-night':'night'}[S.st.track];TP.SCREENS.paid.prep(S);return;}
+    if(S.st.track?.startsWith('parcel-')){TP.ensureCase('closed');TP.fulfillmentPreview(C(),S.st.track==='parcel-received'?'parcel-delivered':S.st.track);if(S.st.track==='parcel-received'){C().order.paid.got=TRK_AT.got;C().order.picked=true;}return;}
     if(S.st.track?.startsWith('chat-')){TP.ensureCase('closed');TP.fulfillmentPreview(C(),'delivery-'+S.st.track.slice(5));return;}
     const st = S.st.track || 'transit', recv = 'express';
     mockPaid(recv); const o = C().order, pd = o.paid;
@@ -5041,18 +5218,23 @@ TP.screen('track', {
     pd.deliv = ['delivered', 'received'].includes(st) ? TRK_AT.deliv : ''; pd.got = st === 'received' ? TRK_AT.got : ''; o.picked = st === 'received';
   },
   render() {
+    if(C()?.order?.paid?.recv==='pickup')return TP.SCREENS.paid.render();
     if(C()?.order?.paid?.recv==='express'&&TP.fulfillmentInfo(C()))return TP.chatDeliveryPage(C());
     const o = order(), pd = o.paid, cr = courierOf(pd), ex = pd.recv === 'express', cold = pd.recv === 'cold', st = trkState(pd), { steps, cur } = trkSteps(pd, st), a = pd.addr;
-    const head = ui.card(`<div class="tk-h"><span class="tk-i">${ic(ex ? 'zap' : cold ? 'snowflake' : 'package', 22, 2)}</span><div class="grow"><b>${esc(ex ? 'ส่งด่วน Lalamove' : pd.courier ? cr.name : TP.DELIVERY.find(d => d.id === 'parcel').name)}</b><small>${pd.track ? `เลขพัสดุ <span class="num">${esc(pd.track)}</span>` : pd.trackUrl ? 'ร้านแปะลิงก์ติดตามพัสดุแล้ว' : ex ? 'ไรเดอร์ส่งถึงบ้าน' : 'เลขพัสดุขึ้นเมื่อร้านส่งของ'}</small></div>${pd.track ? ui.btn('คัดลอก', { kind: 'ghost', sm: true, icon: 'copy', a: 'copyTrack' }) : ''}</div>
+    const head = ui.card(`<div class="tk-h"><span class="tk-i">${ic(ex ? 'zap' : cold ? 'snowflake' : 'package', 22, 2)}</span><div class="grow"><b>${esc(ex ? 'ส่งด่วน Lalamove' : pd.courier ? cr.name : TP.DELIVERY.find(d => d.id === 'parcel').name)}</b><small>${pd.track ? `<span class="num">${esc(pd.track)}</span>` : pd.trackUrl ? 'ร้านแปะลิงก์ติดตามพัสดุแล้ว' : ex ? 'ไรเดอร์ส่งถึงบ้าน' : 'เลขพัสดุขึ้นเมื่อร้านส่งของ'}</small></div>${pd.track ? `<button type="button" class="ibtn" data-a="copyTrack" aria-label="คัดลอกรหัสพัสดุ" title="คัดลอกรหัสพัสดุ">${ic('copy', 20, 2)}</button>` : ''}</div>
       ${cold ? `<p class="tk-n">${ic('snowflake', 14, 2)}<span>ยาอยู่ในกล่องคุมความเย็น 2-8 องศา · สถานะระหว่างทาง โทรถามร้านได้</span></p>${pd.track ? `<button type="button" class="link tk-web" data-a="trackShip">ติดตามบนเว็บ ${esc(TP.COLD.short)} ${ic('external-link', 14, 2)}</button>` : pd.trackUrl ? ui.btn('เปิดหน้าติดตามพัสดุ', { kind: 'secondary', sm: true, icon: 'external-link', a: 'openTrackLink', cls: 'mt12' }) : ''}` : ''}`, { din: 1, cls: 'mt8' });
-    const tl = ui.card(`<h3 class="h3">สถานะ</h3><ol class="tl mt12">${steps.map(([t, d], i) => `<li class="${i < cur ? 'done' : i === cur ? 'cur' : ''}"><b>${esc(t)}${i === cur ? ' ' + ui.tag('ตอนนี้', 'ok', { dot: true }) : ''}</b>${d ? `<span>${esc(d)}</span>` : ''}</li>`).join('')}</ol>`, { din: 2, cls: 'mt16' });
+    const current = Math.min(cur, steps.length - 1);
+    const tl = paidStatusCard(steps.map(([title,detail],i)=>[i<current?'done':i===current?'cur':'',title,detail]),o.no,false,'',{
+      artwork:pd.deliv||pd.got?'delivered':st==='prep'?'preparing':ex?'delivery':'parcel',
+      icons:steps.length===6?['receipt','pill','package','truck','truck','check']:['receipt','pill',ex?'motorcycle':'truck','check']
+    });
     const coldTip = cold && st !== 'prep' ? ui.card(`<div class="tk-cold">${ic('snowflake', 20, 2)}<div><b>ถึงแล้วเก็บเข้าตู้เย็นทันที</b><p>ถ้ากล่องไม่เย็นแล้ว อย่าใช้ยา โทรหาร้าน ${esc(caseBranch().phone)}</p></div></div>${ui.btn('โทรหาร้าน', { kind: 'secondary', sm: true, icon: 'phone', a: 'callStore', cls: 'mt8' })}`, { din: 2, cls: 'mt16' }) : '';
     const got = pd.got ? `<div class="tk-got mt16" data-in="2" role="status">${ic('circle-check', 22, 2)}<span><b>คุณยืนยันว่าได้รับยาแล้ว</b>${esc(pd.got)} · ร้านเห็นแล้ว</span></div>` : '';
     const to = a ? ui.card(ui.kv([['ส่งไปที่', esc(TP.fmtAddr ? TP.fmtAddr(a) : a.dist)], ['ผู้รับ', esc(`${a.first} ${a.last}`.trim())], ['เลขคำสั่งซื้อ', `<span class="num">${esc(o.no)}</span>`]]), { din: 3, cls: 'mt16' }) : '';
     const ask = pd.deliv && !pd.got ? `<p class="tk-ask" data-in="3">${ic('package', 15, 2)}<span>${esc(cr.name || 'ขนส่ง')} แจ้งว่าส่งถึงแล้ว ได้รับยาครบแล้ว กด ได้รับยาแล้ว · ยังไม่ได้รับ โทรถามร้านได้</span></p>` : '';
     const side = ex ? ui.btn('ดูตำแหน่งไรเดอร์ (Lalamove)', { kind: 'ghost', a: 'trackShip', icon: 'external-link' }) : cold ? ui.btn('ถามสถานะกับร้าน', { kind: 'ghost', a: 'callStore', icon: 'phone' }) : ui.btn(`เปิดหน้าติดตามของ ${cr.name}`, { kind: 'ghost', a: 'trackShip', icon: 'external-link' });
     const dock = pd.got ? ui.btn('กลับหน้าแรก', { a: 'goHome' }) : pd.deliv ? ui.btn('ได้รับยาแล้ว', { a: 'tkGot', icon: 'circle-check' }) + side : st === 'prep' ? ui.btn('กลับ', { kind: 'secondary', a: 'tkBack' }) : side;
-    return ui.nav({ back: true, title: 'ติดตามพัสดุ' }) + ui.page(`${head}${got}${coldTip}${ask}${tl}${to}<div class="mt16">${ui.callHelp({ din: 4, branch: C().branch })}</div>`) + ui.dock(dock);
+    return ui.nav({ title: 'ติดตามพัสดุ', right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>` }) + ui.page(`${tl}${head}${got}${coldTip}${ask}${to}<div class="mt16">${ui.callHelp({ din: 4, branch: C().branch })}</div>`) + ui.dock(dock);
   }
 });
 for(const [key,label,from,to]of [['chatCalling','ร้านเตรียมยาเสร็จ · เรียกไรเดอร์','preparing','calling'],['chatDelivering','ไรเดอร์รับยาแล้ว','calling','delivering'],['chatDelivered','ไรเดอร์ส่งยาสำเร็จ','delivering','delivered']])TP.simAction({id:key,label,when:S=>S.case?.order?.paid?.recv==='express'&&S.case?.order?.fulfillment?.status===from,run(){if(TP.setFulfillment(TP.S.case,to))TP.refresh({anim:false});}});
@@ -5127,7 +5309,7 @@ TP.screen('receipt', {
       <h2>${title}</h2><p>${subtitle}</p>
     </header>`;
     const shortRows = [
-      ...o.items.map(i=>[`<div class="rc-med">${TP.medicineImage(i) || `<span class="rc-med-placeholder">${ic('pill',20,1.8)}</span>`}<span><b>${esc(i.name)}</b><small>จำนวน ${esc(i.qty)}</small></span></div>`,TP.money(i.price)]),
+      ...o.items.map(i=>[`<div class="rc-med">${TP.medicineImage(i) || `<span class="rc-med-placeholder">${ic('pill',20,1.8)}</span>`}<span><b>${esc(i.name)}</b><small>จำนวน: ${esc(i.qty)}</small></span></div>`,TP.money(i.price)]),
       ...(pd.discount? [['ส่วนลด','−'+TP.money(pd.discount)]] : []),
       ...(pd.ship? [[esc(SHIP_L(pd)),TP.money(pd.ship)]] : []),
       ...(pd.fee? [['ค่าธรรมเนียมบัตร (3.65%)',TP.money(pd.fee)]] : [])
@@ -5341,6 +5523,7 @@ function sumOf(h) {
     follow: quiet ? 'ปรึกษาใหม่ได้ทุกเมื่อ' : 'ถ้าอาการไม่ดีขึ้นใน 3 วัน ปรึกษาใหม่ได้ทุกเมื่อ'
   };
 }
+TP.consultationSummary = sumOf;
 function closedCase() {
   const items = TP.ORDER_ITEMS;
   return { id: 'TC-261018-0142', who: 'me', symptoms: ['ไข้', 'เจ็บคอ'], urgent: [], note: 'เป็นมา 2 วัน กลืนแล้วเจ็บ', photos: 0, mode: 'chat', branch: 'tw', pharm: 'kj', status: 'closed', pos: 0, joinedAt: '14:12', order: { status: 'paid', items, total: items.reduce((s, i) => s + i.price, 0) }, rated: 0, msgs: [] };
@@ -5385,7 +5568,7 @@ function docHtml(S, h, options = {}) {
   return `<article class="af-visit" aria-label="ใบสรุปการปรึกษา">
     ${options.hideHero ? '' : `<header class="af-visit-hero">
       <span>สรุปการรับบริการ</span>
-      <h2>รหัสเคส ${esc(TP.caseCode(h))}</h2>
+      <h2>คำสั่งซื้อ #${esc(visitCase?.order?.no || h.orderNo || TP.orderNumber(h))}</h2>
       <small>${esc(h.date)}${h.time?' · '+esc(h.time)+' น.':''}</small>
     </header>`}
     ${options.fulfillmentCard || ''}
@@ -5397,7 +5580,7 @@ function docHtml(S, h, options = {}) {
 
     </section>
     <section class="card af-visit-section"><h3>${ic('pill',20,1.8)} ข้อมูลยา</h3>
-      ${sm.meds.length?`<ul class="af-meds">${sm.meds.map(m=>`<li><div class="af-med-top"><span class="af-med-i">${TP.medicineImage(m)||ic('pill',18,2)}</span><div class="grow"><b>${esc(m.name)}</b>${m.description?`<p class="af-med-description">${esc(m.description)}</p>`:''}${m.qty?`<p>จำนวน ${esc(m.qty)}</p>`:''}</div></div>${m.schedule?.length?`<div class="af-med-schedule"><strong>วิธีใช้</strong>${m.schedule.map(row=>`<p>${row.time === 'เมื่อมีอาการ' ? '' : `<b>${ic(({ 'เช้า':'sunrise', 'กลางวัน':'sun', 'เย็น':'sunset', 'ก่อนนอน':'moon' })[row.time] || 'clock',16,1.8)}<span>${esc(row.time)}</span></b>`}<span${row.time === 'เมื่อมีอาการ' ? ' style="grid-column:1 / -1"' : ''}>${esc(row.instruction)}</span></p>`).join('')}</div>`:m.how?`<div class="af-med-schedule"><strong>วิธีใช้</strong><p>${esc(m.how)}</p></div>`:''}</li>`).join('')}</ul>`:`<p>${esc(sm.nomed||'ไม่มียาที่ได้รับในการปรึกษาครั้งนี้')}</p>`}
+      ${sm.meds.length ? `<div class="af-medicine-list">${TP.orderMedicineList({items: sm.meds.map(m => ({...m, how: m.schedule?.length ? m.schedule.map(row => [row.time === 'เมื่อมีอาการ' ? '' : row.time, row.instruction].filter(Boolean).join(' · ')).join(' / ') : m.how}))}, {showPrice: false})}</div>` : `<p>${esc(sm.nomed || 'ไม่มียาที่ได้รับในการปรึกษาครั้งนี้')}</p>`}
     </section>
     <section class="card af-visit-section af-visit-advice"><h3>${ic('file-text',20,1.8)} คำแนะนำจากเภสัชกร</h3><p class="af-advice-text">${esc([Array.isArray(sm.advice) ? sm.advice.join("\n") : (sm.advice || ""), follow].filter(Boolean).join("\n\n"))}</p>
     </section>
@@ -6286,8 +6469,29 @@ function receiptTaxPicker(S) {
   const kind=S._receiptTaxKind||'me', rows=TP.taxRecords(kind,S), selected=TP.taxSelected(kind,S);
   return `<div class="tax-profile-page rc-tax-picker">${ui.seg('receiptTaxKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],kind,{a:'receiptTaxKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${rows.length})</span></h3>${ui.btn('เพิ่มข้อมูล',{kind:'secondary',icon:'plus',a:'rcTaxPickerAdd'})}</div><div class="tax-profile-list">${rows.length?rows.map(r=>`<button type="button" class="card tax-summary tax-summary-compact rc-tax-pick-card" data-a="rcTaxPickerChoose" data-v="${kind}" data-key="${esc(r.profileKey)}" aria-label="เลือก ${esc(r.name)}"><header class="tax-summary-head"><b>${esc(r.name)}</b>${r.profileKey===selected?.profileKey?ic('circle-check',20):ic('chevron-right',20)}</header><div class="tax-summary-content"><p>${esc(TP.taxAddress(r))}</p>${kind==='co'&&r.business?`<p>ชื่อธุรกิจ : ${esc(r.business)}</p>`:''}<p>โทรศัพท์ : ${esc(r.phone||'—')}</p><p>${kind==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(('xxxxxxxxx'+String(r.id||'').slice(-4)))}</p></div></button>`).join(''):`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`;
 }
+// Checkout uses the same saved-recipient cards and visual pattern as the receipt.
+TP.act('payTaxPickOpen',()=>{
+  TP.S._receiptTaxKind=TP.S.pay?.taxWho||'me';
+  TP.S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;
+  return TP.sheet('checkouttaxpicker');
+});
+TP.act('payTaxPickerChoose',async b=>{
+  const record=TP.taxChoose(b.dataset.v,b.dataset.key);if(!record)return;
+  Object.assign(TP.S.pay,{taxWho:b.dataset.v,taxWant:true});
+  await TP.closeSheet();
+});
+TP.act('payTaxPickerAdd',()=>{
+  const d=taxProfileDraft(TP.S);d.kind=TP.S._receiptTaxKind||'me';d.editKey=null;d.errors={};d.drafts[d.kind]=taxProfileEntry(null,{},d.kind==='co');
+  TP.sheetOpen().ctx.params.editing=true;
+  return TP.sheet('checkouttaxedit');
+});
+TP.sheetDef('checkouttaxpicker',{
+  group:'during',title:'เลือกข้อมูลใบกำกับภาษี',hidden:true,host:'room',tall:true,
+  render:ctx=>receiptTaxPicker(ctx.S).replaceAll('rcTaxPickerChoose','payTaxPickerChoose').replaceAll('rcTaxPickerAdd','payTaxPickerAdd'),
+  close(ctx){if(!ctx.params.editing)setTimeout(async()=>{await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;},450);}
+});
 TP.act('rcTaxPickOpen',()=>{TP.S._receiptTaxKind=TP.cur()?.ctx?.rc?.tax?.who||'me';return TP.sheet('receipttaxpicker');});
-TP.act('receiptTaxKind',b=>{TP.S._receiptTaxKind=b.dataset.v;const sheet=TP.sheetOpen(),body=$('.sh-b',sheet.el);body.innerHTML=receiptTaxPicker(TP.S);TP.icons(body);});
+TP.act('receiptTaxKind',b=>{TP.S._receiptTaxKind=b.dataset.v;const sheet=TP.sheetOpen(),body=$('.sh-b',sheet.el);body.innerHTML=receiptTaxPicker(TP.S);if(sheet.id==='checkouttaxpicker')body.innerHTML=body.innerHTML.replaceAll('rcTaxPickerChoose','payTaxPickerChoose').replaceAll('rcTaxPickerAdd','payTaxPickerAdd');TP.icons(body);});
 TP.act('rcTaxPickerChoose',async b=>{
   const o=TP.cur()?.ctx?.rc,kind=b.dataset.v,record=TP.taxRecords(kind).find(r=>r.profileKey===b.dataset.key);
   if(!o||!record)return;
@@ -6421,6 +6625,7 @@ TP.act('taxProfileSave',async()=>{
   const rec={profileKey:d.editKey||('tax-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),name,business:f.business.trim(),id,phone,kind:co?'นิติบุคคล':'บุคคลธรรมดา',first:f.first.trim(),last:f.last.trim(),addressMode:f.mode,country:f.country.trim(),prov:f.prov.trim(),amp:f.amp.trim(),dist:f.dist.trim(),zip:f.zip.trim(),detail:f.detail.trim(),village:f.village.trim(),alley:f.alley.trim(),road:f.road.trim(),addr};
   const rows=TP.taxRecords(d.kind,S),index=rows.findIndex(r=>r.profileKey===d.editKey);if(index>=0)rows[index]=rec;else rows.push(rec);if(d.preview?.[d.kind]){d.previewLists||={};d.previewLists[d.kind]=rows;delete d.preview[d.kind];}TP.taxChoose(d.kind,rec.profileKey,S);d.editKey=rec.profileKey;S.rcNoAddr=false;S._taxProfileMockInitialized=true;
   if(TP.sheetOpen()?.id==='receiptprofile'){const order=TP.cur()?.ctx?.rc;if(order?.tax)Object.assign(order.tax,{who:d.kind,want:true});}
+  if(TP.sheetOpen()?.id==='checkouttaxedit')Object.assign(S.pay,{taxWho:d.kind,taxWant:true});
   TP.emit('state');if(['taxprofileedit','receiptprofile','checkouttaxedit'].includes(TP.sheetOpen()?.id))await TP.closeSheet();await TP.refresh({anim:false});TP.notify('บันทึกข้อมูลแล้ว',{icon:'circle-check'});
 });
 
