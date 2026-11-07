@@ -133,18 +133,18 @@
 .phone .st-otp.bad .st-cell {background:var(--semantic-surface);color:var(--semantic-text);box-shadow:inset 0 0 0 1px var(--semantic-error-text)}
 .phone .st-otp.lock .st-cell {background:var(--semantic-disabled-bg);color:var(--semantic-text-disabled)}
 .phone .hm-mini-icon {border-radius:var(--radius-md)}
-.phone .sw, .panel .pn-autofill input {
+.phone .sw {
   appearance:none;position:relative;flex-shrink:0;width:48px;height:22px;
   border:0;border-radius:var(--radius-pill);background:var(--semantic-field-border);box-shadow:none;cursor:pointer;
 }
 .phone .sw::before {inset:-11px 0}
-.phone .sw::after, .panel .pn-autofill input::after {
+.phone .sw::after {
   content:'';display:block;position:absolute;top:2px;left:2px;width:28px;height:18px;
   border-radius:var(--radius-pill);background:var(--semantic-surface);box-shadow:none;
   transition:transform var(--motion-default) ease-out;
 }
-.phone .sw[aria-checked=true], .panel .pn-autofill input:checked {background:var(--semantic-primary)}
-.phone .sw[aria-checked=true]::after, .panel .pn-autofill input:checked::after {transform:translateX(16px)}
+.phone .sw[aria-checked=true] {background:var(--semantic-primary)}
+.phone .sw[aria-checked=true]::after {transform:translateX(16px)}
 .phone .sw:disabled {opacity:.5;cursor:default}
 .sheet:has(.account-delete-info) .sh-h {position:relative}
 .sheet:has(.account-delete-info) .sh-h h2 {width:100%;padding-inline:44px;text-align:center}

@@ -153,6 +153,8 @@ Checkout C308 offers store pickup and express delivery only. Parcel and cold-cha
 # คู่มือเหตุการณ์ทดสอบ — 2 พฤศจิกายน 2569
 เมื่อเพิ่มหน้าหรือ state ให้รัน `npm run screens:sync` ซึ่งสร้างคู่มือรายหน้าและทะเบียนเหตุการณ์ที่ `public/preview/events/` อัตโนมัติ และรัน `npm run screens:check` เพื่อตรวจความตรงกัน รหัสเหตุการณ์ `EV-Cxxx-state` ใช้ state key คงที่ ห้ามเปลี่ยน key หรือใช้รหัสซ้ำ แยก `EV-GLOBAL-xxx` สำหรับเหตุการณ์กลาง เพิ่ม acceptance เฉพาะกรณีใน `TP.previewEventPolicy.describe` และทดสอบ fixture/action จริง คู่มือเป็น checklist ไม่ใช่ผล QA ผ่านแล้ว ดู `docs/testing-events.md`
 
+`docs/screen-specs.md` สร้างจาก `notes`, `wait` และ `states` ใน `public/runtime/customer.js` ห้ามแก้ไฟล์นี้ตรง ๆ เมื่อสเปกเปลี่ยนให้แก้ในโค้ดแล้วรัน `npm run screens:sync` และ `npm run screens:check`
+
 - โฟลว์สนทนา C303: เภสัชกรส่งรายการยา ถามเพิ่มเติม แล้วปิดเคสจึงเปิด C308 ของรายการเดิม ห้ามกลับเข้าห้องแชทที่ปิดแล้ว เวลา 15 นาทีเริ่มเมื่อเปิดหน้าชำระครั้งแรก ไม่ต่ออายุเมื่อปิดเคส ส่งด่วนหลังจ่ายใช้ C414 เดิม (เตรียมยา → เรียกไรเดอร์ → จัดส่ง → เสร็จสิ้น) โหมดวิดีโอคอลคงโฟลว์เดิม ดู docs/chat-order-lifecycle.md
 
 # ตำแหน่งที่อยู่ส่งยา

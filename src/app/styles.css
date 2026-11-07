@@ -222,7 +222,7 @@ html.mob .panel{position:fixed;inset:0;z-index:200;height:auto;transform:transla
 html.mob .panel.open{transform:none}
 html.mob .pn-x{display:grid;margin-left:auto}
 html.mob .pn-top{position:sticky;top:-16px;z-index:3;margin:-16px -20px 0;padding:12px 12px 8px 20px;background:rgba(251,250,247,.94);-webkit-backdrop-filter:var(--blur);backdrop-filter:var(--blur);box-shadow:0 1px 0 var(--hair)}
-html.mob .panel-fab{flex-direction:column;gap:4px}
+html.mob .panel-fab{display:flex;position:fixed;right:0;top:46%;z-index:150;align-items:center;gap:6px;padding:10px 8px 10px 10px;border-radius:12px 0 0 12px;background:rgba(3,92,103,.72);color:#fff;font:600 12px/1 var(--font);box-shadow:var(--e-3)}
 html.mob .panel-fab span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
 @media (max-width:1180px){.app{grid-template-columns:minmax(0,1fr) 340px}}
 /* review codes (owner 19/10/2026): badge on the stage, code on the phone panel tab, codes in the panel lists */

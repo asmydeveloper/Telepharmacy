@@ -1147,20 +1147,9 @@ brand.appicon = (cls = '') => old() ? v11.appicon(cls) : `<span class="appicon $
 /* ===== Preview event metadata: shared by runtime and Markdown generator ===== */
 TP.previewEventPolicy={
  code:(code,state)=>`EV-${code}-${state||'default'}`,
- pageStates(id,states,simulations=[]){
-  // Hide visual review variants from the event panel; keep actionable scenarios.
-  const visualOnly={
-   home:new Set(['banner-edge','blue-canvas','pharmacy-banner','mini-menu','compact-store','named-address','plain-mini-menu','branch-tile','white-canvas','layout-system','store-list','care-shortcuts','figma-system','real-photos','pastel-icons','banner-actions','refined-store-list','distinct-store-photos','soft-status','store-more','bear-banner','banner-safe-area','bright-bear','tritone-icons','personal-greeting','counter-bear','soft-rounded-icons','glass-tabs','female-pharmacist-banner','consult-banner','active-next','active-room','active-paused','active-payment','active-idle']),
-   login:new Set(['cover','platform-cover','storefront-cover','no-logo-overlay','compact-terms','white-fade','white-image','simple-cover','cover-heading']),
-   loginemail:new Set(['panel-layout','consultation-cover']),loginphone:new Set(['panel-layout','consultation-cover']),
-   registrationsuccess:new Set(['full-cover']),store:new Set(['grouped','neutral-sections']),intake:new Set(['cover']),
-   history:new Set(['dark-filters','shared-tabs','store-recipient-card','detail-rows','tap-card','search-below-tabs','tab-counts']),
-   account:new Set(['profile-cover','abstract-cover','clean-profile']),family:new Set(['generated-members'])
-  };
-  const base=(states?.length?states:[['','ปกติ']]).filter(([key,label,enabled])=>enabled!==false&&!visualOnly[id]?.has(key)&&!(['profile','addressedit','pay'].includes(id)&&(key.startsWith('map-')||['expmap','exppin','locdeny'].includes(key))));
-  if(id!=='home')return base;
-  const ordered=simulations.filter(([key])=>!['queue3','queue2'].includes(key)).map(([key,label])=>['case-'+key,label]);
-  return [...ordered,...base.filter(([key])=>!key.startsWith('case-'))];
+ pageStates(id,states){
+  // Every case of the page in registry order; retired cases, the paused map and removed queue cases stay hidden.
+  return (states?.length?states:[['','ปกติ']]).filter(([key,label,enabled])=>enabled!==false&&!(['profile','addressedit','pay'].includes(id)&&(key.startsWith('map-')||['expmap','exppin','locdeny'].includes(key)))&&!(id==='home'&&['case-queue3','case-queue2'].includes(key)));
  },
  category(state,label){const text=state+' '+label;return /error|invalid|wrong|fail|national-id|ไม่ถูก|ผิด|ไม่สำเร็จ/.test(text)?'ข้อผิดพลาด':/empty|missing|ยังไม่กรอก|ไม่มีข้อมูล|ไม่ครบ/.test(text)?'ข้อมูลไม่ครบ / ว่าง':/expired|timeout|หมดเวลา|หมดอายุ/.test(text)?'เวลา / หมดอายุ':/consent|ยินยอม/.test(text)?'ความยินยอม':/loading|โหลด/.test(text)?'กำลังโหลด':/offline|เน็ต|สัญญาณ/.test(text)?'การเชื่อมต่อ': 'สถานะ / การใช้งาน';},
  describe(code,state,label){
@@ -1332,13 +1321,6 @@ TP.codeOf = id => {
 };
 const byCode = (a, b) => (TP.def(a).code || '').localeCompare(TP.def(b).code || '');
 const badge = $('#codeBadge'), fabCode = $('#fabCode');
-badge?.addEventListener('click', e => {
-  const simButton=e.target.closest('[data-preview-sim]');if(simButton){const action=SIM.find(a=>a.id===simButton.dataset.previewSim);if(action?.when(TP.S)){if(action.id==='order')TP.casePreview.playChat('payment');else action.run();}}
-  if(e.target.closest('[data-preview-send-order]'))TP.casePreview.playChat('payment');
-  const videoButton=e.target.closest('[data-preview-request-video]');
-  if(videoButton&&!videoButton.disabled)TP.casePreview.playChat('video-request');
-  if (e.target.closest('.preview-mock-button')) TP.registrationPreview?.fillCurrent();
-});
 /* the panel never moves under the reviewer (owner 19/10/2026: "ถ้ากดดูอันไหนอย่าขยับจอสิ"):
    a redraw keeps the item just tapped, else the first item in view, at the same height */
 let tapped = null;
@@ -1351,27 +1333,6 @@ function anchorOf() {
 }
 function holdAnchor(a) { const el = a && panel.querySelector(a.sel); if (el) panel.scrollTop += el.getBoundingClientRect().top - a.y; }
 /* Reviewer navigation categories are separate from permanent screen code groups. */
-const PREVIEW_MAIN=[
- {key:'entry',label:'หน้าแรกเข้าแอป',root:'login',ids:['splash','login','loginemail','loginphone','onboard','update','sysoff','doc']},
- {key:'signup',label:'หน้าสมัครสมาชิก',root:'profile',ids:['profile','registrationexit','registrationconsent','marketingconsent','regdob','registrationsuccess','faceid']},
- {key:'home',label:'หน้าแรก หลังเข้าล็อคอิน',root:'home',ids:['home','homeaddress','addressbook','addressedit','allbranches','storeinfo','storeactions','pushask']},
- {key:'favorites',label:'หน้า Favorite',root:'favorites',ids:['favorites','storeinfo','storeactions']},
- {key:'history',label:'หน้าประวัติ',root:'history',ids:['history','summary','receipt','track','gotask','medhub','adrcare','adrreport','adr','adrsent','follow','fucheck','furesult','fulog','fudone','fureminder','fuoff']},
- {key:'consult',label:'หน้าปรึกษา',root:'intake',ids:['intake','area','allergy','redflag','serviceterms','queue','cancelq','queueclosed','expired','offline','declined','room','roommenu','endcase','video','hangup','nocam','lost','pay','payfail','paid','lock','storeinfo','allbranches']},
- {key:'inbox',label:'หน้าแจ้งเตือน',root:'inbox',ids:['inbox']},
- {key:'account',label:'หน้าบัญชี',root:'account',ids:['account','health','consents','consenttext','consentwd','deleteacc','deleted','help','logout','addressbook','addressedit','faceid','marketingconsent']}
-];
-let mainFlowKey=null;
-function previewMainFor(id){
- const primary=PREVIEW_MAIN.find(flow=>flow.root===id);
- const retained=PREVIEW_MAIN.find(flow=>flow.key===mainFlowKey&&flow.ids.includes(id));
- const member=PREVIEW_MAIN.find(flow=>flow.ids.includes(id));
- const group=TP.def(id)?.group;
- return primary||retained||member||PREVIEW_MAIN.find(flow=>flow.key===({start:'entry',before:'home',during:'consult',after:'history',account:'account',edge:'entry'}[group]||'home'));
-}
-function previewMainIds(flow){return TP.ORDER.filter(id=>{
- const d=TP.def(id);return !d.hidden&&(flow.ids.includes(id)||(!PREVIEW_MAIN.some(item=>item.ids.includes(id))&&previewMainFor(id).key===flow.key));
-}).sort((a,b)=>a===flow.root?-1:b===flow.root?1:byCode(a,b));}
 /* Preview-only data adapter: never submit, opt into consent, or overwrite edits. */
 TP.previewAutofill={enabled:false,
   valueFor(input){
@@ -1393,101 +1354,61 @@ TP.previewAutofill={enabled:false,
     });
   }
 };
-// Preview categories describe what is being tested; they do not change app state.
-function previewEventGroup(screen,key,label){
- const t=(key+' '+label).toLowerCase();
- if(screen==='home' && /^(case-|active-)/.test(key))return 'สถานะการ์ดปรึกษาและคำสั่งซื้อ';
- if(/error|invalid|fail|wrong|no-results|ไม่สำเร็จ|ไม่ถูกต้อง|ผิดพลาด/.test(t))return 'ข้อผิดพลาดและการแก้ไข';
- if(/offline|connecting|weak|signal|เน็ต|สัญญาณ|การเชื่อมต่อ/.test(t))return 'การเชื่อมต่อ';
- if(/empty|missing|noaddr|noaddress|no-active|ยังไม่มี|ไม่พบ|ไม่มียา/.test(t))return 'ข้อมูลว่างหรือไม่พร้อม';
- if(/payment|payexp|unpaid|paid|qr|card|bank|ชำระ|ใบกำกับ|tax/.test(t))return 'การชำระเงินและเอกสาร';
- if(/deliver|pickup|parcel|rider|express|ready|รับยา|จัดส่ง|ส่งด่วน/.test(t))return 'การรับยาและจัดส่ง';
- if(/queue|waiting|paused|matched|คิว|เภสัชกรพัก/.test(t))return 'คิวและการรับปรึกษา';
- if(/video|call|chat|message|reply|สนทนา|วิดีโอ|ข้อความ/.test(t))return 'การสนทนาและวิดีโอ';
- if(/sym|adr|allerg|อาการ|แพ้ยา/.test(t))return 'อาการและรายงานหลังใช้ยา';
- if(/search|ค้นหา/.test(t))return 'ค้นหาและตัวกรอง';
- if(/consent|ยินยอม/.test(t))return 'ความยินยอม';
- if(/loading|กำลังโหลด/.test(t))return 'กำลังโหลด';
- if(/expired|timeout|idle|หมดเวลา|หมดอายุ/.test(t))return 'เวลาและหมดอายุ';
- return 'ข้อมูลและการใช้งาน';
-}
-function previewEventGroups(screen,states){const groups=new Map();for(const state of states){const name=previewEventGroup(screen,state[0],state[1]);if(!groups.has(name))groups.set(name,[]);groups.get(name).push(state);}return groups;}
-function previewSimGroup(id){
- if(['next','accept','pause','resume','decline','closeBr','storeShut'].includes(id))return 'คิวและการรับปรึกษา';
- if(['msg','order','close','requestVideo','withdrawVideo','pcam','ofReply'].includes(id))return 'การปรึกษาและวิดีโอ';
- if(/^chat/.test(id))return 'จัดเตรียมและส่งยา';
- if(/adr|sym|follow/i.test(id))return 'ติดตามอาการ';
- return 'จำลองระบบและกรณีทดสอบ';
-}
-let panelSelectCleanups=[];
+/* the state list must match design-system/screens/<group>/<code>.json: C102 + .position in def.states */
+function stateCode(def,key){const all=def.states||[],i=all.findIndex(x=>x[0]===key);return all.length>1&&i>=0?`${def.code}.${i+1}`:def.code||'';}
 function render() {
-  panelSelectCleanups.forEach(cleanup=>cleanup());panelSelectCleanups=[];
-  const expanded = new Set(Array.from(panel.querySelectorAll('details[data-panel-section][open]'), node=>node.dataset.panelSection));
   const s = TP.sheetOpen(), c = TP.cur(), keep = anchorOf();
   const internal = s?.def.hidden && s.def.host;
   const def = internal ? TP.SCREENS[s.def.host] : s ? s.def : c && TP.SCREENS[c.id];
   const id = internal ? s.def.host : s ? s.id : c?.id;
-  const states = def ? TP.previewEventPolicy.pageStates(id,def.states,TP.casePreview?.states||[]) : [];
+  const states = def ? TP.previewEventPolicy.pageStates(id,def.states) : [];
   const sims = SIM.filter(a => { try { return a.when(TP.S); } catch { return false; } });
-  const mainFlow=previewMainFor(id);mainFlowKey=mainFlow.key;
-  const mainGroup=mainFlow.key,flowIds=previewMainIds(mainFlow);
+  const visible = TP.ORDER.filter(i => !TP.def(i).hidden);
   const code = id ? TP.codeOf(id) : '', ttl = def ? (typeof def.title === 'function' ? def.title({ S: TP.S, params: s ? s.ctx.params : c?.ctx?.params || {} }) : def.title) : '';
   const canMock = !s && TP.registrationPreview?.canFill(c);
-  if (badge) {
-    badge.classList.toggle('has-mock', !!canMock);
-    badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>${canMock ? '<button type="button" class="preview-mock-button">มอคข้อมูล</button>' : ''}${sims.length?`<section class="preview-pharmacist"><h2>จำลองฝั่งเภสัชกรและระบบ</h2><p>แสดงปุ่มที่ใช้ได้ตามสถานะปัจจุบัน</p>${[...new Set(sims.map(a=>previewSimGroup(a.id)))].map(group=>`<details class="preview-sim-group" open><summary>${esc(group)}</summary><div class="preview-case-controls">${sims.filter(a=>previewSimGroup(a.id)===group).map(a=>`<button type="button" data-preview-sim="${esc(a.id)}">${esc(a.label)}</button>`).join('')}</div></details>`).join('')}</section>`:''}` : '';
-  }
+  if (badge) badge.innerHTML = code ? `<b>${esc(code)}</b><span>${esc(ttl)}</span>` : '';
   if (fabCode) fabCode.textContent = code;
   panel.innerHTML = `
     <div class="pn-top">${TP.brand.logo('wmen', { cls: 'sm' })}<button type="button" class="ibtn pn-x" data-pn="close" aria-label="ปิดแผง">${ic('x', 20, 2)}</button></div>
     <h1 class="mt12">ต้นแบบแอปลูกค้า · ปรึกษาเภสัชกร</h1>
     <p class="pn-sub">${esc(TP.DESIGN_VERSION)} · หน้ากากอย่างเดียว ยังไม่ต่อระบบจริง · ข้อมูลสมมติ</p>
-    <section class="pn-sec pn-main"><label class="pn-h" for="pnMainFlow">Main · เลือกโฟลว์หลัก</label><div class="pn-main-select"><select id="pnMainFlow" aria-label="เลือกโฟลว์หลัก">${PREVIEW_MAIN.map(({key,label})=>`<option value="${key}" ${key===mainGroup?'selected':''}>${esc(label)}</option>`).join('')}</select></div></section>
-    <section class="pn-sec pn-autofill"><label for="pnAutofill"><span><b>กรอกข้อมูลทดสอบอัตโนมัติ</b><small>เติมช่องว่างเมื่อเปิดฟอร์ม · ไม่กดยืนยัน</small></span><input id="pnAutofill" type="checkbox" role="switch" ${TP.previewAutofill.enabled?'checked':''}></label></section>
-    ${def ? `<section class="pn-sec pn-current" hidden><h2 class="pn-h">หน้าปัจจุบัน</h2><div class="pn-card">
+    ${def ? `<section class="pn-sec"><h2 class="pn-h">จอนี้</h2><div class="pn-card">
       <h2>${codeTag(code)}${esc(ttl)}</h2>
-      <details data-panel-section="notes" ${expanded.has('notes')?'open':''}><summary>รายละเอียดสำหรับตรวจงาน</summary>${def.ref ? `<p class="pn-ref">อ้างอิงสเปกเดิม ${esc(def.ref)}</p>` : ''}
+      ${def.ref ? `<p class="pn-ref">อ้างอิงสเปกเดิม ${esc(def.ref)}</p>` : ''}
       ${def.notes?.length ? `<ul class="pn-list">${def.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
       ${def.wait?.length ? `<p class="pn-wait-h">รอเจ้าของเคาะ</p><ul class="pn-list wait">${def.wait.map(n => `<li>${esc(n)}</li>`).join('')}</ul>` : ''}
-      </details>
     </div></section>` : ''}
-    ${states.length ? `<section class="pn-sec pn-page-events" data-panel-section="states"><h2 class="pn-h">เหตุการณ์ของหน้านี้ <span>${states.length}</span></h2><p class="pn-sub">เลือกหมวดเพื่อเปิดดูและทดลองสถานการณ์</p>${[...previewEventGroups(id,states)].map(([group,items])=>`<details class="pn-event-group" data-panel-section="event-${esc(id)}-${esc(group)}" ${expanded.has(`event-${id}-${group}`)?'open':''}><summary>${esc(group)} <span>${items.length}</span></summary><div class="pn-row pn-event-list">${items.map(([k,l],i)=>`<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id)===k}"><b class="pn-sc">${esc(TP.previewEventPolicy?.code(def.code,k)||def.code+'.'+(i+1))}</b>${esc(l)}</button>`).join('')}</div></details>`).join('')}</section>` : ''}
-    <details class="pn-sec pn-disclosure" data-panel-section="faults" ${expanded.has('faults')?'open':''}><summary>เหตุการณ์กลาง</summary><p class="pn-sub">ใช้กับหน้าที่เปิดอยู่ · ไม่เปลี่ยนข้อมูลแบบร่าง</p><div class="pn-row">${(TP.previewEventPolicy?.globals||[]).map(event=>`<button type="button" class="pn-btn" data-pn="fault" data-k="${event.key}" aria-pressed="${TP.previewEvents?.active?.key===event.key}"><b class="pn-sc">${event.id}</b>${esc(event.label)}</button>`).join('')}</div><button type="button" class="pn-btn wide" data-pn="fault-clear">ยกเลิกเหตุการณ์กลาง</button><a class="pn-event-doc" href="/preview/events/GLOBAL.md" target="_blank" rel="noopener">คู่มือเหตุการณ์กลาง (.md)</a></details>
-    <details class="pn-sec pn-disclosure pn-flow" data-panel-section="flow" ${expanded.has('flow')?'open':''}><summary>หน้าในโฟลว์นี้</summary><p class="pn-sub">เลือกหน้าที่ต้องการลอง แล้วเปิดดูสถานะของหน้านั้น</p><div class="pn-grid">${flowIds.map(i=>{const d=TP.def(i);return `<button type="button" class="pn-btn" data-pn="jump" data-k="${i}" aria-current="${i===id}"><b class="pn-sc">${esc(d.code||'')}</b>${esc(typeof d.title==='function'?d.title({S:TP.S,params:{}}):d.title)}${d.kind==='sheet'?'<small>แผ่นเลื่อนขึ้น</small>':''}</button>`;}).join('')}</div></details>
-    <details class="pn-sec pn-disclosure" data-panel-section="globals" ${expanded.has('globals')?'open':''}><summary>ตั้งค่าจำลองทั้งแอป</summary><div class="gap8">${GLOBAL.map(([k, l, opts]) => `<div><p class="small" style="margin:0 2px 4px">${esc(l)}</p><div class="pn-row">${opts.map(([v, t]) => `<button type="button" class="pn-btn" data-pn="g" data-k="${k}" data-v="${v}" aria-pressed="${TP.S[k] === v}">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div></details>
+    ${def?.states?.length > 1 && states.length ? `<section class="pn-sec"><h2 class="pn-h">ลองสถานะของจอนี้</h2><div class="pn-row">${states.map(([k, l]) => `<button type="button" class="pn-btn" data-pn="state" data-k="${esc(k)}" aria-pressed="${TP.stateOf(id) === k}"><b class="pn-sc">${esc(stateCode(def, k))}</b>${esc(l)}</button>`).join('')}</div></section>` : ''}
+    ${canMock ? '<section class="pn-sec"><button type="button" class="pn-btn wide" data-pn="mock">มอคข้อมูล</button></section>' : ''}
+    ${sims.length ? `<section class="pn-sec"><h2 class="pn-h">${ic('stethoscope', 15, 2)}จำลองฝั่งเภสัชกร</h2><div class="pn-grid">${sims.map(a => `<button type="button" class="pn-btn ph" data-pn="sim" data-k="${esc(a.id)}">${esc(a.label)}</button>`).join('')}</div></section>` : ''}
+    <section class="pn-sec"><h2 class="pn-h">ทั้งแอป</h2><div class="gap8">${GLOBAL.map(([k, l, opts]) => `<div><p class="small" style="margin:0 2px 4px">${esc(l)}</p><div class="pn-row">${opts.map(([v, t]) => `<button type="button" class="pn-btn" data-pn="g" data-k="${k}" data-v="${v}" aria-pressed="${TP.S[k] === v}">${esc(t)}</button>`).join('')}</div></div>`).join('')}</div></section>
+    <section class="pn-sec"><h2 class="pn-h">ไปจอ · ทั้งหมด ${visible.length} จอ</h2>
+      ${TP.GROUPS.map(([g, gl]) => { const ids = visible.filter(i => TP.def(i).group === g).sort(byCode); if (!ids.length) return ''; return `<div class="pn-grp"><b>${esc(gl)}</b><div class="pn-grid">${ids.map(i => { const d = TP.def(i); return `<button type="button" class="pn-btn" data-pn="jump" data-k="${i}" aria-current="${i === id}"><b class="pn-sc">${esc(d.code || '')}</b>${esc(typeof d.title === 'function' ? d.title({ S: TP.S, params: {} }) : d.title)}${d.kind === 'sheet' ? '<small>แผ่นเลื่อนขึ้น</small>' : ''}</button>`; }).join('')}</div></div>`; }).join('')}
+    </section>
     <section class="pn-sec"><button type="button" class="pn-btn wide" data-pn="restart">${ic('rotate-ccw', 15, 2)} เริ่มใหม่ตั้งแต่เปิดแอป</button></section>
     <p class="pn-foot">กดในจอได้เหมือนแอปจริง · แผงนี้ไม่ใช่ส่วนของแอป · สี โลโก้ ฟอนต์จากชุด CI</p>`;
   TP.icons(panel);
-  TP.mountDesignSelects(panel,{onLeave:cleanup=>panelSelectCleanups.push(cleanup)});
   holdAnchor(keep);
 }
-panel.addEventListener('change',e=>{
-  if(e.target.id==='pnAutofill'){
-    TP.previewAutofill.enabled=e.target.checked;
-    if(e.target.checked){const active=TP.sheetOpen()||TP.cur();TP.previewAutofill.fill(active?.el,active?.ctx);}
-    return;
-  }
-  if(e.target.id!=='pnMainFlow')return;
-  const flow=PREVIEW_MAIN.find(item=>item.key===e.target.value);if(!flow)return;
-  mainFlowKey=flow.key;
-  const target=TP.def(flow.root)?flow.root:previewMainIds(flow)[0];
-  if(target){tapped=null;TP.jump(target);panel.scrollTop=0;}
-});
 panel.addEventListener('click', async e => {
   const b = e.target.closest('[data-pn]'); if (!b) return;
   if (b.dataset.k != null) tapped = keyOf(b);
   const k = b.dataset.k, mob = document.documentElement.classList.contains('mob');
   switch (b.dataset.pn) {
     case 'close': toggle(false); break;
-    case 'fault': TP.previewEvents?.set(k); break;
-    case 'fault-clear': TP.previewEvents?.clear(); break;
     case 'state': {
       const s = TP.sheetOpen();
       if (s) { TP.S.st[s.id] = k; TP.prepState(s.def); const p = s.ctx.params; await TP.closeSheet({ instant: true }); TP.sheet(s.id, p); }
       else { const id = TP.cur().id; TP.S.st[id] = k; TP.prepState(TP.SCREENS[id]); TP.refresh(); }
       break;
     }
-    case 'sim': SIM.find(a => a.id === k)?.run(); if (mob) toggle(false); break;
+    case 'sim': {
+      const action = SIM.find(a => a.id === k);
+      if (action?.when(TP.S)) { if (action.id === 'order') TP.casePreview.playChat('payment'); else action.run(); }
+      if (mob) toggle(false);
+      break;
+    }
+    case 'mock': TP.registrationPreview?.fillCurrent(); if (mob) toggle(false); break;
     case 'g': {
       const raw = b.dataset.v, v = raw === 'true' ? true : raw === 'false' ? false : raw;
       if (k === 'loc' || k === 'zoneLock') TP.S.locDenySeen = TP.S.locWarnSeen = false;
@@ -8097,8 +8018,7 @@ function fit() {
   const frame = TP.$('.device-frame-image', dv);
   const density = Math.max(1, window.devicePixelRatio || 1);
   const rasterLimit = (frame?.naturalWidth || 1520) / (dv.offsetWidth * density);
-  const sidebar=TP.$('#codeBadge'),sidebarWidth=sidebar&&getComputedStyle(sidebar).display!=='none'?sidebar.offsetWidth:0;
-  const k = Math.max(0, Math.min(rasterLimit, (st.clientHeight - 24) / dv.offsetHeight, (st.clientWidth - sidebarWidth - 24) / dv.offsetWidth));
+  const k = Math.max(0, Math.min(rasterLimit, (st.clientHeight - 24) / dv.offsetHeight, (st.clientWidth - 24) / dv.offsetWidth));
   dv.style.setProperty('--k', k.toFixed(4));
 }
 mode();
