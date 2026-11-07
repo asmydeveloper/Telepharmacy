@@ -378,9 +378,41 @@
   line-height: var(--type-body-sm-mobile-line);
   box-shadow: none;
 }
-.phone .note:not(.danger):not(.warn):not(.ok) {
-  background: var(--semantic-info-background);
-  color: var(--semantic-info-text);
+.phone .note {
+  --alert-bg: var(--alert-info-bg);
+  --alert-border: var(--alert-info-border);
+  --alert-ink: var(--alert-info-ink);
+  text-align: left;
+}
+.phone .note:not(.plain):not(.on-teal):not(.neutral) {
+  background: var(--alert-bg);
+  color: var(--alert-ink);
+  border: 1px solid var(--alert-border);
+}
+.phone .note.warn {
+  --alert-bg: var(--alert-warning-bg);
+  --alert-border: var(--alert-warning-border);
+  --alert-ink: var(--alert-warning-ink);
+}
+.phone .note.danger {
+  --alert-bg: var(--alert-error-bg);
+  --alert-border: var(--alert-error-border);
+  --alert-ink: var(--alert-error-ink);
+}
+.phone .note.ok {
+  --alert-bg: var(--alert-success-bg);
+  --alert-border: var(--alert-success-border);
+  --alert-ink: var(--alert-success-ink);
+}
+.phone .note:not(.plain):not(.on-teal):not(.neutral) :is(b, strong, a, .ic) {
+  color: inherit;
+}
+.phone .err-t {
+  color: var(--alert-error-ink);
+}
+.phone .auth-login-alert {
+  margin: 0;
+  text-align: left;
 }
 .phone .note > .ic {
   color: inherit;
@@ -1716,4 +1748,9 @@
 }
 .auth-recovery-actions [role='status']:empty {
   display: none;
+}
+
+.phone .note.neutral {
+  background: var(--color-neutral-100);
+  color: var(--semantic-text-secondary);
 }

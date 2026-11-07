@@ -1,5 +1,18 @@
 /* Shared customer UI tokens. Used by the app and /design-system. */
 :root {
+  /* Alert palette: pale surfaces, distinct outlines, readable foregrounds. */
+  --alert-info-bg: #f0f9ff;
+  --alert-info-border: #69b8df;
+  --alert-info-ink: #075985;
+  --alert-warning-bg: #fffbeb;
+  --alert-warning-border: #e5b94f;
+  --alert-warning-ink: #854d0e;
+  --alert-error-bg: #fff1f2;
+  --alert-error-border: #e899a4;
+  --alert-error-ink: #9f1239;
+  --alert-success-bg: #f0fdf4;
+  --alert-success-border: #79c79a;
+  --alert-success-ink: #166534;
   --color-canvas-base: #ffffff;
   --semantic-waiting-indicator: #e07816;
   --ground: var(--color-canvas-base);
