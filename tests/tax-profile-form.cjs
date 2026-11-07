@@ -19,7 +19,7 @@ d.drafts.me.dist='';assert.equal(run('taxProfileErrors')(d).dist,'เลือ�
 d=draft('me');d.addressState='loading';assert(run('taxProfileErrors')(d).prov.includes('โหลดข้อมูล'));assert.equal(run('taxProfileErrors')(d,{skipLoad:true}).prov,'เลือกจังหวัด');
 for(const [kind,mode] of [['me','select'],['co','select'],['me','manual'],['co','manual']]){
  const form=draft(kind);form.drafts[kind].mode=mode;const html=run('taxProfileForm')({_taxProfile:form},true,true),inputs=html.match(/<input [^>]*>/g);
- assert(inputs.length>=9);for(const input of inputs)assert(/placeholder="[^"]+"/.test(input),kind+' '+mode+' needs a placeholder: '+input.slice(0,60));
+ assert(inputs.length>=9);for(const input of inputs){assert(/placeholder="[^"]+"/.test(input),kind+' '+mode+' needs a placeholder: '+input.slice(0,60));assert(!/placeholder="[^"]*เช่น/.test(input),'placeholders give an instruction, not an example');}
 }
 console.log('PASS: C519 validates required fields, formats and address selection');
 
