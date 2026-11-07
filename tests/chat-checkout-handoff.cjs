@@ -1,0 +1,51 @@
+const assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
+const source=fs.readFileSync('public/runtime/customer.js','utf8'),actions={},routes=[],sheets=[];let current={id:'room',el:{}};
+const S={st:{},user:{full:'Test User'},history:[],inbox:[],case:{id:'chat-one',mode:'chat',status:'room',symptoms:['อาการตัวอย่าง'],msgs:[],joinedAt:'14:12',branch:'tw'}};
+const ui={nav:()=>'',page:s=>s,dock:s=>s,btn:(label,o)=>`<button data-go="${o?.go||''}">${label}</button>`,tag:s=>s};
+const TP={S,ui,sim:{},ORDER_ITEMS:[{name:'A',price:120},{name:'B',price:40},{name:'C',price:225}],ORDER_PAYMENT_MS:900000,NOW:{date:'02/11/2026',time:'00:30'},medicineImage:()=>'',money:n=>'฿'+n,esc:String,ic:()=>'',fmtAddr:()=> 'Address',branch:()=>({name:'Branch'}),emit(){},act:(k,f)=>actions[k]=f,cur:()=>current,refresh(){},banner(){},notify(){},sheet:async(id,p)=>{if(id==='pay')TP.startOrderPayment(S._paymentCase.order);sheets.push({id,p});},closeSheet:async()=>{},saveReceipt(){},casePlan:()=>({items:TP.ORDER_ITEMS,adv:['คำแนะนำเพิ่มเติมจากเภสัชกร']}),paidMsg:()=> 'Payment received',RED:()=>true};
+require('./consultation-harness.cjs')(TP);
+const context=vm.createContext({TP,C:()=>S._paymentCase||S.case,esc:String,ic:()=>'',ui,now:()=> '00:30',setInterval(){},clearInterval(){},clearTimeout(){},document:{querySelectorAll:()=>[]},$:()=>({innerHTML:''}),push:(_,m)=>S.case.msgs.push(m),typing:async()=>{},wake(){},waitingForPharmacist:()=>false,console});
+const run=(a,b)=>vm.runInContext(source.slice(source.indexOf(a),source.indexOf(b,source.indexOf(a))),context);
+run('TP.ORDER_PAYMENT_MS=','/* ---------- message html ---------- */');
+vm.runInContext("let chain=Promise.resolve(),pending=null,cur=null,sheet=null,hist=[],running=[];const SCREENS={room:{},home:{},track:{},paid:{}};async function doGo(id,o){routeCapture(id,o)}",context);context.routeCapture=(id,o)=>{routes.push(id);current={id,el:{}}};
+run('TP.go = (id, o = {}) => {','async function doGo(id, o)');run('TP.back = () => {','TP.canBack =');
+run('TP.sim.closeCase =','TP.sim.idleWarn =');
+run('async function sendText(text)','TP.act(\'quickReply\'');
+const tick=()=>new Promise(resolve=>setImmediate(resolve));
+
+(async()=>{
+ const c=S.case;
+ c.order={status:'pending',items:[{name:'A',qty:'1 กล่อง',how:'ตามฉลาก',price:120}],total:120,awaitingCheckout:true,paymentStartedAt:null,expiresAt:null};
+ TP.sim.closeCase();
+ assert.equal(c.status,'closed');
+ assert.equal(TP.checkoutHandoffRemaining(c),30);
+ assert.equal(TP.closedChatRoute(c),null);
+ assert.equal(c.order.expiresAt,null);
+ assert.equal(sheets.length,0);
+ await actions.continueCheckout();await tick();
+ assert.equal(c.checkoutHandoffUntil,null);
+ assert.equal(routes.at(-1),'home');
+ assert.equal(sheets.at(-1).id,'pay');
+ const count=sheets.length;await actions.continueCheckout();await tick();assert.equal(sheets.length,count);
+ await TP.go('room');await tick();assert.equal(routes.at(-1),'home');
+ assert.equal(sheets.at(-1).id,'pay');
+ // Simulate the mounted countdown reaching zero, using its actual callback.
+ current={id:'room',el:{querySelector:()=>button}};const button={textContent:''};
+ c.checkoutHandoffUntil=Date.now()-1;
+ const start=source.indexOf("    if (c.status === 'closed' && c.checkoutHandoffUntil) {",source.indexOf("TP.screen('room'"));
+ const end=source.indexOf('    if (inp) {',start);
+ context.c=c;context.el=current.el;context.ctx={every:fn=>{context.countdownTick=fn}};
+ TP.ACTS=actions;vm.runInContext(source.slice(start,end),context);await tick();
+ assert.equal(button.textContent,'ขั้นตอนต่อไป ชำระค่ายา (0 วิ)');
+ assert.equal(c.checkoutHandoffUntil,null);assert.equal(routes.at(-1),'home');
+ const after=sheets.length;context.countdownTick();await tick();assert.equal(sheets.length,after);
+ // Basket visibility comes from the shared order, never a placeholder count.
+ assert(TP.chatBasketBar(c.order).includes('1 รายการ'));
+ assert.equal(TP.chatBasketBar({...c.order,items:[]}), '');
+ assert.equal(TP.chatBasketBar(null), '');
+ assert.equal(TP.chatBasketBar({...c.order,status:'cancelled'}), '');
+ const previous=sheets.length;c.order.items=[];await actions.openMedicineBasket();assert.equal(sheets.length,previous);
+ current={id:'room',el:{}};c.status='room';c.order=null;c.msgs=[];TP.sim.closeCase();
+ assert(!c.checkoutHandoffUntil,'no medicine means no payment countdown');
+ console.log('PASS pharmacist closure, immediate/automatic checkout, duplicate protection, closed-room guard and empty basket');
+})().catch(error=>{console.error(error);process.exitCode=1});

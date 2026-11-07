@@ -39,6 +39,14 @@ console.log('PASS: panel follows the open screen, hosted sheets and hidden retir
  await click('sim','accept');await click('sim','order');await click('sim','off');assert.deepEqual(ran,['accept']);assert.deepEqual(played,['payment']);
  SIM.length=0;mockable=true;context.render();assert(panel.innerHTML.includes('data-pn="mock"'));await click('mock');assert.equal(filled,1);
  console.log('PASS: state, simulation and mock buttons dispatch from the right panel');
+ const videoDefault=source.match(/TP\.screen\('video', \{\s*previewDefaultState: '([^']+)'/)[1];
+ defs.video={code:'C306',previewDefaultState:videoDefault};
+ const jumps=[];TP.jump=k=>jumps.push([k,TP.S.st[k]]);
+ TP.S.st.video='on';await click('jump','video');
+ assert.deepEqual(jumps.at(-1),['video','waiting-provider']);
+ await events.click({target:{closest:()=>({dataset:{pn:'jump-state',k:'video',state:'on'}})}});
+ assert.deepEqual(jumps.at(-1),['video','on']);
+ console.log('PASS: C306 main jump opens waiting cover while explicit active-call selection stays available');
 })().catch(e=>{console.error(e);process.exitCode=1});
 
 context.Event=class{constructor(type){this.type=type}};

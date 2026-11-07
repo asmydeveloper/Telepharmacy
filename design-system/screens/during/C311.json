@@ -1,0 +1,27 @@
+{
+  "code": "C311",
+  "screen": "paymentsuccess",
+  "title": "ชำระเงินสำเร็จ",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C311.1",
+      "state": "pickup",
+      "label": "รับที่ร้าน",
+      "url": "/?screen=paymentsuccess&state=pickup&splash=0"
+    },
+    {
+      "code": "C311.2",
+      "state": "express",
+      "label": "ส่งด่วน",
+      "url": "/?screen=paymentsuccess&state=express&splash=0"
+    },
+    {
+      "code": "C311.3",
+      "state": "parcel",
+      "label": "จัดส่งปกติ",
+      "url": "/?screen=paymentsuccess&state=parcel&splash=0"
+    }
+  ]
+}

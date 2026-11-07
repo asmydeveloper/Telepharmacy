@@ -1,7 +1,7 @@
 {
   "code": "C309",
   "screen": "paid",
-  "title": "ชำระสำเร็จ",
+  "title": "สถานะยา",
   "group": "during",
   "kind": "screen",
   "cases": [
@@ -10,6 +10,12 @@
       "state": "pickup",
       "label": "รับที่ร้าน",
       "url": "/?screen=paid&state=pickup&splash=0"
+    },
+    {
+      "code": "C309.2",
+      "state": "parcel",
+      "label": "จัดส่งปกติ",
+      "url": "/?screen=paid&state=parcel&splash=0"
     },
     {
       "code": "C309.3",

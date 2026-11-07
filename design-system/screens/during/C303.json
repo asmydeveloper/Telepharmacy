@@ -14,20 +14,14 @@
     {
       "code": "C303.2",
       "state": "order",
-      "label": "มีรายการยารอชำระ",
+      "label": "เภสัชกรส่งรายละเอียดรายการยา",
       "url": "/?screen=room&state=order&splash=0"
     },
     {
-      "code": "C303.3",
-      "state": "paid",
-      "label": "ชำระแล้ว",
-      "url": "/?screen=room&state=paid&splash=0"
-    },
-    {
       "code": "C303.5",
-      "state": "offline",
-      "label": "ไม่มีอินเทอร์เน็ต",
-      "url": "/?screen=room&state=offline&splash=0"
+      "state": "checkout-handoff",
+      "label": "เภสัชกรสิ้นสุดสนทนา · ไปชำระค่ายาใน 30 วินาที",
+      "url": "/?screen=room&state=checkout-handoff&splash=0"
     },
     {
       "code": "C303.6",
@@ -100,6 +94,12 @@
       "state": "payment-soon",
       "label": "จบแชท เหลือชำระ 1 นาที",
       "url": "/?screen=room&state=payment-soon&splash=0"
+    },
+    {
+      "code": "C303.21",
+      "state": "offline",
+      "label": "ไม่มีอินเทอร์เน็ต",
+      "url": "/?screen=room&state=offline&splash=0"
     }
   ]
 }

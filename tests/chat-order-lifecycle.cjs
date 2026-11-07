@@ -20,7 +20,10 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  const c=S.case,order=c.order;assert.equal(order.expiresAt,null);assert.equal(TP.expireOrder(c),false);let deadline;
  // Final explicit patient answer leads the mock pharmacist to close and navigate.
  await vm.runInContext("sendText('ไม่มีคำถามเพิ่มเติม')",context);await tick();
- assert.equal(c.status,'closed');assert.equal(c.outcome,'completed');deadline=order.expiresAt;assert(deadline>Date.now());assert(deadline<=Date.now()+900000);assert.equal(order.status,'pending');assert.equal(routes.at(-1),'home');assert.equal(sheets.at(-1).id,'pay');assert.equal(S._paymentCase,c);assert.equal(S.history.length,1);assert.equal(c.pharmacistAdvice,'คำแนะนำเพิ่มเติมจากเภสัชกร');
+ assert.equal(c.status,'closed');assert.equal(c.outcome,'completed');
+ assert.equal(order.expiresAt,null);assert(TP.checkoutHandoffRemaining(c)>0);assert.equal(TP.closedChatRoute(c),null);assert.equal(sheets.length,0);
+ await actions.continueCheckout();await tick();
+ assert.equal(c.checkoutHandoffUntil,null);deadline=order.expiresAt;assert(deadline>Date.now());assert(deadline<=Date.now()+900000);assert.equal(order.status,'pending');assert.equal(routes.at(-1),'home');assert.equal(sheets.at(-1).id,'pay');assert.equal(S._paymentCase,c);assert.equal(S.history.length,1);assert.equal(c.pharmacistAdvice,'คำแนะนำเพิ่มเติมจากเภสัชกร');
  const beforeRooms=routes.filter(x=>x==='room').length;await TP.go('room');assert.equal(routes.filter(x=>x==='room').length,beforeRooms);assert.equal(sheets.at(-1).id,'pay');
  vm.runInContext("hist.push({id:'room'})",context);await TP.back();assert.equal(routes.at(-1),'home');assert.equal(order.expiresAt,deadline);
  // Successful express payment starts the existing delivery view without reopening chat.

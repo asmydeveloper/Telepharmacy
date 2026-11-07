@@ -40,7 +40,7 @@ for(const screen of screens){
   screen.cases=cases;
   count+=cases.length;
 }
-for(const group of fs.readdirSync(path.join(root,'design-system/screens'),{withFileTypes:true}).filter(d=>d.isDirectory())){const dir=path.join(root,'design-system/screens',group.name);for(const name of fs.readdirSync(dir).filter(n=>/^C\d+\.json$/.test(n))){const file=path.join(dir,name);if(!expectedFiles.has(file)){if(process.argv.includes('--check'))throw Error('Retired manifest: '+file);fs.unlinkSync(file);}}}
+for(const group of fs.readdirSync(path.join(root,'design-system/screens'),{withFileTypes:true}).filter(d=>d.isDirectory())){const dir=path.join(root,'design-system/screens',group.name);for(const name of fs.readdirSync(dir).filter(n=>/^C\d+(?:\.\d+)*\.json$/.test(n))){const file=path.join(dir,name);if(!expectedFiles.has(file)){if(process.argv.includes('--check'))throw Error('Retired manifest: '+file);fs.unlinkSync(file);}}}
 console.log(`PASS ${screens.length} screen codes and ${count} case links match the live registry`);
 
 // Event docs follow the registry whenever screens are added or changed.

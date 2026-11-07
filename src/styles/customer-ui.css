@@ -398,8 +398,18 @@ select {
   white-space: nowrap;
 }
 .rm-cancel-wait {
+  color: var(--semantic-error-text);
   font-size: var(--text-small);
   white-space: nowrap;
+}
+.rm-waiting-nav {
+  grid-template-columns: 44px minmax(0, 1fr) 64px;
+}
+.rm-waiting-nav h1 {
+  margin: 0;
+  text-align: left;
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
 }
 .rm-queue-bar {
   position: absolute;
@@ -407,51 +417,62 @@ select {
   top: calc(var(--st) + 52px);
   left: 0;
   right: 0;
-  height: 76px;
+  min-height: 76px;
   display: flex;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-3) var(--space-4);
-  background: var(--brand);
-  color: var(--semantic-surface);
-  font-size: var(--type-body-mobile-size);
+  background: var(--semantic-surface);
+  color: var(--ink);
 }
 .rm-queue-icon {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: grid;
   place-items: center;
   flex: none;
-}
-.rm-queue-icon .mb-status-art {
-  width: 32px;
-  height: 32px;
-  animation: mb-status-breathe 2.6s ease-in-out infinite;
+  border-radius: var(--r-pill);
+  background: var(--color-brand-50);
+  color: var(--brand);
 }
 .rm-queue-copy {
   display: grid;
   gap: var(--space-1);
-  flex: 1;
   min-width: 0;
 }
-.rm-queue-copy small {
-  color: var(--on-brand-2);
-  font-size: var(--text-small);
-  line-height: 1.3;
-}
 .rm-queue-copy b {
-  font-size: var(--type-body-mobile-size);
+  font-size: var(--text-body);
   font-weight: var(--weight-semibold);
-  line-height: 1.4;
+  line-height: var(--leading-body);
+}
+.rm-queue-copy small {
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
 }
 .rm-scroll.has-queue {
-  padding-top: calc(var(--st) + 142px);
+  padding-top: calc(var(--st) + 144px);
+  background: var(--semantic-disabled-bg);
 }
 .rm-scroll.has-queue.has-net {
-  padding-top: calc(var(--st) + 180px);
+  padding-top: calc(var(--st) + 186px);
 }
 .scr:has(.rm-queue-bar) .rm-net {
   top: calc(var(--st) + 128px);
+}
+.rm-scroll.has-queue .msg-sys:first-child {
+  margin: var(--space-1) var(--space-4) var(--space-4);
+}
+.rm-scroll.has-queue .msg-sys:first-child > span {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+  background: var(--semantic-disabled-bg);
+  color: var(--ink-2);
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
+}
+.scr:has(.rm-queue-bar) .rm-comp {
+  background: var(--semantic-surface);
 }
 .rm-video-wait {
   overflow: hidden;
@@ -504,32 +525,6 @@ select {
   }
 }
 
-/* Chat queue: a compact CI ribbon with restrained depth. */
-.rm-queue-bar {
-  background:
-    radial-gradient(ellipse at 95% 0%, rgb(255 255 255 / 0.13), transparent 65%),
-    linear-gradient(115deg, var(--brand-deep), var(--brand));
-  box-shadow: 0 4px 12px rgb(var(--color-primary-rgb) / 0.12);
-  gap: var(--space-3);
-}
-.rm-queue-icon {
-  width: 44px;
-  height: 44px;
-  border: 1px solid rgb(255 255 255 / 0.22);
-  border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 0.09);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.1);
-}
-.rm-queue-icon .mb-status-art {
-  width: 28px;
-  height: 28px;
-}
-.rm-queue-copy small {
-  letter-spacing: 0.01em;
-}
-.rm-queue-copy b {
-  font-size: var(--text-body);
-}
 /* The submitted intake reads as a document, separate from chat bubbles. */
 .msg.me.wide:has(.msg-intake) {
   align-self: stretch;
@@ -595,32 +590,6 @@ select {
 .msg-intake-allergy dt,
 .msg-intake-allergy dt svg {
   color: var(--semantic-error-text);
-}
-
-.rm-queue-bar {
-  overflow: hidden;
-  isolation: isolate;
-}
-.rm-queue-bar::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    100deg,
-    transparent 30%,
-    rgb(255 255 255 / 0.18) 50%,
-    transparent 70%
-  );
-  transform: translateX(-100%);
-  animation: mb-sheen 3.6s var(--ease-apple) infinite 1s;
-  pointer-events: none;
-}
-@media (prefers-reduced-motion: reduce) {
-  .rm-queue-bar::after {
-    animation: none;
-    display: none;
-  }
 }
 
 /* Provider identity: name first, professional details second, availability last. */
@@ -1119,47 +1088,42 @@ select {
   margin-bottom: 0;
 }
 
+/* Compact, full-width delivery choices share the radio control tokens. */
 #payRecv {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-2);
 }
 .checkout-block #payRecv > .opt.po {
   display: grid;
-  grid-template-columns: 20px 1fr;
+  grid-template-columns: 20px 20px minmax(0, 1fr) auto;
   gap: var(--space-2);
-  align-content: start;
-  align-items: start;
+  align-items: center;
   min-width: 0;
+  min-height: 72px;
   padding: var(--space-3);
 }
-#payRecv > [data-v='parcel'] {
-  grid-column: 1 / -1;
+.checkout-block #payRecv > .opt.po[aria-checked='false'] {
+  border-color: var(--semantic-border);
+  box-shadow: none;
 }
-#payRecv .po-i {
-  grid-column: 1;
-  grid-row: 1;
-  justify-self: start;
-  color: var(--brand-deep);
-}
-#payRecv .tx {
-  grid-column: 2;
-  grid-row: 1;
-  min-width: 0;
-}
-#payRecv .tx b {
-  display: block;
-}
+#payRecv .po-i { color: var(--brand-deep); }
+#payRecv .tx { min-width: 0; }
+#payRecv .tx b { display: block; }
 .checkout-block #payRecv .tx > span {
   font-size: var(--text-small);
   line-height: var(--type-body-mobile-line);
 }
 .checkout-block #payRecv .po-f {
-  grid-column: 2;
-  text-align: left;
+  grid-column: 4;
+  grid-row: 1;
+  margin-top: 0;
+  text-align: right;
   max-width: none;
   font-size: var(--text-small);
 }
+.payw .checkout-delivery,
+.payw .checkout-tax { border-bottom: 0; padding-bottom: 0; }
 .checkout-privacy {
   margin: 0;
   text-align: center;
@@ -1308,7 +1272,7 @@ select {
 }
 .checkout-block #payMeth .pay-method-option {
   display: grid;
-  grid-template-columns: 48px minmax(0, 1fr) 20px;
+  grid-template-columns: 36px minmax(0, 1fr) 20px;
   gap: var(--space-3);
   padding: var(--space-4);
   min-height: 84px;
@@ -1330,8 +1294,8 @@ select {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 48px;
-  height: 48px;
+  width: 36px;
+  height: 36px;
   aspect-ratio: 1;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -1376,7 +1340,7 @@ select {
 }
 @media (max-width: 360px) {
   .checkout-block #payMeth .pay-method-option {
-    grid-template-columns: 48px minmax(0, 1fr) 20px;
+    grid-template-columns: 36px minmax(0, 1fr) 20px;
     gap: var(--space-2);
     padding: var(--space-3);
   }
@@ -2602,7 +2566,9 @@ select {
 
 /* Keep the radio semantics while the card itself indicates selection. */
 #payRecv .opt.po > .rd {
-  display: none;
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 
 /* Shared active consultation cards: one hierarchy across queue, payment and delivery. */
@@ -2638,19 +2604,23 @@ select {
   color: var(--semantic-primary);
   background: var(--semantic-surface);
 }
-.phone .case-progress-head :is(.tag,.hm-active-status) { margin-left: auto; }
+.phone .case-progress-head :is(.tag, .hm-active-status) {
+  margin-left: auto;
+}
 .phone .case-progress-body {
   display: grid;
   gap: var(--space-3);
   padding: var(--space-4);
 }
-.phone .case-progress-body :is(h2,h3) {
+.phone .case-progress-body :is(h2, h3) {
   margin: 0;
   font-size: var(--type-h3-mobile-size);
   line-height: var(--type-h3-mobile-line);
   color: var(--semantic-text);
 }
-.phone .case-progress-body p { margin: 0; }
+.phone .case-progress-body p {
+  margin: 0;
+}
 .phone .case-progress-meta {
   display: flex;
   align-items: center;
@@ -2665,7 +2635,9 @@ select {
   font-size: var(--type-caption-mobile-size);
   color: var(--semantic-text-secondary);
 }
-.phone .case-progress-order span { overflow-wrap: anywhere; }
+.phone .case-progress-order span {
+  overflow-wrap: anywhere;
+}
 .phone .case-progress-foot {
   display: grid;
   gap: var(--space-2);
@@ -2673,26 +2645,391 @@ select {
   border-top: 1px solid var(--semantic-border);
   background: var(--semantic-surface-muted);
 }
-.phone .case-progress-foot > .btn { width: 100%; margin: 0; }
-.phone .case-progress-body .post-payment-total { margin: 0; }
-.phone .case-progress-body .post-payment-deadline { margin: 0; }
+.phone .case-progress-foot > .btn {
+  width: 100%;
+  margin: 0;
+}
+.phone .case-progress-body .post-payment-total {
+  margin: 0;
+}
+.phone .case-progress-body .post-payment-deadline {
+  margin: 0;
+}
 
-.phone .case-progress-head > .tag.warn { background: var(--semantic-warning-background); color: var(--semantic-warning-text); }
-.phone .case-progress-head > .tag.ok { background: var(--semantic-success-background); color: var(--semantic-success-text); }
-.phone .case-progress-head > .tag.muted { background: var(--semantic-surface-muted); color: var(--semantic-text-secondary); }
+.phone .case-progress-head > .tag.warn {
+  background: var(--semantic-warning-background);
+  color: var(--semantic-warning-text);
+}
+.phone .case-progress-head > .tag.ok {
+  background: var(--semantic-success-background);
+  color: var(--semantic-success-text);
+}
+.phone .case-progress-head > .tag.muted {
+  background: var(--semantic-surface-muted);
+  color: var(--semantic-text-secondary);
+}
 
 /* Gallery isolates the same live cards without the home-page chrome. */
-.phone .consultation-card-preview { padding: 0; }
-.phone .consultation-card-preview > .case-progress-card { margin: 0; }
+.phone .consultation-card-preview {
+  padding: 0;
+}
+.phone .consultation-card-preview > .case-progress-card {
+  margin: 0;
+}
 
 body:has(.consultation-card-preview) #tabbar,
-body:has(.consultation-card-preview) #minibar { display: none !important; }
-.phone .scr:has(.consultation-card-preview) > .app-page { padding-bottom: var(--space-4); }
+body:has(.consultation-card-preview) #minibar {
+  display: none !important;
+}
+.phone .scr:has(.consultation-card-preview) > .app-page {
+  padding-bottom: var(--space-4);
+}
 
 body:has(.consultation-card-preview),
 body:has(.consultation-card-preview) .phone,
-body:has(.consultation-card-preview) .scr { background: transparent !important; }
+body:has(.consultation-card-preview) .scr {
+  background: transparent !important;
+}
 
 body:has(.consultation-card-preview) #stack,
-body:has(.consultation-card-preview) #stage {background: #e8f1f0 !important;}
-body:has(.consultation-card-preview) nextjs-portal {display:none;}
+body:has(.consultation-card-preview) #stage {
+  background: #e8f1f0 !important;
+}
+body:has(.consultation-card-preview) nextjs-portal {
+  display: none;
+}
+
+/* Chat identity stays outside the softly shaded conversation. */
+.rm-provider-bar {
+  position: absolute;
+  top: calc(var(--st) + 52px);
+  left: 0;
+  right: 0;
+  z-index: 4;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-4);
+  min-height: 60px;
+  background: var(--semantic-surface);
+}
+.rm-provider-bar .rm-who {
+  flex: 1;
+  justify-content: flex-start;
+  text-align: left;
+  gap: var(--space-3);
+}
+.rm-provider-bar .rm-who b {
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
+}
+.rm-provider-license {
+  color: var(--ink-3);
+  font-weight: var(--weight-regular);
+}
+.rm-provider-bar .rm-who small {
+  font-size: var(--text-small);
+}
+.rm-scroll {
+  background: var(--semantic-disabled-bg);
+}
+.rm-scroll.has-provider {
+  padding-top: calc(var(--st) + 128px);
+}
+.rm-scroll.has-provider.has-net {
+  padding-top: calc(var(--st) + 170px);
+}
+.rm-scroll.has-provider.has-call {
+  padding-top: calc(var(--st) + 170px);
+}
+.scr:has(.rm-provider-bar) .rm-call,
+.scr:has(.rm-provider-bar) .rm-net {
+  top: calc(var(--st) + 112px);
+}
+.scr:has(.rm-provider-bar) .rm-call ~ .rm-net {
+  top: calc(var(--st) + 154px);
+}
+.rm-scroll.has-provider.has-call.has-net {
+  padding-top: calc(var(--st) + 212px);
+}
+.rm-comp {
+  background: var(--semantic-surface);
+}
+.rm-provider-ready span {
+  display: inline-block;
+  padding: var(--space-2) var(--space-4);
+  line-height: var(--leading-body);
+}
+
+.scr .rm-scroll {
+  background: var(--semantic-disabled-bg);
+}
+.scr .rm-scroll .msg.ph > p {
+  background: var(--semantic-surface);
+  color: var(--ink);
+}
+.scr .rm-scroll .msg.me > p {
+  background: var(--brand);
+  color: var(--semantic-surface);
+}
+.scr .rm-scroll .msg-sys > span {
+  background: rgb(var(--color-ink-rgb) / 0.045);
+}
+.scr .rm-queue-bar {
+  background: var(--brand);
+  color: var(--semantic-surface);
+  overflow: hidden;
+  isolation: isolate;
+}
+.scr .rm-queue-copy small {
+  color: var(--on-brand-2);
+}
+.scr .rm-queue-icon {
+  background: rgb(255 255 255 / 0.14);
+  color: var(--semantic-surface);
+}
+.rm-queue-bar::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    110deg,
+    transparent 20%,
+    rgb(255 255 255 / 0.13) 50%,
+    transparent 80%
+  );
+  transform: translateX(-100%);
+  animation: queue-light-pass 4s ease-in-out infinite;
+  z-index: -1;
+}
+@keyframes queue-light-pass {
+  to {
+    transform: translateX(100%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rm-queue-bar::after {
+    animation: none;
+    display: none;
+  }
+}
+.scr .rm-provider-bar {
+  background: var(--brand);
+  color: var(--semantic-surface);
+}
+.scr .rm-provider-bar .rm-who b,
+.scr .rm-provider-bar .ibtn {
+  color: var(--semantic-surface);
+}
+.scr .rm-provider-bar .rm-provider-license,
+.scr .rm-provider-bar .rm-who small {
+  color: var(--on-brand-2);
+}
+
+/* C303: pharmacist proposal uses the shared order items, without checkout actions. */
+.rm-medicine-card { padding: 0; overflow: hidden; background: var(--surface); border: 1px solid var(--hair); box-shadow: var(--shadow-card); }
+.rm-medicine-card > .mo-h { padding: var(--space-3); background: var(--surface); border-bottom: 1px solid var(--hair); }
+.rm-medicine-card > .mo-h > div { flex: 1; min-width: 0; }
+.rm-medicine-card > .mo-h small { display: block; color: var(--ink-3); font-size: var(--text-small); margin-top: var(--space-1); }
+.rm-medicine-body { padding: 0 var(--space-3); }
+.rm-medicine-body .mo-l { margin: 0; }
+.rm-medicine-body .mo-l li { padding: var(--space-3) 0; }
+.rm-medicine-body .mo-l li:last-child { border-bottom: 0; }
+.rm-medicine-body .mo-l .num { white-space: nowrap; }
+.rm-medicine-footer { padding: var(--space-3); background: var(--surface); border-top: 1px solid var(--hair); }
+.rm-medicine-footer .mo-t { padding: 0; align-items: center; }
+.rm-medicine-footer .mo-t > b { color: var(--brand); font-size: var(--type-body-mobile-size); }
+.scr .msg .rm-medicine-footer p { padding: 0; background: transparent; border-radius: 0; margin: var(--space-2) 0 0; font-size: var(--text-small); color: var(--ink-3); line-height: var(--type-body-mobile-line); }
+
+.scr .msg .rm-medicine-footer p.rm-medicine-notice { padding: var(--space-2) var(--space-3); background: var(--semantic-warning-background); color: var(--semantic-warning-text); border-radius: var(--radius-sm); }
+
+/* Pharmacist basket: separate from chat entry, with no purchase action. */
+.dock.rm-comp { flex-direction: column; align-items: stretch; gap: 0; }
+.rm-compose-row { display: flex; align-items: flex-end; gap: var(--space-1); width: 100%; }
+#rmBasket:empty { display: none; }
+.rm-basket-bar { display: flex; align-items: center; gap: var(--space-2); width: 100%; min-height: 48px; padding: var(--space-2) var(--space-3); margin-bottom: var(--space-2); border: 1px solid var(--hair); border-radius: var(--radius-sm); background: var(--brand-soft); color: var(--brand); text-align: left; font-size: var(--text-small); }
+.rm-basket-bar > span:first-of-type { flex: 1; }
+.rm-basket-open { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: 600; white-space: nowrap; }
+.rm-basket-intro { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--brand-soft); border-radius: var(--radius-sm); color: var(--brand); }
+.rm-basket-intro p { margin: var(--space-1) 0 0; }
+.rm-basket-items .mo-l { margin: var(--space-3) 0; }
+.rm-basket-items .mo-l li { padding: var(--space-3) 0; }
+.rm-basket-items .num { white-space: nowrap; }
+.rm-basket-total { display: flex; justify-content: space-between; align-items: center; padding: var(--space-3) 0; border-top: 1px solid var(--hair); }
+.rm-basket-total b { color: var(--brand); }
+.rm-basket-content > .note { margin-top: var(--space-2); }
+.rm-basket-empty { text-align: center; padding: var(--space-6) var(--space-3); color: var(--ink-3); }
+.rm-basket-empty > svg { color: var(--brand); margin-bottom: var(--space-3); }
+
+.rm-basket-strip { position: absolute; z-index: 8; left: 0; right: 0; bottom: var(--dock-h, 86px); }
+.rm-basket-strip .rm-basket-bar { margin: 0; border-radius: 0; border-left: 0; border-right: 0; min-height: 52px; padding-inline: var(--page-gutter); }
+.scr:has(.rm-basket-bar) > .rm-scroll { padding-bottom: calc(var(--dock-h, 86px) + 52px + var(--space-4)); }
+.rm-basket-strip .rm-basket-bar {
+  background: linear-gradient(110deg, var(--brand-deep), var(--brand));
+  color: var(--surface);
+  border-color: var(--brand);
+  box-shadow: var(--shadow-card);
+}
+.rm-basket-bar > .ic { flex: none; width: 24px; height: 24px; }
+
+/* Medicine basket cover and pharmacist identity dialog share the app tokens. */
+.rm-basket-intro {
+  position: relative;
+  min-height: 104px;
+  overflow: hidden;
+  padding: var(--space-3) var(--space-4);
+  background: var(--brand-deep) url("/assets/illustrations/medicine-basket-banner-v2.png") center / cover no-repeat;
+  color: var(--surface);
+  border-radius: var(--radius-md);
+}
+.rm-basket-intro > div { position: relative; z-index: 1; width: 65%; }
+.rm-basket-intro b { display: block; font-size: var(--type-body-lg-mobile-size); line-height: 1.5; }
+.rm-basket-eyebrow { display: block; font-size: var(--text-small); margin-bottom: var(--space-1); opacity: .85; }
+.rm-basket-intro .small { color: inherit; opacity: .9; }
+.rm-provider-bar button.rm-who { display: flex; align-items: center; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.phone .sheet.rm-provider-popup { inset: 0; margin: auto; width: calc(100% - 48px); height: fit-content; max-height: calc(100% - 120px); border-radius: var(--radius-lg); }
+.rm-provider-popup .grab { display: none; }
+.rm-provider-popup .sh-h { min-height: 48px; }
+.rm-provider-popup .sh-h h2 { font-size: var(--text-small); }
+.rm-provider-popup .sh-b { padding-top: 0; overflow-y: auto; }
+.rm-provider-popup .sh-f { padding-bottom: var(--space-4); }
+.rm-provider-profile { text-align: center; }
+.rm-provider-portrait { display: block; width: 128px; height: 128px; margin: 0 auto var(--space-4); border: 3px solid var(--brand-soft); border-radius: 50%; object-fit: cover; }
+.rm-provider-profile .h3 { margin: 0 0 var(--space-3); }
+.rm-provider-profile dl { margin: 0; font-size: var(--text-small); }
+.rm-provider-profile dl > div { display: flex; justify-content: space-between; gap: var(--space-3); padding: var(--space-2) 0; border-bottom: 1px solid var(--hair); text-align: left; }
+.rm-provider-profile dt { color: var(--ink-3); }
+.rm-provider-profile dd { margin: 0; text-align: right; }
+
+/* Keep the minimized call distinct from the provider header. */
+.phone .rm-call { background: var(--brand-deep); color: var(--surface); border: 0; }
+.phone .rm-call .rm-call-go { color: inherit; opacity: .85; }
+
+/* Video call cover: a clear dialing state without an identity card. */
+.phone .vd-remote { background: radial-gradient(ellipse at 50% 38%, var(--brand) 0%, var(--brand-deep) 78%); }
+.vd-call-cover { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 100px 24px 145px; text-align: center; color: var(--surface); }
+.vd-call-avatar { position: relative; width: 128px; height: 128px; margin-bottom: 28px; isolation: isolate; }
+.vd-call-avatar img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--surface); box-shadow: 0 12px 40px rgb(0 0 0 / .18); }
+.vd-call-mark { position: absolute; right: -4px; bottom: 0; display: grid; place-items: center; width: 36px; height: 36px; background: var(--brand); border: 2px solid var(--surface); border-radius: 50%; }
+.vd-call-cover h2 { margin: 0 0 8px; font-size: var(--type-body-lg-mobile-size); font-weight: 600; }
+.vd-call-cover p { margin: 0 0 24px; font-size: var(--text-small); opacity: .8; }
+.vd-dial-status { display: flex; align-items: center; gap: 8px; font-size: var(--text-small); }
+.vd-dial-status > span { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: vd-dot 1.5s ease-in-out infinite; }
+.vd-call-cover small { margin-top: 10px; font-size: var(--text-small); opacity: .65; }
+@keyframes vd-dot { 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .vd-ripples > i, .vd-dial-status > span { animation: none; } }
+
+.rm-basket-strip .rm-basket-bar { position: relative; isolation: isolate; background: var(--brand); color: var(--surface); border-color: var(--brand); }
+.rm-basket-strip .rm-basket-bar::before { content: ''; position: absolute; inset: 0; z-index: -1; background: url('/assets/illustrations/medicine-basket-strip-light-v1.png') center / cover no-repeat; opacity: .12; pointer-events: none; }
+
+/* Staggered water ripples animate only transform and opacity. */
+.vd-ripples { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.vd-ripples > i { position: absolute; inset: -4px; border: 1px solid rgb(255 255 255 / .45); border-radius: 50%; box-shadow: inset 0 0 12px rgb(255 255 255 / .07), 0 0 16px rgb(255 255 255 / .05); opacity: 0; animation: vd-water-ripple 5.6s cubic-bezier(.2,.5,.4,1) infinite; }
+.vd-ripples > i:nth-child(2) { animation-delay: -1.4s; }
+.vd-ripples > i:nth-child(3) { animation-delay: -2.8s; }
+.vd-ripples > i:nth-child(4) { animation-delay: -4.2s; }
+@keyframes vd-water-ripple { 0% { transform: scale(1); opacity: 0; } 12% { opacity: .65; } 65% { opacity: .2; } 100% { transform: scale(2.6); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .vd-ripples > i { animation: none; opacity: .15; transform: scale(1.2); } .vd-ripples > i:not(:first-child) { display: none; } }
+
+.rm-basket-empty-illustration { display: block; width: 144px; height: 144px; object-fit: contain; margin: 0 auto var(--space-3); }
+.rm-basket-empty .h3 { color: var(--ink); }
+.rm-basket-strip[hidden] { display: none; }
+
+/* Checkout advice and delivery address reuse the summary card pattern. */
+.payw .checkout-advice { margin-top: var(--space-3); }
+.payw .checkout-address { margin: 0; }
+.payw .checkout-address .pay-address-readonly { padding: 0; border: 0; background: transparent; }
+
+/* C308: consistent section rhythm, type scale and QR bill hierarchy. */
+.payw { gap: var(--space-4); }
+.payw > .pay-store { margin: 0; font-size: var(--text-body); }
+.payw > .pay-exp { margin: 0; padding: var(--space-3); }
+.payw .checkout-block { padding-bottom: var(--space-4); }
+.payw .checkout-delivery, .payw .checkout-tax, .payw .checkout-order-section { padding-bottom: 0; }
+.payw .pay-sec { margin: 0 0 var(--space-3); font-size: var(--text-body); line-height: var(--type-body-mobile-line); }
+.payw .checkout-order-card .medicine-copy b { font-size: var(--text-body); }
+.payw .checkout-order-card .medicine-copy small { font-size: var(--text-small); }
+.payw .pay-sum { margin-top: 0; }
+.payw .checkout-advice .af-advice-text { font-size: var(--text-body); }
+.payw #payAddrSec { margin-top: var(--space-3); }
+.qr-box.card { display: block; padding: 0; overflow: hidden; border: 1px solid var(--hair); text-align: left; }
+.qr-bill-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-4); background: var(--brand-tint); border-bottom: 1px solid var(--hair); }
+.qr-bill-head > div { flex: 1; min-width: 0; }
+.qr-bill-head h3, .qr-scan-body h4, .qr-bill-foot h4 { margin: 0; font-size: var(--text-body); font-weight: var(--weight-semibold); line-height: var(--type-body-mobile-line); }
+.qr-bill-head p { margin: var(--space-1) 0 0; font-size: var(--text-small); color: var(--ink-2); }
+.qr-bill-head .qr-av { flex: none; width: 36px; height: 36px; border-radius: var(--radius-md); background: var(--surface); }
+.qr-bill-summary { padding: var(--space-4); text-align: center; }
+.qr-bill-summary p { margin: 0; }
+.qr-bill-summary .qr-amt { margin: var(--space-1) 0; color: var(--brand-deep); font-size: var(--type-h1-mobile-size); line-height: var(--type-h1-mobile-line); }
+.qr-order-number { color: var(--ink-3); font-size: var(--text-small); overflow-wrap: anywhere; }
+.qr-breakdown { margin-top: var(--space-3); padding-top: var(--space-3); border-top: 1px dashed var(--hair); text-align: left; font-size: var(--text-small); }
+.qr-breakdown .kv { margin: 0; }
+.qr-scan-body { display: grid; justify-items: center; gap: var(--space-2); padding: var(--space-4); border-top: 1px solid var(--hair); }
+.qr-scan-body > p { margin: 0; }
+.qr-scan-body .qr-code { width: min(224px, 100%); aspect-ratio: 1; height: auto; background: var(--surface); }
+.qr-scan-body .qr-cd { display: flex; align-items: center; gap: var(--space-1); padding: var(--space-2) var(--space-3); background: var(--brand-tint); border-radius: var(--radius-pill); }
+.qr-bill-foot { padding: var(--space-4); background: var(--color-neutral-50); border-top: 1px solid var(--hair); }
+.qr-bill-foot ol { margin: var(--space-2) 0 0; padding-left: var(--space-4); color: var(--ink-2); font-size: var(--text-small); line-height: var(--type-body-mobile-line); }
+.qr-payment-status { margin-top: var(--space-4); }
+.qr-payment-status .qr-wait { margin-top: 0; }
+
+/* C309: current-state artwork with an icon-only fulfillment stepper. */
+.pd-status-card { margin: var(--space-4) 0; }
+.pd-status-content { padding: var(--space-3) 0 var(--space-4); text-align: center; }
+.pd-status-art { display: block; width: 180px; height: 160px; object-fit: contain; margin: 0 auto var(--space-3); }
+.pd-status-title { margin: 0; color: var(--brand-deep); font-size: var(--text-h2); line-height: var(--type-body-mobile-line); }
+.pd-status-order { margin: var(--space-2) 0 0; font-size: var(--text-small); line-height: var(--type-body-sm-mobile-line); color: var(--ink-2); overflow-wrap: anywhere; }
+.pd-status-order strong { color: var(--ink); }
+.pd-status-description { margin: var(--space-2) auto 0; max-width: 32ch; font-size: var(--text-small); color: var(--ink-2); line-height: var(--type-body-sm-mobile-line); }
+.pd-status-steps { display: grid; grid-template-columns: repeat(var(--status-steps,4),minmax(0,1fr)); list-style: none; padding: 0; margin: var(--space-5) 0 0; }
+.pd-status-steps li { position: relative; display: grid; place-items: center; min-width: 0; }
+.pd-status-steps li:not(:last-child)::after { content: ''; position: absolute; top: 17px; left: calc(50% + 18px); width: calc(100% - 36px); height: 2px; background: var(--semantic-border); }
+.pd-status-steps li.done::after { background: var(--brand-deep); }
+.pd-step-marker { position: relative; z-index: 1; display: grid; place-items: center; width: 36px; height: 36px; border: 2px solid var(--semantic-border); border-radius: 50%; background: var(--neutral-50); color: var(--ink-3); }
+.pd-status-steps .done .pd-step-marker { border-color: var(--brand-deep); background: var(--brand-deep); color: var(--semantic-surface); }
+.pd-status-steps .cur .pd-step-marker { border-color: var(--brand-deep); background: var(--brand-deep); color: var(--semantic-surface); box-shadow: none; }
+
+/* Payment result pages share the customer type and spacing tokens. */
+.payment-result { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: var(--space-5) 0; }
+.payment-result-art { width: min(100%, 260px); aspect-ratio: 1; object-fit: contain; margin-bottom: var(--space-4); }
+.payment-result h1 { font-size: var(--text-h2); line-height: 1.4; margin: 0 0 var(--space-2); }
+.payment-result-message { color: var(--ink-2); font-size: var(--text-body); margin: 0 0 var(--space-4); }
+.payment-result-order { margin: 0; color: var(--ink-2); font-size: var(--text-small); }
+.payment-result-order strong { display: block; color: var(--ink); margin-top: var(--space-1); }
+.payment-result-actions { display: grid; gap: var(--space-2); width: 100%; margin-top: var(--space-6); }
+
+.pd-status-content { position: relative; isolation: isolate; }
+
+.pd-step-marker svg { width: 18px; height: 18px; }
+
+/* A spreading aura identifies the current step without moving the artwork. */
+.pd-status-steps .cur .pd-step-marker::before,
+.pd-status-steps .cur .pd-step-marker::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  border: 0;
+  background: radial-gradient(circle, transparent 45%, color-mix(in srgb, var(--brand) 32%, transparent) 62%, transparent 76%);
+  pointer-events: none;
+  animation: status-step-aura 2.8s ease-out infinite;
+}
+.pd-status-steps .cur .pd-step-marker::after { animation-delay: -1.4s; }
+@keyframes status-step-aura {
+  0% { transform: scale(1); opacity: .65; }
+  85%, 100% { transform: scale(1.8); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pd-status-steps .cur .pd-step-marker::before,
+  .pd-status-steps .cur .pd-step-marker::after { animation: none; opacity: 0; }
+}
+
+/* Keep parcel copy action at the trailing edge of the carrier card. */
+.tk-h > .ibtn[data-a="copyTrack"] { margin-inline-start: auto; flex-shrink: 0; }
+
+/* Summary medicine rows reuse the medicine list shown in consultation chat. */
+.af-visit-section .af-medicine-list { padding: 0 var(--space-4); }
+.af-visit-section .af-medicine-list .mo-l { margin: 0; padding: 0; }
+.af-visit-section .af-medicine-list .medicine-copy { min-width: 0; flex: 1; }

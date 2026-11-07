@@ -12,7 +12,7 @@ function readScreens() {
     .filter((entry) => entry.isDirectory())
     .flatMap((group) =>
       readdirSync(join(root, group.name))
-        .filter((file) => /^C\d+\.json$/.test(file))
+        .filter((file) => /^C\d+(?:\.\d+)*\.json$/.test(file))
         .map((file) => JSON.parse(readFileSync(join(root, group.name, file), 'utf8'))),
     );
   return new Map(manifests.map((screen) => [screen.code, screen]));
