@@ -38,7 +38,7 @@
     {
       "code": "C203.6",
       "state": "ack",
-      "label": "ติ๊กรับทราบแล้ว",
+      "label": "ข้อมูลพร้อมปรึกษา",
       "url": "/?screen=intake&state=ack&splash=0"
     },
     {
