@@ -691,6 +691,32 @@
       "steps": "กดปุ่มเคส ตรวจข้อมูลและข้อความ แล้วลองแก้ข้อมูลหรือกดปุ่มหลักตามสถานการณ์"
     },
     {
+      "id": "EV-C518-multiple-person",
+      "screen": "taxprofile",
+      "screenCode": "C518",
+      "caseCode": "C518.7",
+      "state": "multiple-person",
+      "label": "บุคคลธรรมดาหลายรายการ",
+      "url": "/?screen=taxprofile&state=multiple-person&splash=0",
+      "category": "สถานะ / การใช้งาน",
+      "setup": "เปิดสถานการณ์ “บุคคลธรรมดาหลายรายการ”",
+      "expected": "แสดง “บุคคลธรรมดาหลายรายการ” ตามเคสจำลอง ตรวจข้อความ ปุ่มที่กดได้ และหน้าปลายทางให้ตรงกับบริบท",
+      "steps": "กดปุ่มเคส ตรวจข้อมูลและข้อความ แล้วลองแก้ข้อมูลหรือกดปุ่มหลักตามสถานการณ์"
+    },
+    {
+      "id": "EV-C518-multiple-company",
+      "screen": "taxprofile",
+      "screenCode": "C518",
+      "caseCode": "C518.8",
+      "state": "multiple-company",
+      "label": "นิติบุคคลหลายรายการ",
+      "url": "/?screen=taxprofile&state=multiple-company&splash=0",
+      "category": "สถานะ / การใช้งาน",
+      "setup": "เปิดสถานการณ์ “นิติบุคคลหลายรายการ”",
+      "expected": "แสดง “นิติบุคคลหลายรายการ” ตามเคสจำลอง ตรวจข้อความ ปุ่มที่กดได้ และหน้าปลายทางให้ตรงกับบริบท",
+      "steps": "กดปุ่มเคส ตรวจข้อมูลและข้อความ แล้วลองแก้ข้อมูลหรือกดปุ่มหลักตามสถานการณ์"
+    },
+    {
       "id": "EV-C519-person",
       "screen": "taxprofileedit",
       "screenCode": "C519",

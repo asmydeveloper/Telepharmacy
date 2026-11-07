@@ -21,7 +21,7 @@ h.S.intake.symptoms=['ไอ','น้ำมูก'];html=h.screens.intake.render
 h.S.intake.otherOpen=true;html=h.screens.intake.render({S:h.S,state:'other',params:{}});assert(!html.includes('id="ikOtherIn"'));assert(html.includes('<textarea'));assert(!html.includes('เพิ่มอาการ</span>'));assert(!html.includes('<details class="ik-extra"'));
 h.S.intake.symptoms=['อาการเดิมจากร่าง'];html=h.screens.intake.render({S:h.S,state:'normal',params:{}});assert(h.S.intake.note.includes('อาการเดิมจากร่าง'));assert(!html.includes('id="ikSymOptions"'));
 const legacyNames=['น้ำมูก คัดจมูก','ผื่น คัน','ตาแดง แสบตา'];const symptomLine=source.match(/TP.SYMPTOMS = \[[^;]+/)[0];for(const name of legacyNames)assert(!symptomLine.includes(name));
-const css=fs.readFileSync('src/styles/intake.css','utf8');assert(css.includes('grid-template-columns:repeat(2,minmax(0,1fr))'));assert(css.includes('min-height:48px'));
+const css=fs.readFileSync('src/styles/intake.css','utf8');const hasCss=fragment=>css.replace(/[\s;]/g,'').includes(fragment.replace(/[\s;]/g,''));assert(hasCss('grid-template-columns:repeat(2,minmax(0,1fr))'));assert(hasCss('min-height:48px'));
 console.log('PASS: multi-select rendering, empty summary, Other input, legacy draft preservation, split symptom labels and custom input validation');
 
 
@@ -43,16 +43,16 @@ const removeStart=source.indexOf("TP.act('addPhoto',");sections.run(source.slice
 sections.actions.ikPhotoRemove({dataset:{v:'1'}});assert.equal(I.photos,2);assert(sections.screens.intake.render({S:sections.S,state:'photos',params:{}}).includes('data-a="addPhoto"'));assert.deepEqual(revoked,['blob:1']);assert.equal(I.attachments[1].file.name,'private-name-3.jpg');assert.equal(sections.TP.intakePhotoBatch(I,[img(4)]),'');assert.equal(I.photos,3);
 I.attachments=[];assert(sections.TP.intakePhotoBatch(I,[{type:'application/pdf',size:10}]));assert(sections.TP.intakePhotoBatch(I,[{type:'image/png',size:6*1024*1024}]));assert.equal(I.attachments.length,0);
 let picker=0,change;sections.elements['#ikPhotos']={click(){picker++},addEventListener:(type,fn)=>change=fn};sections.actions.addPhoto();assert.equal(picker,1);let modeChange;sections.screens.intake.mount({addEventListener:(type,fn)=>{if(type==='change')modeChange=fn;}}, {S:sections.S});modeChange({target:{name:'ikConsultMode',value:'chat'}});assert.equal(I.mode,'chat');modeChange({target:{name:'ikConsultMode',value:'video'}});assert.equal(I.mode,'video');change({target:{files:[img(5)],value:'selected'}});assert.equal(I.attachments.length,1);change({target:{files:[],value:''}});assert.equal(I.attachments.length,1);
-assert(css.includes(':where(#ikSymOptions,.ik-safety) .chips {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'));assert(css.includes('grid-template-columns:repeat(3,minmax(0,1fr))'));
+assert(hasCss(':where(#ikSymOptions,.ik-safety) .chips {display:grid;grid-template-columns:repeat(2,minmax(0,1fr))'));assert(hasCss('grid-template-columns:repeat(3,minmax(0,1fr))'));
 console.log('PASS: upload picker/change, 3-photo limit, hidden filenames, deletion/replacement, cancelled selection and type/size errors');
 
-assert(!css.includes(":is(#ikSymOptions,.ik-safety)"),"shared styles must not inherit ID specificity and override the urgent single column");assert(css.includes(":where(#ikSymOptions,.ik-safety)"));assert(source.includes('class="note danger ik-urgent-message"'));
+assert(!hasCss(":is(#ikSymOptions,.ik-safety)"),"shared styles must not inherit ID specificity and override the urgent single column");assert(hasCss(":where(#ikSymOptions,.ik-safety)"));assert(source.includes('class="note danger ik-urgent-message"'));
 
 const ready=sections.TP.intakeReady;Object.assign(I,{symptoms:[],note:'',otherOpen:false,otherText:''});assert(!ready(I));I.note='ปวดหูข้างซ้าย\nเริ่มเมื่อวาน';assert(ready(I));
 page=sections.screens.intake.render({S:sections.S,state:'other',params:{}});assert(page.includes('ปวดหูข้างซ้าย'));assert(!page.includes('data-v="__other"'));assert(!page.includes('id="ikOtherIn"'));assert(page.indexOf('ik-upload-help')<page.indexOf('</button>',page.indexOf('ik-upload-help')));
 assert(page.includes('id="ikAckLabel"'));assert(page.includes('ฉันได้อ่านและรับทราบ'));assert(page.includes('ik-consent-copy'));assert(!page.includes('<details class="ik-extra"'));
 sections.S.intake.ack=false;sections.actions.ikAck({checked:true});assert(sections.S.intake.ack);sections.actions.ikAck({checked:false});assert(!sections.S.intake.ack);
-assert(css.includes('color-mix(in srgb,var(--semantic-error-background) 30%'));assert(css.includes('#ikUrgentAlert :is(b,a,span) {color:inherit}'));
+assert(hasCss('color-mix(in srgb,var(--semantic-error-background) 30%'));assert(hasCss('#ikUrgentAlert :is(b,a,span) {color:inherit}'));
 assert(page.includes('แนบรูปเพิ่มเติม'));console.log('PASS: free-text readiness, inline acknowledgment, visible optional form and upload-area guidance');
 
 const redflagStart=source.indexOf("TP.sheetDef('redflag'");sections.run(source.slice(redflagStart,source.indexOf("TP.act('call1669'",redflagStart)));

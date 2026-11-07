@@ -23,7 +23,7 @@ console.log('PASS: login panel lists C102.1 to C102.12, matching the screen mani
 
 for(const text of ['จอนี้','ลองสถานะของจอนี้','ทั้งแอป','ไปจอ · ทั้งหมด 3 จอ','data-pn="jump" data-k="home"','data-pn="g" data-k="storeOpen"','data-pn="restart"','pn-foot'])assert(panel.innerHTML.includes(text),text);
 assert(!panel.innerHTML.includes('data-k="registrationexit"'));for(const text of ['pnMainFlow','pnAutofill','EV-GLOBAL-'])assert(!panel.innerHTML.includes(text),text);
-assert(fs.readFileSync('src/app/Shell.jsx','utf8').includes('"id": "codeBadge", "aria-hidden": "true"'));
+assert.match(fs.readFileSync('src/app/Shell.jsx','utf8'), /id:\s*['"]codeBadge['"],\s*['"]aria-hidden['"]:\s*['"]true['"]/);
 console.log('PASS: panel has the reference sections, a code badge and no sidebar controls');
 
 id='profile';context.render();assert(!panel.innerHTML.includes('ลองสถานะของจอนี้'));assert(context.badge.innerHTML.includes('C105'));

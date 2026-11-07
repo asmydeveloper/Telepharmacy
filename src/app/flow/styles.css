@@ -9,42 +9,157 @@
   width: 100%;
   padding: clamp(14px, 2vw, 32px);
   color: var(--ink);
-  font-family: "Noto Sans Thai", sans-serif;
+  font-family: 'Noto Sans Thai', sans-serif;
 }
-.flow-page *, .flow-page *::before, .flow-page *::after { box-sizing: inherit; }
+.flow-page *,
+.flow-page *::before,
+.flow-page *::after {
+  box-sizing: inherit;
+}
 .flow-hero {
   padding: clamp(22px, 5vw, 56px);
   border-radius: 26px;
   color: white;
   background-color: #005f69;
-  background-image: linear-gradient(90deg, #005f6926 0%, #005f691a 45%, transparent 75%), url("/assets/photos/flow-pharmacy-cover-v2.jpg");
-  background-position: center, 70% center;
+  background-image:
+    linear-gradient(90deg, #005f6926 0%, #005f691a 45%, transparent 75%),
+    url('/assets/photos/flow-pharmacy-cover-v2.jpg');
+  background-position:
+    center,
+    70% center;
   background-size: cover;
 }
-.flow-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.flow-top strong { letter-spacing: .16em; }
-.flow-top a { color: inherit; background: #063a42; border-radius: 8px; padding: 4px 10px; }
-.flow-hero h1 { font-size: clamp(2rem, 5vw, 3.4rem); margin: 24px 0 4px; max-width: 60%; line-height: 1.2; }
-.flow-hero p { margin: 12px 0 0; color: #e0f5ee; max-width: 56%; }
-.flow-nav { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr)); gap: 12px; }
-.flow-nav { margin: 20px 0 10px; }
-.flow-nav a, .flow-grid li { background: white; border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
-.flow-nav a { color: inherit; text-decoration: none; }
-.flow-nav b { display: block; color: var(--accent); }
-.flow-legend, .flow-caption { color: #486168; font-size: .88rem; }
-.flow-section { margin-top: 32px; padding: clamp(14px, 2.8vw, 32px); border: 1px solid var(--line); border-radius: 22px; background: #f3f8f6; }
-.flow-section h2 { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px; margin: 0; font-size: clamp(1.2rem, 3vw, 1.7rem); }
-.flow-section h2 span { color: var(--accent); }
-.flow-group h3 { margin: 26px 0 10px; font-size: 1.05rem; }
-.flow-grid { display: grid; grid-auto-flow: column; grid-auto-columns: calc(var(--flow-phone-width) + 2 * var(--flow-card-padding) + 2px); gap: 12px; overflow-x: auto; list-style: none; margin: 0; padding: 0 0 10px; align-items: stretch; scroll-snap-type: x proximity; }
-.flow-grid > li { padding: var(--flow-card-padding); display: flex; flex-direction: column; min-width: 0; scroll-snap-align: start; }
-.flow-grid li.flow-home-card { background: #eef8ff; border-color: #b9d8e8; }
-.flow-grid h4 { margin: 10px 0; }
-.flow-codes { display: flex; justify-content: space-between; gap: 8px; font-size: .83rem; }
-.flow-codes b { color: var(--accent); }
-.flow-codes span { background: #e7f2ef; padding: 2px 9px; border-radius: 20px; }
-.flow-state { display: grid; gap: 6px; font-size: .9rem; font-weight: 600; }
-.flow-actions a { font: inherit; color: inherit; border: 1px solid var(--line); border-radius: 8px; padding: 8px; background: white; }
+.flow-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.flow-top strong {
+  letter-spacing: 0.16em;
+}
+.flow-top a {
+  color: inherit;
+  background: #063a42;
+  border-radius: 8px;
+  padding: 4px 10px;
+}
+.flow-hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  margin: 24px 0 4px;
+  max-width: 60%;
+  line-height: 1.2;
+}
+.flow-hero p {
+  margin: 12px 0 0;
+  color: #e0f5ee;
+  max-width: 56%;
+}
+.flow-nav {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 245px), 1fr));
+  gap: 12px;
+}
+.flow-nav {
+  margin: 20px 0 10px;
+}
+.flow-nav a,
+.flow-grid li {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 16px;
+}
+.flow-nav a {
+  color: inherit;
+  text-decoration: none;
+}
+.flow-nav b {
+  display: block;
+  color: var(--accent);
+}
+.flow-legend,
+.flow-caption {
+  color: #486168;
+  font-size: 0.88rem;
+}
+.flow-section {
+  margin-top: 32px;
+  padding: clamp(14px, 2.8vw, 32px);
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  background: #f3f8f6;
+}
+.flow-section h2 {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 0;
+  font-size: clamp(1.2rem, 3vw, 1.7rem);
+}
+.flow-section h2 span {
+  color: var(--accent);
+}
+.flow-group h3 {
+  margin: 26px 0 10px;
+  font-size: 1.05rem;
+}
+.flow-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: calc(var(--flow-phone-width) + 2 * var(--flow-card-padding) + 2px);
+  gap: 12px;
+  overflow-x: auto;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 10px;
+  align-items: stretch;
+  scroll-snap-type: x proximity;
+}
+.flow-grid > li {
+  padding: var(--flow-card-padding);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  scroll-snap-align: start;
+}
+.flow-grid li.flow-home-card {
+  background: #eef8ff;
+  border-color: #b9d8e8;
+}
+.flow-grid h4 {
+  margin: 10px 0;
+}
+.flow-codes {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.83rem;
+}
+.flow-codes b {
+  color: var(--accent);
+}
+.flow-codes span {
+  background: #e7f2ef;
+  padding: 2px 9px;
+  border-radius: 20px;
+}
+.flow-state {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+.flow-actions a {
+  font: inherit;
+  color: inherit;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 8px;
+  background: white;
+}
 .flow-state select {
   width: 100%;
   min-height: 48px;
@@ -56,16 +171,45 @@
   font: inherit;
   font-weight: 500;
 }
-.flow-state select:focus-visible { outline: 2px solid var(--brand, var(--accent)); outline-offset: 2px; }
-.flow-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; font-size: .88rem; }
-.flow-actions a { color: var(--accent); text-decoration: none; }
-.flow-page :is(a, select, .flow-grid):focus-visible { outline: 2px solid #007568; outline-offset: 3px; }
-.flow-grid iframe { flex: none; display: block; width: var(--flow-phone-width); height: var(--flow-phone-height); border: 0; outline: 1px solid var(--line); border-radius: 12px; margin-top: auto; }
-.flow-grid :is(.flow-state, .flow-caption) { margin: 0 0 12px; }
+.flow-state select:focus-visible {
+  outline: 2px solid var(--brand, var(--accent));
+  outline-offset: 2px;
+}
+.flow-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 0.88rem;
+}
+.flow-actions a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.flow-page :is(a, select, .flow-grid):focus-visible {
+  outline: 2px solid #007568;
+  outline-offset: 3px;
+}
+.flow-grid iframe {
+  flex: none;
+  display: block;
+  width: var(--flow-phone-width);
+  height: var(--flow-phone-height);
+  border: 0;
+  outline: 1px solid var(--line);
+  border-radius: 12px;
+  margin-top: auto;
+}
+.flow-grid :is(.flow-state, .flow-caption) {
+  margin: 0 0 12px;
+}
 
 @media (max-width: 640px) {
   .flow-hero {
-    background-image: linear-gradient(90deg, #063a42f5, #063a4299), url("/assets/photos/flow-pharmacy-cover-v2.jpg");
+    background-image:
+      linear-gradient(90deg, #063a42f5, #063a4299), url('/assets/photos/flow-pharmacy-cover-v2.jpg');
   }
-  .flow-hero :is(h1, p) { max-width: none; }
+  .flow-hero :is(h1, p) {
+    max-width: none;
+  }
 }

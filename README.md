@@ -41,3 +41,11 @@ npm start
 ## ฐานข้อมูลอ้างอิง
 
 - [แผนที่ฐานข้อมูล MITRAREE](docs/mitraree-database.md) — schema snapshot จากผู้ใช้ วันที่ 1 พฤศจิกายน 2569 รวมแผนภาพและ SQL อ้างอิง ยังไม่ได้เชื่อมต่อฐานข้อมูลหรือรัน SQL
+
+
+## Code maintenance
+
+- `npm run format`: format authored JSX/modules/CSS in src and next.config.js.
+- `npm run format:check`: check the shared formatting rules.
+- `npm run test:performance`: check preview activity, timer cleanup and runtime-version invalidation.
+- Scope, evidence and remaining work: [docs/code-maintenance.md](docs/code-maintenance.md).

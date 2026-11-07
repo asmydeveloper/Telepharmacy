@@ -1,48 +1,192 @@
 /* Shared app structure: one gutter owner, content-based heights, safe-area-aware actions. */
-.phone {container:app / inline-size}
-.phone :where(button,input,select,textarea,figure,section,article,nav,dl) {box-sizing:border-box}
-.app-page {padding-inline:var(--page-gutter);scroll-padding-block:var(--space-4) calc(var(--tabbar-height) + var(--sb) + var(--space-4))}
-.app-page:not(.q-scroll) {padding-top:calc(var(--st) + var(--nav-height) + var(--space-4))}
-.app-page.nonav:not(.q-scroll) {padding-top:calc(var(--st) + var(--space-4))}
-.app-page>* {min-width:0;max-width:100%}
-.app-page:not(.q-scroll)>:last-child {margin-bottom:0}
-.app-page .lt {margin:0 0 var(--space-4);font-size:var(--text-title);line-height:var(--leading-tight)}
-.app-page .lt:has(+.lt-sub) {margin-bottom:var(--space-2)}
-.app-page .lt-sub {margin:0 0 var(--section-gap)}
-.app-page .group-h {margin:var(--section-gap) 0 var(--space-3)}
-.app-page .group-f {margin:var(--space-2) 0 0}
-.app-page .sec-h {margin:var(--section-gap) 0 var(--space-3);align-items:center;gap:var(--space-3)}
-.app-page .sec-h .link {margin:0;padding:0;min-height:var(--size-touch)}
-.card:not(.pad0) {padding:var(--card-padding)}
-.row {gap:var(--space-3);padding:var(--space-3) var(--card-padding);min-width:0}
-.r-t {min-width:0;overflow-wrap:anywhere}
-.app-page>.field+.field {margin-top:var(--space-4)}
-.input {min-width:0;max-width:100%;box-sizing:border-box}
-.btn-row {display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));gap:var(--space-3)}
-.btn-row>.btn {width:100%;min-width:0}
-.tabbar {left:var(--page-gutter);right:var(--page-gutter);bottom:calc(var(--sb) + var(--tabbar-offset));height:var(--tabbar-height);grid-template-columns:repeat(5,minmax(0,1fr))}
-.tb-pill {width:calc((100% - 8px) / 5)}
-.minibar {left:var(--page-gutter);right:var(--page-gutter);height:var(--minibar-height);bottom:calc(var(--sb) + var(--tabbar-offset) + var(--tabbar-height) + var(--minibar-gap))}
-.scr.has-tab>.app-page {--pb:calc(var(--tabbar-height) + var(--tabbar-offset) + var(--minibar-height) + var(--minibar-gap) + var(--space-4))}
-.scr.has-tab.no-mini>.app-page {--pb:calc(var(--tabbar-height) + var(--tabbar-offset) + var(--space-4))}
-.scr.has-dock>.app-page:not(.q-scroll) {padding-bottom:calc(var(--dock-h,96px) + var(--space-4))}
-.dock:not(.st-kb):not(.rm-comp) {padding:var(--space-3) var(--page-gutter) calc(var(--space-3) + var(--sb));gap:var(--space-3)}
-.sheet {border-radius:var(--radius-feature) var(--radius-feature) 0 0}
-.sheet .sh-h {padding:var(--space-2) var(--page-gutter);gap:var(--space-3);min-height:60px}
-.sheet .sh-h h2 {min-width:0;font-size:var(--type-body-lg-mobile-size);line-height:1.4}
-.sheet .sh-x {width:44px;height:44px;flex-shrink:0}
-.sheet .sh-x::after {inset:0}
-.sheet .sh-b {padding:var(--space-3) var(--page-gutter) var(--space-5);min-height:0;min-width:0}
-.sheet>.sh-b:last-child {padding-bottom:calc(var(--space-5) + var(--sb))}
-.sheet .sh-b>* {min-width:0;max-width:100%}
-.sheet .sh-f {padding:var(--space-3) var(--page-gutter) calc(var(--space-3) + var(--sb));gap:var(--space-3)}
-.sheet .sh-f>* {min-width:0;max-width:100%}
-.fu-entry {display:grid;grid-template-columns:var(--icon-tile-size) minmax(0,1fr) 18px;align-items:center;padding:var(--card-padding);gap:var(--space-3);margin-top:var(--content-gap);border-radius:var(--card-radius)}
-.fu-entry .fu-ic {width:var(--icon-tile-size);height:var(--icon-tile-size);border-radius:var(--radius-control)}
-.fu-entry-t {min-width:0;overflow-wrap:anywhere}
-.fu-entry-t b {font-size:var(--text-body);line-height:var(--leading-body)}
-.fu-entry-t>span:not(.fu-tags) {font-size:var(--text-small);line-height:var(--leading-body)}
+.phone {
+  container: app / inline-size;
+}
+.phone :where(button, input, select, textarea, figure, section, article, nav, dl) {
+  box-sizing: border-box;
+}
+.app-page {
+  padding-inline: var(--page-gutter);
+  scroll-padding-block: var(--space-4) calc(var(--tabbar-height) + var(--sb) + var(--space-4));
+}
+.app-page:not(.q-scroll) {
+  padding-top: calc(var(--st) + var(--nav-height) + var(--space-4));
+}
+.app-page.nonav:not(.q-scroll) {
+  padding-top: calc(var(--st) + var(--space-4));
+}
+.app-page > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.app-page:not(.q-scroll) > :last-child {
+  margin-bottom: 0;
+}
+.app-page .lt {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-title);
+  line-height: var(--leading-tight);
+}
+.app-page .lt:has(+ .lt-sub) {
+  margin-bottom: var(--space-2);
+}
+.app-page .lt-sub {
+  margin: 0 0 var(--section-gap);
+}
+.app-page .group-h {
+  margin: var(--section-gap) 0 var(--space-3);
+}
+.app-page .group-f {
+  margin: var(--space-2) 0 0;
+}
+.app-page .sec-h {
+  margin: var(--section-gap) 0 var(--space-3);
+  align-items: center;
+  gap: var(--space-3);
+}
+.app-page .sec-h .link {
+  margin: 0;
+  padding: 0;
+  min-height: var(--size-touch);
+}
+.card:not(.pad0) {
+  padding: var(--card-padding);
+}
+.row {
+  gap: var(--space-3);
+  padding: var(--space-3) var(--card-padding);
+  min-width: 0;
+}
+.r-t {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.app-page > .field + .field {
+  margin-top: var(--space-4);
+}
+.input {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.btn-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 132px), 1fr));
+  gap: var(--space-3);
+}
+.btn-row > .btn {
+  width: 100%;
+  min-width: 0;
+}
+.tabbar {
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  bottom: calc(var(--sb) + var(--tabbar-offset));
+  height: var(--tabbar-height);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+.tb-pill {
+  width: calc((100% - 8px) / 5);
+}
+.minibar {
+  left: var(--page-gutter);
+  right: var(--page-gutter);
+  height: var(--minibar-height);
+  bottom: calc(var(--sb) + var(--tabbar-offset) + var(--tabbar-height) + var(--minibar-gap));
+}
+.scr.has-tab > .app-page {
+  --pb: calc(
+    var(--tabbar-height) + var(--tabbar-offset) + var(--minibar-height) + var(--minibar-gap) +
+      var(--space-4)
+  );
+}
+.scr.has-tab.no-mini > .app-page {
+  --pb: calc(var(--tabbar-height) + var(--tabbar-offset) + var(--space-4));
+}
+.scr.has-dock > .app-page:not(.q-scroll) {
+  padding-bottom: calc(var(--dock-h, 96px) + var(--space-4));
+}
+.dock:not(.st-kb):not(.rm-comp) {
+  padding: var(--space-3) var(--page-gutter) calc(var(--space-3) + var(--sb));
+  gap: var(--space-3);
+}
+.sheet {
+  border-radius: var(--radius-feature) var(--radius-feature) 0 0;
+}
+.sheet .sh-h {
+  padding: var(--space-2) var(--page-gutter);
+  gap: var(--space-3);
+  min-height: 60px;
+}
+.sheet .sh-h h2 {
+  min-width: 0;
+  font-size: var(--type-body-lg-mobile-size);
+  line-height: 1.4;
+}
+.sheet .sh-x {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+}
+.sheet .sh-x::after {
+  inset: 0;
+}
+.sheet .sh-b {
+  padding: var(--space-3) var(--page-gutter) var(--space-5);
+  min-height: 0;
+  min-width: 0;
+}
+.sheet > .sh-b:last-child {
+  padding-bottom: calc(var(--space-5) + var(--sb));
+}
+.sheet .sh-b > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.sheet .sh-f {
+  padding: var(--space-3) var(--page-gutter) calc(var(--space-3) + var(--sb));
+  gap: var(--space-3);
+}
+.sheet .sh-f > * {
+  min-width: 0;
+  max-width: 100%;
+}
+.fu-entry {
+  display: grid;
+  grid-template-columns: var(--icon-tile-size) minmax(0, 1fr) 18px;
+  align-items: center;
+  padding: var(--card-padding);
+  gap: var(--space-3);
+  margin-top: var(--content-gap);
+  border-radius: var(--card-radius);
+}
+.fu-entry .fu-ic {
+  width: var(--icon-tile-size);
+  height: var(--icon-tile-size);
+  border-radius: var(--radius-control);
+}
+.fu-entry-t {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.fu-entry-t b {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+.fu-entry-t > span:not(.fu-tags) {
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
+}
 @container app (max-width:360px) {
-  .app-page,.sheet,.dock,.tabbar,.minibar {--page-gutter:16px}
-  .ds-form-grid,.st-pf-name {grid-template-columns:minmax(0,1fr)}
+  .app-page,
+  .sheet,
+  .dock,
+  .tabbar,
+  .minibar {
+    --page-gutter: 16px;
+  }
+  .ds-form-grid,
+  .st-pf-name {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

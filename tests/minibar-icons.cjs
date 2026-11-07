@@ -19,5 +19,5 @@ icons.forEach(svg=>{assert(svg.includes('viewBox="0 0 32 32"'));assert(svg.inclu
 assert(!source.includes('mountMiniAnimation'));
 assert(!source.includes('/vendor/lottie/'));
 const css=fs.readFileSync('src/styles/components.css','utf8');
-assert(css.includes('mb-status-breathe'));assert(css.includes('prefers-reduced-motion:reduce'));
+assert(css.includes('mb-status-breathe'));assert(/prefers-reduced-motion:\s*reduce/.test(css));
 console.log('PASS: all six minibar states, original SVG icons, no Lottie loading, reduced motion and home exclusion');

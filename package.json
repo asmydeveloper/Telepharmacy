@@ -17,7 +17,10 @@
     "test:adr": "node tests/adr.cjs",
     "test:empty": "node tests/empty-states.cjs",
     "test:login": "node tests/login.cjs",
-    "test:registration": "node tests/registration.cjs"
+    "test:registration": "node tests/registration.cjs",
+    "format": "prettier --write src next.config.js",
+    "format:check": "prettier --check src next.config.js",
+    "test:performance": "node tests/preview-performance.cjs"
   },
   "dependencies": {
     "next": "16.4.3",
@@ -25,6 +28,7 @@
     "react-dom": "19.3.1"
   },
   "devDependencies": {
-    "playwright": "1.64.1"
+    "playwright": "1.64.1",
+    "prettier": "3.9.10"
   }
 }

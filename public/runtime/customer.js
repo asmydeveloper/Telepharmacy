@@ -10,7 +10,7 @@ TP.caseCode = record => window.MitrareeConsultations.codeFor(record);
 TP.consultationText = record => window.MitrareeConsultations.description(record);
 /* Fictional generated portraits for the prototype. Doctor is an available asset,
    not a new clinical service or consultation route. */
-TP.demoProfiles = {"doctor": "/assets/2e859134738f7da9b2.png", "kid": "/assets/29f3f6d06e939b6966.png", "mom": "/assets/e8e22abc6ab0e8d75d.png", "pharmacist_f": "/assets/photos/pharmacist-v1.png", "pharmacist_m": "/assets/667d2683bb4711f58c.png", "self": "/assets/profiles/default-profile-2d-v1.png", "dad": "/assets/photos/family-dad-v1.png", "sp": "/assets/photos/family-spouse-v1.png", "kid2": "/assets/photos/family-younger-child-v1.png"};
+TP.demoProfiles = {"doctor": "/assets/profiles/doctor.png", "kid": "/assets/profiles/kid.png", "mom": "/assets/profiles/mom.png", "pharmacist_f": "/assets/photos/pharmacist-v1.png", "pharmacist_m": "/assets/profiles/pharmacist_m.png", "self": "/assets/profiles/default-profile-2d-v1.png", "dad": "/assets/photos/family-dad-v1.png", "sp": "/assets/photos/family-spouse-v1.png", "kid2": "/assets/photos/family-younger-child-v1.png"};
 TP.profileImage = who => TP.demoProfiles[who === 'me' || !who ? 'self' : who] || '';
 
 TP.$ = (s, r = document) => r.querySelector(s);
@@ -19,6 +19,39 @@ TP.clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const RM = matchMedia('(prefers-reduced-motion: reduce)');
 TP.RED = () => RM.matches;
 TP.FINE = matchMedia('(hover: hover) and (pointer: fine)');
+
+/* Rendering activity for the real app and embedded /flow previews. */
+TP.previewActivity = (() => {
+  let inViewport = true;
+  let active = !document.hidden;
+  const listeners = new Set();
+  document.documentElement.classList.toggle('preview-inactive', !active);
+  const update = () => {
+    const next = !document.hidden && inViewport;
+    if (next === active) return;
+    active = next;
+    document.documentElement.classList.toggle('preview-inactive', !active);
+    listeners.forEach(listener => listener(active));
+  };
+  document.addEventListener('visibilitychange', update);
+  if (new URLSearchParams(location.search).get('flowPreview') === '1') {
+    window.addEventListener('message', event => {
+      if (event.source !== window.parent || event.origin !== location.origin) return;
+      if (event.data?.type !== 'telepharmacy:preview-visibility') return;
+      if (typeof event.data.visible !== 'boolean') return;
+      inViewport = event.data.visible;
+      update();
+    });
+  }
+  return {
+    active: () => active,
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
+    },
+  };
+})();
+
 TP.wait = ms => new Promise(r => setTimeout(r, ms));
 TP.esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 TP.rafT = fn => { let q = false; return (...a) => { if (q) return; q = true; requestAnimationFrame(() => { q = false; fn(...a); }); }; };
@@ -286,14 +319,16 @@ TP.previewInbox = (history) => {
  const summaryId=history===undefined?'TC-261002-0087':history.find(h=>h.summary)?.id;
  const today=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date()),[d,m,y]=today.split('/').map(Number);
  const samples=[
- [0,'02:50','summary','ใบสรุปการปรึกษาพร้อมแล้ว','ดูคำแนะนำจากเภสัชกร','summary'],
- [0,'02:30','delivery','ยาพร้อมรับที่สาขา','ดูประวัติคำสั่งซื้อ','history'],
- [0,'02:10','delivery','ชำระค่ายาแล้ว','ดูประวัติคำสั่งซื้อ','history'],
- [0,'01:45','pay','มีรายการยารอชำระ','ดูประวัติคำสั่งซื้อ','history'],
- [1,'19:20','queue','เภสัชกรรับคิวแล้ว','ดูประวัติการปรึกษา','history'],
- [3,'18:35','delivery','จัดส่งยาสำเร็จ','ดูประวัติคำสั่งซื้อ','history'],
- [3,'13:10','delivery','กำลังจัดส่งยา','ดูประวัติคำสั่งซื้อ','history'],
- [7,'17:25','msg','มีข้อความจากเภสัชกร','ดูประวัติการปรึกษา','history'],
+ [0,'02:50','summary','สรุปการปรึกษาพร้อมแล้ว','เปิดดูข้อมูลยาและคำแนะนำจากเภสัชกร','summary'],
+ [0,'02:30','delivery','ยาพร้อมรับที่สาขา','แสดงรหัสรับยาเมื่อไปรับที่ร้าน','history'],
+ [0,'02:10','pay','ชำระเงินสำเร็จ','ร้านได้รับคำสั่งซื้อและจะเริ่มเตรียมยา','history'],
+ [0,'01:45','pay','รอชำระค่ายา','ตรวจสอบรายการยาและชำระเงินเพื่อดำเนินการต่อ','history'],
+ [1,'19:20','queue','เภสัชกรรับคิวแล้ว','กลับเข้าห้องปรึกษาเพื่อเริ่มพูดคุย','history'],
+ [1,'18:40','delivery','กำลังเตรียมยา','ร้านกำลังจัดเตรียมยาตามคำสั่งซื้อ','history'],
+ [3,'18:35','delivery','จัดส่งยาสำเร็จ','ตรวจสอบการรับยาและรายละเอียดคำสั่งซื้อ','history'],
+ [3,'13:10','delivery','กำลังจัดส่งยา','ติดตามสถานะการส่งยาได้ในรายละเอียดคำสั่งซื้อ','history'],
+ [3,'12:50','delivery','กำลังเรียกไรเดอร์','ร้านเตรียมยาพร้อมแล้ว กำลังรอไรเดอร์เข้ารับ','history'],
+ [7,'17:25','msg','มีข้อความจากเภสัชกร','เปิดดูข้อความและรายละเอียดการปรึกษา','history'],
  ];
  return samples.map(([days,at,kind,title,body,go],index)=>{const date=new Date(Date.UTC(y,m-1,d-days)),dateText=[String(date.getUTCDate()).padStart(2,'0'),String(date.getUTCMonth()+1).padStart(2,'0'),date.getUTCFullYear()].join('/');return {id:'preview-note-'+index,kind,title,body,time:dateText+' '+at,read:true,go:go==='summary'&&!summaryId?'history':go,...(go==='summary'&&summaryId?{p:{id:summaryId}}:{})};});
 };
@@ -1043,7 +1078,7 @@ brand.field = (cv, o = {}) => {
   }
   function drawMark(x, y, s) { ctx.moveTo(x - arm * s, y); ctx.lineTo(x + arm * s, y); ctx.moveTo(x, y - arm * s); ctx.lineTo(x, y + arm * s); }
   function frame(now) {
-    if (!alive) return;
+    if (!alive || !TP.previewActivity.active()) return;
     const t = now - t0;
     if (o.every && now - lastEmit > o.every) { waves.push({ t: now, s: 1 }); lastEmit = now; }
     waves = waves.filter(w => (now - w.t) * speed < Math.hypot(W, H) + sigma * 3);
@@ -1068,9 +1103,13 @@ brand.field = (cv, o = {}) => {
   const ro = new ResizeObserver(() => { size(); if (TP.RED()) still(); });
   ro.observe(cv);
   function still() { ctx.clearRect(0, 0, W, H); ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.lineCap = 'round'; ctx.globalAlpha = base; ctx.beginPath(); marks.forEach(m => drawMark(m.x, m.y, 1)); ctx.stroke(); ctx.globalAlpha = 1; }
-  if (TP.RED()) still(); else raf = requestAnimationFrame(frame);
+  const unsubscribe = TP.previewActivity.subscribe(active => {
+    cancelAnimationFrame(raf);
+    if (active && alive && !TP.RED()) raf = requestAnimationFrame(frame);
+  });
+  if (TP.RED()) still(); else if (TP.previewActivity.active()) raf = requestAnimationFrame(frame);
   return {
-    stop() { alive = false; cancelAnimationFrame(raf); ro.disconnect(); },
+    stop() { alive = false; unsubscribe(); cancelAnimationFrame(raf); ro.disconnect(); },
     pulse(s = 1) { waves.push({ t: performance.now(), s }); },
     retarget(fx, fy) { o.origin = [fx, fy]; size(); }
   };
@@ -1121,11 +1160,15 @@ brand.field = (cv, o = {}) => {
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     }
   }
-  function frame(now) { if (!alive) return; paint(now); raf = requestAnimationFrame(frame); }
+  function frame(now) { if (!alive || !TP.previewActivity.active()) return; paint(now); raf = requestAnimationFrame(frame); }
   size();
   const ro = new ResizeObserver(() => { size(); if (TP.RED()) paint(t0); }); ro.observe(cv);
-  if (TP.RED()) paint(t0); else raf = requestAnimationFrame(frame);
-  return { stop() { alive = false; cancelAnimationFrame(raf); ro.disconnect(); }, pulse(s = 1) { waves.push({ t: performance.now(), s }); }, retarget(fx, fy) { o.origin = [fx, fy]; } };
+  const unsubscribe = TP.previewActivity.subscribe(active => {
+    cancelAnimationFrame(raf);
+    if (active && alive && !TP.RED()) raf = requestAnimationFrame(frame);
+  });
+  if (TP.RED()) paint(t0); else if (TP.previewActivity.active()) raf = requestAnimationFrame(frame);
+  return { stop() { alive = false; unsubscribe(); cancelAnimationFrame(raf); ro.disconnect(); }, pulse(s = 1) { waves.push({ t: performance.now(), s }); }, retarget(fx, fy) { o.origin = [fx, fy]; } };
 };
 /* line patterns become one soft light where the rosette used to sit; the thin band becomes a hairline fade */
 brand.guilloche = (o = {}) => {
@@ -3632,27 +3675,56 @@ TP.act('openOrderPayment',async (t,ctx)=>{
 });
 /* Prototype clock only. A production backend owns expiration and payment reconciliation. */
 TP.orderExpiryTick = () => {
-  let changed=false;
-  for(const c of TP.orderCases(TP.S)){
-    if(TP.expireOrder(c)){
-      changed=true;
-      TP.S.inbox?.unshift({id:'order-expired-'+c.order.no,kind:'order',title:'รายการยาหมดเวลาชำระแล้ว',body:'แชทและใบสรุปยังเปิดดูได้',time:TP.NOW.date+' '+TP.orderTime(c.order),read:false,go:'summary',p:{id:c.id}});
-    }
+  const cases = TP.orderCases(TP.S);
+  let changed = false;
+  for (const consultation of cases) {
+    if (!TP.expireOrder(consultation)) continue;
+    changed = true;
+    TP.S.inbox?.unshift({
+      id: 'order-expired-' + consultation.order.no,
+      kind: 'order',
+      title: 'รายการยาหมดเวลาชำระแล้ว',
+      body: 'แชทและใบสรุปยังเปิดดูได้',
+      time: TP.NOW.date + ' ' + TP.orderTime(consultation.order),
+      read: false,
+      go: 'summary',
+      p: { id: consultation.id },
+    });
   }
-  if(changed){
+  if (changed) {
     TP.emit('state');
-    const paymentCase=TP.S._paymentCase||TP.S.case;
-    if(TP.sheetOpen()?.id==='pay'&&paymentCase?.order?.status==='expired'){
-      TP.closeSheet({instant:true}).then(()=>TP.sheet('pay',{caseId:paymentCase.id}));
+    const paymentCase = TP.S._paymentCase || TP.S.case;
+    if (TP.sheetOpen()?.id === 'pay' && paymentCase?.order?.status === 'expired') {
+      TP.closeSheet({ instant: true }).then(() => TP.sheet('pay', { caseId: paymentCase.id }));
+    } else if (TP.sheetOpen()?.id !== 'pay') {
+      TP.refresh({ anim: false });
     }
-    else if(TP.sheetOpen()?.id!=='pay')TP.refresh({anim:false});
   }
-  document.querySelectorAll('[data-order-countdown]').forEach(el=>{
-    const c=el.dataset.orderCase?TP.orderCases(TP.S).find(c=>c.id===el.dataset.orderCase):(TP.S._paymentCase||TP.S.case);
-    if(c?.order)el.textContent=TP.orderRemaining(c.order);
+  const byId = new Map(cases.map(consultation => [consultation.id, consultation]));
+  document.querySelectorAll('[data-order-countdown]').forEach(element => {
+    const consultation = element.dataset.orderCase
+      ? byId.get(element.dataset.orderCase)
+      : TP.S._paymentCase || TP.S.case;
+    if (!consultation?.order) return;
+    const remaining = TP.orderRemaining(consultation.order);
+    if (element.textContent !== remaining) element.textContent = remaining;
   });
 };
-setInterval(()=>TP.orderExpiryTick(),1000);
+// Reconcile against the original deadline on return; never extend an order's life.
+let orderExpiryTimer;
+function syncOrderExpiryPolling(active) {
+  clearInterval(orderExpiryTimer);
+  if (!active) return;
+  TP.orderExpiryTick();
+  orderExpiryTimer = setInterval(() => TP.orderExpiryTick(), 1000);
+}
+if (TP.previewActivity) {
+  TP.previewActivity.subscribe(syncOrderExpiryPolling);
+  syncOrderExpiryPolling(TP.previewActivity.active());
+} else {
+  orderExpiryTimer = setInterval(() => TP.orderExpiryTick(), 1000);
+}
+
 
 
 TP.orderMedicineList = o => `<ul class="mo-l">${o.items.map(i => `<li>${TP.medicineImage(i)}<span class="medicine-copy"><b>${esc(i.name)}</b><small>${esc(i.qty)}${i.type ? ` · <i class="mo-ty">${esc(i.type === 'ยาอันตราย' ? 'ต้องจ่ายโดยเภสัชกร' : i.type)}</i>` : ''}</small><small>${esc(i.how)}</small></span><span class="num">${TP.money(i.price)}</span></li>`).join('')}</ul>`;
@@ -4338,13 +4410,26 @@ const VIA_IC = { pickup: 'store', express: 'zap', parcel: 'package', cold: 'snow
 const viaText = () => { const p = P(), b = TP.branch(C().branch); return p.recv === 'pickup' ? `รับยาเองที่ร้าน ${b.name}` : p.recv === 'express' ? 'ส่งด่วนถึงบ้าน (Lalamove)' : p.recv === 'cold' ? `ส่งแบบควบคุมความเย็น (${TP.COLD.short})` : TP.DELIVERY.find(d => d.id === 'parcel').name; };
 const expLine = o => `ชำระภายใน ${TP.orderTime(o)} น. · เหลือ <b data-order-countdown>${TP.orderRemaining(o)}</b>`;
 
+/* Saved recipients share one collection across account, checkout and receipts. */
+TP.taxRecords = (kind, S=TP.S) => {
+  const d=S._taxProfile;
+  if(d?.previewLists?.[kind]) return d.previewLists[kind];
+  if(d?.preview?.[kind]) {const r=d.preview[kind];r.profileKey ||= 'preview-'+kind;d.previewLists ||= {};d.previewLists[kind]=[r];delete d.preview[kind];return d.previewLists[kind];}
+  S.taxProfiles ||= {};
+  if(!Array.isArray(S.taxProfiles[kind])) {const legacy=kind==='co'?S.taxCo:S.taxWho;S.taxProfiles[kind]=legacy?[{...legacy,profileKey:legacy.profileKey||'saved-'+kind}]:[];}
+  return S.taxProfiles[kind];
+};
+TP.taxSelected = (kind, S=TP.S) => {const rows=TP.taxRecords(kind,S),current=kind==='co'?S.taxCo:S.taxWho;return rows.find(r=>r.profileKey===current?.profileKey)||rows[0]||null;};
+TP.taxChoose = (kind,key,S=TP.S) => {const r=TP.taxRecords(kind,S).find(r=>r.profileKey===key);if(r)S[kind==='co'?'taxCo':'taxWho']=r;return r;};
+TP.taxRecipientPicker = (kind,action) => {const rows=TP.taxRecords(kind),selected=TP.taxSelected(kind);return rows.length>1?`<div class="tax-recipient-picker" role="group" aria-label="เลือกผู้รับใบกำกับภาษี">${rows.map(r=>`<button type="button" class="rc-tax-type-option${r.profileKey===selected?.profileKey?' selected':''}" data-a="${action}" data-key="${esc(r.profileKey)}" data-v="${kind}" aria-pressed="${r.profileKey===selected?.profileKey}">${esc(r.name)} · ${esc(String(r.id).slice(-4))}</button>`).join('')}</div>`:'';};
 const maskCheckoutTax = v => 'xxxxxxxxx' + String(v).slice(-4);
 function payTaxHtml() {
-  const p=P(), who=p.taxWho||'me', record=who==='co'?TP.S.taxCo:TP.S.taxWho;
-  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${record?`<section class="pay-tax-recipient" aria-label="ข้อมูลผู้รับใบกำกับภาษี"><header class="pay-tax-recipient-head"><h4>ข้อมูลผู้รับใบกำกับภาษี</h4><button type="button" class="pay-tax-edit" data-a="payTaxEditProfile">แก้ไขข้อมูล</button></header><dl>${[[who==='co'?'ชื่อนิติบุคคล':'ชื่อผู้รับ',record.name||[record.first,record.last].filter(Boolean).join(' ')],['เลขประจำตัวผู้เสียภาษี',record.id?maskCheckoutTax(record.id):null],...(who==='co'?[['สาขา',record.branch]]:[]),['เบอร์โทรศัพท์',record.phone],['อีเมล',record.email],['ที่อยู่',record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' ')]].filter(([,value])=>value).map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${who==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับเพื่อขอใบกำกับภาษี</p>${ui.btn('เพิ่มข้อมูลใบกำกับภาษี',{a:'payTaxAddProfile'})}</div>`}`:''}`;
+  const p=P(), who=p.taxWho||'me', record=TP.taxSelected(who);
+  return `${ui.seg('payTaxWant',[['no','ไม่ขอเอกสาร'],['yes','ขอใบกำกับภาษี']],p.taxWant?'yes':'no',{a:'payTaxWant',label:'ใบกำกับภาษีเต็มรูป'})}${p.taxWant?`<div class="rc-tax-type">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([v,label])=>`<button type="button" class="rc-tax-type-option${who===v?' selected':''}" data-a="payTaxWho" data-v="${v}" aria-pressed="${who===v}">${label}</button>`).join('')}</div>${TP.taxRecipientPicker(who,'payTaxSelectProfile')}${record?`<section class="pay-tax-recipient" aria-label="ข้อมูลผู้รับใบกำกับภาษี"><header class="pay-tax-recipient-head"><h4>ข้อมูลผู้รับใบกำกับภาษี</h4><button type="button" class="pay-tax-edit" data-a="payTaxEditProfile">แก้ไขข้อมูล</button></header><dl>${[[who==='co'?'ชื่อนิติบุคคล':'ชื่อผู้รับ',record.name||[record.first,record.last].filter(Boolean).join(' ')],['เลขประจำตัวผู้เสียภาษี',record.id?maskCheckoutTax(record.id):null],...(who==='co'?[['สาขา',record.branch]]:[]),['เบอร์โทรศัพท์',record.phone],['อีเมล',record.email],['ที่อยู่',record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' ')]].filter(([,value])=>value).map(([label,value])=>`<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`).join('')}</dl></section>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${who==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับเพื่อขอใบกำกับภาษี</p>${ui.btn('เพิ่มข้อมูลใบกำกับภาษี',{a:'payTaxAddProfile'})}</div>`}`:''}`;
 }
 function redrawPayTax(){const el=$('#payTax');if(el){el.innerHTML=payTaxHtml();TP.icons(el)}}
 TP.act('payTaxWant',b=>{P().taxWant=b.dataset.v==='yes';redrawPayTax()});
+TP.act('payTaxSelectProfile',b=>{TP.taxChoose(b.dataset.v,b.dataset.key);redrawPayTax()});
 TP.act('payTaxWho',b=>{P().taxWho=b.dataset.v;redrawPayTax()});
 TP.act('payTaxAddProfile',async()=>{const who=P().taxWho||'me';await TP.closeSheet({instant:true});TP.S.st.taxprofile=who==='co'?'company':undefined;await TP.go('taxprofile');});
 
@@ -4672,7 +4757,7 @@ async function shrink(b) {
 TP.act('payGo', async b => {
   if(!TP.orderPayable(C()?.order)){TP.orderExpiryTick();return;}
   const m = missing(); if (m) { where[m]?.(); return; }
-  if(P().taxWant && !(P().taxWho==='co'?TP.S.taxCo:TP.S.taxWho)){TP.notify('กรุณาเพิ่มข้อมูลออกใบกำกับภาษีก่อนชำระเงิน',{icon:'info'});return;}
+  if(P().taxWant && !TP.taxSelected(P().taxWho||'me')){TP.notify('กรุณาเพิ่มข้อมูลออกใบกำกับภาษีก่อนชำระเงิน',{icon:'info'});return;}
   if (b.dataset.busy) return; b.dataset.busy = '1';
   const p = P();
   if (p.method === 'card') {
@@ -4799,7 +4884,7 @@ async function paid() {
   c.order.status = 'paid';
   (TP.S.history||[]).filter(h=>h.id===c.id).forEach(h=>{h.orderStatus='paid';h.bought=c.order.total;h._case=c;});
   c.order.paid = { ...totals(), recv: p.recv, courier: p.recv === 'cold' ? TP.COLD.id : null, addr: p.recv === 'pickup' ? null : { ...a }, method: p.method, bank: p.bank, date: TP.NOW.date, at: TP.roomNow?.() || TP.NOW.time };
-  if(p.taxWant){const recipient=p.taxWho==='co'?TP.S.taxCo:TP.S.taxWho;if(recipient)c.order.tax={who:p.taxWho||'me',pending:{...recipient}};}
+  if(p.taxWant){const recipient=TP.taxSelected(p.taxWho||'me');if(recipient)c.order.tax={who:p.taxWho||'me',pending:{...recipient}};}
   TP.setFulfillment(c,'preparing');
   TP.saveReceipt?.(c);
   c.msgs.push({ who: 'ph', text: TP.paidMsg(p.recv), time: c.order.paid.at });
@@ -5082,7 +5167,7 @@ TP.act('tkGotOk', () => {
 /* every receipt is an abbreviated tax invoice; the full one downloads in one tap (owner 19/10: "ผมไม่ต้องการให้กดขอ")
    in the account name and main address · a person needs no tax id, a company does (Revenue Code 86/4) */
 const meTax = () => { const u = TP.S.user, a = TP.S.rcNoAddr ? null : (TP.S.addrs || TP.fresh().addrs).find(x => x.main); return a ? { name: u.full, kind: 'บุคคลธรรมดา', addr: TP.fmtAddr(a), phone: (a.phone || u.phone).replace(/\D/g, '') } : null; };
-const taxWho = () => TP.S._taxProfile?.preview?.me || TP.S.taxWho || null;
+const taxWho = () => TP.taxSelected('me');
 /* the name on the full invoice belongs to the account; form / done belong to each order */
 const T = o => o.tax || (o.tax = { done: null, form: false, who: 'me' });
 /* deadline = end of the purchase month (AccountController:524-577) */
@@ -5159,7 +5244,7 @@ TP.screen('receipt', {
 });
 /* full invoice in your own name (one tap) or a company (filled once, real-user R 19/10: pick before the tap)
    a wrong name after download = issue a new one, the old one is cancelled (as a shop does on paper) */
-const coTax = () => TP.S._taxProfile?.preview?.co || TP.S.taxCo || null;
+const coTax = () => TP.taxSelected('co');
 const whoOf = t => (t.who === 'co' ? coTax() : taxWho());
 function taxForm(t, until) {
   const co = t.who === 'co', w = whoOf(t);
@@ -5187,18 +5272,19 @@ function taxBox(o, late) {
   const choice=`<header class="rc-tax-request-head"><span class="rc-tax-pending-icon" aria-hidden="true">${ic('file-text',22,1.8)}</span><div><h3 class="h3">ใบกำกับภาษีเต็มรูป</h3><p class="small">ขอย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</p></div></header><div class="rc-tax-request-toggle"><span id="rcTaxWantLabel">ขอใบกำกับภาษี</span><button type="button" class="sw" role="switch" aria-labelledby="rcTaxWantLabel" aria-checked="${!!t.want}" data-a="rcTaxWant" data-v="${t.want?'no':'yes'}"></button></div>`;
   const types=`<fieldset class="rc-tax-recipient-types"><legend>ประเภทผู้รับ</legend><div role="radiogroup" aria-label="ประเภทผู้รับใบกำกับภาษี">${[['me','บุคคลธรรมดา'],['co','นิติบุคคล']].map(([value,label])=>`<button type="button" class="rc-tax-recipient-option" role="radio" aria-checked="${(co?'co':'me')===value}" data-a="rcTaxWho" data-v="${value}"><span class="rc-tax-radio" aria-hidden="true"></span>${label}</button>`).join('')}</div></fieldset>`;
   const body=w?`<button type="button" class="rc-tax-profile selected" data-a="rcProfileEdit" data-v="${co?'co':'me'}" aria-label="แก้ไขข้อมูลผู้รับใบกำกับภาษี"><span><b>${esc(w.name)}</b><small>${w.id?'เลขผู้เสียภาษี '+esc(maskTax(w.id)):''}</small><small>${esc(w.addr || [w.detail,w.dist,w.amp,w.prov,w.zip].filter(Boolean).join(' '))}</small><em>แก้ไขข้อมูล</em></span>${ic('chevron-right',18,1.8)}</button>`:`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${co?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">เพิ่มข้อมูลผู้รับใบกำกับภาษี</p>${ui.btn('กรอกข้อมูลใบกำกับภาษี',{a:'rcProfileNew'})}</div>`;
-  return `<section class="rc-tax rc-tax-request-card">${choice}${t.want?`<div class="rc-tax-request-body">${types}${body}</div>${w?`<footer class="rc-tax-status-footer">${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}</footer>`:''}`:''}</section>`;
+  return `<section class="rc-tax rc-tax-request-card">${choice}${t.want?`<div class="rc-tax-request-body">${types}${TP.taxRecipientPicker(co?'co':'me','rcTaxSelectProfile')}${body}</div>${w?`<footer class="rc-tax-status-footer">${ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend'})}</footer>`:''}`:''}</section>`;
 }
 const redrawTax = () => { const box = $('#rcTax'), o = rcCur(); if (!box || !o) return; box.innerHTML = taxBox(o, isLate(o.paid.date)); TP.icons(box); A(box, [{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { d: 320, e: E.out }); };
 async function issue(b, o, who) {
   b.disabled = true; b.classList.add('busy');
   await TP.wait(300);
-  const t = T(o); t.form = false; t.requesting = false; t.pending = who;
+  const t = T(o); t.form = false; t.requesting = false; t.pending = {...who};
   redrawTax(); TP.notify('ส่งคำขอแล้ว รอร้านตรวจสอบข้อมูล', { icon: 'circle-check' });
 }
 TP.act('rcTaxRequest', () => { const o = rcCur(); if (!o) return; T(o).requesting = true; redrawTax(); });
 TP.act('rcTaxCancel', () => { const o = rcCur(); if (!o) return; const t = T(o); t.requesting = false; t.form = false; t.f = null; redrawTax(); });
 TP.act('rcTaxWant', b => { const o = rcCur(); if (!o) return; T(o).want = b.dataset.v === 'yes'; redrawTax(); });
+TP.act('rcTaxSelectProfile',b=>{TP.taxChoose(b.dataset.v,b.dataset.key);redrawTax()});
 TP.act('rcTaxWho', b => { const o = rcCur(); if (!o) return; const t = T(o); t.who = b.dataset.v; t.form = false; t.f = null; redrawTax(); if (t.who === 'co' && !coTax()) $('#rcTfName')?.focus({ preventScroll: true }); });
 TP.act('rcTaxSend', b => { const o = rcCur(); if (!o) return; const w = whoOf(T(o)); if (!w) return; return issue(b, o, w); });
 TP.act('rcTaxNew', () => { const o = rcCur(); if (!o) return; T(o).form = true; redrawTax(); $('#rcTfName')?.focus(); });
@@ -6225,7 +6311,7 @@ function openNote(n) {
 TP.screen('inbox', {
  group:'after',title:'กล่องแจ้งเตือน',code:'C404',ref:'A13',tab:'inbox',
  states:[['normal','หลายรายการ แบ่งตามวัน'],['read','รายการเดิม'],['empty','ยังไม่มี'],['many','แจ้งเตือนหลายวัน'],['same-day','หลายรายการในวันเดียว'],['loading','กำลังโหลดแจ้งเตือน'],['error','โหลดแจ้งเตือนไม่สำเร็จ']],
- notes:['แสดงลิสต์ใหม่สุดก่อน แบ่งวันนี้ เมื่อวาน และวันที่ก่อนหน้า ตามเวลาไทย','ไม่มีข้อความอ่านแล้ว จำนวนยังไม่อ่าน หรือปุ่มอ่านทั้งหมดในหน้านี้','แสดงเฉพาะหัวข้อสถานะหลักของการปรึกษา การชำระเงิน และการรับยา เปิดรายละเอียดจากรายการแจ้งเตือน','ข้อมูลตัวอย่างแยกจากรายการแจ้งเตือนที่เข้ามาระหว่างใช้ต้นแบบ'],
+ notes:['แสดงลิสต์ใหม่สุดก่อน แบ่งวันนี้ เมื่อวาน และวันที่ก่อนหน้า ตามเวลาไทย','ไม่มีข้อความอ่านแล้ว จำนวนยังไม่อ่าน หรือปุ่มอ่านทั้งหมดในหน้านี้','แสดงเฉพาะหัวข้อสถานะหลักของการปรึกษา การชำระเงิน และการรับยา เปิดรายละเอียดจากรายการแจ้งเตือน','การ์ดมุมมนแสดงไอคอนทางซ้าย หัวข้อสถานะหลัก ข้อความสั้นด้านล่าง และเวลาด้านขวา ไม่ใช้ชื่อร้านแทนหัวข้อ','ข้อมูลตัวอย่าง 10 รายการแยกจากรายการแจ้งเตือนที่เข้ามาระหว่างใช้ต้นแบบ'],
  prep(S){const st=S.st.inbox;if(!st)return;if(st==='empty'){S.inbox=[];return;}S.inbox=TP.previewInbox(S.history);if(st==='normal')S.inbox[0].read=false;if(st==='same-day'){const first=inboxDate(S.inbox[0]).key;S.inbox=S.inbox.filter(n=>inboxDate(n).key===first);}},
  render(ctx){
   const S=ctx.S,nav=ui.nav({title:'การแจ้งเตือน',back:TP.canBack()});
@@ -6233,7 +6319,7 @@ TP.screen('inbox', {
   if(ctx.state==='error')return nav+ui.page(ui.empty({icon:'bell',title:'ยังโหลดการแจ้งเตือนไม่ได้',body:'ลองอีกครั้งเพื่อดูรายการล่าสุด',btn:{label:'ลองใหม่',a:'afInboxRetry'}}));
   const visible = S.inbox.filter(inboxVisible);
   if(!visible.length)return nav+ui.page(ui.empty({icon:'bell',title:'ยังไม่มีการแจ้งเตือน',body:'เมื่อมีข้อมูลจากเภสัชกรหรือรายการของคุณ จะแจ้งไว้ที่นี่'}));
-  return nav+ui.page(`<div class="inbox-page">${TP.inboxGroups(visible).map((group,index)=>`<section class="inbox-day" aria-labelledby="inboxDay${index}"><h2 id="inboxDay${index}">${esc(group.label)}</h2><ul class="inbox-list">${group.items.map(({note:n,date})=>`<li><button type="button" class="inbox-item" data-a="afOpenNote" data-v="${esc(n.id)}"><span class="inbox-item-icon" aria-hidden="true">${ic(KIND_IC[n.kind]||'bell',22,1.8)}</span><span class="inbox-item-copy"><b>${esc(n.title)}</b>${n.body?`<span>${esc(n.body)}</span>`:''}<time${date.iso?` datetime="${esc(date.iso)}"`:''}>${esc(date.time)}${date.iso?' น.':''}</time></span><span class="inbox-item-chevron" aria-hidden="true">${ic('chevron-right',16,1.8)}</span></button></li>`).join('')}</ul></section>`).join('')}</div>`);
+  return nav+ui.page(`<div class="inbox-page">${TP.inboxGroups(visible).map((group,index)=>`<section class="inbox-day" aria-labelledby="inboxDay${index}"><h2 id="inboxDay${index}">${esc(group.label)}</h2><ul class="inbox-list">${group.items.map(({note:n,date})=>`<li><button type="button" class="inbox-item" data-a="afOpenNote" data-v="${esc(n.id)}"><span class="inbox-item-icon" aria-hidden="true">${ic(KIND_IC[n.kind]||'bell',22,1.8)}</span><span class="inbox-item-copy"><b>${esc(n.title)}</b>${n.body?`<span>${esc(n.body)}</span>`:''}</span><time class="inbox-item-time"${date.iso?` datetime="${esc(date.iso)}"`:''}>${esc(date.time)}${date.iso?' น.':''}</time></button></li>`).join('')}</ul></section>`).join('')}</div>`);
  }
 });
 TP.act('afOpenNote',t=>{const n=TP.S.inbox.find(x=>x.id===t.dataset.v);if(n)openNote(n);});
@@ -6290,8 +6376,8 @@ const taxProfileDraft = S => S._taxProfile ||= {kind:'me', errors:{}, addressSta
 function taxProfilePreview(kind) { return kind==='co'
   ? {id:'0105569024564',name:'บริษัท ตัวอย่าง จำกัด',phone:'021234567',branch:'สำนักงานใหญ่',branchType:'hq',detail:'99 ถนนตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย'}
   : {id:'1234567890121',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย'}; }
-const taxProfileRecord = (S,d) => d.preview?.[d.kind] || (d.kind==='co' ? S.taxCo : S.taxWho);
-function taxProfileForm(S, sheet=false) {
+const taxProfileRecord = (S,d) => TP.taxRecords(d.kind,S).find(r=>r.profileKey===d.editKey) || TP.taxSelected(d.kind,S);
+function taxProfileForm(S, sheet=false, allowDelete=false) {
   const d=taxProfileDraft(S), co=d.kind==='co', f=d.drafts[d.kind], bind=key=>`_taxProfile.drafts.${d.kind}.${key}`;
     const field=(key,label,o={})=>{
       const id='tax-profile-'+key,error=d.errors[key],attrs=`id="${id}" class="input" data-bind="${bind(key)}" aria-invalid="${!!error}" aria-describedby="${id}-error" required aria-required="true"`;
@@ -6300,11 +6386,11 @@ function taxProfileForm(S, sheet=false) {
     const select=(key,label)=>`<div class="field${d.errors[key]?' err':''}"><label for="tax-profile-${key}">${label} <span class="reg-required" aria-hidden="true">*</span></label><select class="input" id="tax-profile-${key}" required aria-required="true" aria-describedby="tax-profile-${key}-error" aria-invalid="${!!d.errors[key]}" disabled><option value="">เลือก${label}</option></select><p class="err-t" id="tax-profile-${key}-error" role="alert" ${d.errors[key]?'':'hidden'}>${esc(d.errors[key]||'')}</p></div>`;
     const branch=co?`<fieldset><legend>สาขา <span class="reg-required" aria-hidden="true">*</span></legend>${`<div class="tax-branch-options" role="group" aria-label="ประเภทสาขา">${[['hq','สำนักงานใหญ่'],['branch','สาขา'],['other','อื่น ๆ']].map(([value,label])=>`<button type="button" class="tax-branch-option" data-a="taxProfileBranch" data-v="${value}" aria-pressed="${f.branchType===value}">${esc(label)}</button>`).join('')}</div>`}</fieldset>${f.branchType!=='hq'?field('branch',f.branchType==='branch'?'รหัสสาขา 5 หลัก':'ระบุสาขา'):''}`:'';
     const area=f.mode==='select'?`${select('prov','จังหวัด')}${select('amp','อำเภอ / เขต')}${select('dist','ตำบล / แขวง')}${field('zip','รหัสไปรษณีย์',{readonly:true})}<p class="hint" id="taxAddressStatus" role="status">กำลังโหลดข้อมูลพื้นที่</p><button type="button" class="txtbtn" id="taxAddressRetry" hidden>โหลดข้อมูลที่อยู่อีกครั้ง</button><button type="button" class="txtbtn" id="taxAddressManual" data-a="taxProfileAddressMode" data-v="manual" hidden>กรอกข้อมูลที่อยู่เอง</button>`:`${field('prov','จังหวัด')}${field('amp','อำเภอ / เขต')}${field('dist','ตำบล / แขวง')}${field('zip','รหัสไปรษณีย์')}`;
-    return `<div class="registration-page tax-profile">${field('id','เลขประจำตัวผู้เสียภาษี 13 หลัก')}${co?field('name','ชื่อนิติบุคคล'):`${field('first','ชื่อผู้รับ')}${field('last','นามสกุลผู้รับ')}`}${branch}${field('phone','เบอร์โทรศัพท์ผู้รับ')}${field('detail','ที่อยู่',{area:true})}${area}<div class="tax-form-actions">${sheet?ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true}):''}${ui.btn('บันทึกข้อมูล',{a:'taxProfileSave'})}</div></div>`;
+    return `<div class="registration-page tax-profile">${field('id','เลขประจำตัวผู้เสียภาษี 13 หลัก')}${co?field('name','ชื่อนิติบุคคล'):`${field('first','ชื่อผู้รับ')}${field('last','นามสกุลผู้รับ')}`}${branch}${field('phone','เบอร์โทรศัพท์ผู้รับ')}${field('detail','ที่อยู่',{area:true})}${area}<div class="tax-form-actions">${sheet?ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true}):''}${ui.btn('บันทึกข้อมูล',{a:'taxProfileSave'})}</div>${allowDelete&&d.editKey?`<div class="tax-edit-delete">${d.deleteConfirm?`<p>ลบข้อมูลผู้รับรายการนี้หรือไม่?</p><p class="small">ใบกำกับภาษีที่ขอไว้แล้วจะยังคงเดิม</p><div class="tax-form-actions">${ui.btn('ยกเลิก',{kind:'secondary',a:'taxProfileDeleteCancel'})}${ui.btn('ยืนยันลบ',{kind:'danger',a:'taxProfileDelete'})}</div>`:ui.btn('ลบข้อมูลผู้รับนี้',{kind:'danger-line',icon:'trash',a:'taxProfileDeleteAsk'})}</div>`:''}</div>`;
 }
 function taxProfileCard(record, co) {
-  const items=[['เลขประจำตัวผู้เสียภาษี',record.id], ...(co ? [['ชื่อนิติบุคคล',record.name],['สาขา',record.branch]] : [['ชื่อผู้รับ',record.first || (record.name||'').split(' ')[0]],['นามสกุลผู้รับ',record.last || (record.name||'').split(' ').slice(1).join(' ')]]), ['เบอร์โทรศัพท์ผู้รับ',record.phone],['ที่อยู่',record.detail || record.addr],['จังหวัด',record.prov],['อำเภอ / เขต',record.amp],['ตำบล / แขวง',record.dist],['รหัสไปรษณีย์',record.zip]];
-  return `<section class="card tax-summary"><header class="tax-summary-head">${ic('file-text',20,1.8)}<strong>${co?'นิติบุคคล':'บุคคลธรรมดา'}</strong></header><dl class="tax-summary-body">${items.map(([key,value])=>`<div><dt>${esc(key)}</dt><dd>${esc(value || '—')}</dd></div>`).join('')}</dl><footer class="tax-summary-foot">${ui.btn('ลบข้อมูล',{kind:'danger-line',icon:'trash',a:'taxProfileDeleteAsk'})}${ui.btn('แก้ไขข้อมูล',{kind:'secondary',icon:'pencil',a:'taxProfileEdit'})}</footer></section>`;
+  const name=record.name||[record.first,record.last].filter(Boolean).join(' '),addr=record.addr||[record.detail,record.dist,record.amp,record.prov,record.zip].filter(Boolean).join(' ');
+  return `<section class="card tax-summary tax-summary-compact"><header class="tax-summary-head"><div><strong>${esc(name)}</strong>${co?`<span class="small">${esc(record.branch||'สำนักงานใหญ่')}</span>`:''}</div><button type="button" class="txtbtn tax-summary-edit" data-a="taxProfileEdit" data-p="${esc(record.profileKey)}" aria-label="แก้ไขข้อมูล ${esc(name)}">${ic('pencil',16,1.8)} แก้ไข</button></header><div class="tax-summary-content"><p class="tax-summary-address">${esc(addr)}</p><p class="small">โทรศัพท์ : ${esc(record.phone||'—')}</p><p class="small">อีเมล : ${esc(record.email||'—')}</p><p class="small">เลขประจำตัวผู้เสียภาษี : ${esc('xxxxxxxxx'+String(record.id||'').slice(-4))}</p></div></section>`;
 }
 function taxProfileMount(el,ctx) {
   const d=taxProfileDraft(ctx.S), f=d.drafts[d.kind]; if(f.mode!=='select'||!$('#taxAddressStatus',el))return;
@@ -6326,17 +6412,18 @@ function taxProfileMount(el,ctx) {
 }
 TP.screen('taxprofile', {
   group:'account', title:'ข้อมูลออกใบกำกับภาษี', code:'C518', parent:'account',
-  states:[['normal','บุคคลธรรมดา'],['company','นิติบุคคล'],['empty','ยังไม่มีข้อมูล'],['address-error','โหลดข้อมูลที่อยู่ไม่สำเร็จ'],['saved-person','บันทึกบุคคลธรรมดาแล้ว'],['saved-company','บันทึกนิติบุคคลแล้ว']],
-  notes:['แต่ละประเภทเก็บได้หนึ่งชุด แสดงฟอร์มเมื่อยังไม่มีข้อมูล','ข้อมูลตัวอย่างในต้นแบบยังไม่ส่งให้ร้านหรือออกใบกำกับภาษีจริง'],
+  states:[['normal','บุคคลธรรมดา'],['company','นิติบุคคล'],['empty','ยังไม่มีข้อมูล'],['address-error','โหลดข้อมูลที่อยู่ไม่สำเร็จ'],['saved-person','บันทึกบุคคลธรรมดาแล้ว'],['saved-company','บันทึกนิติบุคคลแล้ว'],['multiple-person','บุคคลธรรมดาหลายรายการ'],['multiple-company','นิติบุคคลหลายรายการ']],
+  notes:['เมื่อไม่มีข้อมูลแสดง Empty พร้อมไอคอน กดเพิ่มข้อมูลจึงเปิดฟอร์ม ทั้งสองประเภทใช้รูปแบบเดียวกัน','การ์ดเรียงที่อยู่ โทรศัพท์ อีเมล และเลขผู้เสียภาษีตามลำดับ','แต่ละประเภทเพิ่มผู้รับได้หลายรายการ แสดงการ์ดสั้นและเพิ่ม แก้ไข หรือลบเฉพาะรายการที่เลือก','ใช้ผู้รับชุดเดียวกับหน้าชำระเงินและใบเสร็จ โดยคำขอที่ส่งแล้วเก็บสำเนาข้อมูล ณ เวลาส่ง','ข้อมูลตัวอย่างในต้นแบบยังไม่ส่งให้ร้านหรือออกใบกำกับภาษีจริง'],
   prep(S) {
     const state=S.st.taxprofile; if(state==='normal' && !S._taxProfileMockInitialized){if(!S.taxWho) S.taxWho=taxProfilePreview('me'); S._taxProfileMockInitialized=true;} S._taxProfile=null; const d=taxProfileDraft(S);
-    if(state==='company'||state==='saved-company')d.kind='co';
-    if(state==='empty')d.drafts.me=taxProfileEntry(null,{},false);
+    if(state==='company'||state==='saved-company'||state==='multiple-company')d.kind='co';
+    if(state==='empty'){d.previewLists={me:[],co:[]};d.drafts.me=taxProfileEntry(null,{},false);}
     if(state==='saved-person'||state==='saved-company'){d.preview={[d.kind]:taxProfilePreview(d.kind)};d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');}
+    if(state==='multiple-person'||state==='multiple-company'){const kind=d.kind,base=taxProfilePreview(kind);d.previewLists={[kind]:[{...base,profileKey:'example-1'},{...base,profileKey:'example-2',name:kind==='co'?'บริษัท มิตรสุข จำกัด':'สมใจ ใจดี',detail:'12 ถนนสุขใจ',addr:'12 ถนนสุขใจ แขวงคลองตัน เขตคลองเตย กรุงเทพมหานคร 10110'}]};}
   },
   render(ctx) {
-    const d=taxProfileDraft(ctx.S), rec=taxProfileRecord(ctx.S,d);
-    return ui.nav({back:true,title:'ข้อมูลออกใบกำกับภาษี'})+ui.page(`<div class="tax-profile-page">${ui.seg('taxProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],d.kind,{a:'taxProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${rec?taxProfileCard(rec,d.kind==='co'):taxProfileForm(ctx.S)}</div>`);
+    const d=taxProfileDraft(ctx.S), records=TP.taxRecords(d.kind,ctx.S);
+    return ui.nav({back:true,title:'ข้อมูลออกใบกำกับภาษี'})+ui.page(`<div class="tax-profile-page">${ui.seg('taxProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],d.kind,{a:'taxProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${records.length})</span></h3>${ui.btn('เพิ่มข้อมูล',{kind:'secondary',icon:'plus',a:'taxProfileAdd'})}</div><div class="tax-profile-list">${records.length?records.map(rec=>taxProfileCard(rec,d.kind==='co')).join(''):`<div class="rc-tax-empty tax-profile-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${d.kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`);
   },
   mount:taxProfileMount
 });
@@ -6344,26 +6431,28 @@ TP.sheetDef('taxprofileedit',{
   group:'account',title:'แก้ไขข้อมูลออกใบกำกับภาษี',code:'C519',host:'taxprofile',tall:true,
   states:[['person','แก้ไขบุคคลธรรมดา'],['company','แก้ไขนิติบุคคล']],
   notes:['แก้ไขเฉพาะข้อมูลประเภทที่เลือก','ยกเลิกหรือปิดหน้าต่างโดยไม่เปลี่ยนข้อมูลที่บันทึกไว้'],
-  prep(S){const d=taxProfileDraft(S);d.kind=S.st.taxprofileedit==='company'?'co':'me';d.preview={[d.kind]:taxProfilePreview(d.kind)};d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');},
-  render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,
+  prep(S){const d=taxProfileDraft(S);d.kind=S.st.taxprofileedit==='company'?'co':'me';d.preview={[d.kind]:{...taxProfilePreview(d.kind),profileKey:'preview-'+d.kind}};d.editKey=d.preview[d.kind].profileKey;d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');},
+  render:ctx=>taxProfileForm(ctx.S,true,true),mount:taxProfileMount,
   close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(ctx.S,d),ctx.S.user,d.kind==='co');}
 });
-TP.act('payTaxEditProfile',()=>{const S=TP.S,d=taxProfileDraft(S),pay=S.pay;d.kind=pay?.taxWho||'me';d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?S.taxCo:S.taxWho,S.user,d.kind==='co');S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;return TP.sheet('checkouttaxedit');});
+TP.act('payTaxEditProfile',()=>{const S=TP.S,d=taxProfileDraft(S),pay=S.pay;d.kind=pay?.taxWho||'me';d.editKey=TP.taxSelected(d.kind)?.profileKey;d.errors={};d.drafts[d.kind]=taxProfileEntry(TP.taxSelected(d.kind),S.user,d.kind==='co');S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;return TP.sheet('checkouttaxedit');});
 TP.sheetDef('checkouttaxedit',{group:'during',title:'แก้ไขข้อมูลออกใบกำกับภาษี',hidden:true,host:'room',tall:true,render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');setTimeout(async()=>{await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;},450);}});
-TP.act('rcProfileNew',()=>{const d=taxProfileDraft(TP.S),o=TP.cur()?.ctx?.rc;d.kind=o?.tax?.who||'me';d.errors={};d.drafts.me=taxProfileEntry(TP.S._taxProfile?.preview?.me||TP.S.taxWho,TP.S.user,false);d.drafts.co=taxProfileEntry(TP.S._taxProfile?.preview?.co||TP.S.taxCo,TP.S.user,true);return TP.sheet('receiptprofile');});
-TP.act('rcProfileEdit',b=>{const S=TP.S,d=taxProfileDraft(S);d.kind=b.dataset.v;d.errors={};d.drafts[d.kind]=taxProfileEntry(S._taxProfile?.preview?.[d.kind]||(d.kind==='co'?S.taxCo:S.taxWho),S.user,d.kind==='co');return TP.sheet('receiptprofile');});
+TP.act('rcProfileNew',()=>{const d=taxProfileDraft(TP.S),o=TP.cur()?.ctx?.rc;d.kind=o?.tax?.who||'me';d.editKey=null;d.errors={};d.drafts.me=taxProfileEntry(TP.S._taxProfile?.preview?.me||TP.S.taxWho,TP.S.user,false);d.drafts.co=taxProfileEntry(TP.S._taxProfile?.preview?.co||TP.S.taxCo,TP.S.user,true);return TP.sheet('receiptprofile');});
+TP.act('rcProfileEdit',b=>{const S=TP.S,d=taxProfileDraft(S);d.kind=b.dataset.v;d.editKey=TP.taxSelected(d.kind)?.profileKey;d.errors={};d.drafts[d.kind]=taxProfileEntry(TP.taxSelected(d.kind),S.user,d.kind==='co');return TP.sheet('receiptprofile');});
 TP.sheetDef('receiptprofile',{group:'after',title:'ข้อมูลออกใบกำกับภาษี',hidden:true,host:'receipt',tall:true,render:ctx=>`${ui.seg('receiptProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],taxProfileDraft(ctx.S).kind,{a:'receiptProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${taxProfileForm(ctx.S,true)}`,mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');}});
 TP.act('receiptProfileKind',b=>{const d=taxProfileDraft(TP.S);d.kind=b.dataset.v;const order=TP.cur()?.ctx?.rc;if(order?.tax)order.tax.who=d.kind;d.errors={};const sheet=TP.sheetOpen(),body=$('.sh-b',sheet.el);body.innerHTML=`${ui.seg('receiptProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],d.kind,{a:'receiptProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${taxProfileForm(TP.S,true)}`;TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);});
 async function taxProfileRedraw(){
   const sheet=TP.sheetOpen();
   if(sheet?.id==='receiptprofile'){const body=$('.sh-b',sheet.el),top=body.scrollTop;body.innerHTML=`${ui.seg('receiptProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],taxProfileDraft(TP.S).kind,{a:'receiptProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${taxProfileForm(TP.S,true)}`;TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);body.scrollTop=top;return;}
-  if(['taxprofileedit','checkouttaxedit'].includes(sheet?.id)){const body=$('.sh-b',sheet.el),top=body.scrollTop;body.innerHTML=taxProfileForm(TP.S,true);TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);body.scrollTop=top;return;}
+  if(['taxprofileedit','checkouttaxedit'].includes(sheet?.id)){const body=$('.sh-b',sheet.el),top=body.scrollTop;body.innerHTML=taxProfileForm(TP.S,true,sheet.id==='taxprofileedit');TP.icons(body);taxProfileMount(sheet.el,sheet.ctx);body.scrollTop=top;return;}
   return TP.refresh({anim:false});
 }
-TP.sheetDef('taxprofiledelete',{group:'account',title:'ลบข้อมูลออกใบกำกับภาษี?',hidden:true,host:'taxprofile',render:()=>'<p>ข้อมูลที่บันทึกไว้สำหรับประเภทนี้จะถูกลบ</p>',foot:()=>ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true})+ui.btn('ยืนยันลบข้อมูล',{kind:'danger',a:'taxProfileDelete'})});
-TP.act('taxProfileDeleteAsk',()=>TP.sheet('taxprofiledelete'));
-TP.act('taxProfileDelete',async()=>{const S=TP.S,d=taxProfileDraft(S),kind=d.kind;if(d.preview) delete d.preview[kind];if(kind==='co') S.taxCo=null;else S.taxWho=null;d.drafts[kind]=taxProfileEntry(null,S.user,kind==='co');d.errors={};TP.emit('state');await TP.closeSheet();await TP.refresh({anim:false});TP.notify('ลบข้อมูลแล้ว',{icon:'circle-check'});});
-TP.act('taxProfileEdit',()=>{const S=TP.S,d=taxProfileDraft(S);d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(S,d),S.user,d.kind==='co');return TP.sheet('taxprofileedit');});
+TP.sheetDef('taxprofiledelete',{group:'account',title:'ลบข้อมูลออกใบกำกับภาษี?',hidden:true,host:'taxprofile',render:()=>'<p>ลบข้อมูลผู้รับรายการนี้หรือไม่? ข้อมูลในใบกำกับภาษีที่ขอไว้แล้วจะยังคงเดิม</p>',foot:()=>ui.btn('ยกเลิก',{kind:'secondary',closeSheet:true})+ui.btn('ยืนยันลบข้อมูล',{kind:'danger',a:'taxProfileDelete'})});
+TP.act('taxProfileDeleteAsk',()=>{taxProfileDraft(TP.S).deleteConfirm=true;return taxProfileRedraw();});
+TP.act('taxProfileDeleteCancel',()=>{taxProfileDraft(TP.S).deleteConfirm=false;return taxProfileRedraw();});
+TP.act('taxProfileDelete',async()=>{const S=TP.S,d=taxProfileDraft(S),rows=TP.taxRecords(d.kind,S),index=rows.findIndex(r=>r.profileKey===d.editKey);if(index<0)return;const removed=rows.splice(index,1)[0];if(S[d.kind==='co'?'taxCo':'taxWho']?.profileKey===removed.profileKey)S[d.kind==='co'?'taxCo':'taxWho']=rows[0]||null;d.editKey=null;d.errors={};TP.emit('state');await TP.closeSheet();await TP.refresh({anim:false});TP.notify('ลบข้อมูลแล้ว',{icon:'circle-check'});});
+TP.act('taxProfileAdd',()=>{const S=TP.S,d=taxProfileDraft(S);d.editKey=null;d.deleteConfirm=false;d.errors={};d.drafts[d.kind]=taxProfileEntry(null,{},d.kind==='co');return TP.sheet('taxprofileedit');});
+TP.act('taxProfileEdit',b=>{const S=TP.S,d=taxProfileDraft(S);d.editKey=b.dataset.p;d.deleteConfirm=false;d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(S,d),S.user,d.kind==='co');return TP.sheet('taxprofileedit');});
 TP.act('taxProfileKind',b=>{const d=taxProfileDraft(TP.S);d.kind=b.dataset.v;d.errors={};return TP.refresh({anim:false});});
 TP.act('taxProfileAddressMode',b=>{const d=taxProfileDraft(TP.S),f=d.drafts[d.kind];f.mode=b.dataset.v;d.errors={};return taxProfileRedraw();});
 TP.act('taxProfileBranch',b=>{const d=taxProfileDraft(TP.S);d.drafts[d.kind].branchType=b.dataset.v;d.errors={};return taxProfileRedraw();});
@@ -6380,8 +6469,8 @@ TP.act('taxProfileSave',async()=>{
   if(f.mode==='select'&&d.addressState==='ready'&&!TP.thaiAddressData.rows.some(r=>r.province===f.prov&&r.amphoe===f.amp&&r.district===f.dist&&String(r.zipcode)===f.zip))d.errors.dist='เลือกจังหวัด อำเภอ และตำบลให้สัมพันธ์กัน';
   if(Object.keys(d.errors).length){await taxProfileRedraw();$('[aria-invalid="true"]',TP.sheetOpen()?.el || TP.cur()?.el)?.focus();return;}
   const name=co?f.name.trim():`${f.first.trim()} ${f.last.trim()}`,branch=co?(f.branchType==='hq'?'สำนักงานใหญ่':f.branchType==='branch'?'สาขา '+f.branch.trim():f.branch.trim()):'',addr=[f.detail.trim(),f.dist.trim(),f.amp.trim(),f.prov.trim(),f.zip.trim(),f.country.trim()].filter(Boolean).join(' ');
-  const rec={name,id,phone,branch,kind:co?'นิติบุคคล':'บุคคลธรรมดา',first:f.first.trim(),last:f.last.trim(),branchType:f.branchType,addressMode:f.mode,country:f.country.trim(),prov:f.prov.trim(),amp:f.amp.trim(),dist:f.dist.trim(),zip:f.zip.trim(),detail:f.detail.trim(),addr};
-  if(d.preview?.[d.kind]) d.preview[d.kind]=rec; if(co) S.taxCo=rec;else {S.taxWho=rec;S.rcNoAddr=false;} S._taxProfileMockInitialized=true;
+  const rec={profileKey:d.editKey||('tax-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,7)),name,id,phone,branch,kind:co?'นิติบุคคล':'บุคคลธรรมดา',first:f.first.trim(),last:f.last.trim(),branchType:f.branchType,addressMode:f.mode,country:f.country.trim(),prov:f.prov.trim(),amp:f.amp.trim(),dist:f.dist.trim(),zip:f.zip.trim(),detail:f.detail.trim(),addr};
+  const rows=TP.taxRecords(d.kind,S),index=rows.findIndex(r=>r.profileKey===d.editKey);if(index>=0)rows[index]=rec;else rows.push(rec);if(d.preview?.[d.kind]){d.previewLists||={};d.previewLists[d.kind]=rows;delete d.preview[d.kind];}TP.taxChoose(d.kind,rec.profileKey,S);d.editKey=rec.profileKey;S.rcNoAddr=false;S._taxProfileMockInitialized=true;
   TP.emit('state');if(['taxprofileedit','receiptprofile','checkouttaxedit'].includes(TP.sheetOpen()?.id))await TP.closeSheet();await TP.refresh({anim:false});TP.notify('บันทึกข้อมูลแล้ว',{icon:'circle-check'});
 });
 

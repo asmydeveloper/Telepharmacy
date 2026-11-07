@@ -3,9 +3,13 @@ import './styles.css';
 
 export const metadata = { title: 'บันทึกการแก้ไข · MITRAREE' };
 
-const formatDate = (value) => new Intl.DateTimeFormat('th-TH', {
-  day: 'numeric', month: 'short', year: 'numeric', timeZone: 'Asia/Bangkok',
-}).format(new Date(`${value}T12:00:00+07:00`));
+const formatDate = (value) =>
+  new Intl.DateTimeFormat('th-TH', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'Asia/Bangkok',
+  }).format(new Date(`${value}T12:00:00+07:00`));
 
 export default function ChangeLogPage() {
   return (
@@ -25,10 +29,26 @@ export default function ChangeLogPage() {
           <article key={`${entry.date}-${entry.path}-${index}`}>
             <div className="log-meta">
               <time dateTime={entry.date}>{formatDate(entry.date)}</time>
-              {entry.codes.length ? entry.codes.map(code => <span className="log-code" key={code}>{code}</span>) : <span className="log-scope">UI ส่วนกลาง</span>}
+              {entry.codes.length ? (
+                entry.codes.map((code) => (
+                  <span className="log-code" key={code}>
+                    {code}
+                  </span>
+                ))
+              ) : (
+                <span className="log-scope">UI ส่วนกลาง</span>
+              )}
             </div>
-            <h2><a href={entry.path}>{entry.page} <span>{entry.path}</span></a></h2>
-            <ul>{entry.changes.map(change => <li key={change}>{change}</li>)}</ul>
+            <h2>
+              <a href={entry.path}>
+                {entry.page} <span>{entry.path}</span>
+              </a>
+            </h2>
+            <ul>
+              {entry.changes.map((change) => (
+                <li key={change}>{change}</li>
+              ))}
+            </ul>
           </article>
         ))}
       </div>
