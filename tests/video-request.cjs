@@ -17,7 +17,7 @@ TP.receiveVideoRequest({id:'one'});TP.receiveVideoRequest({id:'duplicate'});asse
 let card=run('msgHtml(C().msgs[0])');assert(card.includes('acceptVideoRequest'));assert(card.includes('declineVideoRequest'));
 await actions.declineVideoRequest({dataset:{request:'one'}});await actions.acceptVideoRequest({dataset:{request:'one'}});assert.equal(calls.length,0,'declined card cannot start a call');
 TP.receiveVideoRequest({id:'two'});sim.withdrawVideo.run();await actions.acceptVideoRequest({dataset:{request:'two'}});assert.equal(calls.length,0,'withdrawn card cannot start a call');
-TP.receiveVideoRequest({id:'three'});TP.S.camDenied=true;await actions.acceptVideoRequest({dataset:{request:'three'}});assert.equal(calls.at(-1),'nocam');assert.equal(TP.S.call,null);
+TP.receiveVideoRequest({id:'three'});TP.S.camDenied=true;await actions.acceptVideoRequest({dataset:{request:'three'}});assert.equal(calls.at(-1),'video');
 TP.S.camDenied=false;await actions.startVideo();assert.equal(calls.at(-1),'video');
 const session=TP.S.call={t0:Date.now()-5000,mic:false,cam:false};const messages=C().msgs;
 await actions.toChat();assert.equal(current.id,'room');assert.equal(TP.S.call,session);assert.equal(C().msgs,messages);assert.equal(C().draft,'draft to preserve');

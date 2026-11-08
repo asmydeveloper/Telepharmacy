@@ -32,8 +32,8 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  run('async function paid()','TP.payPaid = paid;');await vm.runInContext('paid()',context);
  assert.equal(order.status,'paid');assert.equal(c.status,'closed');assert.equal(order.fulfillment.status,'preparing');assert.equal(routes.at(-1),'paymentsuccess');assert.equal(order.items.length,3);
  // Every checkout method must keep the same order and open its matching status page.
- run('TP.fulfillmentScreen =', "TP.screen('paid',");
- for (const [recv, destination] of [['pickup','paid'], ['express','track'], ['parcel','track']]) {
+ run('TP.fulfillmentScreen =', '/* C309 merged into C414');
+ for (const [recv, destination] of [['pickup','track'], ['express','track'], ['parcel','track']]) {
    order.status='pending';order.fulfillment=null;order.expiresAt=deadline;
    vm.runInContext(`selectedRecv='${recv}'`,context);
    await vm.runInContext('paid()',context);
@@ -47,7 +47,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
    assert.equal(routes.at(-1),destination);
  }
  // Legacy history snapshots must not fall back to the latest consultation.
- for (const [recv,destination] of [['pickup','paid'],['express','track'],['parcel','track']]) {
+ for (const [recv,destination] of [['pickup','track'],['express','track'],['parcel','track']]) {
   const record={id:'legacy-'+recv,status:'closed',order:{status:'paid',paid:{recv},items:[]}};
   S.history=[record];
   await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:record.id})}});
@@ -64,7 +64,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  assert.equal((multiple.match(/class="hm-fulfillment-banner"/g)||[]).length,2);
  assert(multiple.includes('ยาพร้อมรับที่สาขาแล้ว'));assert(multiple.includes('รับที่ร้าน'));assert(multiple.includes('ส่งด่วน'));
  await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:pickup.id})}});
- assert.equal(S._paymentCase.id,pickup.id);assert.equal(routes.at(-1),'paid');
+ assert.equal(S._paymentCase.id,pickup.id);assert.equal(routes.at(-1),'track');
  pickup.order.picked=true;
  assert(!TP.fulfillmentCard(S,{compact:true}).includes('hm-fulfillment-group'));
  S.history=[];S._paymentCase=c;
@@ -73,7 +73,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  assert(source.includes("go:'summary',p:{id:c.id}")&&source.slice(source.indexOf('TP.fulfillmentDetails = c =>'),source.indexOf('/* ---------- paid (C12)')).includes('ดูคำสั่งซื้อ'),'C414 links to C401 instead of inlining the summary');
  for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);if(phase==='delivered'){/* a finished order has no status page: it shows the order summary C401 */assert(page.includes('C401 '+c.id));}else assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert.equal(TP.fulfillmentInfo(c).done,phase==='delivered');if(phase!=='delivered')assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert(!/tkGot|ได้รับยาแล้ว/.test(page));assert.equal(order.expiresAt,deadline);}
  assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert.equal(order.picked,true);assert.equal(order.paid.got,undefined);assert(order.paid.deliv);assert.equal(TP.fulfillmentCard(S),'');assert.equal(TP.fulfillmentCard(S,{compact:true}),'');assert(!source.includes("TP.act('tkGot'"));assert(!source.includes("TP.act('fuGot'"));assert(!source.includes("TP.sheetDef('gotask'"));
- await TP.go('room');assert.equal(routes.at(-1),'paid');assert.equal(c.status,'closed');
+ await TP.go('room');assert.equal(routes.at(-1),'track');assert.equal(c.status,'closed');
  const unpaid={id:'unpaid',status:'closed',mode:'chat',order:{status:'pending',expiresAt:Date.now()-1}};assert.equal(TP.closedChatRoute(unpaid).screen,'home');assert.equal(unpaid.order.status,'expired');assert.equal(TP.setFulfillment(unpaid,'preparing'),false);
  // Video-selected consultation retains its existing navigation behavior.
  c.mode='video';const count=sheets.length;await TP.go('room');assert.equal(routes.at(-1),'room');assert.equal(sheets.length,count);assert.equal(TP.closedChatRoute(c),null);

@@ -2718,8 +2718,9 @@ body:has(.consultation-card-preview) nextjs-portal {
 
 /* A canceled order stays recognizable without adding a status row to service facts. */
 .af-visit-hero.af-visit-hero-cancelled {
-  background-color: var(--alert-error-bg);
-  border-color: var(--alert-error-border);
+  /* cancelled = consultation ended or not paid: neutral, not an error (user 8 Nov 2026) */
+  background-color: var(--semantic-surface-muted);
+  border-color: var(--semantic-border);
 }
 .af-visit-hero-cancelled::before {
   background-image: url('/assets/illustrations/order-cancelled-header.webp');
@@ -2729,7 +2730,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 .af-visit-hero-cancelled > span,
 .af-visit-hero-cancelled > h2,
 .af-visit-hero-cancelled > small {
-  color: var(--alert-error-ink);
+  color: var(--semantic-text-secondary);
 }
 
 /* C309: order details moved to C401 behind one button */

@@ -84,7 +84,7 @@ export const journey = [
             ['unknownarea', 'outarea'],
           ],
           ['A202', 'แจ้งอาการก่อนปรึกษา', 'C203', 'filled', ['normal']],
-          ['A203', 'รอเภสัชกรรับคิว', 'C207', 'q4', ['q2', 'q1', 'paused']],
+          ['A203', 'รอเภสัชกรรับคิว', 'C207', 'q4', ['q2', 'q1']],
           [
             'A204',
             'การ์ดหน้าแรก · กำลังรอคิว',
@@ -97,23 +97,15 @@ export const journey = [
       [
         'พูดคุยและสั่งจ่ายยา',
         [
-          ['A205R', 'เภสัชกรพร้อมให้บริการ', 'C303', 'provider-joined'],
           ['A206', 'เข้าห้องและเริ่มสนทนา', 'C303', 'live'],
           ['A207', 'การ์ดหน้าแรก · กำลังปรึกษา', 'C201', 'case-chat'],
-          [
-            'A208',
-            'เภสัชกรขอวิดีโอคอล',
-            'C303',
-            'video-request',
-            ['video-declined', 'video-withdrawn'],
-          ],
           ['A210', 'ปรึกษาผ่านวิดีโอ', 'C306', 'waiting-provider', ['on', 'connecting', 'camoff', 'weak']],
           [
             'A211',
             'เภสัชกรส่งรายการยาให้ตรวจสอบ',
             'C303',
             'order',
-            ['checkout-handoff', 'closed-unpaid', 'payment-soon'],
+            ['checkout-handoff'],
           ],
           ['A211P', 'ดูข้อมูลเภสัชกรในห้องสนทนา', 'C313', 'normal'],
           ['A211B', 'เปิดตะกร้ายาจากเภสัชกร', 'C312', 'normal'],
@@ -161,9 +153,9 @@ export const journey = [
           [
             'A219',
             'ดูรหัสรับยาและสถานะรับที่สาขา',
-            'C309',
-            'pickup',
-            ['ready', 'overdue'],
+            'C414',
+            'pickup-preparing',
+            ['pickup-ready', 'pickup-overdue'],
           ],
         ],
         'ร้านเตรียมยา → พร้อมรับที่สาขา → ร้านบันทึกว่ารับยาแล้ว',
@@ -205,9 +197,9 @@ export const journey = [
       [
         'ดูเอกสารการชำระเงิน',
         [
-          ['A303', 'ดูข้อมูลใบเสร็จ', 'C402', 'normal', ['missing', 'tax-selected']],
+          ['A303', 'ดูข้อมูลใบเสร็จและขอใบกำกับภาษี', 'C402', 'normal', ['missing']],
           ['A306', 'เลือกข้อมูลใบกำกับภาษี', 'C421', 'person', ['company', 'empty']],
-          ['A304', 'ติดตามใบกำกับภาษี', 'C402', 'taxpending', ['notax', 'taxdone', 'late']],
+          ['A304', 'ใบกำกับภาษีส่งทางอีเมล', 'C402', 'taxsent', ['late']],
         ],
       ],
       [

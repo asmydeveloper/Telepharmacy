@@ -63,7 +63,7 @@ h.context.tabRecords=[
 {id:'advice',who:'me',date:'15/10/2026',outcome:'no-medicine'}
 ];
 S._histQuery='';
-for(const [tab,expected] of [['all',5],['shipping',1],['completed',1],['cancelled',2]]){
+for(const [tab,expected] of [['all',5],['shipping',1],['completed',2],['cancelled',2]]){
  S._histStatus=tab;
  assert.equal(run('historyItems(TP.S,"me",tabRecords).length'),expected,tab);
 }

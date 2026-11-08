@@ -29,7 +29,7 @@ assert.equal(typeof TP.S.call.t0, 'number');
 assert(!joined.when(TP.S));
 TP.S.call = null; TP.S.camDenied = true;
 actions.chatVideo();
-assert.equal(navigations.at(-1).id, 'nocam');
+assert.equal(navigations.at(-1).id, 'video');
 activeCase.status = 'closed';
 const count = navigations.length;
 actions.chatVideo();

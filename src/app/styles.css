@@ -6885,11 +6885,12 @@ ul.risk-l {
 
 /* item 63 (owner 20/10): silent customer warned 2 minutes before the auto close · text + icon + countdown, never colour alone */
 .rm-idle {
+  /* same shape and tokens as the shared warning alert (.note.warn) */
   margin: var(--space-3) 0 var(--space-1);
-  padding: var(--space-3) var(--space-4) var(--space-4);
-  border-radius: var(--r-xl);
-  background: var(--warn-tint);
-  box-shadow: inset 0 0 0 1px rgba(154, 98, 0, 0.22);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--alert-warning-bg);
+  border: 1px solid var(--alert-warning-border);
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
@@ -6905,7 +6906,7 @@ ul.risk-l {
   align-items: center;
   gap: var(--space-2);
   width: 100%;
-  color: var(--warn);
+  color: var(--alert-warning-ink);
 }
 .rm-idle .rm-idle-h > b {
   font: 600 var(--type-body-mobile-size)/var(--type-body-mobile-line) var(--font);
@@ -6914,7 +6915,7 @@ ul.risk-l {
 .rm-idle-t {
   margin-left: auto;
   font: 500 var(--type-caption-mobile-size)/var(--type-caption-mobile-line) var(--font);
-  color: var(--warn);
+  color: var(--alert-warning-ink);
   white-space: nowrap;
 }
 .rm-idle-t b {
