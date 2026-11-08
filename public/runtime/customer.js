@@ -4640,8 +4640,10 @@ function rcOf(id) {
   if (RC()[id]) return RC()[id];
   if (c?.id === id && c.order?.status === 'paid') return (RC()[id] = c.order.paid ? c.order : { ...pastOrder(id, TP.NOW.date, c.joinedAt, c.order.items), no: c.order.no || codeOf(id) });
   const h = (S.history || []).find(x => x.id === id);
+  /* a history record's paid order may live on its archived case (_case), not only on h.bought */
+  const ho = h?._case?.order?.status === 'paid' ? h._case.order : h?.order?.status === 'paid' || h?.order?.paid ? h.order : null;
+  if (ho?.paid) return (RC()[id] = { ...ho, no: ho.no || codeOf(id) });
   if (!h?.bought) return null;
-  if (h.order?.paid) return (RC()[id] = h.order);
   const meds = h.previewSummary?.meds || TP.SUMMARY?.[id]?.meds || TP.ORDER_ITEMS.slice(0, 2);
   return (RC()[id] = pastOrder(id, h.date, h.time, priced(meds, h.bought)));
 }
@@ -4915,7 +4917,8 @@ TP.screen('receipt', {
   },
   render(ctx) {
     const id = ctx.params?.id;
-    let o = ctx.state === 'missing' ? null : id ? rcOf(id) : rcOf() || order();
+    /* the C402.7 preview case applies only to the preview link, never to a receipt opened for a real order id */
+    let o = ctx.state === 'missing' && !id ? null : id ? rcOf(id) : rcOf() || order();
     if (!id && o && ctx.state === 'normal') {
       const items = [...TP.ORDER_ITEMS.map(i => ({...i})), {name:'ยาแก้ไอ ชนิดน้ำ', qty:'1 ขวด', price:90}];
       const total = items.reduce((sum, i) => sum + i.price, 0);
