@@ -752,8 +752,8 @@ document.addEventListener('keydown', e => {
 /* ---------- notifications: island (chrome) / pill toast / push banner ---------- */
 TP.live = msg => { liveEl.textContent = ''; setTimeout(() => { liveEl.textContent = msg; }, 30); };
 let islT = 0, toastT = 0, banT = 0, banTok = 0;
-TP.notify = (msg, { icon = 'check', dismissible = false } = {}) => {
-  TP.live(msg);
+TP.notify = (msg, { icon = 'check', dismissible = false, title = '', description = '', image = '' } = {}) => {
+  TP.live([title || msg, description].filter(Boolean).join(' '));
   ptoast.dataset.tone = /alert|x|error/.test(icon) ? 'error' : /info|clock/.test(icon) ? 'info' : 'success';
   if (!dismissible && document.documentElement.classList.contains('chrome') && !phone.closest('.device-real')) {
     const c = $('.isl-c', island);
@@ -767,7 +767,8 @@ TP.notify = (msg, { icon = 'check', dismissible = false } = {}) => {
       A(island, [{ width: w + 'px', height: '44px', borderRadius: '24px' }, { width: '120px', height: '34px', borderRadius: '20px' }], { d: 520, e: SP.soft.e, delay: 100, fill: 'forwards' });
     }, 2400);
   } else {
-    ptoast.innerHTML = TP.ic(icon,20,2) + '<span>' + TP.esc(msg) + '</span>' + (dismissible ? '<button type="button" class="ptoast-close" aria-label="ปิดข้อความแจ้งเตือน">'+TP.ic('x',18,2)+'</button>' : ''); kill(ptoast); clearTimeout(toastT); ptoast.style.visibility = 'visible'; ptoast.setAttribute('aria-hidden','false'); ptoast.classList.toggle('dismissible',dismissible);
+    ptoast.classList.toggle('ptoast-rich',Boolean(title));
+    ptoast.innerHTML = (title ? (image ? '<img class="ptoast-art" src="'+TP.esc(image)+'" alt="">' : '') + '<div class="ptoast-copy"><strong>'+TP.esc(title)+'</strong><p>'+TP.esc(description)+'</p></div>' : TP.ic(icon,20,2) + '<span>' + TP.esc(msg) + '</span>') + (dismissible ? '<button type="button" class="ptoast-close" aria-label="ปิดข้อความแจ้งเตือน">'+TP.ic('x',18,2)+'</button>' : ''); kill(ptoast); clearTimeout(toastT); ptoast.style.visibility = 'visible'; ptoast.setAttribute('aria-hidden','false'); ptoast.classList.toggle('dismissible',dismissible);
     if (dismissible) $('.ptoast-close',ptoast).onclick = () => { kill(ptoast); clearTimeout(toastT); ptoast.style.visibility='hidden'; ptoast.setAttribute('aria-hidden','true'); };
     A(ptoast, [{ transform: 'translate(-50%,-180%)' }, { transform: 'translate(-50%,0)' }], { d: SP.spring.d, e: SP.spring.e, fill: 'forwards' });
     if (!dismissible) toastT = setTimeout(() => fin(A(ptoast, [{ transform: 'translate(-50%,0)' }, { transform: 'translate(-50%,-180%)' }], { d: 320, e: E.in, fill: 'forwards' })).then(() => { ptoast.style.visibility = 'hidden'; }), 2400);
@@ -2340,7 +2341,7 @@ TP.act('quickConsult',()=>{
   if (!result.branch){
     if(result.reason==='address'){TP.notify('เลือกที่อยู่จัดส่งเพื่อหาร้านยาใกล้คุณ',{icon:'map-pin'});return TP.sheet('homeaddress');}
     if(result.reason==='unavailable') return TP.sheet('storeinfo', { branch: TP.homeStores()[0].id });
-    TP.notify(result.reason==='area'?'อยู่นอกระยะการใช้งาน':'ยังตรวจสอบระยะจากที่อยู่นี้ไม่ได้ กรุณาตรวจสอบที่อยู่',{icon:'info',dismissible:true});
+    TP.notify(result.reason==='area'?'อยู่นอกระยะการใช้งาน':'ยังตรวจสอบระยะจากที่อยู่นี้ไม่ได้ กรุณาตรวจสอบที่อยู่',{icon:'info',dismissible:true,...(result.reason==='area'?{title:'อยู่นอกระยะการให้บริการ',description:'ยังไม่มีร้านยาในรัศมี 15 กม. จากที่อยู่ที่เลือก กรุณาเปลี่ยนที่อยู่เพื่อเริ่มปรึกษา',image:'/assets/illustrations/outside-service-area-2d-v1.png'}:{})});
     return;
   }
   S.branch=result.branch.id;S.branchPicked=true;S.autoReason='';
