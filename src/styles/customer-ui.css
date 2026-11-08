@@ -3115,3 +3115,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .fu-order-summary .fu-plan-footer { background: transparent; }
 
 .fu-course-assessment-copy { margin: 0 0 var(--space-2); font-size: var(--text-small); line-height: var(--type-body-mobile-line); }
+
+/* C207 outzone: delivery-zone notice pinned above the waiting chat messages. */
+.rm-zone { padding: var(--space-3) var(--page-gutter, var(--space-4)) 0; }

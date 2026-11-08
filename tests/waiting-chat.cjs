@@ -53,6 +53,10 @@ for(const state of ['video-wait','video-next']){
   assert.match(html,state==='video-next'?/คุณเป็นคิวถัดไป/:/รออีก 1 คิว/);
   assert.doesNotMatch(html,/class="rm-queue-bar"|data-a="startVideo"/);
 }
+ui.note=s=>`<div class="note">${s}</div>`;TP.zoneLock=()=>true;TP.zoneOf=a=>({ok:a.dist!=='วัดชลอ',km:a.dist==='วัดชลอ'?null:3});
+S.case=fresh();S.case.deliveryAddress={dist:'วัดชลอ',prov:'นนทบุรี'};html=screens.queue.render(ctx);assert.match(html,/rm-zone.*ที่อยู่จัดส่งอยู่นอกเขตส่งยา.*วัดชลอ นนทบุรี.*รับยาที่ร้านตัวอย่าง หรือเลือกที่อยู่อื่น/s);assert.equal(C().status,'queue','out-of-zone address still waits in the queue');
+S.case=fresh();S.case.deliveryAddress={dist:'อ่อนนุช',prov:'กรุงเทพมหานคร'};assert.doesNotMatch(screens.queue.render(ctx),/rm-zone/);
+S.case=fresh();S.case.deliveryAddress={dist:'วัดชลอ',prov:'นนทบุรี'};S.case.status='room';assert.doesNotMatch(screens.room.render(ctx),/rm-zone/,'notice only while waiting');
 S.case=fresh();S.case.status='closed';html=screens.room.render(ctx);assert(!html.includes('id="rmIn"'));
 console.log('PASS: waiting/paused chat, pre-service messages, draft/reopen, queue updates without scroll jump, acceptance preserves messages, hidden provider marker and closed composer');
 })().catch(e=>{console.error(e);process.exitCode=1});

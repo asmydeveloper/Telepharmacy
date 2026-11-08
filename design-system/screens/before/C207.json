@@ -46,6 +46,12 @@
       "state": "video-wait",
       "label": "รอเภสัชกรวิดีโอคอล",
       "url": "/?screen=queue&state=video-wait&splash=0"
+    },
+    {
+      "code": "C207.13",
+      "state": "outzone",
+      "label": "ที่อยู่จัดส่งนอกเขต 15 กม.",
+      "url": "/?screen=queue&state=outzone&splash=0"
     }
   ]
 }
