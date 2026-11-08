@@ -24,18 +24,6 @@
       "url": "/?screen=profile&state=error&splash=0"
     },
     {
-      "code": "C105.4",
-      "state": "acct",
-      "label": "มีบัญชีเว็บ: ความยินยอมฉบับใหม่",
-      "url": "/?screen=profile&state=acct&splash=0"
-    },
-    {
-      "code": "C105.5",
-      "state": "email",
-      "label": "สมัครใหม่ด้วยอีเมลที่ยืนยันแล้ว",
-      "url": "/?screen=profile&state=email&splash=0"
-    },
-    {
       "code": "C105.6",
       "state": "address",
       "label": "ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ",
@@ -64,12 +52,6 @@
       "state": "health-empty",
       "label": "ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ",
       "url": "/?screen=profile&state=health-empty&splash=0"
-    },
-    {
-      "code": "C105.11",
-      "state": "health-filled",
-      "label": "ข้อมูลสุขภาพหลายรายการ",
-      "url": "/?screen=profile&state=health-filled&splash=0"
     },
     {
       "code": "C105.12",
@@ -106,30 +88,6 @@
       "state": "health-doc-error",
       "label": "ไฟล์แนบไม่ผ่านเงื่อนไข",
       "url": "/?screen=profile&state=health-doc-error&splash=0"
-    },
-    {
-      "code": "C105.22",
-      "state": "conditions-multi",
-      "label": "ระบุโรคประจำตัว",
-      "url": "/?screen=profile&state=conditions-multi&splash=0"
-    },
-    {
-      "code": "C105.23",
-      "state": "conditions-other",
-      "label": "ระบุโรคอื่น ๆ",
-      "url": "/?screen=profile&state=conditions-other&splash=0"
-    },
-    {
-      "code": "C105.24",
-      "state": "conditions-other-empty",
-      "label": "เลือกอื่น ๆ แต่ยังไม่กรอก",
-      "url": "/?screen=profile&state=conditions-other-empty&splash=0"
-    },
-    {
-      "code": "C105.27",
-      "state": "health-all-other",
-      "label": "เลือกหลายข้อและอื่น ๆ ทุกกลุ่มสุขภาพ",
-      "url": "/?screen=profile&state=health-all-other&splash=0"
     },
     {
       "code": "C105.28",

@@ -1501,7 +1501,6 @@ const freshAccount = S => {
 const blankUser = (S, phone) => {
   Object.assign(S.user, { name: '', last: '', full: '', born: '', birthYear: '', age: '', sex: 'none' });
   if (phone?.length === 10) S.user.phone = `${phone.slice(0, 3)}-${phone.slice(3, 6)}-${phone.slice(6)}`;
-  S._pf = null;
 };
 TP.blankUser = blankUser;
 TP.freshAccount = freshAccount;
@@ -1714,7 +1713,7 @@ function authNewAccount(S,channel,target){
   TP.freshAccount(S);TP.blankUser(S,channel==='phone'?target:'');
   S.user={name:'',last:'',full:'',phone:channel==='phone'?fmtPhone(target):'',email:channel==='email'?target:'',born:'',birthYear:'',age:'',sex:'none',allergies:[],allergyState:'unknown',allergySrc:'',meds:[],weight:'',conditions:[],condNone:false,food:'',foodNone:false};
   S.intake={who:'me',symptoms:[],custom:[],otherOpen:false,urgent:[],note:'',photos:0,mode:S.intake?.mode==='video'?'video':'chat'};
-  Object.assign(S,{loggedIn:true,firstTime:true,newAccount:true,consent:false,consentVer:0,_gone:false,_pf:null,_authFlows:{},_registration:null,_registrationIdentity:{provider:channel,email:channel==='email'?target:'',phone:channel==='phone'?digits(target):''},_registrationComplete:false,healthConsentRecord:null,ofPending:null,deliveryAddressId:null});
+  Object.assign(S,{loggedIn:true,firstTime:true,newAccount:true,consent:false,consentVer:0,_gone:false,_authFlows:{},_registration:null,_registrationIdentity:{provider:channel,email:channel==='email'?target:'',phone:channel==='phone'?digits(target):''},_registrationComplete:false,healthConsentRecord:null,ofPending:null,deliveryAddressId:null});
 }
 function authPreview(S,channel,state){
   S.loggedIn=false;S._authFlows ||= {};delete S._authFlows[channel];const f=authDraft(S,channel);
@@ -1777,53 +1776,8 @@ const KEYS = [['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'],
 /* =====================================================================
    Profile (C02): new phone number with no account yet, after OTP
    ===================================================================== */
-const NOW_Y = +TP.NOW.date.slice(-4);
-const PF_CHECK = {
-  first: v => v.trim() ? '' : 'ใส่ชื่อ',
-  last: v => v.trim() ? '' : 'ใส่นามสกุล',
-  house: v => (v || '').trim() ? '' : 'ใส่บ้านเลขที่',
-  building: v => String(v||'').length<=200?'':'รายละเอียดอาคารต้องไม่เกิน 200 ตัวอักษร',
-  alley: v => String(v||'').length<=100?'':'ซอยต้องไม่เกิน 100 ตัวอักษร',
-  road: v => String(v||'').length<=100?'':'ถนนต้องไม่เกิน 100 ตัวอักษร',
-  dist: v => (v || '').trim() ? '' : 'ใส่ตำบล / แขวง',
-  amp: v => (v || '').trim() ? '' : 'ใส่อำเภอ / เขต',
-  prov: v => (v || '').trim() ? '' : 'ใส่จังหวัด',
-  zip: v => /^\d{5}$/.test(v || '') ? '' : 'ใส่รหัสไปรษณีย์ 5 หลัก',
-  year: v => {
-    if (!/^\d{4}$/.test(v)) return 'ใส่ปีเกิดเป็น ค.ศ. 4 หลัก เช่น 1988';
-    const y = +v;
-    if (y >= 2443 && y <= NOW_Y + 543) return `เลขนี้น่าจะเป็นปี พ.ศ. ปี ค.ศ. คือ ${y - 543}`;
-    if (y < 1900 || y > NOW_Y) return `ปีเกิดต้องอยู่ระหว่าง 1900 ถึง ${NOW_Y}`;
-    return '';
-  }
-};
 const SEXES = [['none', 'ไม่ระบุ'], ['f', 'หญิง'], ['m', 'ชาย']];
-function pfField(k, o, d, err) {
-  const id = 'pf-' + k, e = err ? PF_CHECK[k](d[k]) : '';
-  const be = k === 'year' && /^\d{4}$/.test(d.year) && +d.year >= 2443 && +d.year <= NOW_Y + 543 ? +d.year - 543 : 0;
-  return `<div class="field st-pf-f${e ? ' err' : ''}" data-k="${k}">
-    <label for="${id}">${o.label}</label>
-    <input id="${id}" class="input" type="text" value="${esc(d[k] || '')}" placeholder="${o.ph}" autocomplete="${o.ac}"${o.im ? ` inputmode="${o.im}"` : ''} maxlength="${o.max}" aria-invalid="${!!e}" aria-describedby="${id}-h ${id}-e">
-    <p class="hint" id="${id}-h"${e ? ' hidden' : ''}>${o.hint || ''}</p>
-    <p class="err-t" id="${id}-e" role="alert"${e ? '' : ' hidden'}>${ic('circle-x', 16, 2)}<span>${esc(e)}</span>${be ? `<button type="button" class="link st-inl st-fix" data-fix="${be}">ใช้ ${be}</button>` : ''}</p>
-  </div>`;
-}
-/* a full 4-digit year that is wrong (e.g. Thai calendar 2511) explains itself while typing, not only on blur */
-const ageText = v => { const e = PF_CHECK.year(v); return !e ? `<b class="st-age">อายุ ${NOW_Y - +v} ปี</b>` : /^\d{4}$/.test(v) ? `<b class="warn-t">${e}</b>` : 'ปี ค.ศ. 4 หลัก เช่น 1988'; };
-const pfMode = ctx => ctx.params.edit || ctx.state?.startsWith('personal-edit') ? 'edit' : ctx.params.acct || ctx.state === 'acct' ? 'acct' : 'new';
-const pfAcctCard = (S, ph) => `<div class="st-acct" id="pfAcct" data-in="1" role="group" aria-labelledby="pfAcctT">
-    <p class="st-acct-t" id="pfAcctT">${ic('circle-user-round', 20, 1.9)}<span>พบบัญชีเว็บของ <b>คุณ${esc(S.user.full)}</b> <span class="num st-nw">(${esc(ph)})</span> ใช่คุณไหม</span></p>
-    <div class="st-acct-b"><button type="button" class="btn tint sm" data-x="yes">ใช่</button><button type="button" class="btn ghost sm" data-x="no">ไม่ใช่ ติดต่อฝ่ายบริการลูกค้า</button></div></div>`;
-const pfAcctOk = (S, ph) => `<p class="st-pf-ok" data-in="1">${ui.tag('บัญชีของคุณ', 'ok', { dot: true })}<span>คุณ${esc(S.user.full)} <span class="num st-nw">${esc(ph)}</span></span></p>`;
-/* consent sits on the same screen (owner 19/10/2026): short summary, link to the full text, a box that is never pre-ticked */
-const pfConsent = acct => `<h3 class="group-h st-pf-cnh" data-in="5">ความยินยอมในการใช้ข้อมูล</h3>
-    <div class="card st-pf-cn" id="pfCnBox" data-in="5">
-      <ul class="st-pf-cnl">${CN_SUM.map(([i, t, x]) => `<li>${ic(i, 16, 2)}<span><b>${esc(t)}</b> ${esc(x)}</span></li>`).join('')}</ul>
-      <p class="st-pf-cnv">${ic('file-text', 15, 2)}<span>ฉบับที่ ${CN_VER} · มีผล 18/10/2026${acct ? ' · เพิ่มหัวข้อบริการปรึกษาผ่านแอปจากฉบับที่คุณยินยอมไว้บนเว็บ' : ''} <button type="button" class="link st-inl" data-sheet="registrationconsent">อ่านฉบับเต็ม</button></span></p>
-      <div class="st-pf-cnk">${ui.check('<b>ยินยอมให้ใช้ข้อมูลสุขภาพเพื่อการปรึกษาและจ่ายยา</b><small>จำเป็นสำหรับการปรึกษา · ข้อมูลอ่อนไหวตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล</small>', { id: 'pfCn', a: 'pfCn' })}
-        <p class="st-req-e" id="pfCnE" hidden>${ic('circle-x', 16, 2)}<span>ติ๊กยินยอมก่อน จึงจะเริ่มปรึกษาได้</span></p></div>
-    </div>`;
-TP.act('pfCn', () => TP.cur()?.el?._pfSync?.());
+const pfMode = ctx => ctx.params.edit || ctx.state?.startsWith('personal-edit') ? 'edit' : 'new';
 /* Registration draft: verified contact is carried from OTP, never requested twice. */
 const REG_TOPICS=[['weight','น้ำหนัก'],['height','ส่วนสูง'],['conditions','โรคประจำตัว'],['meds','ยาที่ใช้ประจำ'],['allergies','ประวัติการแพ้ยา'],['documents','เอกสารการแพ้ยา'],['food','ประวัติการแพ้อาหาร'],['follow','ติดตามอาการป่วย']];
 /* Single purpose, explicit health-data consent. Company details require owner confirmation. */
@@ -1846,7 +1800,6 @@ TP.healthConsentVersion=()=>REG_HEALTH_POLICY.version;
 TP.healthConsentNeeded=S=>!(S.consent&&S.consentVer>=4&&S.healthConsentRecord?.documentVersion===REG_HEALTH_POLICY.version);
 TP.saveHealthConsent=(S,version,method)=>{if(version!==REG_HEALTH_POLICY.version)return false;S.consent=true;S.consentVer=4;S.healthConsentRecord={documentVersion:version,controller:REG_HEALTH_POLICY.controller,purpose:'pharmaceutical-care',acceptedAt:new Date().toISOString(),method,categories:REG_TOPICS.map(([key])=>key),prototype:true};return true;};
 TP.sheetDef('registrationconsent',{group:'start',title:'ความยินยอมข้อมูลสุขภาพ',code:'C107',host:'profile',tall:true,hideClose:true,states:[['normal','อ่านความยินยอม ไม่มีช่องติ๊ก']],notes:['อ่านอย่างเดียว ปิดแล้วไม่เปลี่ยนความยินยอม','ผู้ควบคุมข้อมูล บริษัท มิตรอารีแคร์ จำกัด ตามเจ้าของโครงการยืนยัน','ฉบับร่าง รอที่อยู่ ช่องทางติดต่อ ระยะเวลา และตรวจฐานกฎหมายก่อนใช้จริง'],render:regConsentDocument,foot:()=>ui.btn('ปิด',{kind:'secondary',closeSheet:true})});
-const REG_LISTS={conditions:['ความดันโลหิตสูง','ไขมันในเลือดสูง','โรคเบาหวาน','โรคหัวใจ','โรคไตเรื้อรัง','โรคหลอดเลือดสมอง'],meds:['Activelle 28s','Aerius 5 mg','Air-X 40 mg','Air-X 80 mg','Air-X 120 mg'],allergies:['Activelle 28s','Aerius 5 mg','Air-X 40 mg','Air-X 80 mg','Air-X 120 mg'],food:['ไข่','นม','แป้งสาลี','ถั่ว','อาหารทะเล']};
 const REG_STEPS=['ข้อมูลส่วนตัว','ที่อยู่ปัจจุบัน','ข้อมูลสุขภาพ','ตรวจทานและยินยอม'];
 function regDraft(S){return S._registration ||= {step:0,first:'',last:'',nationalId:'',day:'',month:'',year:'',sex:'none',weight:'',height:'',house:'',building:'',alley:'',road:'',dist:'',amp:'',prov:'',zip:'',health:{conditions:{mode:'unknown',items:[]},meds:{mode:'unknown',items:[]},allergies:{mode:'unknown',items:[]},food:{mode:'unknown',items:[]}},documents:[],queries:{},docError:'',consents:{},errors:{},busy:false};}
 /* Signup contact state; replace this demo adapter with server-bound SMS challenges. */
@@ -1989,8 +1942,6 @@ function regHealthText(v){return v.mode==='none'?'ไม่มี':v.mode==='unk
 function regReview(ctx,d,editable=true){const c=regContact(ctx),change=n=>editable?`<button type="button" class="txtbtn" data-reg-step="${n}" aria-label="แก้ไข${REG_STEPS[n]}">แก้ไข</button>`:'';return `<section class="reg-summary"><div class="reg-section-head"><h3>${ic('user',20,1.8)}ข้อมูลส่วนตัว</h3>${change(0)}</div>${regKv([['ชื่อ–นามสกุล',d.first+' '+d.last],['เลขบัตรประชาชน','*********'+d.nationalId.slice(-4)],['วันเกิด',`${d.day}/${d.month}/${d.year} · ${regAge(d)} ปี`],['เพศ',SEXES.find(x=>x[0]===d.sex)?.[1]],['น้ำหนัก / ส่วนสูง',`${d.weight} กก. / ${d.height} ซม.`],['อีเมล',d.email||c.value],['เบอร์โทรที่ยืนยันแล้ว',d.verifiedPhone||c.value]])}</section><section class="reg-summary"><div class="reg-section-head"><h3>${ic('map-pin',20,1.8)}ที่อยู่ปัจจุบัน</h3>${change(1)}</div><p>${esc([d.addressFirst,d.addressLast,d.addressPhone].filter(Boolean).join(' '))}</p><p>${esc([d.house,d.building,d.alley,d.road,d.dist,d.amp,d.prov,d.zip].filter(Boolean).join(' '))}</p></section><section class="reg-summary"><div class="reg-section-head"><h3>${ic('heart-pulse',20,1.8)}ข้อมูลสุขภาพ</h3>${change(2)}</div>${regKv(Object.entries(d.health).map(([k,v])=>[{conditions:'โรคประจำตัว',meds:'ยาที่ใช้ประจำ',allergies:'ประวัติแพ้ยา',food:'ประวัติแพ้อาหาร'}[k],regHealthText(v)]))}<div class="reg-review-documents"><h4>เอกสารแพ้ยา${d.documents.length?` <span class="opt-t">(${d.documents.length} ไฟล์)</span>`:''}</h4>${d.documents.length?regDocumentList(d):'<p class="hint">ไม่ได้แนบเอกสาร</p>'}</div></section>`;}
 const REG_HEALTH_LABELS={conditions:'โรคประจำตัว',meds:'ยาที่ใช้ประจำ',allergies:'ประวัติการแพ้ยา',food:'ประวัติแพ้อาหาร'};
 function regHealthValues(h){if(h.mode!=='set')return [];if(h.text!==undefined)return h.text.trim()?[h.text.trim()]:[];return [...new Set([...h.items,...(h.other&&h.otherText?.trim()?[h.otherText.trim()]:[])])];}
-function regHealthToggle(h,value,checked){if(value==='__other'){h.other=checked;if(!checked)h.otherText='';return;}h.items=checked?[...new Set([...h.items,value])]:h.items.filter(x=>x!==value);}
-function regHealthOptions(d,key){const h=d.health[key],items=[...new Set([...REG_LISTS[key],...h.items])];return items.map(v=>`<label class="reg-health-choice"><input type="checkbox" data-reg-health-choice="${key}" data-v="${esc(v)}" ${h.items.includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('');}
 function regHealthBlock(d,key,title){const h=d.health[key],placeholder={conditions:'เช่น โรคที่เป็นอยู่ ระยะเวลาที่เป็น และการรักษาปัจจุบัน',meds:'เช่น ชื่อยา ขนาดยา และความถี่ที่ใช้ตามฉลาก',allergies:'เช่น ชื่อยาที่เคยแพ้ และอาการที่เกิดขึ้น',food:'เช่น อาหารที่เคยแพ้ และอาการที่เกิดขึ้น'}[key];if(h.text===undefined)h.text=[...(h.items||[]),h.otherText||''].filter(Boolean).join('\n');return `<section class="reg-health-block"><h3 id="regHealthTitle-${key}">${title}</h3>${ui.seg('regMode-'+key,[['unknown','ยังไม่ทราบ'],['none','ไม่มี'],['set','ระบุข้อมูล']],h.mode,{a:'regHealthMode',label:title})}${h.mode==='set'?`<div class="field reg-health-other"><label class="f-l" for="reg-health-text-${key}">ระบุ${title} <span class="reg-required" aria-hidden="true">*</span></label><textarea class="input" id="reg-health-text-${key}" data-reg-health-text="${key}" rows="3" maxlength="1000" required aria-required="true" aria-invalid="${!!d.errors[key]}" aria-describedby="regHealthError-${key}" placeholder="${placeholder}">${esc(h.text)}</textarea></div>`:''}<p class="err-t" id="regHealthError-${key}" role="alert" ${d.errors[key]?'':'hidden'}>${esc(d.errors[key]||'')}</p></section>`;}
 
 /* Date-of-birth zoom picker: scratch selection stays in the sheet until confirmed. */
@@ -2113,7 +2064,6 @@ if(d.step===0){
 }
 if(d.step===1)regMountAddressSelect(el,d,sync,ctx);
 const healthSync=key=>{clearConsent();const error=$('#regHealthError-'+key,el);if(error){const text=regErrors(d)[key]||'';if(text)d.errors[key]=text;else delete d.errors[key];error.textContent=text;error.hidden=!text;}sync();};
-el.addEventListener('change',e=>{const input=e.target,key=input.dataset.regHealthChoice;if(!REG_HEALTH_LABELS[key]||d.busy)return;const h=d.health[key];regHealthToggle(h,input.dataset.v,input.checked);if(input.dataset.v==='__other'){const area=$('#regHealthOther-'+key,el),text=$('#reg-health-other-'+key,el);area.hidden=!h.other;input.setAttribute('aria-expanded',String(!!h.other));if(h.other)text.focus({preventScroll:true});else text.value='';}healthSync(key);});
 el.addEventListener('input',e=>{const textKey=e.target.dataset.regHealthText;if(REG_HEALTH_LABELS[textKey]){d.health[textKey].text=e.target.value;healthSync(textKey);e.target.setAttribute('aria-invalid',String(!!regErrors(d)[textKey]));return;}const key=e.target.dataset.regHealthOther;if(!REG_HEALTH_LABELS[key]||d.busy)return;d.health[key].otherText=e.target.value;healthSync(key);});
 
 el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||d.busy)return;if(b.dataset.regStep!==undefined){d.step=+b.dataset.regStep;d.returnToReview=true;d.errors={};return TP.refresh({anim:false});}if(b.dataset.regMode){const h=d.health[b.dataset.regMode];h.mode=b.dataset.v;if(h.mode!=='set')h.items=[];clearConsent();return TP.refresh({anim:false});}const key=b.dataset.regPick||b.dataset.regAdd;if(key){const input=$('#reg-search-'+key,el),value=(b.dataset.regPick?b.dataset.v:input.value).trim();if(!value)return;const h=d.health[key];if(h.items.some(v=>v.toLocaleLowerCase()===value.toLocaleLowerCase()))return TP.live('มีรายการนี้แล้ว');h.items.push(value.slice(0,120));d.queries[key]='';h.mode='set';clearConsent();return TP.refresh({anim:false});}if(b.dataset.regRemove){d.health[b.dataset.regRemove].items.splice(+b.dataset.n,1);clearConsent();return TP.refresh({anim:false});}if(b.dataset.regDocRemove!==undefined){const removed=d.documents.splice(+b.dataset.regDocRemove,1)[0];if(removed?.url?.startsWith('blob:'))URL.revokeObjectURL(removed.url);clearConsent();return TP.refresh({anim:false});}});
@@ -2156,138 +2106,26 @@ TP.registrationPreview={
 TP.previewSavedAddressPin=function(a){a.pin=true;a.location={lat:13.7585281507793,lng:100.358974455533,code:'104801',addressKey:[a.house,...(a.building?.trim()?[a.building]:[]),a.alley,a.road,a.dist,a.amp,a.prov,a.zip].map(v=>String(v||'').trim()).join('|'),verified:true,source:'DDPM',confirmedAt:new Date().toISOString()};};
 function regPreview(S,state='empty'){const d=regDraft(S);if(state==='google-new'||state.startsWith('phone-')){regPreview(S,'filled');d.email='new.member@gmail.com';d.emailLocked=true;d.emailProvider='google';if(state==='google-new'){d.verifiedPhone='';d.phone='';}else if(state!=='phone-verified'){d.verifiedPhone='';if(state==='phone-change')d.phone='0899999999';if(['phone-sent','phone-wrong','phone-expired','phone-locked','phone-resend'].includes(state)){d.phoneRound=1;d.phoneChallenge=TP.authDemo.issue('phone',d.phone,1,S,'new');if(state==='phone-wrong'){d.phoneCode='000000';d.phoneError='รหัสไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';d.phoneChallenge.attempts=1;}if(state==='phone-expired'){d.phoneChallenge.expiresAt=Date.now()-1;d.phoneChallenge.resendAt=0;}if(state==='phone-locked'){d.phoneChallenge.attempts=5;d.phoneChallenge.resendAt=0;d.phoneError='กรุณาขอรหัสใหม่เพื่อยืนยันเบอร์';}if(state==='phone-resend')d.phoneChallenge.resendAt=0;}if(state==='phone-send-error')d.phoneError='ส่งรหัสไม่สำเร็จ กรุณาลองอีกครั้ง';}return;}if(state==='password-partial'||state==='password-mismatch'){regPreview(S,'filled');d.passwordConfirm=state==='password-mismatch'?'Different-Preview42!':'';if(state==='password-partial')d.password='Demo';d.errors=regErrors(d);return;}if(['address-split','address-legacy','address-details-invalid'].includes(state)){regPreview(S,'address');Object.assign(d,{house:'88/12',building:'หมู่บ้านมิตรอารี อาคารบี ห้อง 1201 ชั้น 12',alley:'ทวีวัฒนา 25',road:'เลียบคลองทวีวัฒนา'});if(state==='address-legacy')Object.assign(d,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});if(state==='address-details-invalid')d.building='ก'.repeat(201);d.errors=regErrors(d);return;}if(state.startsWith('map-')){regPreview(S,'address');d.pin=false;d.location=null;if(state==='map-saved')TP.previewSavedAddressPin(d);return;}if(['national-id-short','national-id-format','national-id-checksum'].includes(state)){regPreview(S,'filled');d.step=0;d.nationalId=state==='national-id-short'?'110170020345':state==='national-id-format'?'11017002034AB':'1101700203459';d.errors=regErrors(d);return;}if(['address-select','address-missing-phone','address-invalid-phone','health-text'].includes(state)){regPreview(S,state==='health-text'?'health':'address');if(state==='address-select')Object.assign(d,{prov:'',amp:'',dist:'',zip:''});if(state==='address-missing-phone')d.addressPhone='';if(state==='address-invalid-phone')d.addressPhone='0212345678';if(state==='health-text')for(const [key,h]of Object.entries(d.health))Object.assign(h,{mode:'set',text:'ข้อมูลตัวอย่าง '+REG_HEALTH_LABELS[key]});d.errors=regErrors(d);return;}if(['filled','registration-back','address','address-search','address-no-results','address-error','health','health-empty','health-filled','review','consent-partial','consent-ready','save-error','health-none','health-no-results','health-documents','health-doc-error'].includes(state)||state.startsWith('conditions-')||state==='health-all-other'||state==='health-doc-limit'){Object.assign(d,{email:d.email||'somjai@example.com',phone:'0812345678',verifiedPhone:'0812345678',phoneVerifiedAt:new Date().toISOString(),contactInitialized:true,first:'สมใจ',last:'ใจดี',nationalId:'1101700203450',password:REG_PREVIEW_PASSWORD,passwordConfirm:REG_PREVIEW_PASSWORD,day:'15',month:'6',year:'1988',weight:'55',height:'160',addressFirst:'สมใจ',addressLast:'ใจดี',addressPhone:'0812345678',house:'88/12',building:'',alley:'ซอยทวีวัฒนา',road:'',dist:'ทวีวัฒนา',amp:'ทวีวัฒนา',prov:'กรุงเทพมหานคร',zip:'10170'});const base=d.nationalId.slice(0,12);let sum=0;for(let i=0;i<12;i++)sum+=(13-i)*+base[i];d.nationalId=base+((11-sum%11)%10);}
 if(state==='error')Object.assign(d,{first:'สมใจ',last:'ใจดี',nationalId:'123',day:'31',month:'2',year:'2025',weight:'0',height:'160',errors:{nationalId:'ตรวจสอบเลขบัตรประชาชน 13 หลัก',day:'วันที่นี้ไม่มีในปฏิทิน',weight:'กรอกน้ำหนักมากกว่า 0'}});
-if(state.startsWith('address'))d.step=1;if(state==='address-no-results')d.dist='ตำบลตัวอย่างที่ไม่มี';if(state.startsWith('health'))d.step=2;if(state==='health-empty')d.health.meds.mode='set';if(state==='health-none')for(const h of Object.values(d.health))h.mode='none';if(state==='health-documents'||state==='health-doc-limit'){d.documents=[{name:'บัตรแพ้ยา-ตัวอย่าง.png',type:'image/png',size:248832,url:'/assets/preview/allergy-document.svg'},{name:'เอกสารประกอบ-ตัวอย่าง.pdf',type:'application/pdf',size:524288}];if(state==='health-doc-limit')for(let n=3;n<=5;n++)d.documents.push({name:`เอกสารตัวอย่าง-${n}.pdf`,type:'application/pdf',size:n*102400});}if(state==='health-doc-error')d.docError='ไฟล์นี้ไม่รองรับ กรุณาเลือก JPG, PNG, WEBP หรือ PDF ไม่เกิน 5 MB';if(state==='health-all-other')for(const [key,h]of Object.entries(d.health))Object.assign(h,{mode:'set',items:[REG_LISTS[key][0]],other:true,otherText:'ข้อมูลเพิ่มเติมที่ผู้ใช้ระบุ'});if(state==='health-filled'){d.health.conditions={mode:'set',items:['ความดันโลหิตสูง']};d.health.food={mode:'set',items:['ไข่']};}if(['review','consent-ready','save-error'].includes(state))d.step=3;if(['consent-ready','save-error'].includes(state)){d.consents=Object.fromEntries(REG_TOPICS.map(([k])=>[k,true]));d.healthConsentVersion=REG_HEALTH_POLICY.version;}if(state==='save-error')d.submitError='บันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองอีกครั้งได้';if(state.startsWith('conditions-')){d.step=2;d.health.conditions={mode:'set',items:['ความดันโลหิตสูง','โรคเบาหวาน']};if(state.includes('other'))Object.assign(d.health.conditions,{other:true,otherText:state==='conditions-other'?'โรคหอบหืด':''});if(state==='conditions-other-empty')d.errors.conditions='กรอกโรคประจำตัวอื่น ๆ';if(state==='conditions-no-results')Object.assign(d.health.conditions,{other:true,otherText:''});}if(state==='review-documents'){regPreview(S,'health-documents');d.step=3;}if(state.startsWith('dob-')){regPreview(S,'filled');d.step=0;}}
+if(state.startsWith('address'))d.step=1;if(state==='address-no-results')d.dist='ตำบลตัวอย่างที่ไม่มี';if(state.startsWith('health'))d.step=2;if(state==='health-empty')d.health.meds.mode='set';if(state==='health-none')for(const h of Object.values(d.health))h.mode='none';if(state==='health-documents'||state==='health-doc-limit'){d.documents=[{name:'บัตรแพ้ยา-ตัวอย่าง.png',type:'image/png',size:248832,url:'/assets/preview/allergy-document.svg'},{name:'เอกสารประกอบ-ตัวอย่าง.pdf',type:'application/pdf',size:524288}];if(state==='health-doc-limit')for(let n=3;n<=5;n++)d.documents.push({name:`เอกสารตัวอย่าง-${n}.pdf`,type:'application/pdf',size:n*102400});}if(state==='health-doc-error')d.docError='ไฟล์นี้ไม่รองรับ กรุณาเลือก JPG, PNG, WEBP หรือ PDF ไม่เกิน 5 MB';if(['review','consent-ready','save-error'].includes(state))d.step=3;if(['consent-ready','save-error'].includes(state)){d.consents=Object.fromEntries(REG_TOPICS.map(([k])=>[k,true]));d.healthConsentVersion=REG_HEALTH_POLICY.version;}if(state==='save-error')d.submitError='บันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองอีกครั้งได้';if(state==='review-documents'){regPreview(S,'health-documents');d.step=3;}if(state.startsWith('dob-')){regPreview(S,'filled');d.step=0;}}
 TP.screen('registrationsuccess',{group:'start',title:'สมัครสมาชิกสำเร็จ',code:'C108',cls:'auth-cover-screen registration-welcome-screen',sb:'dark',states:[['normal','สมัครสำเร็จด้วยเบอร์โทร'], ['long-name','ชื่อจริงยาว', true, 4]],notes:['หน้าต้อนรับหลังบันทึกข้อมูล แสดงชื่อจริงและปุ่มเริ่มใช้งาน ไปแนะนำแอป C112','ระบบยืนยันและบันทึกยังเป็นต้นแบบ ไม่ได้ส่งข้อมูลจริง'],prep(S){S._registrationComplete=true;S.loggedIn=S._registrationComplete;Object.assign(S.user,{name:'สมใจ',full:'สมใจ ใจดี',email:'',phone:'0812345678'});if(S.st.registrationsuccess==='long-name')S.user.name='กาญจนาภัทรวรรณ';},render(ctx){const S=ctx.S;if(!S._registrationComplete)return ui.nav({title:'สมัครสมาชิก'})+ui.page(ui.empty({title:'ยังสมัครสมาชิกไม่เสร็จ',body:'กลับไปตรวจสอบข้อมูลและความยินยอม',icon:'clipboard-list',btn:{label:'กลับไปสมัคร',go:'profile'}}));return `<div class="auth-cover registration-welcome" aria-label="สมัครสมาชิกสำเร็จ"><img class="auth-cover-photo reg-welcome-cover" src="/assets/auth/registration-welcome-full-v3.png" alt="" width="864" height="1824" fetchpriority="high"><div class="auth-cover-content reg-welcome-copy"><div class="reg-welcome-message"><p class="reg-welcome-status">สมัครสมาชิกเรียบร้อยแล้ว</p><h1>ยินดีต้อนรับ${S.user.name?`<br><span>คุณ${esc(S.user.name)}</span>`:''}</h1><p class="auth-cover-subtitle">พร้อมให้เภสัชกรดูแลคุณแล้ว</p><div class="auth-cover-actions">${ui.btn('เริ่มใช้งาน',{go:'onboard',root:true,iconRight:'arrow-right'})}</div></div></div></div>`;}});
 
 TP.screen('profile', {
   group: 'start', title: 'ข้อมูลของคุณและความยินยอม', code: 'C105', ref: 'C02', cls: 'st-cn',
-  states: [['empty', 'สมัครใหม่: ยังไม่กรอก'], ['filled', 'เบอร์ใหม่: กรอกแล้ว'], ['error', 'ปีเกิดไม่ถูกต้อง'], ['acct', 'มีบัญชีเว็บ: ความยินยอมฉบับใหม่'], ['email', 'สมัครใหม่ด้วยอีเมลที่ยืนยันแล้ว'], ['address','ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ'], ['address-no-results','ค้นหาที่อยู่ไม่พบ กรอกเองได้'], ['address-error','ตัวช่วยที่อยู่โหลดไม่สำเร็จ'], ['health','ขั้นข้อมูลสุขภาพ ยังไม่ทราบ'], ['health-empty','ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ'], ['health-filled','ข้อมูลสุขภาพหลายรายการ'], ['review','ตรวจทานและความยินยอม ยังไม่ติ๊ก'], ['consent-ready','เลือกยินยอมแล้ว พร้อมสมัคร', true, 14], ['save-error','บันทึกไม่สำเร็จ ข้อมูลยังอยู่', true, 15], ['health-none','ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง', true, 16], ['health-documents','แนบเอกสารแพ้ยาแล้ว', true, 18], ['health-doc-error','ไฟล์แนบไม่ผ่านเงื่อนไข', true, 19], ['conditions-multi','ระบุโรคประจำตัว', true, 22], ['conditions-other','ระบุโรคอื่น ๆ', true, 23], ['conditions-other-empty','เลือกอื่น ๆ แต่ยังไม่กรอก', true, 24], ['health-all-other','เลือกหลายข้อและอื่น ๆ ทุกกลุ่มสุขภาพ', true, 27], ['health-doc-limit','แนบเอกสารครบ 5 ไฟล์', true, 28], ['review-documents','ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์', true, 29], ["dob-years", "วันเกิด: ล้อหมุน", true, 30], ["dob-leap", "วันเกิด: ปีอธิกสุรทิน", true, 34], ["dob-future", "วันเกิด: จำกัดถึงวันนี้", true, 35], ["dob-oldest", "วันเกิด: ปี 1900", true, 36], ['address-select','เลือกจังหวัด อำเภอ ตำบล', true, 37], ['address-missing-phone','ที่อยู่ยังไม่กรอกเบอร์', true, 38], ['address-invalid-phone','รูปแบบเบอร์ติดต่อไม่ถูกต้อง', true, 39], ['health-text','ระบุสุขภาพด้วยข้อความ', true, 40], ['national-id-short','เลขประชาชนไม่ครบ 13 หลัก', true, 41], ['national-id-format','เลขประชาชนมีตัวอักษร', true, 42], ['national-id-checksum','เลขประชาชนครบแต่เลขตรวจสอบผิด', true, 43], ['address-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน', true, 48], ['address-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ', true, 49], ['address-details-invalid','รายละเอียดอาคารยาวเกินกำหนด', true, 50], ['personal-edit','แก้ไขข้อมูลส่วนตัว', true, 51], ['personal-edit-invalid','แก้ไขข้อมูลส่วนตัวไม่ครบ', true, 52], ['password-partial','รหัสผ่านยังไม่ครบเงื่อนไข', true, 53], ['password-mismatch','รหัสผ่านยืนยันไม่ตรงกัน', true, 54], ['google-new','Google สมาชิกใหม่ อีเมลแก้ไม่ได้', true, 55], ['phone-entry','กรอกเบอร์ ขอ SMS OTP', true, 56], ['phone-sent','ส่ง SMS แล้ว กรอกรหัสในฟอร์ม', true, 57], ['phone-wrong','รหัส OTP ไม่ถูกต้อง', true, 58], ['phone-expired','OTP หมดอายุ ขอใหม่ได้', true, 59], ['phone-locked','OTP ผิดครบจำนวน ขอใหม่', true, 60], ['phone-resend','ส่งรหัสใหม่ได้', true, 61], ['phone-verified','ยืนยันเบอร์แล้ว ไปขั้นที่อยู่', true, 62], ['phone-change','เปลี่ยนเบอร์ ต้องยืนยันใหม่', true, 63], ['phone-send-error','ส่ง SMS ไม่สำเร็จ ลองอีกครั้ง', true, 64]],
-  notes:['สมัครใหม่: ข้อมูลส่วนตัว → ที่อยู่ปัจจุบัน → สุขภาพ → ตรวจทานและยินยอม → C108 สมัครสำเร็จ ไม่มีหน้าไม่ยินยอม','สมัครสำเร็จแล้วตั้งที่อยู่ปัจจุบันเป็นที่อยู่หลัก หน้าแรก C201 จึงมีที่อยู่จัดส่งทันที ต้นแบบใช้ที่อยู่จำลองแทนค่าที่กรอก','อีเมล/เบอร์ที่ผ่าน OTP แล้วแสดงสถานะยืนยัน ผู้สมัครใหม่ตั้งและยืนยันรหัสผ่านในขั้นข้อมูลส่วนตัว','อ้างอิงช่องฟอร์มจากภาพเว็บที่ผู้ใช้ส่ง 1 พ.ย. 2026; ตัวเลือกยาเป็นรายการตัวอย่าง กรอกเองได้','ไม่ตั้งค่าไม่มีโรคหรือไม่แพ้ยาให้เอง; ผู้ใช้เลือกยังไม่ทราบได้','ที่อยู่ปัจจุบันไม่ถูกนำไปบันทึกเป็นที่อยู่จัดส่งโดยอัตโนมัติ','ความยินยอม1ช่องสำหรับบริการเภสัชกรรม ไม่ติ๊กล่วงหน้า เปิดC107อ่านอย่างเดียว ไม่รวมการตลาด; การบันทึกยังเป็นต้นแบบ','มีบัญชีเดิม/แก้ไขข้อมูลใช้เส้นทางเดิม คงข้อมูลและความยินยอม'],
+  states: [['empty', 'สมัครใหม่: ยังไม่กรอก'], ['filled', 'เบอร์ใหม่: กรอกแล้ว'], ['error', 'ปีเกิดไม่ถูกต้อง'], ['address','ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ', true, 6], ['address-no-results','ค้นหาที่อยู่ไม่พบ กรอกเองได้', true, 7], ['address-error','ตัวช่วยที่อยู่โหลดไม่สำเร็จ', true, 8], ['health','ขั้นข้อมูลสุขภาพ ยังไม่ทราบ', true, 9], ['health-empty','ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ', true, 10], ['review','ตรวจทานและความยินยอม ยังไม่ติ๊ก', true, 12], ['consent-ready','เลือกยินยอมแล้ว พร้อมสมัคร', true, 14], ['save-error','บันทึกไม่สำเร็จ ข้อมูลยังอยู่', true, 15], ['health-none','ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง', true, 16], ['health-documents','แนบเอกสารแพ้ยาแล้ว', true, 18], ['health-doc-error','ไฟล์แนบไม่ผ่านเงื่อนไข', true, 19], ['health-doc-limit','แนบเอกสารครบ 5 ไฟล์', true, 28], ['review-documents','ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์', true, 29], ["dob-years", "วันเกิด: ล้อหมุน", true, 30], ["dob-leap", "วันเกิด: ปีอธิกสุรทิน", true, 34], ["dob-future", "วันเกิด: จำกัดถึงวันนี้", true, 35], ["dob-oldest", "วันเกิด: ปี 1900", true, 36], ['address-select','เลือกจังหวัด อำเภอ ตำบล', true, 37], ['address-missing-phone','ที่อยู่ยังไม่กรอกเบอร์', true, 38], ['address-invalid-phone','รูปแบบเบอร์ติดต่อไม่ถูกต้อง', true, 39], ['health-text','ระบุสุขภาพด้วยข้อความ', true, 40], ['national-id-short','เลขประชาชนไม่ครบ 13 หลัก', true, 41], ['national-id-format','เลขประชาชนมีตัวอักษร', true, 42], ['national-id-checksum','เลขประชาชนครบแต่เลขตรวจสอบผิด', true, 43], ['address-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน', true, 48], ['address-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ', true, 49], ['address-details-invalid','รายละเอียดอาคารยาวเกินกำหนด', true, 50], ['personal-edit','แก้ไขข้อมูลส่วนตัว', true, 51], ['personal-edit-invalid','แก้ไขข้อมูลส่วนตัวไม่ครบ', true, 52], ['password-partial','รหัสผ่านยังไม่ครบเงื่อนไข', true, 53], ['password-mismatch','รหัสผ่านยืนยันไม่ตรงกัน', true, 54], ['google-new','Google สมาชิกใหม่ อีเมลแก้ไม่ได้', true, 55], ['phone-entry','กรอกเบอร์ ขอ SMS OTP', true, 56], ['phone-sent','ส่ง SMS แล้ว กรอกรหัสในฟอร์ม', true, 57], ['phone-wrong','รหัส OTP ไม่ถูกต้อง', true, 58], ['phone-expired','OTP หมดอายุ ขอใหม่ได้', true, 59], ['phone-locked','OTP ผิดครบจำนวน ขอใหม่', true, 60], ['phone-resend','ส่งรหัสใหม่ได้', true, 61], ['phone-verified','ยืนยันเบอร์แล้ว ไปขั้นที่อยู่', true, 62], ['phone-change','เปลี่ยนเบอร์ ต้องยืนยันใหม่', true, 63], ['phone-send-error','ส่ง SMS ไม่สำเร็จ ลองอีกครั้ง', true, 64]],
+  notes:['สมัครใหม่: ข้อมูลส่วนตัว → ที่อยู่ปัจจุบัน → สุขภาพ → ตรวจทานและยินยอม → C108 สมัครสำเร็จ ไม่มีหน้าไม่ยินยอม','สมัครสำเร็จแล้วตั้งที่อยู่ปัจจุบันเป็นที่อยู่หลัก หน้าแรก C201 จึงมีที่อยู่จัดส่งทันที ต้นแบบใช้ที่อยู่จำลองแทนค่าที่กรอก','เบอร์โทรยืนยันด้วย SMS OTP ในฟอร์ม (C105.56–.64) อีเมลไม่มีการยืนยันตัวตน สมัครด้วย Google ใช้อีเมลจาก Google แก้ไม่ได้ (C105.55) ผู้สมัครใหม่ตั้งและยืนยันรหัสผ่านในขั้นข้อมูลส่วนตัว','ข้อมูลสุขภาพแต่ละหมวด (โรคประจำตัว ยาที่ใช้ประจำ แพ้ยา แพ้อาหาร) เลือก ยังไม่ทราบ / ไม่มี / ระบุข้อมูล แล้วพิมพ์ข้อความเอง ไม่มีรายการให้ติ๊ก แนบเอกสารแพ้ยาได้สูงสุด 5 ไฟล์','ไม่ตั้งค่าไม่มีโรคหรือไม่แพ้ยาให้เอง; ผู้ใช้เลือกยังไม่ทราบได้','ความยินยอม1ช่องสำหรับบริการเภสัชกรรม ไม่ติ๊กล่วงหน้า เปิดC107อ่านอย่างเดียว ไม่รวมการตลาด; การบันทึกยังเป็นต้นแบบ','แก้ไขข้อมูลส่วนตัวจากบัญชีใช้ C105.51/.52 คงข้อมูลที่ล็อกและความยินยอมเดิม ไม่มีโหมดบัญชีเว็บเดิม'],
   prep(S) {
     const st = S.st.profile;
     if(st?.startsWith('personal-edit')){S._profileEdit=null;if(st==='personal-edit-invalid'){const d=pfEditDraft(S);d.first='';d.errors=pfEditErrors(d);}return;}
     S._registration=null;S._registrationComplete=false;
-    if(st==='email')authNewAccount(S,'email','new@example.com');
-    S._pf = st === 'filled' ? { first: 'สมศรี', last: 'มีสุข', year: '1968', sex: 'f' } : st === 'error' ? { first: 'สมศรี', last: 'มีสุข', year: '2511', sex: 'none' } : { first: '', last: '', year: '', sex: 'none' };
-    Object.assign(S, { firstTime: true, newAccount: st !== 'acct', loggedIn: true, consent: false, consentVer: st === 'acct' ? 2 : CN_VER });
-    if(st!=='acct')regPreview(S,st);
+    Object.assign(S, { firstTime: true, newAccount: true, loggedIn: true, consent: false, consentVer: CN_VER });
+    regPreview(S,st);
   },
   render(ctx) {
-    const S = ctx.S, d = S._pf || (S._pf = { first: '', last: '', year: '', sex: 'none' }), err = ctx.state === 'error', m = pfMode(ctx);
-    if(m==='new')return regRender(ctx);if(m==='edit')return pfEditRender(ctx);
-    const ph = ctx.params.email || (ctx.state==='email'?S.user.email:'') || maskPhone(ctx.params.phone || ctx.params.acct || digits(S.user.phone));
-    const form = m === 'acct' ? pfAcctOk(S, ph) : `
-      <p class="st-pf-ok" data-in="1">${ui.tag(m === 'edit' ? 'เบอร์ในบัญชี' : ctx.params.email||ctx.state==='email' ? 'ยืนยันอีเมลแล้ว' : 'ยืนยันเบอร์แล้ว', 'ok', { dot: true })}<span class="num">${esc(ph)}</span></p>
-      <div class="st-pf-name" data-in="2">${pfField('first', { label: 'ชื่อ', ph: 'ชื่อจริง', ac: 'given-name', max: 50 }, d)}${pfField('last', { label: 'นามสกุล', ph: 'นามสกุล', ac: 'family-name', max: 50 }, d)}</div>
-      <div class="mt16" data-in="3">${pfField('year', { label: 'ปีเกิด (ค.ศ.)', ph: 'เช่น 1988', ac: 'bday-year', im: 'numeric', max: 4, hint: ageText(d.year) }, d, err)}</div>
-      <div class="field mt16" data-in="4"><span class="f-l" id="pf-sex-l">เพศ <span class="opt-t">(ไม่บังคับ)</span></span>
-        <div class="chips st-sex" role="radiogroup" aria-labelledby="pf-sex-l" data-radio-scope>${SEXES.map(([v, l]) => `<button type="button" class="chip" role="radio" data-radio="sex" data-v="${v}" aria-checked="${d.sex === v}"><svg class="ck-i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>${l}</button>`).join('')}</div></div>`;
-    const address = m === 'new' ? `<section class="ds-form-section" aria-labelledby="pfAddressTitle"><h3 class="group-h" id="pfAddressTitle">ที่อยู่ของคุณ</h3><p class="hint">บันทึกไว้สำหรับจัดส่งยา แก้ไขได้ภายหลัง</p><div class="mt16">${pfField('house',{label:'บ้านเลขที่',ph:'เช่น 88/12',ac:'address-line1',max:200},d)}${pfField('building',{label:'หมู่บ้าน / อาคาร / ห้อง / ชั้น (ไม่บังคับ)',ph:'ชื่อหมู่บ้าน อาคาร ห้อง หรือชั้น',ac:'address-line2',max:200},d)}${pfField('alley',{label:'ซอย (ไม่บังคับ)',ph:'เช่น ทวีวัฒนา 25',ac:'off',max:100},d)}${pfField('road',{label:'ถนน (ไม่บังคับ)',ph:'เช่น เลียบคลองทวีวัฒนา',ac:'off',max:100},d)}</div><div class="ds-form-grid">${[['dist','ตำบล / แขวง','address-level3',60],['amp','อำเภอ / เขต','address-level2',60],['prov','จังหวัด','address-level1',60],['zip','รหัสไปรษณีย์','postal-code',5]].map(([k,label,ac,max]) => pfField(k,{label,ph:label,ac,max,im:k === 'zip' ? 'numeric' : ''},d)).join('')}</div></section>` : '';
-    const tail = m === 'edit' ? `<p class="st-pf-fine" data-in="5">${ic('lock', 14, 2)}<span>ใช้ในบัญชีและการปรึกษาของคุณเท่านั้น</span></p>` : pfConsent(m === 'acct');
-    const head = m === 'edit' ? { lt: 'ข้อมูลส่วนตัว', sub: 'เปลี่ยนเบอร์โทรได้ที่ฝ่ายบริการลูกค้า' }
-      : m === 'acct' ? { lt: 'ยินดีต้อนรับ', sub: 'ใช้บัญชีเดียวกับเว็บไซต์ MITRAREE · ให้ความยินยอมฉบับปัจจุบันก่อนเข้าสู่หน้าหลัก' }
-      : { lt: 'ข้อมูลของคุณ', sub: `เภสัชกรต้องรู้ชื่อและอายุเพื่อแนะนำและคำนวณขนาดยาให้ปลอดภัย · บันทึกการปรึกษาเก็บ 1 ปีนับจากวันปิดเคส ${nw('ตามกฎ อย.')}` };
-    const dock = m === 'edit' ? ui.btn('บันทึก', { id: 'pfGo' })
-      : `<div class="btn-row st-cn-row"><button type="button" class="btn primary st-cn-go" id="pfGo" aria-disabled="true"><span>ยินยอมและเข้าสู่หน้าหลัก</span></button></div>`;
-    return ui.nav(m === 'edit' ? { back: true, title: 'ข้อมูลส่วนตัว' } : { title: m === 'acct' ? 'ความยินยอม' : 'ข้อมูลของคุณ' }) + ui.page((m === 'acct' ? form : `<section class="ds-form-section" aria-labelledby="pfDetailsTitle"><h3 class="group-h" id="pfDetailsTitle">ข้อมูลส่วนตัว</h3>${form}</section>`) + address + tail, head) + ui.dock(dock);
+    return pfMode(ctx)==='edit'?pfEditRender(ctx):regRender(ctx);
   },
   mount(el, ctx) {
-    const S = ctx.S, d = S._pf, m = pfMode(ctx), go = $('#pfGo', el), cn = $('#pfCn', el), cnE = $('#pfCnE', el);
-    if(m==='new')return regMount(el,ctx);if(m==='edit')return pfEditMount(el,ctx);
-    const ph = ctx.params.email || (ctx.state==='email'?S.user.email:'') || maskPhone(ctx.params.phone || ctx.params.acct || digits(S.user.phone));
-    const ok = () => m === 'acct' || (m === 'new' ? Object.keys(PF_CHECK) : ['first','last','year']).every(k => !PF_CHECK[k](d[k]));
-    const ticked = () => cn?.getAttribute('aria-checked') === 'true';
-    const show = (k, on) => {
-      const f = $(`.st-pf-f[data-k="${k}"]`, el), e = on ? PF_CHECK[k](d[k]) : '', inp = $('input', f);
-      f.classList.toggle('err', !!e); inp.setAttribute('aria-invalid', String(!!e));
-      $('.hint', f).hidden = !!e; $('.err-t', f).hidden = !e;
-      if (e) {
-        $('.err-t span', f).textContent = e;
-        $('.st-fix', f)?.remove();
-        const y = +d.year;
-        if (k === 'year' && /^\d{4}$/.test(d.year) && y >= 2443 && y <= NOW_Y + 543) $('.err-t', f).insertAdjacentHTML('beforeend', `<button type="button" class="link st-inl st-fix" data-fix="${y - 543}">ใช้ ${y - 543}</button>`);
-      }
-      return !!e;
-    };
-    const sync = () => {
-      go.disabled = !ok() || !!(cn && !ticked());
-      if (cn) { go.setAttribute('aria-disabled', String(!ticked())); if (ticked()) { cnE.hidden = true; cn.classList.remove('st-nudge'); } }
-    };
-    el._pfSync = sync;
-    $$('.st-pf-f', el).forEach(f => {
-      const k = f.dataset.k, inp = $('input', f);
-      inp.addEventListener('input', () => {
-        if (k === 'year') { const v = digits(inp.value).slice(0, 4); if (inp.value !== v) inp.value = v; }
-        d[k] = inp.value; f.dataset.touched = '1';
-        if (k === 'year') { $('.hint', f).innerHTML = ageText(d.year); if (/^\d{4}$/.test(d.year) && +d.year > NOW_Y) show(k, true); }
-        if (f.classList.contains('err')) show(k, true);
-        sync();
-      });
-      inp.addEventListener('blur', () => { if (d[k] || f.dataset.touched) show(k, true); f.dataset.touched = '1'; });
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const n = $$('.st-pf-f input', el)[$$('.st-pf-f input', el).indexOf(inp) + 1]; if (n) n.focus(); else inp.blur(); } });
-      /* tapping the fix must not blur the field first: the blur redraws the error line and the button under the finger */
-      f.addEventListener('pointerdown', e => { if (e.target.closest('.st-fix')) e.preventDefault(); });
-      f.addEventListener('mousedown', e => { if (e.target.closest('.st-fix')) e.preventDefault(); });
-      f.addEventListener('click', e => {
-        const b = e.target.closest('.st-fix'); if (!b) return;
-        inp.value = d.year = b.dataset.fix; show('year', true); $('.hint', f).innerHTML = ageText(d.year); sync(); inp.focus();
-        TP.live('เปลี่ยนเป็น ค.ศ. ' + d.year + ' แล้ว');
-      });
-    });
-    $('.st-sex', el)?.addEventListener('click', e => { const c = e.target.closest('[data-v]'); if (c) d.sex = c.dataset.v; });
-    /* web account: confirm it is theirs first */
-    const card = $('#pfAcct', el);
-    card?.addEventListener('click', async e => {
-      const b = e.target.closest('[data-x]'); if (!b) return;
-      if (b.dataset.x === 'yes') {
-        ctx.params.acctOk = 1; TP.live('ยืนยันบัญชีแล้ว');
-        await TP.fin(A(card, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.98)' }], { d: 220, e: E.apple, fill: 'forwards' }));
-        card.insertAdjacentHTML('afterend', pfAcctOk(S, ph)); const n = card.nextElementSibling; card.remove(); rise(n, 0, 6);
-        return;
-      }
-      if (b.dataset.x === 'no') {
-        go.disabled = true;
-        [$('#pfCnBox', el), $('.st-pf-cnh', el)].forEach(n => { if (n) n.style.display = 'none'; });
-        card.classList.add('no');
-        card.innerHTML = `<p class="st-acct-t">${ic('headset', 20, 1.9)}<span>ติดต่อฝ่ายบริการลูกค้า <b class="num st-nw">${esc(TP.STORE?.cs || '')}</b> <span class="st-nw">(${esc(TP.STORE?.csHours || '')})</span> เพื่อตรวจสอบบัญชีที่ผูกกับเบอร์นี้ ระหว่างนี้ยังไม่ต้องใช้งานต่อ</span></p>
-          <div class="st-acct-b"><button type="button" class="btn tint sm" data-x="call">${ic('phone', 18, 2)}<span>โทรหาฝ่ายบริการลูกค้า</span></button><button type="button" class="btn ghost sm" data-x="out">ออกจากระบบ</button></div>`;
-        rise(card, 0, 6); $('[data-x="call"]', card).focus();
-        return;
-      }
-      if (b.dataset.x === 'call') TP.notify('กำลังโทร ' + (TP.STORE?.cs || ''), { icon: 'phone' });
-      if (b.dataset.x === 'out') { S.loggedIn = false; TP.emit('state'); TP.go('login', { via: 'fade', root: true }); }
-    });
-    sync();
-    const fieldsBad = () => m !== 'acct' && (m === 'new' ? Object.keys(PF_CHECK) : ['first','last','year']).map(k => show(k, true)).some(Boolean);
-    const save = () => {
-      if (m === 'acct') return;
-      const first = d.first.trim(), last = d.last.trim(), y = +d.year, p = ctx.params.phone;
-      if (m === 'new') freshAccount(S);
-      Object.assign(S.user, { name: first, last, full: `${first} ${last}`, birthYear: y, born: String(y), age: NOW_Y - y, sex: d.sex });
-      if (m === 'new') S.addrs = [{ id: 'a1', first, last, phone: p || digits(S.user.phone), house: d.house.trim(), building:(d.building||'').trim(),alley:(d.alley||'').trim(),road:(d.road||'').trim(), dist: d.dist.trim(), amp: d.amp.trim(), prov: d.prov.trim(), zip: d.zip, main: true, pin: false }];
-      if (m === 'new' && p && p.length === 10) S.user.phone = `${p.slice(0, 3)}-${p.slice(3, 6)}-${p.slice(6)}`;
-    };
-    go.addEventListener('click', async () => {
-      if (go.disabled || go.classList.contains('busy')) return;
-      if (fieldsBad()) return;
-      if (cn && !ticked()) {
-        shake(cn); cn.classList.remove('st-nudge'); cn.getBoundingClientRect(); cn.classList.add('st-nudge');
-        cnE.hidden = false; TP.live(cnE.textContent); rise(cnE, 0, 4);
-        cn.scrollIntoView({ block: 'center', behavior: TP.RED() ? 'auto' : 'smooth' }); cn.focus({ preventScroll: true });
-        return;
-      }
-      go.classList.add('busy'); go.setAttribute('aria-busy', 'true');
-      await sleep(ctx, 650);
-      save();
-      if (m === 'edit') { TP.emit('state'); TP.back(); TP.notify('บันทึกข้อมูลส่วนตัวแล้ว', { icon: 'circle-check' }); return; }
-      TP.saveHealthConsent(S,TP.healthConsentVersion(),'profile-checkbox');
-      Object.assign(S, { firstTime: false, newAccount: false });
-      TP.emit('state');
-      await TP.go('home', { via: 'none', root: true });
-      // Stay on home after registration or updated consent.
-      TP.notify(m === 'acct' ? 'บันทึกความยินยอมแล้ว' : 'บันทึกข้อมูลและความยินยอมแล้ว', { icon: 'circle-check' });
-    });
-    if (ctx.state === 'empty' && m === 'new') ctx.later(() => $('#pf-first', el)?.focus({ preventScroll: true }), 650);
+    /* C105.4 web-account consent mode removed 8 Nov 2026: profile is registration or personal edit only */
+    return pfMode(ctx)==='edit'?pfEditMount(el,ctx):regMount(el,ctx);
   }
 });
 
@@ -2295,12 +2133,6 @@ TP.screen('profile', {
    Consent (C06 · A6 + C1): summary on top, full text, required + optional
    ===================================================================== */
 const CN_VER = 4;
-const CN_SUM = [
- ['clipboard-list','ข้อมูลที่ใช้','ข้อมูลสุขภาพที่จำเป็นต่อการประเมินอาการและความเหมาะสมของยา'],
- ['stethoscope','วัตถุประสงค์','บริการเภสัชกรรมและติดตามความปลอดภัยที่เกี่ยวข้อง'],
- ['clock','ระยะเวลาเก็บ','ตามระยะเวลาหรือเกณฑ์ที่บริษัทต้องแจ้งในประกาศความเป็นส่วนตัว'],
- ['shield-check','สิทธิของคุณ','อ่านรายละเอียด ถอนความยินยอม หรือขอใช้สิทธิผ่านเมนูบัญชี']
-];
 TP.consentDoc=()=>TP.registrationConsentDocument();
 /* =====================================================================
    No consent (C06): owner 19/10/2026 consent is required to use the app at all
@@ -6153,7 +5985,6 @@ TP.act('afDeleteResolve',async t=>{const block=TP.deleteAccountBlocked(TP.S),c=T
 TP.act('afEditProf', () => {
   TP.S._profileEdit=null;
   const u = TP.S.user, [first, ...rest] = String(u.full || u.name || '').trim().split(/\s+/);
-  TP.S._pf = { first: u.name || first || '', last: u.last || rest.join(' '), year: String(u.born || u.birthYear || ''), sex: u.sex || 'none' };
   TP.go('profile', { params: { edit: 1 } });
 });
 TP.act('afDelType',t=>{
