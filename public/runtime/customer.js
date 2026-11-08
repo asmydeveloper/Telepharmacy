@@ -5725,14 +5725,29 @@ function histItem(h) {
   const destination=ui.route({go:'summary',p:{id:h.id}});
   const f=TP.fulfillmentInfo?.(c), active=historyInProgress(S,h);
   const activeStatus=payable?'รอชำระค่ายา':f?(f.pickup?(o.paid?.stage==='ready'?'พร้อมรับที่สาขา':'กำลังเตรียมยา'):f.title):'กำลังดำเนินการ';
+  const items=o?.items || h.previewSummary?.meds;
+  const itemText=Array.isArray(items)?(items.length?`ยา ${items.length} รายการ`:'ไม่มีรายการยา'):'ปรึกษาเภสัชกร';
   return `<article class="history-card${payable?' history-card-payable':''}" data-history-id="${esc(h.id)}">
-    <header class="history-order-head"><b class="num">${orderNumber?`#${esc(orderNumber)}`:'การปรึกษา'}</b>${ui.tag(active?activeStatus:outcome.label,active?'info':outcome.tone)}</header>
+    <header class="history-order-head">
+      <span class="history-order-icon" aria-hidden="true">${ic('receipt',23,1.8)}</span>
+      <div class="history-order-identity"><span>เลขคำสั่งซื้อ</span><div><b class="num">${orderNumber?esc(orderNumber):'การปรึกษา'}</b>${orderNumber?`<button type="button" class="history-order-copy" data-a="historyCopyOrder" data-order-no="${esc(orderNumber)}" aria-label="คัดลอกเลขคำสั่งซื้อ ${esc(orderNumber)}">${ic('copy',16,1.8)}</button>`:''}</div></div>
+      <span class="history-order-status">${ui.tag(active?activeStatus:outcome.label,active?'info':outcome.tone)}${ic('chevron-right',17,1.8)}</span>
+    </header>
     <button type="button" class="history-card-open" ${destination} aria-label="ดูข้อมูลคำสั่งซื้อ ${esc(orderNumber || h.id)} ${esc(person.name)} วันที่ ${esc(h.date)}">
-      <span class="history-order-date">${esc(h.date)} · ${esc(h.time)} น.</span>
-      <span class="history-order-amount"><span>${paid?'ยอดชำระแล้ว':'การชำระเงิน'}</span><b class="${paid?'num':''}">${esc(amountText)}</b></span>
-      <span class="history-open-hint">ดูข้อมูลคำสั่งซื้อ ${ic('chevron-right',16,1.8)}</span>
+      <span class="history-order-date"><span>วันที่ทำรายการ</span><span>${esc(h.date)} · ${esc(h.time)} น.</span></span>
+      <span class="history-order-amount"><span>${esc(itemText)}</span><b class="${paid?'num':''}">${esc(amountText)}</b></span>
     </button>${payable?`<div class="history-payment-action"><button type="button" class="btn primary history-payment-button" ${ui.route({a:'openOrderPayment',p:{caseId:h.id}})}>${ic('credit-card',19,1.8)}<span>ข้อมูลชำระเงิน</span><span class="history-payment-countdown">${ic('clock',16,1.8)}<b data-order-countdown data-order-case="${esc(h.id)}">${TP.orderRemaining(o)}</b></span>${ic('chevron-right',17,2)}</button></div>`:''}</article>`;
 }
+TP.act('historyCopyOrder', async b => {
+  const number=b.dataset.orderNo;
+  if(!number)return;
+  try {
+    if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');
+    await navigator.clipboard.writeText(number);
+    TP.notify('คัดลอกเลขคำสั่งซื้อแล้ว',{icon:'check'});
+  } catch (_) { TP.notify('คัดลอกไม่ได้ กรุณาลองอีกครั้ง',{icon:'info'}); }
+});
+
 function historyInProgress(S,h) {
   const c = S.case?.id === h.id ? S.case : h._case, o = c?.order || h.order;
   if (c && !['closed','cancelled','declined','expired','branchclosed'].includes(c.status)) return true;
@@ -5795,7 +5810,7 @@ function historySearchSetOpen(el,S,open) {
 TP.screen('history', {
   group:'after',title:'ประวัติ',code:'C403',ref:'C14',tab:'history',
   states:[["normal", "มีรายการ"], ["empty", "ยังไม่มี"], ["loading", "กำลังโหลด"], ["self", "เฉพาะตัวเอง", false], ["paid", "ปรึกษาสำเร็จ", false], ["no-medication", "สิ้นสุดก่อนสรุป", false], ["search", "ค้นหาประวัติ"], ["no-results", "ค้นหาไม่พบ"], ["error", "โหลดไม่สำเร็จ"], ["dark-filters", "แท็บประเภทสี CI เข้ม", false], ["shared-tabs", "แท็บกลาง ตัวอักษร 14px", false], ["store-recipient-card", "หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา", false], ["receipt-inside", "ดูใบเสร็จในใบสรุป", false], ["detail-rows", "รายละเอียดเรียงแถวพร้อมไอคอน", false], ["purchase-status", "ป้ายตามข้อมูลซื้อยา", false], ["pending-order", "รายการยารอชำระ"], ["expired-order", "รายการยาหมดอายุ"], ["cancelled-order", "ยกเลิกรายการยา"], ["tap-card", "แตะการ์ด ไม่มีข้อความลิงก์", false], ["search-below-tabs", "ช่องค้นหาอยู่ใต้แท็บ", false], ["tab-counts", "จำนวนรายการในแต่ละแท็บ", false], ["search-open", "เปิดช่องค้นหาจากหัวหน้า"], ["search-cleared", "ช่องค้นหาหลังล้างคำ", false], ["ten-records", "ประวัติ 10 รายการ หลายวันและเดือน", false],["completed","ปรึกษาสำเร็จ", false],["ended","สิ้นสุดก่อนสรุป", false],["customer-ended","คุณจบการสนทนา"],["no-response","ไม่มีการตอบกลับ 5 นาที"],["long-note","ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด", false]],
-  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดแสดงเลขคำสั่งซื้อ สถานะ วันเวลา และยอดชำระจริง ไม่แสดงสาขาหรืออาการ กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
+  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดคำสั่งซื้อแบบย่อ: ไอคอน เลขคำสั่งซื้อพร้อมปุ่มคัดลอก สถานะ วันเวลา จำนวนรายการยาและยอดชำระจริง ไม่แสดงสาขาหรืออาการ กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
   prep(S) {
     const st=S.st.history;S._histStatus='all';
     // Replace the original built-in examples while preserving actual consultation records.

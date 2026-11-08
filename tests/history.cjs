@@ -42,7 +42,7 @@ search.S._histSearchOpen=false;const closedSearch=search.screens.history.render(
 console.log('PASS: header search, focus, live query, clear versus close, retained tab, Escape/Enter and toggle');
 
 const totals=harness();totals.context.paidRecord={id:'total-paid',who:'me',date:'01/10/2026',time:'12:00',topic:'ตัวอย่าง',pharm:'kj',branch:'tw',bought:265,order:{status:'paid',total:310.5}};
-let totalHtml=totals.run('histItem(paidRecord)');assert(!totalHtml.includes('ยอดเงินทั้งหมด'));assert(totalHtml.includes('฿310.5'));assert(!totalHtml.includes('฿265'));assert(totalHtml.includes('ยอดชำระแล้ว'));
+let totalHtml=totals.run('histItem(paidRecord)');assert(!totalHtml.includes('ยอดเงินทั้งหมด'));assert(totalHtml.includes('฿310.5'));assert(!totalHtml.includes('฿265'));assert(totalHtml.includes('history-order-amount'));
 for(const status of ['none','pending','cancelled','expired']){totals.context.paidRecord.order.status=status;totals.context.paidRecord.bought=0;assert(!totals.run('histItem(paidRecord)').includes('history-card-total'));}
 console.log('PASS: seven mock records, unique consultation IDs, mixed dates/times and consultation outcomes independent of purchases and compact paid totals');
 

@@ -12,3 +12,10 @@ h.context.record.order={status:'expired',total:385};assert(h.run('histItem(recor
 h.TP.orderPayable=()=>true;h.TP.orderRemaining=()=> '14:59';h.context.record.order={status:'pending'};
 const pending=h.run('histItem(record)');assert(pending.includes('data-a="openOrderPayment"'));assert(pending.includes('data-order-countdown'));assert(pending.includes('compact-order'));
 console.log('PASS: compact order identity/date/status/detail route and retained pending-payment action');
+
+// Reference layout retains real item counts and an independent copy control.
+h.context.record.order={no:'MT2026101801',status:'paid',total:385,paid:{total:410},items:[{name:'ยา A'},{name:'ยา B'}]};
+const reference=h.run('histItem(record)');
+assert(reference.includes('ยา 2 รายการ'));assert(reference.includes('history-order-icon'));assert(reference.includes('data-a="historyCopyOrder"'));assert(reference.includes('data-order-no="MT2026101801"'));
+assert(!reference.includes('history-open-hint'));assert(!reference.includes('topic'));
+(async()=>{let copied='',notice='';h.context.navigator={clipboard:{writeText:async value=>{copied=value}}};h.TP.notify=text=>notice=text;await h.actions.historyCopyOrder({dataset:{orderNo:'MT2026101801'}});assert.equal(copied,'MT2026101801');assert.equal(notice,'คัดลอกเลขคำสั่งซื้อแล้ว');h.context.navigator={};await h.actions.historyCopyOrder({dataset:{orderNo:'MT2026101801'}});assert.equal(notice,'คัดลอกไม่ได้ กรุณาลองอีกครั้ง');console.log('PASS: real item count, independent order copy and clipboard failure feedback');})().catch(error=>{console.error(error);process.exitCode=1});
