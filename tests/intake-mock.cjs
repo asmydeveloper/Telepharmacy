@@ -14,6 +14,6 @@ assert.match(source,/TP\.screen\('intake', \{\n  previewMock: intakeMock,/);
 assert.match(source,/screenMock \? !!screenMock\.canFill\(c\.ctx\)/,'panel shows the mock button for screens with previewMock');
 assert.match(source,/else if \(screenMock\) await screenMock\.fill\(cur\.ctx\)/);
 // Chat: the intake renders as the customer's first bubble from fixed mock content.
-assert.match(source,/TP\.INTAKE_CHAT_MOCK = \['แจ้งอาการ'/);
+assert.match(source,/TP\.INTAKE_CHAT_MOCK = \['อาการเบื้องต้น', 'ไข้, เจ็บคอ', 'เป็นมา 2 วัน กลืนแล้วเจ็บ'\];/);assert.doesNotMatch(source,/INTAKE_CHAT_MOCK = \[[^\]]*(อาการ:|รายละเอียด:|ประวัติแพ้ยา:)/,'no labels or categories');
 assert.doesNotMatch(source,/kind:'provider-ready'\},\{who:'me',kind:'intake'\}/,'intake is never placed after the provider marker');
 console.log('PASS: C203 mock fills empty fields only without ticking acknowledgement; chat intake is the first message');

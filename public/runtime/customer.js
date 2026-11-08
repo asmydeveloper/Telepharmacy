@@ -1255,7 +1255,7 @@ TP.previewEventPolicy={
  const history=code==='C403'?{
   'pending-order':['ปรึกษาจบแล้วและยังมียาค้างชำระ','แสดงปุ่มข้อมูลชำระเงินพร้อม countdown เปิดคำสั่งซื้อเดียวกันโดยไม่เปิดเคสปรึกษาใหม่'],
   'expired-order':['ปล่อยรายการยาจนหมดเวลาชำระ','แสดงหมดอายุและปิดการชำระเดิม ผลการปรึกษายังคงเดิม'],
-  'customer-ended':['ผู้ปรึกษาจบการสนทนาเอง','ระบุว่าคุณจบการสนทนา ไม่ตีความเป็นปรึกษาล้มเหลว และไม่ยกเลิกรายการยาที่ค้างชำระ'],
+  'customer-ended':['ผู้ปรึกษาจบการสนทนาเอง','แสดงสถานะยกเลิก คุณยกเลิกการปรึกษานี้ รายการยาที่ค้างชำระของเคสนี้ถูกยกเลิก'],
   'no-response':['ไม่มีการตอบกลับครบ 5 นาที','ระบุเหตุผลปิดการสนทนาจากการไม่ตอบกลับ แยกจากสำเร็จและผู้ใช้กดจบเอง']
  }[state]:null;
  const home=code==='C201'?{
@@ -3618,12 +3618,14 @@ function orderCard(o) {
 }
 
 /* Mock first message: the symptom report sent automatically when the chat opens (prototype content, not the C203 state). */
-TP.INTAKE_CHAT_MOCK = ['แจ้งอาการ', '- อาการ: ไข้, เจ็บคอ', '- รายละเอียด: เป็นมา 2 วัน กลืนแล้วเจ็บ', '- ประวัติแพ้ยา: ยังไม่ได้ระบุ'];
+/* Heading "อาการเบื้องต้น", then what the customer entered as typed (no labels or categories). */
+TP.INTAKE_CHAT_MOCK = ['อาการเบื้องต้น', 'ไข้, เจ็บคอ', 'เป็นมา 2 วัน กลืนแล้วเจ็บ'];
 function adrChatMessage(m) {
   const reports = m.adrReports || (m.adrReportIds || []).map(id => (TP.S.adrReports || []).find(report => report.id === id)).filter(Boolean);
   return reports.map(report => {
     const symptoms = (report.sym || []).join(', ');
     const lines = [
+      'แจ้งแพ้ยา',
       report.drug,
       `- อาการ: ${symptoms || report.note || 'ไม่ได้ระบุ'}`,
       `- เริ่มมีอาการ: ${TP.adrSinceLabel(report.since)}`,
@@ -3918,7 +3920,7 @@ TP.sim.closeCase = (by = 'ph', at) => {
   c.msgs.push({ kind: 'summary', time: at || now(), by, ...(c.checkoutHandoffUntil ? { handoff: true } : {}) });
   TP.followCaseClosed?.(c);
   TP.S.history.unshift({ id: c.id, caseCode: TP.caseCode(c), note: c.note, date: c.date || TP.NOW.date, time: c.joinedAt, who: c.who, topic: c.symptoms.join(' ') || 'ถามเรื่องยา', branch: c.branch, pharm: c.pharm, bought: c.order?.status === 'paid' ? c.order.total : 0, orderStatus: c.order?.status || 'none', outcome:c.outcome, rated: 0, summary: true, _case:c });
-  TP.S.inbox.unshift({ id: 'n' + Date.now(), kind: 'summary', title: 'ใบสรุปการปรึกษาพร้อมแล้ว', body: 'แตะเพื่อเปิดดู', time: TP.NOW.date + ' 14:41', read: false, go: 'summary' });
+  if (by !== 'me') TP.S.inbox.unshift({ id: 'n' + Date.now(), kind: 'summary', title: 'ใบสรุปการปรึกษาพร้อมแล้ว', body: 'แตะเพื่อเปิดดู', time: TP.NOW.date + ' 14:41', read: false, go: 'summary' });
   if(c.order?.status==='pending')TP.S.inbox.unshift({id:'order-pending-'+c.order.no,kind:'order',title:'มีรายการยารอชำระ',body:'การปรึกษาจบแล้ว เปิดแอปเพื่อดูรายการและเวลาชำระ',time:TP.NOW.date+' '+now(),read:false,go:'summary',p:{id:c.id}});
   TP.emit('state');
   if(TP.checkoutHandoffRemaining(c)){TP.refresh({anim:false});return;}
@@ -3977,15 +3979,20 @@ TP.sheetDef('chatprovider', {
 /* End consultation directly from the header, then confirm. */
 TP.sheetDef('endcase', {
   group: 'during', title: 'ผู้ใช้กดจบสนทนา', code: 'C305', ref: 'C09', host: 'room',
-  render: () => { const o = C()?.order; return `<p class="body">${o?.status === 'pending' ? 'รายการยายังชำระได้ภายในเวลาที่กำหนด แม้จบการสนทนาแล้ว ' : ''}เคสนี้จะปิด และคุณจะได้ใบสรุปจากเภสัชกร ถ้ายังมีอาการ ปรึกษาใหม่ได้ทุกเมื่อ</p>`; },
+  render: () => { const o = C()?.order; return `<p class="body">การปรึกษานี้จะถูกยกเลิก${o?.status === 'pending' ? ' รายการยาที่เภสัชกรส่งมาจะถูกยกเลิกด้วย' : ''} ถ้ายังมีอาการ เริ่มปรึกษาใหม่ได้ทันทีจากหน้าแรก</p>`; },
   foot: () => ui.btn('จบการปรึกษา', { kind: 'danger', a: 'endCase' }) + ui.btn('คุยต่อ', { kind: 'ghost', closeSheet: true })
 });
 TP.act('askEnd', async () => { await TP.closeSheet({ instant: true }); TP.sheet('endcase'); });
+/* User 8 Nov 2026: the customer ending the chat cancels the consultation. Any unpaid order is cancelled too,
+   so no status or payment card remains; home is ready for a new consultation and history shows "ยกเลิก". */
 TP.act('endCase', async () => {
   const c = C(); if (!c) return;
   await TP.closeSheet();
+  if (c.order?.status === 'pending') { c.order.status = 'cancelled'; c.order.cancelledAt = Date.now(); c.order.cancelledBy = 'customer'; }
   TP.sim.closeCase('me');
-  TP.notify('จบการปรึกษาแล้ว ดูใบสรุปได้ในประวัติ', { icon: 'circle-check' });
+  /* chat: closeCase already routes a closed chat to home; video and other screens go home here */
+  if (!TP.chatConsult(c) && ['room', 'video'].includes(TP.cur()?.id)) await TP.go('home', { root: true, via: 'uncover' });
+  TP.notify('ยกเลิกการปรึกษาแล้ว เริ่มปรึกษาใหม่ได้ทันที', { icon: 'circle-check' });
 });
 TP.act('retryMsg', () => {
   if (TP.S.netOff) { TP.notify('ยังไม่มีอินเทอร์เน็ต ลองอีกครั้งเมื่อสัญญาณกลับมา', { icon: 'wifi-off' }); return; }
@@ -5611,7 +5618,8 @@ function historyOutcome(S,h) {
   const c=h._case || (S.case?.id===h.id?S.case:null),last=c?.msgs?.filter(m=>m.kind==='summary').at(-1);
   const key=h.outcome || c?.outcome || (c?.endWhy==='noreply'?'no-response':last?.by==='me'?'customer-ended':last?.by==='auto'?'no-response':last?.by==='ph'?'completed':h.summary?'completed':'unknown');
   const order = c?.order || h.order;
-  const finalKey = order?.status === 'expired' ? 'payment-expired'
+  const finalKey = key === 'customer-ended' ? 'customer-ended'
+    : order?.status === 'expired' ? 'payment-expired'
     : order?.status === 'cancelled' ? 'order-cancelled'
     : TP.completedMedicationOrder?.(S, h) ? 'order-complete'
     : key;
@@ -5622,14 +5630,14 @@ function historyOutcome(S,h) {
     'no-medicine': ['ปรึกษาสำเร็จ · ไม่มีรายการยา', 'เภสัชกรให้คำแนะนำโดยไม่มีการจ่ายยา'],
     'order-cancelled': ['ยกเลิกแล้ว', 'คำสั่งซื้อถูกยกเลิก'],
     completed: ['ปรึกษาสำเร็จ', 'เภสัชกรสรุปและจบการปรึกษาแล้ว'],
-    'customer-ended': ['คุณจบการสนทนา', 'คุณเลือกจบการสนทนาก่อนเภสัชกรสรุป'],
+    'customer-ended': ['ยกเลิก', 'คุณยกเลิกการปรึกษานี้'],
     'no-response': ['สิ้นสุดการสนทนา', 'สิ้นสุดการสนทนา เนื่องจากไม่มีการตอบกลับภายใน 5 นาที'],
   };
   const [detailLabel, reason] = details[finalKey] || ['', 'ไม่มีข้อมูลผลการปรึกษาเดิม'];
   if (['order-complete', 'declined-medicine', 'no-medicine', 'completed'].includes(finalKey)) {
     return {key, label:'สำเร็จ', tone:'ok', detailLabel, reason};
   }
-  return {key:Object.hasOwn(details, key) ? key : 'unknown', label:finalKey === 'order-cancelled' ? 'ยกเลิกแล้ว' : 'สิ้นสุด', tone:'muted', detailLabel, reason};
+  return {key:Object.hasOwn(details, key) ? key : 'unknown', label:finalKey === 'customer-ended' ? 'ยกเลิก' : finalKey === 'order-cancelled' ? 'ยกเลิกแล้ว' : 'สิ้นสุด', tone:'muted', detailLabel, reason};
 }
 function historyItems(S, who = S._histWho || 'all', list = allHistory(S)) {
   const q=String(S._histQuery||'').trim().toLocaleLowerCase('th'),type=['all','completed','ended'].includes(S._histStatus)?S._histStatus:'all';
