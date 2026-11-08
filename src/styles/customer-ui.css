@@ -3147,6 +3147,9 @@ body:has(.consultation-card-preview) nextjs-portal {
 .queue-wait-summary { padding: var(--space-5); }
 .queue-wait-art { display: block; width: 220px; max-width: 100%; height: 220px; object-fit: contain; margin: 0 auto var(--space-5); }
 .queue-wait-content h2 { font-size: var(--text-title); line-height: 1.4; margin: 0 0 var(--space-3); }
+.queue-wait-dots { display: inline-block; width: 1em; text-align: left; clip-path: inset(0 66.666% 0 0); animation: queue-wait-dots 1.5s step-end infinite; }
+@keyframes queue-wait-dots { 0% { clip-path: inset(0 66.666% 0 0); } 33.333% { clip-path: inset(0 33.333% 0 0); } 66.666%, 100% { clip-path: inset(0); } }
+@media (prefers-reduced-motion: reduce) { .queue-wait-dots { animation: none; clip-path: none; } }
 .queue-wait-subtitle { margin: 0 auto var(--space-5); font-size: var(--text-small); line-height: 1.7; color: var(--text-muted); }
 .queue-ticket-position { max-width: 300px; margin: 0 auto; padding: var(--space-4); background: var(--semantic-surface-muted); border: 1px solid var(--border); border-radius: var(--radius-lg); color: var(--semantic-primary); }
 .queue-ticket-position > span { display: block; font-size: var(--text-body); }
