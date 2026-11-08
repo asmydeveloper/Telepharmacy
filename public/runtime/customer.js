@@ -7745,11 +7745,11 @@ function followPlanCard(plan, historical = false, compact = false, pos = null) {
     ${compact ? '' : `<div class="fu-plan-body">${plan.meds.map(med => `<div class="fu-multi-plan-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b>
       <p class="small">${esc([followDirections(med), (med.slots || []).map(slot => SLOT[slot][0]).join(' / ')].filter(Boolean).join(' · '))}</p>
     </div></div>`).join('')}</div>`}
-    <footer class="fu-plan-footer">${plan.days ? `<div class="fu-multi-progress">
+    <footer class="fu-plan-footer">${plan.days && !completed ? `<div class="fu-multi-progress">
       <div><b>${completed ? 'จบคอร์สแล้ว' : historical ? `ระยะเวลาตามแผน ${plan.days} วัน` : `วันที่ ${plan.today} จาก ${plan.days}`}</b><span>สิ้นสุด ${esc(plan.endDate || addD(plan.date, plan.days - 1))}</span></div>
       ${historical || completed ? '' : `<progress aria-label="วันที่ของแผนการใช้ยา" value="${plan.today}" max="${plan.days}"></progress>`}
     </div>` : ''}
-    ${completed ? ui.btn('ประเมินอาการ', {kind:'secondary', sheet:'historyassessment', p:{id:plan.id, ...(plan.preview ? {followPreview:true} : {})}, icon:'clipboard-list'}) : ''}
+    ${completed ? ui.btn('ประเมินอาการหลังจบคอร์ส', {kind:'secondary', sheet:'historyassessment', p:{id:plan.id, ...(plan.preview ? {followPreview:true} : {})}, icon:'clipboard-list'}) : ''}
     ${compact ? '' : ui.btn('ดูใบสรุปการปรึกษา', { go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) }, kind: 'tint', sm: true, icon: 'file-text' })}
   </footer></section>`;
 }

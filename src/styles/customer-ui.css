@@ -3087,7 +3087,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 }
 
 /* Order identity stays separate from the consultation details. */
-.fu-order-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-1) var(--space-4) 0; border-bottom: 0; color: var(--semantic-primary); }
+.fu-order-card-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-4) var(--space-4) 0; border-bottom: 0; color: var(--semantic-primary); }
 .fu-order-card-head > strong { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-small); }
 .fu-order-card-head > .fu-order-view { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-1); flex-shrink: 0; min-height: 44px; color: var(--semantic-primary); font-size: var(--text-small); white-space: nowrap; }
 
@@ -3202,3 +3202,14 @@ body:has(.consultation-card-preview) nextjs-portal {
 /* card position on each order card, e.g. 2/6 */
 .fu-order-ident { display: inline-flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); min-width: 0; }
 .fu-order-index { flex: none; padding: 2px var(--space-2); border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.18); font-size: var(--text-small); font-weight: var(--weight-semibold); line-height: 1.4; }
+
+/* Order index and details action share the first row; number sits below. */
+.fu-order-card-head {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  row-gap: var(--space-1);
+}
+.fu-order-card-head .fu-order-ident { display: contents; }
+.fu-order-card-head .fu-order-index { grid-column: 1; grid-row: 1; justify-self: start; align-self: center; }
+.fu-order-card-head .fu-order-ident > strong { grid-column: 1 / -1; grid-row: 2; }
+.fu-order-card-head > .fu-order-view { grid-column: 2; grid-row: 1; min-height: 0; padding-block: 0; }
