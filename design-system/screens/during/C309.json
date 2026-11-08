@@ -46,12 +46,6 @@
       "state": "overdue",
       "label": "เลยกำหนดรับยา",
       "url": "/?screen=paid&state=overdue&splash=0"
-    },
-    {
-      "code": "C309.10",
-      "state": "pickup-complete",
-      "label": "รับยาที่สาขาแล้ว",
-      "url": "/?screen=paid&state=pickup-complete&splash=0"
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "code": "C114",
   "screen": "googlelogin",
-  "title": "ดำเนินการด้วย Google",
+  "title": "ลงชื่อเข้าใช้ด้วย Google",
   "group": "start",
   "kind": "sheet",
   "cases": [

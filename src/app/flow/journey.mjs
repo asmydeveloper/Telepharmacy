@@ -164,7 +164,7 @@ export const journey = [
             'ดูรหัสรับยาและสถานะรับที่สาขา',
             'C309',
             'pickup',
-            ['ready', 'pickup-complete', 'overdue'],
+            ['ready', 'overdue'],
           ],
         ],
         'ร้านเตรียมยา → พร้อมรับที่สาขา → ร้านบันทึกว่ารับยาแล้ว',
