@@ -2235,6 +2235,47 @@ select {
   padding-bottom: var(--space-4);
 }
 
+.phone .payment-reminder-card .payment-reminder-amount {
+  color: var(--semantic-surface);
+  font-size: var(--type-h2-mobile-size);
+  line-height: var(--type-h2-mobile-line);
+  font-weight: var(--weight-semibold);
+}
+.phone .payment-reminder-caption {
+  font-size: var(--type-body-mobile-size);
+  font-weight: var(--weight-semibold);
+}
+.phone .payment-reminder-timing {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.phone .payment-reminder-timing > .tag {
+  flex: none;
+  background: var(--semantic-warning-background);
+  color: var(--semantic-warning-text);
+}
+.phone .payment-reminder-card .post-payment-deadline {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--semantic-text-secondary);
+  font-size: var(--type-caption-mobile-size);
+}
+.phone .payment-reminder-card .case-progress-foot {
+  padding-top: 0;
+  padding-bottom: var(--space-4);
+  border: 0;
+}
+.phone .payment-reminder-card .case-progress-foot > .btn.ghost {
+  order: 1;
+  margin-inline: auto;
+  min-height: 36px;
+}
+
 /* Gallery isolates the same live cards without the home-page chrome. */
 .phone .consultation-card-preview {
   padding: 0;
