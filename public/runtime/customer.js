@@ -710,7 +710,7 @@ TP.miniStatusIcon = kind => {
   };
   return `<svg class="mb-status-art" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" focusable="false">${artwork[kind] || artwork.chat}</svg>`;
 };
-function miniWanted() { const c = TP.S.case; return !!(c && (!c.who||c.who==='me') && ((c.order?.status==='paid'&&c.order.fulfillment&&c.order.fulfillment.status!=='delivered')||c.order?.status==='pending'||!['closed', 'cancelled', 'declined', 'expired'].includes(c.status))); }
+function miniWanted() { const c = TP.S.case; return !!(c && (!c.who||c.who==='me') && c.order?.status!=='paid' && (c.order?.status==='pending'||!['closed', 'cancelled', 'declined', 'expired'].includes(c.status))); }
 TP.miniInfo = () => null; /* 60-main replaces this: () => ({title, sub, go}) */
 TP.mini = (animate = true) => {
   const def = cur && SCREENS[cur.id], info = miniWanted() && def?.tab ? TP.miniInfo() : null, was = !mini.hidden;
@@ -3062,9 +3062,9 @@ TP.ensureCase = ensureCase;
 
 /* mini bar above the tab bar while a case is open */
 TP.miniInfo = () => {
-  const c = C(); if (!c || TP.cur()?.id === 'home') return null;
+  const c = C();
+  if (!c || TP.cur()?.id === 'home' || c.order?.status === 'paid' || (c.status === 'closed' && c.order?.status !== 'pending')) return null;
   const b = TP.branch(c.branch);
-  const fulfillment=TP.fulfillmentInfo?.(c);if(fulfillment&&!fulfillment.done)return {icon:'delivery',title:fulfillment.title,sub:b.name,go:'paid',cta:'ดูสถานะ'};
   if (c.idle && c.status !== 'closed') return { icon:'reply', title: 'เภสัชกรรอคำตอบอยู่', sub: 'ไม่ตอบใน 2 นาที การปรึกษาจะปิด', go: 'room', cta: 'กลับไปตอบ' };
   if (c.order?.status === 'pending') return { icon:'payment', title: 'รายการยารอชำระ', sub: `เหลือเวลาชำระ ${TP.orderRemaining?.(c.order)||'15:00'}`, orderCase:c.id, go: 'room', cta: 'ชำระเงิน' };
   if (c.status === 'matched') return {icon:'chat',title:'เภสัชกรรับคิวแล้ว',sub:`${ph().short} · ${b.short}`,go:'room',cta:'เข้าห้องปรึกษา'};
