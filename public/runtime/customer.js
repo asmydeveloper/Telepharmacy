@@ -3034,7 +3034,7 @@ TP.screen('queue', {
           <h2 id="queueWaitTitle">${paused?'เภสัชกรพักชั่วคราว':'กำลังรอคิวปรึกษา<span class="queue-wait-dots" aria-hidden="true">...</span>'}</h2>
           ${!paused?'<p class="queue-wait-subtitle">กรุณารอสักครู่ เภสัชกรกำลังให้บริการ<br>ผู้รับบริการก่อนหน้าคุณ</p>':''}
           <div class="queue-ticket-position" role="status" aria-live="polite" aria-atomic="true">
-            ${ahead===null?'<b>กำลังตรวจสอบคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong></div>`}
+            ${ahead===null?'<b>กำลังตรวจสอบคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong><span>คิว</span></div>`}
           </div>
           ${paused?'<p class="queue-wait-explanation">คิวของคุณยังอยู่</p>':''}
         </div>
