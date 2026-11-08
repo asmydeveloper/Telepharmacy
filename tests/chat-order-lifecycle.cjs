@@ -57,6 +57,18 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  ui.route=o=>`data-a="${o.a}" data-case="${o.p.caseId}"`;
  const compact=TP.fulfillmentCard(S,{compact:true});assert(compact.includes('hm-fulfillment-banner'));assert(compact.includes(order.no));assert(compact.includes(c.id));assert(!compact.includes('case-progress-foot'));
  order.paid.recv='express';
+ const pickup=structuredClone(c);pickup.id='pickup-two';pickup.order.no='MT202610180702';pickup.order.paid.recv='pickup';pickup.order.paid.stage='ready';pickup.order.fulfillment={status:'preparing'};
+ S.history=[{id:pickup.id,_case:pickup}];
+ const multiple=TP.fulfillmentCard(S,{compact:true});
+ assert(multiple.includes('hm-fulfillment-group'));assert(multiple.includes('2 รายการ'));
+ assert.equal((multiple.match(/class="hm-fulfillment-banner"/g)||[]).length,2);
+ assert(multiple.includes('ยาพร้อมรับที่สาขาแล้ว'));assert(multiple.includes('รับที่ร้าน'));assert(multiple.includes('ส่งด่วน'));
+ await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:pickup.id})}});
+ assert.equal(S._paymentCase.id,pickup.id);assert.equal(routes.at(-1),'paid');
+ pickup.order.picked=true;
+ assert(!TP.fulfillmentCard(S,{compact:true}).includes('hm-fulfillment-group'));
+ S.history=[];S._paymentCase=c;
+ order.paid.recv='express';
  TP.orderStatusCard=(steps,no)=>steps.map(x=>x[1]).join(' ')+no;TP.fulfillmentDetails=c=>c.pharmacistAdvice;TP.summaryForCase=c=>'history '+c.pharmacistAdvice;
  for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);if(phase==='delivered'){assert(page.includes('history '));assert(!page.includes('สถานะการจัดส่งยา'));}else assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert.equal(TP.fulfillmentInfo(c).done,phase==='delivered');if(phase!=='delivered')assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert(!/tkGot|ได้รับยาแล้ว/.test(page));assert.equal(order.expiresAt,deadline);}
  assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert.equal(order.picked,true);assert.equal(order.paid.got,undefined);assert(order.paid.deliv);assert.equal(TP.fulfillmentCard(S),'');assert.equal(TP.fulfillmentCard(S,{compact:true}),'');assert(!source.includes("TP.act('tkGot'"));assert(!source.includes("TP.act('fuGot'"));assert(!source.includes("TP.sheetDef('gotask'"));

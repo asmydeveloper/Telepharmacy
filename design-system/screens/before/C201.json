@@ -94,6 +94,12 @@
       "state": "medication-read",
       "label": "เปิดข้อมูลยาแล้ว ไม่มี Badge",
       "url": "/?screen=home&state=medication-read&splash=0"
+    },
+    {
+      "code": "C201.79",
+      "state": "multiple-fulfillments",
+      "label": "2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน",
+      "url": "/?screen=home&state=multiple-fulfillments&splash=0"
     }
   ]
 }
