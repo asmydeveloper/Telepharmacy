@@ -3144,10 +3144,10 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .queue-wait-screen > .dock .btn:not(:disabled):is(:hover, :active) { background: var(--brand-deep); color: var(--surface); box-shadow: none; }
 .queue-wait-screen .queue-wait-page { padding: 0; background: transparent; }
 .queue-wait-content { position: relative; min-height: 100%; text-align: center; color: var(--semantic-primary); }
-.queue-wait-summary { padding: var(--space-6) var(--space-5); }
-.queue-wait-art { display: block; width: 240px; max-width: 100%; height: 160px; object-fit: contain; margin: 0 auto var(--space-4); }
+.queue-wait-summary { padding: var(--space-5); }
+.queue-wait-art { display: block; width: 220px; max-width: 100%; height: 220px; object-fit: contain; margin: 0 auto var(--space-5); }
 .queue-wait-content h2 { font-size: var(--text-heading); line-height: 1.4; margin: 0 0 var(--space-5); }
-.queue-ticket-position { color: var(--semantic-primary); }
+.queue-ticket-position { max-width: 300px; margin: 0 auto; padding: var(--space-4); background: var(--semantic-surface-muted); border: 1px solid var(--border); border-radius: var(--radius-lg); color: var(--semantic-primary); }
 .queue-ticket-position > span { display: block; font-size: var(--text-body); }
 .queue-ticket-position > b { font-size: var(--text-heading); }
 .queue-ticket-position > div { display: flex; align-items: baseline; justify-content: center; gap: var(--space-2); margin-top: var(--space-2); }
