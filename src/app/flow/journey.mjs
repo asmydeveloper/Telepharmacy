@@ -46,9 +46,6 @@ export const journey = [
               'phone-sent',
               'phone-wrong',
               'phone-expired',
-              'phone-resend',
-              'phone-verified',
-              'phone-change',
               'phone-send-error',
               'password-partial',
               'password-mismatch',
@@ -67,6 +64,7 @@ export const journey = [
         [
           ['A111', 'เพิ่มหรือแก้ไขที่อยู่', 'C515', 'normal', ['edit']],
           ['A112', 'เปิดเมนูบัญชี', 'C501', 'normal'],
+          ['A117', 'แก้ไขข้อมูลส่วนตัว', 'C520', 'normal', ['invalid']],
         ],
       ],
     ],

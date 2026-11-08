@@ -1,0 +1,289 @@
+{
+  "screen": "profile",
+  "code": "C105",
+  "date": "2026-11-08",
+  "note": "User asked to renumber C105 cases in flow order (personal → address → health → review). Event IDs use state keys and do not change. Personal edit moved to C520.",
+  "groups": [
+    {
+      "step": "ข้อมูลส่วนตัว",
+      "states": [
+        "empty",
+        "filled",
+        "google-new",
+        "phone-entry",
+        "phone-sent",
+        "phone-wrong",
+        "phone-expired",
+        "phone-send-error",
+        "national-id-short",
+        "national-id-format",
+        "national-id-checksum",
+        "error",
+        "dob-years",
+        "dob-leap",
+        "dob-future",
+        "dob-oldest",
+        "password-partial",
+        "password-mismatch"
+      ]
+    },
+    {
+      "step": "ที่อยู่",
+      "states": [
+        "address",
+        "address-select",
+        "address-no-results",
+        "address-error",
+        "address-missing-phone",
+        "address-invalid-phone",
+        "address-split",
+        "address-legacy"
+      ]
+    },
+    {
+      "step": "ข้อมูลสุขภาพ",
+      "states": [
+        "health",
+        "health-empty",
+        "health-none",
+        "health-text",
+        "health-documents",
+        "health-doc-error",
+        "health-doc-limit"
+      ]
+    },
+    {
+      "step": "ตรวจทานและยินยอม",
+      "states": [
+        "review",
+        "review-documents",
+        "consent-ready",
+        "save-error"
+      ]
+    }
+  ],
+  "cases": [
+    {
+      "state": "empty",
+      "old": "C105.1",
+      "new": "C105.1"
+    },
+    {
+      "state": "filled",
+      "old": "C105.2",
+      "new": "C105.2"
+    },
+    {
+      "state": "google-new",
+      "old": "C105.55",
+      "new": "C105.3"
+    },
+    {
+      "state": "phone-entry",
+      "old": "C105.56",
+      "new": "C105.4"
+    },
+    {
+      "state": "phone-sent",
+      "old": "C105.57",
+      "new": "C105.5"
+    },
+    {
+      "state": "phone-wrong",
+      "old": "C105.58",
+      "new": "C105.6"
+    },
+    {
+      "state": "phone-expired",
+      "old": "C105.59",
+      "new": "C105.7"
+    },
+    {
+      "state": "phone-send-error",
+      "old": "C105.64",
+      "new": "C105.8"
+    },
+    {
+      "state": "national-id-short",
+      "old": "C105.41",
+      "new": "C105.9"
+    },
+    {
+      "state": "national-id-format",
+      "old": "C105.42",
+      "new": "C105.10"
+    },
+    {
+      "state": "national-id-checksum",
+      "old": "C105.43",
+      "new": "C105.11"
+    },
+    {
+      "state": "error",
+      "old": "C105.3",
+      "new": "C105.12"
+    },
+    {
+      "state": "dob-years",
+      "old": "C105.30",
+      "new": "C105.13"
+    },
+    {
+      "state": "dob-leap",
+      "old": "C105.34",
+      "new": "C105.14"
+    },
+    {
+      "state": "dob-future",
+      "old": "C105.35",
+      "new": "C105.15"
+    },
+    {
+      "state": "dob-oldest",
+      "old": "C105.36",
+      "new": "C105.16"
+    },
+    {
+      "state": "password-partial",
+      "old": "C105.53",
+      "new": "C105.17"
+    },
+    {
+      "state": "password-mismatch",
+      "old": "C105.54",
+      "new": "C105.18"
+    },
+    {
+      "state": "address",
+      "old": "C105.6",
+      "new": "C105.19"
+    },
+    {
+      "state": "address-select",
+      "old": "C105.37",
+      "new": "C105.20"
+    },
+    {
+      "state": "address-no-results",
+      "old": "C105.7",
+      "new": "C105.21"
+    },
+    {
+      "state": "address-error",
+      "old": "C105.8",
+      "new": "C105.22"
+    },
+    {
+      "state": "address-missing-phone",
+      "old": "C105.38",
+      "new": "C105.23"
+    },
+    {
+      "state": "address-invalid-phone",
+      "old": "C105.39",
+      "new": "C105.24"
+    },
+    {
+      "state": "address-split",
+      "old": "C105.48",
+      "new": "C105.25"
+    },
+    {
+      "state": "address-legacy",
+      "old": "C105.49",
+      "new": "C105.26"
+    },
+    {
+      "state": "health",
+      "old": "C105.9",
+      "new": "C105.27"
+    },
+    {
+      "state": "health-empty",
+      "old": "C105.10",
+      "new": "C105.28"
+    },
+    {
+      "state": "health-none",
+      "old": "C105.16",
+      "new": "C105.29"
+    },
+    {
+      "state": "health-text",
+      "old": "C105.40",
+      "new": "C105.30"
+    },
+    {
+      "state": "health-documents",
+      "old": "C105.18",
+      "new": "C105.31"
+    },
+    {
+      "state": "health-doc-error",
+      "old": "C105.19",
+      "new": "C105.32"
+    },
+    {
+      "state": "health-doc-limit",
+      "old": "C105.28",
+      "new": "C105.33"
+    },
+    {
+      "state": "review",
+      "old": "C105.12",
+      "new": "C105.34"
+    },
+    {
+      "state": "review-documents",
+      "old": "C105.29",
+      "new": "C105.35"
+    },
+    {
+      "state": "consent-ready",
+      "old": "C105.14",
+      "new": "C105.36"
+    },
+    {
+      "state": "save-error",
+      "old": "C105.15",
+      "new": "C105.37"
+    }
+  ],
+  "removed": [
+    {
+      "state": "address-details-invalid",
+      "old": "C105.50",
+      "to": null
+    },
+    {
+      "state": "personal-edit",
+      "old": "C105.51",
+      "to": "C520.1"
+    },
+    {
+      "state": "personal-edit-invalid",
+      "old": "C105.52",
+      "to": "C520.2"
+    },
+    {
+      "state": "phone-locked",
+      "old": "C105.60",
+      "to": null
+    },
+    {
+      "state": "phone-resend",
+      "old": "C105.61",
+      "to": null
+    },
+    {
+      "state": "phone-verified",
+      "old": "C105.62",
+      "to": null
+    },
+    {
+      "state": "phone-change",
+      "old": "C105.63",
+      "to": null
+    }
+  ]
+}
