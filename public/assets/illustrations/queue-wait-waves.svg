@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="920" viewBox="0 0 480 920" fill="none">
+  <defs>
+    <linearGradient id="wash" x1="420" y1="920" x2="100" y2="360" gradientUnits="userSpaceOnUse"><stop stop-color="#005F6B" stop-opacity=".17"/><stop offset="1" stop-color="#8CD3CF" stop-opacity="0"/></linearGradient>
+    <linearGradient id="ribbon" x1="460" y1="900" x2="90" y2="440" gradientUnits="userSpaceOnUse"><stop stop-color="#36AAA8" stop-opacity=".2"/><stop offset="1" stop-color="#8CD3CF" stop-opacity=".02"/></linearGradient>
+    <linearGradient id="line" x1="470" y1="850" x2="70" y2="380" gradientUnits="userSpaceOnUse"><stop stop-color="#249899" stop-opacity=".26"/><stop offset="1" stop-color="#249899" stop-opacity="0"/></linearGradient>
+  </defs>
+  <path d="M480 340C300 445 546 583 322 697C173 774 98 720 0 815V920H480V340Z" fill="url(#wash)"/>
+  <path d="M480 418C306 524 535 630 287 749C132 823 67 784 0 861V920C99 817 183 871 330 786C553 657 352 578 480 486V418Z" fill="url(#ribbon)"/>
+  <path d="M480 465C332 560 550 664 310 779C161 850 65 808 0 888M480 501C363 580 553 686 332 804C187 882 87 845 0 919M480 543C392 613 557 716 352 832C229 902 138 882 70 920" stroke="url(#line)" stroke-width="1.2"/>
+  <path d="M0 35C167 55 38 211 0 327V35Z" fill="#8CD3CF" opacity=".08"/>
+  <path d="M0 73C130 88 24 218 0 270" stroke="#005F6B" stroke-opacity=".06"/>
+</svg>

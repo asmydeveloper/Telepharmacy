@@ -2605,7 +2605,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .queue-wait-screen > .dock .btn:not(:disabled):is(:hover, :active) { background: var(--brand-deep); color: var(--surface); box-shadow: none; }
 .queue-wait-screen .queue-wait-page { padding: 0; background: transparent; }
 .queue-wait-content { position: relative; isolation: isolate; overflow: hidden; min-height: 100%; text-align: center; color: var(--ink); }
-.queue-wait-content::before { content: ""; position: absolute; z-index: -1; inset: -40px; pointer-events: none; opacity: 0.55; background: radial-gradient(ellipse at 5% 25%, var(--color-brand-50), transparent 52%), radial-gradient(ellipse at 95% 75%, var(--color-brand-100), transparent 50%); animation: queue-ambient-drift 14s ease-in-out infinite alternate; }
+.queue-wait-content::before { content: ""; position: absolute; z-index: -1; inset: -40px; pointer-events: none; opacity: 1; background: url("/assets/illustrations/queue-wait-waves.svg") center / 100% 100% no-repeat, radial-gradient(ellipse at 5% 25%, var(--color-brand-50), transparent 52%); animation: queue-ambient-drift 14s ease-in-out infinite alternate; }
 @keyframes queue-ambient-drift { from { transform: translate3d(-16px, -20px, 0) scale(1); } to { transform: translate3d(16px, 20px, 0) scale(1.08); } }
 @media (prefers-reduced-motion: reduce) { .queue-wait-content::before { animation: none; } }
 .queue-wait-summary { padding: var(--space-5); }
