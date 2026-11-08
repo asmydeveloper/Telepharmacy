@@ -2175,36 +2175,38 @@ TP.screen('update', {
 });
 /* C610 / C611 (user 8 Nov 2026): whole-app blocking states. Shown before any screen when the service is in
    maintenance or no API can be reached. Production reads these from a status endpoint / network layer. */
+/* C610 / C611 content follows GOV.UK "service unavailable" and "problem with the service" patterns and NN/g error-message
+   guidelines (8 Nov 2026): plain heading, when it is back, what happens to the customer's data, another way to get help,
+   no jargon or error codes, no blame. Urgent symptoms keep the danger alert (project rule) because the app cannot reach a pharmacist. */
 const stBlock = (ctx, o) => ui.page(`<div class="st-vc"><div class="st-cen">
     <div class="st-upd-art" data-in="0">${brand.halo(176, { draw: true })}<span class="st-block-ic" aria-hidden="true">${ic(o.icon, 56, 1.6)}</span></div>
     <h2 class="st-h1 c" data-in="1">${o.title}</h2>
     <p class="st-sub c" data-in="2">${o.body}</p></div>
-    ${ui.card(ui.kv(o.rows), { din: 3, cls: 'st-kvc' })}
-    <div class="mt16" data-in="4">${ui.note('<b>มีอาการรุนแรงหรือฉุกเฉิน</b> เช่น หายใจลำบาก แน่นหน้าอก ปากหรือหน้าบวม ไปโรงพยาบาลใกล้บ้าน หรือ <a href="tel:1669">โทร 1669</a> ไม่ต้องรอแอป', { tone: 'danger', icon: 'triangle-alert' })}</div></div>`, { nonav: true }) +
+    <div class="mt16" data-in="3">${ui.note('<b>มีอาการรุนแรงหรือฉุกเฉิน</b> เช่น หายใจลำบาก แน่นหน้าอก ปากหรือหน้าบวม ไปโรงพยาบาลใกล้บ้าน หรือ <a href="tel:1669">โทร 1669</a>', { tone: 'danger', icon: 'triangle-alert' })}</div></div>`, { nonav: true }) +
   ui.dock(ctx.state === 'retrying'
-    ? ui.btn('กำลังลองเชื่อมต่อ…', { disabled: true, id: 'stRetryGo' })
-    : ui.btn('ลองอีกครั้ง', { icon: 'refresh-cw', a: 'stRetry', id: 'stRetryGo' }), { clear: true });
+    ? ui.btn('กำลังตรวจสอบ…', { disabled: true, id: 'stRetryGo' })
+    : ui.btn(o.retry, { icon: 'refresh-cw', a: 'stRetry', id: 'stRetryGo' }), { clear: true });
 TP.screen('maintenance', {
-  group: 'edge', title: 'ปิดปรับปรุงระบบ', code: 'C610',
-  states: [['normal', 'ปิดปรับปรุงระบบ'], ['retrying', 'กำลังลองเชื่อมต่อ']],
-  notes: ['ปิดทั้งแอปชั่วคราวเมื่อระบบปิดปรับปรุงตามแผน ไม่มีปุ่มย้อนกลับ', 'บอกว่าข้อมูลและคำสั่งซื้อเดิมอยู่ครบ และให้ไปโรงพยาบาลหรือโทร 1669 เมื่อมีอาการฉุกเฉิน', 'ช่วงเวลากลับมาให้บริการต้องมาจากระบบจริง ต้นแบบแสดงเป็นข้อความตัวอย่าง'],
-  wait: ['ประกาศเวลาปิดปรับปรุงล่วงหน้าผ่านแจ้งเตือนหรือไม่'],
+  group: 'edge', title: 'ปิดให้บริการชั่วคราว', code: 'C610',
+  states: [['normal', 'ปิดให้บริการชั่วคราวตามแผน'], ['retrying', 'กำลังตรวจสอบ']],
+  notes: ['ใช้เฉพาะการปิดตามแผน (GOV.UK service unavailable): หัวข้อบอกตรง ๆ ว่าใช้งานไม่ได้ บอกวันและเวลาที่กลับมา ไม่ใช้คำกว้าง ๆ อย่าง ปรับปรุงระบบ', 'ข้อความสั้น: บอกว่าปิดตามแผน ข้อมูลและคำสั่งซื้ออยู่ครบ ไม่แสดงวันเวลา (ผู้ใช้ 8 พ.ย. 2569)', 'ไม่มีปุ่มย้อนกลับ ปุ่มตรวจสอบอีกครั้งด้านล่าง คงคำเตือนฉุกเฉิน 1669'],
+  wait: ['ประกาศเวลาปิดล่วงหน้าผ่านแจ้งเตือนหรือไม่'],
   render(ctx) {
-    return stBlock(ctx, { icon: 'wrench', title: 'ปิดปรับปรุงระบบชั่วคราว', body: 'ขออภัยในความไม่สะดวก ตอนนี้ยังปรึกษาเภสัชกรและสั่งยาผ่านแอปไม่ได้ กรุณากลับมาใหม่ภายหลัง',
-      rows: [['กลับมาให้บริการ', 'ประมาณ 04:00 น. (ตัวอย่าง)'], ['ประวัติและคำสั่งซื้อ', 'อยู่ครบ'], ['ยาที่ชำระแล้ว', 'ร้านยังดำเนินการตามปกติ']] });
+    return stBlock(ctx, { icon: 'wrench', title: 'แอปปิดให้บริการชั่วคราว', retry: 'ตรวจสอบอีกครั้ง',
+      body: 'เรากำลังดูแลระบบตามแผน ข้อมูลและคำสั่งซื้อของคุณยังอยู่ครบ<br>กลับมาใช้งานได้อีกครั้งเร็ว ๆ นี้' });
   }
 });
 TP.screen('serverdown', {
-  group: 'edge', title: 'เชื่อมต่อระบบไม่ได้', code: 'C611',
-  states: [['normal', 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'], ['retrying', 'กำลังลองเชื่อมต่อ']],
-  notes: ['ใช้เมื่อเรียก API ใด ๆ ไม่ได้ทั้งระบบ (ต่างจาก C608 ที่สัญญาณหลุดระหว่างวิดีโอคอล และแถบไม่มีอินเทอร์เน็ตของเครื่อง)', 'ปุ่มลองอีกครั้งเรียกระบบใหม่ ระหว่างลองปุ่มกดไม่ได้ ไม่มีปุ่มย้อนกลับ', 'คงคำเตือนฉุกเฉิน 1669 เพราะผู้ใช้ติดต่อเภสัชกรผ่านแอปไม่ได้'],
+  group: 'edge', title: 'ระบบมีปัญหาชั่วคราว', code: 'C611',
+  states: [['normal', 'ระบบมีปัญหา เชื่อมต่อไม่ได้'], ['retrying', 'กำลังตรวจสอบ']],
+  notes: ['ใช้กับปัญหาที่ไม่ได้วางแผน เมื่อเรียก API ใด ๆ ไม่ได้ (GOV.UK problem with the service) ใช้หน้าเดียวกับทุกสาเหตุ ไม่แสดงรหัสข้อผิดพลาดหรือคำว่าขัดข้องทางเทคนิค', 'ข้อความสั้น: กำลังแก้ไข ข้อมูลไม่สูญหาย ให้ลองอีกครั้ง ต่างจาก C608 ที่สัญญาณหลุดระหว่างวิดีโอคอล', 'ถ้าแก้นานควรเปลี่ยนเป็น C610 พร้อมเวลาที่กลับมา'],
   render(ctx) {
-    return stBlock(ctx, { icon: 'server-off', title: 'เชื่อมต่อระบบไม่ได้', body: 'ระบบขัดข้องชั่วคราว เราพยายามแก้ไขอยู่ ตรวจสอบอินเทอร์เน็ตของคุณแล้วลองอีกครั้ง',
-      rows: [['ข้อมูลที่บันทึกแล้ว', 'อยู่ครบ'], ['คำสั่งซื้อที่ชำระแล้ว', 'ไม่หาย'], ['ติดต่อร้าน', TP.STORE.cs]] });
+    return stBlock(ctx, { icon: 'server-off', title: 'เชื่อมต่อระบบไม่ได้ในขณะนี้', retry: 'ลองอีกครั้ง',
+      body: 'เรากำลังเร่งแก้ไข ข้อมูลของคุณไม่สูญหาย<br>โปรดลองอีกครั้งในอีกสักครู่' });
   }
 });
 /* prototype: retrying shows the busy state, then returns to the same blocking screen */
-TP.act('stRetry', () => { const id = TP.cur()?.id; if (!['maintenance', 'serverdown'].includes(id)) return; TP.S.st[id] = 'retrying'; TP.refresh({ anim: false }); setTimeout(() => { if (TP.cur()?.id !== id) return; TP.S.st[id] = 'normal'; TP.refresh({ anim: false }); TP.notify('ยังเชื่อมต่อไม่ได้ ลองใหม่อีกครั้งภายหลัง', { icon: 'circle-alert' }); }, 1500); });
+TP.act('stRetry', () => { const id = TP.cur()?.id; if (!['maintenance', 'serverdown'].includes(id)) return; TP.S.st[id] = 'retrying'; TP.refresh({ anim: false }); setTimeout(() => { if (TP.cur()?.id !== id) return; TP.S.st[id] = 'normal'; TP.refresh({ anim: false }); TP.notify('ยังใช้งานไม่ได้ โปรดลองอีกครั้งภายหลัง', { icon: 'circle-alert' }); }, 1500); });
 TP.act('stUpd', async () => {
   TP.notify(TP.stateOf('update') === 'android' ? 'เปิด Google Play' : 'เปิด App Store', { icon: 'download' });
   if (!TP.S.oldApp) return;
