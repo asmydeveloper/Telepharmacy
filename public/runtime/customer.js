@@ -3030,11 +3030,11 @@ TP.screen('queue', {
     return `<button type="button" class="ibtn queue-wait-back" data-a="queueMin" aria-label="กลับหน้าหลัก">${ic('chevron-left',24)}</button>` + ui.page(`
       <section class="queue-wait-content" aria-labelledby="queueWaitTitle">
         <div class="queue-wait-summary">
-          <img class="queue-wait-art" src="/assets/illustrations/queue-wait-pharmacist.webp" width="220" height="220" alt="">
+          <img class="queue-wait-art" src="/assets/illustrations/queue-wait-consultation-vector-v2.webp" width="220" height="220" alt="">
           <h2 id="queueWaitTitle">${paused?'เภสัชกรพักชั่วคราว':'กำลังรอคิวปรึกษา<span class="queue-wait-dots" aria-hidden="true">...</span>'}</h2>
           ${!paused?'<p class="queue-wait-subtitle">กรุณารอสักครู่ เภสัชกรกำลังให้บริการ<br>ผู้รับบริการก่อนหน้าคุณ</p>':''}
           <div class="queue-ticket-position" role="status" aria-live="polite" aria-atomic="true">
-            ${ahead===null?'<b>กำลังตรวจสอบคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong><span>คิว</span></div>`}
+            ${ahead===null?'<b>กำลังตรวจสอบคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong></div>`}
           </div>
           ${paused?'<p class="queue-wait-explanation">คิวของคุณยังอยู่</p>':''}
         </div>
