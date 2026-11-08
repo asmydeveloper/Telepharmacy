@@ -5691,7 +5691,7 @@ function historyOrderStatus(S,h) {
   const c=S.case?.id===h.id?S.case:h._case,o=c?.order||h.order;
   if(c)TP.expireOrder?.(c);
   const cancelled=['customer-ended','payment-expired','order-cancelled'].includes(h.outcome||c?.outcome)||['expired','cancelled'].includes(o?.status||h.orderStatus);
-  if(cancelled)return {key:'cancelled',label:'ยกเลิกคำสั่งซื้อ',tone:'muted'};
+  if(cancelled)return {key:'cancelled',label:'ยกเลิกคำสั่งซื้อ',tone:'danger'};
   const paid=o?o.status==='paid':h.orderStatus?h.orderStatus==='paid':Number(h.bought)>0;
   if(!paid)return null;
   return historyInProgress(S,h)?{key:'shipping',label:'กำลังจัดส่ง',tone:'warn'}:{key:'completed',label:'คำสั่งซื้อสำเร็จ',tone:'ok'};

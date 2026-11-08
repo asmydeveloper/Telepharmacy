@@ -598,3 +598,13 @@
 
 .history-status-tabs .seg { width: 100%; }
 .history-status-tabs .seg button { min-width: 0; padding-inline: var(--space-2); white-space: nowrap; font-size: var(--text-small); }
+
+/* Soft order-status fills retain readable semantic text. */
+.phone .history-card .history-order-status .tag.danger {
+  background: var(--alert-error-bg);
+  color: var(--alert-error-ink);
+}
+.phone .history-card .history-order-status .tag.warn {
+  background: color-mix(in srgb, var(--semantic-warning-background) 25%, var(--semantic-surface));
+  color: var(--semantic-warning-text);
+}
