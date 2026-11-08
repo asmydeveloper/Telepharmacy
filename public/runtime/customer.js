@@ -259,13 +259,13 @@ TP.medicineImage = item => { const src = TP.medicinePhoto(item); return src ? `<
    delivery fees are mock quotes */
 TP.DELIVERY = [
   { id: 'pickup', name: 'รับที่หน้าร้านสาขา', sub: '', fee: 0, icon: 'store' },
-  { id: 'express', name: 'จัดส่งด่วน', sub: '1-4 ชม. · ไม่เกิน 15 กม. จากสาขา', fee: 89, icon: 'zap' },
-  { id: 'parcel', name: 'จัดส่งปกติ', sub: 'ได้รับสินค้าภายใน 1-3 วันทำการ', fee: 25, icon: 'package' }
+  { id: 'express', name: 'จัดส่งด่วน (Lalamove)', sub: '1-4 ชม. · ไม่เกิน 15 กม. จากสาขา', fee: 89, icon: 'zap' },
+  { id: 'parcel', name: 'จัดส่งพัสดุ', sub: 'ส่งทั่วไทยผ่าน Flash Express หรือ DHL Express', fee: 25, icon: 'package' }
 ];
 /* active couriers on the website today (CourierCompanySeeder + CourierCompany::getDeliveryTimeAttribute); fees = earlier real quotes */
 TP.COURIERS = [
-  { id: 'flash', name: 'Flash Express', ini: 'FLASH', time: '1-3 วัน', fee: 25 },
-  { id: 'dhl', name: 'DHL Express', ini: 'DHL', time: '1-2 วัน', fee: 20 }
+  { id: 'flash', name: 'Flash Express', ini: 'FLASH', time: '1-3 วัน', fee: 25, logo: '/assets/couriers/flash-express.svg' },
+  { id: 'dhl', name: 'DHL Express', ini: 'DHL', time: '1-2 วัน', fee: 20, logo: '/assets/couriers/dhl.svg' }
 ];
 /* website mobile banking list (CSM:1907-1911) · built but switched off on the website (features.mobile_banking_enabled=false) */
 /* A7 (owner 20/10 "ส่ง inter express logistic ไปเรียกแบบ manual ไม่มี api"): a list with a cold-chain medicine goes by pickup
@@ -1210,6 +1210,7 @@ TP.previewEventPolicy={
  'C511:typed':['พิมพ์คำยืนยันครบ','ปุ่มลบเปิดเมื่อไม่มีเคสหรือรายการค้าง กดยกเลิกไม่ล้างข้อมูล'],
  'C511:save-error':['จำลองลบบัญชีไม่สำเร็จ','ข้อมูลยังอยู่ครบ แสดงข้อผิดพลาดในแผ่นเดิมและลองซ้ำได้'],
  'C211:normal':['ร้านโปรดตัวอย่าง 4 สาขา','มีรูป ชื่อ สถานะ ระยะทาง เรียงใกล้ก่อนไกล และไม่ซ้ำหัวข้อใหญ่'],
+ 'C308:tax-picker':['เลือกข้อมูลใบกำกับภาษี','แผ่นเลือกข้อมูลเปิดซ้อนด้านล่างในหน้าชำระเงิน พื้นหลังยังเป็น C308 สลับบุคคลธรรมดา/นิติบุคคลได้ เลือกแล้วกลับหน้าชำระเงินและช่องใบกำกับภาษีอัปเดต ปิดได้โดยไม่เปลี่ยนข้อมูล'],
  'C207:offline':['ข้อความระหว่างรอส่งไม่สำเร็จ','บับเบิ้ลแสดงส่งไม่สำเร็จ แตะเพื่อลองส่งใหม่แล้วส่งได้ ข้อความไม่หาย คิวและตำแหน่งคิวไม่เปลี่ยน'],
  'C207:outzone':['ที่อยู่จัดส่งของเคสนอกเขต 15 กม.','ห้องรอแสดงข้อความปักว่าปรึกษาได้ตามปกติ ถ้าซื้อยารับที่ร้านหรือเลือกที่อยู่ในเขตตอนชำระ คิวยังรอได้และยกเลิกได้ตามเดิม'],
  'C211:outside':['มีร้านไกลเกิน 15 กม.','ร้านนอกระยะแสดงท้ายรายการ เปิดดูข้อมูลได้แต่เริ่มปรึกษาไม่ได้'],
@@ -1369,7 +1370,7 @@ function codeTag(code) { return code ? `<span class="pn-code">${esc(code)}</span
 /* review codes (owner 19/10/2026: "ระบุเลขหน้าให้ครบทุกหน้า ผมจะตรวจตามรหัสและให้แก้ตามหมายเลข"):
    C + group digit + 2 digits per screen or sheet; a state picked in the panel or opened by jump adds .n */
 TP.codeOf = id => {
-  const d = TP.def(id); if (d?.hidden && d.host) return TP.codeOf(d.host); if (!d?.code) return '';
+  const d = TP.def(id); if (d?.hidden && (d.owner || d.host)) return TP.codeOf(d.owner || d.host); if (!d?.code) return '';
   const st = d.states || [], k = TP.S.st[id];
   const i = st.length > 1 && k ? st.findIndex(x => x[0] === k) : -1;
   return i < 0 ? d.code : `${d.code}.${i + 1}`;
@@ -1413,9 +1414,10 @@ TP.previewAutofill={enabled:false,
 function stateCode(def,key){const all=def.states||[],i=all.findIndex(x=>x[0]===key);return all.length>1&&i>=0?`${def.code}.${i+1}`:def.code||'';}
 function render() {
   const s = TP.sheetOpen(), c = TP.cur(), keep = anchorOf();
-  const internal = s?.def.hidden && s.def.host;
-  const def = internal ? TP.SCREENS[s.def.host] : s ? s.def : c && TP.SCREENS[c.id];
-  const id = internal ? s.def.host : s ? s.id : c?.id;
+  /* an internal sheet belongs to its owner page (e.g. the C308 tax picker is part of C308), else to its host screen */
+  const internal = s?.def.hidden && (s.def.owner || s.def.host);
+  const def = internal ? TP.def(internal) : s ? s.def : c && TP.SCREENS[c.id];
+  const id = internal ? internal : s ? s.id : c?.id;
   const states = def ? TP.previewEventPolicy.pageStates(id,def.states) : [];
   const sims = SIM.filter(a => { try { return a.when(TP.S); } catch { return false; } });
   const visible = TP.ORDER.filter(i => !TP.def(i).hidden);
@@ -1464,8 +1466,9 @@ panel.addEventListener('click', async e => {
   switch (b.dataset.pn) {
     case 'close': toggle(false); break;
     case 'state': {
-      const s = TP.sheetOpen();
-      if (s) { TP.S.st[s.id] = k; TP.prepState(s.def); const p = s.ctx.params; await TP.closeSheet({ instant: true }); TP.sheet(s.id, p); }
+      const s = TP.sheetOpen(), owner = s?.def.hidden && s.def.owner;
+      if (owner) { TP.S.st[owner] = k; TP.prepState(TP.def(owner)); await TP.closeSheet({ instant: true }); TP.sheet(owner); }
+      else if (s) { TP.S.st[s.id] = k; TP.prepState(s.def); const p = s.ctx.params; await TP.closeSheet({ instant: true }); TP.sheet(s.id, p); }
       else { const id = TP.cur().id; TP.S.st[id] = k; TP.prepState(TP.SCREENS[id]); TP.refresh(); }
       break;
     }
@@ -3462,7 +3465,8 @@ TP.closedChatRoute = c => {
  return c.order?.status==='pending'?{screen:'home',pay:true,case:c}:c.order?.status==='paid'?{screen:'paid',case:c}:{screen:'home',case:c};
 };
 TP.finishChatNavigation = async c => {
- if(TP.sheetOpen?.()?.id==='pay')return;
+ /* C308 and its tax sheets close back to home; never pull the customer into the closed chat while they are open */
+ if(['pay','checkouttaxpicker','checkouttaxedit'].includes(TP.sheetOpen?.()?.id))return;
  const route=TP.closedChatRoute(c);if(!route)return;
  TP.S._paymentCase=c;
  /* From the chat, open C308 straight over the room; home replaces the room underneath, so closing C308 lands on home without flashing it first. */
@@ -4227,7 +4231,8 @@ const fmtPhone = s => { const d = String(s || '').replace(/\D/g, ''); return d.l
 /* defaults: pickup checked (owner 19/10, website checkout CSM:409) · main address checked · PromptPay checked (PL:550) */
 const P = () => {const p=TP.S.pay || (TP.S.pay = { recv: 'pickup', addr: (TP.homeAddress?.() || addrs().find(a => a.main) || addrs()[0])?.id || null, method: 'promptpay', bank: 'KBANK', form: null, q: null, geo: '', geoMsg: '', moved: false, pinXY: null, acc: 0 });if(!recvKeys().includes(p.recv))p.recv=recvKeys()[0]||'pickup';p.form=null;if(!['promptpay','card'].includes(p.method))p.method='promptpay';return p;};
 const addr = () => {const c=C();if(!Object.hasOwn(c,'deliveryAddress')){const a=TP.homeAddress?.()||addrs().find(x=>x.main)||addrs()[0];c.deliveryAddress=a?structuredClone(a):null;}return c.deliveryAddress;};
-const qKey = () => P().recv + ':' + (addr()?.id || '');
+/* parcel quotes per carrier, so switching Flash/DHL recalculates the fee */
+const qKey = () => P().recv + ':' + (addr()?.id || '') + (P().recv === 'parcel' ? ':' + courierId() : '');
 const quoted = () => P().q?.st === 'done' && P().q.key === qKey();
 const EXP_FEE = () => TP.DELIVERY.find(d => d.id === 'express').fee;
 function shipFee() {
@@ -4236,7 +4241,7 @@ function shipFee() {
   if (p.recv === 'cold') return addr() && !zoneStop(addr(), 'cold') ? TP.COLD.fee : null;
   if (!quoted()) return null;
   if (p.recv === 'express') return EXP_FEE();
-  return TP.DELIVERY.find(d => d.id === 'parcel').fee;
+  return TP.COURIERS.find(c => c.id === courierId())?.fee ?? TP.DELIVERY.find(d => d.id === 'parcel').fee;
 }
 /* Preview-only promotion fixtures. Replace validate with a server adapter for production. */
 TP.checkoutCouponAdapter={validate(code,order){
@@ -4276,7 +4281,7 @@ function missing() {
   if (!a) return 'เลือกที่อยู่จัดส่งก่อน';
   if (zoneStop(a)) return 'ที่อยู่นี้อยู่นอกเขตส่งยา';
   if (p.recv === 'express' && isFar(a)) return 'อยู่นอกระยะจัดส่งด่วน';
-  if (!quoted()) return 'กำลังคำนวณค่าส่ง...';
+  if (!quoted()) return 'กำลังคำนวณค่าจัดส่ง...';
   return '';
 }
 /* the latest delivery quote wins */
@@ -4293,20 +4298,21 @@ const ensureOrder = () => { if(!C())TP.ensureCase('room');if(!C().order&&C().sta
 const sec = (n, t) => `<h3 class="pay-sec">${esc(t)}</h3>`;
 const medHtml = i => `<div class="pay-med"><div class="pm-h">${TP.medicineImage(i)}<p class="pm-t"><b>${esc(i.name)}</b> <small>×${esc(i.qty)}</small>${i.cold ? `<span class="pm-cold">${ic('snowflake', 13, 2)}ยาเก็บเย็น</span>` : ''}</p><b class="num pm-p">${TP.money(i.price)}</b></div>${i.how ? `<p class="pm-n"><b>โน้ตจากเภสัช</b> ${esc(i.how)}</p>` : ''}</div>`;
 /* radio card with a fee on the right (PL .opt: radio · icon · title + line · fee) */
-const optCard = o => `<button type="button" class="opt po" role="radio" data-radio="${o.group}" data-v="${o.v}" data-a="${o.a}" aria-checked="${!!o.on}"${o.off ? ' disabled' : ''}>${ui.radioMark}${o.icon ? `<span class="po-i">${ic(o.icon, 20, 1.9)}</span>` : ''}<span class="tx"><b>${esc(o.title)}</b><span>${o.sub}</span></span>${o.fee ? `<span class="po-f ${o.tone || ''}">${o.fee}</span>` : ''}</button>`;
+const optCard = o => `<button type="button" class="opt po" role="radio" data-radio="${o.group}" data-v="${o.v}" data-a="${o.a}" aria-checked="${!!o.on}"${o.off ? ' disabled' : ''}>${ui.radioMark}${o.logo ? `<span class="po-logo"><img src="${esc(o.logo)}" alt="" width="56" height="28" loading="lazy"></span>` : o.icon ? `<span class="po-i">${ic(o.icon, 20, 1.9)}</span>` : ''}<span class="tx"><b>${esc(o.title)}</b><span>${o.sub}</span></span>${o.fee ? `<span class="po-f ${o.tone || ''}">${o.fee}</span>` : ''}</button>`;
 function recvOpts() {
   const S = TP.S, p = P(), b = TP.branch(C().branch), a = addr(), q = quoted(), keys = recvKeys();
   if (!S.storeOpen && p.recv === 'express') p.recv = 'pickup';
   if (!keys.includes(p.recv)) p.recv = keys[0];
-  const dl = p.recv !== 'pickup' && !!a, ozE = dl && zoneStop(a, 'express'), ozP = dl && zoneStop(a, 'parcel'), ozC = dl && zoneStop(a, 'cold'), farNow = dl && isFar(a), next = S.storeOpen ? '' : ' · เริ่มส่งวันทำการถัดไป 19/10/2026';
+  const dl = !!a, ozE = dl && zoneStop(a, 'express'), ozP = dl && zoneStop(a, 'parcel'), ozC = dl && zoneStop(a, 'cold'), farNow = dl && isFar(a), next = S.storeOpen ? '' : ' · เริ่มส่งวันทำการถัดไป 19/10/2026';
   const opts = {
     pickup: () => optCard({ group: 'recv', v: 'pickup', a: 'payRecv', icon: 'store', title: 'รับที่ร้าน', on: p.recv === 'pickup', sub: esc(S.storeOpen?'รับยาที่สาขานี้':'รับวันเปิดทำการถัดไป'), fee: 'ฟรี', tone: 'free' }),
-    express: () => optCard({ group: 'recv', v: 'express', a: 'payRecv', icon: 'zap', title: 'ส่งด่วน', on: p.recv === 'express', off: !S.storeOpen,
-      sub: esc(S.storeOpen ? 'ส่งเร็วใน 1–4 ชม.' : `ส่งด่วนใช้ได้ช่วงร้านเปิด ${b.hours}`),
-      fee: !S.storeOpen ? '' : ozE ? 'นอกเขต' : farNow ? 'นอกระยะ' : p.recv === 'express' && q ? TP.money(EXP_FEE()) : 'ตามระยะทาง', tone: ozE || farNow ? 'warn' : p.recv === 'express' && q ? '' : 'pend' }),
+    express: () => optCard({ group: 'recv', v: 'express', a: 'payRecv', icon: 'zap', title: 'ส่งด่วน (Lalamove)', on: p.recv === 'express', off: !S.storeOpen,
+      sub: esc(S.storeOpen ? 'ไรเดอร์ Lalamove ส่งถึงใน 1–4 ชม.' : `ส่งด่วนใช้ได้ช่วงร้านเปิด ${b.hours}`),
+      /* the delivery address is known from home, so the fee shows before the option is chosen */
+      fee: !S.storeOpen ? '' : ozE ? 'นอกเขต' : farNow ? 'นอกระยะ' : a ? TP.money(EXP_FEE()) : 'ตามระยะทาง', tone: ozE || farNow ? 'warn' : a ? '' : 'pend' }),
     parcel: () => optCard({ group: 'recv', v: 'parcel', a: 'payRecv', icon: 'package', title: TP.DELIVERY.find(d => d.id === 'parcel').name, on: p.recv === 'parcel',
-      sub: esc('ได้รับสินค้าภายใน 1-3 วันทำการ' + next),
-      fee: ozP ? 'นอกเขต' : p.recv === 'parcel' && q ? TP.money(shipFee()) : 'คำนวณตามที่อยู่', tone: ozP ? 'warn' : p.recv === 'parcel' && q ? '' : 'pend' }),
+      sub: esc('ส่งทั่วไทย เลือก Flash Express หรือ DHL Express' + next),
+      fee: ozP ? 'นอกเขต' : a ? TP.money(TP.COURIERS.find(c => c.id === courierId())?.fee ?? TP.DELIVERY.find(d => d.id === 'parcel').fee) : 'คำนวณตามที่อยู่', tone: ozP ? 'warn' : a ? '' : 'pend' }),
     cold: () => optCard({ group: 'recv', v: 'cold', a: 'payRecv', icon: 'snowflake', title: RECV_NAME.cold, on: p.recv === 'cold',
       sub: esc(`${TP.COLD.short} ถึงใน ${TP.COLD.time} · ค่าบริการคงที่ · ร้านจองขนส่งให้หลังชำระ${next}`),
       fee: ozC ? 'นอกเขต' : TP.money(TP.COLD.fee), tone: ozC ? 'warn' : '' })
@@ -4320,8 +4326,14 @@ function whyHtml() {
  return o?.recvOff?.express&&o?.recvOff?.parcel?`<p class="pay-why">${ic('info',16,2)}<span>รายการนี้รับที่ร้านเท่านั้น${o.recvWhy?' · '+esc(o.recvWhy):''}</span></p>`:'';
 }
 /* PL pickup: the branch card with directions and a call button */
+const courierId = () => { const p = P(); if (!TP.COURIERS.some(c => c.id === p.courier)) p.courier = TP.COURIERS[0].id; return p.courier; };
+function courierPicker() {
+  const id = courierId();
+  return `<section class="pay-courier"><h4 class="pay-courier-h">เลือกบริษัทขนส่ง</h4><div class="opts" data-radio-scope role="radiogroup" aria-label="เลือกบริษัทขนส่ง" id="payCourier">${TP.COURIERS.map(c => optCard({ group: 'courier', v: c.id, a: 'payCourier', icon: 'truck', logo: c.logo, title: c.name, on: id === c.id, sub: esc(`ถึงใน ${c.time}`), fee: TP.money(c.fee) })).join('')}</div></section>`;
+}
 function recvExtra() {
   const p = P(), b = TP.branch(C().branch);
+  if (p.recv === 'parcel') return courierPicker();
   if (p.recv !== 'pickup') return '';
   return `<div class="pay-br"><div class="pay-branch-heading">${b.photo?`<img src="${esc(b.photo)}" alt="${esc(b.name)}" width="72" height="72" loading="lazy">`:`<span class="pay-branch-placeholder">${ic('store',28,1.8)}</span>`}<div><span class="pay-branch-eyebrow">สาขารับยา</span><h4>${esc(b.name)}</h4><p>${ic('clock',14,1.8)} เปิด ${esc(b.hours)}</p></div></div><div class="pay-branch-address">${ic('map-pin',18,1.8)}<p>${esc(b.addr || 'ยังไม่มีข้อมูลที่อยู่สาขา')}</p></div><p class="small pay-br-n">แสดงรหัสรับยาที่เคาน์เตอร์เมื่อร้านแจ้งว่ายาพร้อม</p>
     <div class="pay-br-b">${ui.btn('แผนที่', { kind: 'secondary', sm: true, icon: 'navigation', a: 'payMapsGo' })}${ui.btn('โทรหาร้าน', { kind: 'secondary', sm: true, icon: 'phone', a: 'payCallBr' })}</div></div>`;
@@ -4412,6 +4424,7 @@ function payTaxHtml() {
   return `<section class="rc-tax rc-tax-request-card"><header class="rc-tax-request-head rc-tax-choice-head"><button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!p.taxWant}" data-a="payTaxWant" data-v="${p.taxWant?'no':'yes'}" aria-label="ต้องการใบกำกับภาษี"><span class="rc-tax-choice-icon" aria-hidden="true">${ic('file-text',22)}</span><span class="rc-tax-choice-copy"><b>ต้องการใบกำกับภาษี</b></span><span class="rc-tax-choice-check" aria-hidden="true">${p.taxWant?ic('check',16):''}</span></button></header>${record?`<div class="rc-tax-recipient-heading"><b>ข้อมูลผู้รับ</b><button type="button" class="txtbtn" data-a="payTaxPickOpen">${ic('pencil',16)} เปลี่ยนผู้รับ</button></div><div class="rc-tax-selected"><b>ชื่อและที่อยู่ใบกำกับภาษี</b><p>${esc(record.name||[record.first,record.last].filter(Boolean).join(' '))}</p><p>${esc(TP.taxAddress(record))}</p>${who==='co'&&record.business?`<p>ชื่อธุรกิจ : ${esc(record.business)}</p>`:''}<p>โทรศัพท์ : ${esc(record.phone||'—')}</p><p>${who==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(maskCheckoutTax(record.id||''))}</p></div>`:''}</section>`;
 }
 function redrawPayTax(){const el=$('#payTax');if(el){el.innerHTML=payTaxHtml();TP.icons(el)}}
+TP.redrawPayTax = redrawPayTax;
 TP.act('payTaxWant',b=>{if(b.dataset.v==='no'){P().taxWant=false;redrawPayTax();return;}return TP.ACTS.payTaxPickOpen();});
 TP.act('payTaxSelectProfile',b=>{TP.taxChoose(b.dataset.v,b.dataset.key);redrawPayTax()});
 TP.act('payTaxWho',b=>{P().taxWho=b.dataset.v;redrawPayTax()});
@@ -4419,11 +4432,11 @@ TP.act('payTaxAddProfile',async()=>{const who=P().taxWho||'me';await TP.closeShe
 
 /* ---------- pay sheet ---------- */
 TP.sheetDef('pay', {
-  group: 'during', title: 'ชำระเงิน', code: 'C308', ref: 'C11', host: 'room', tall: true, fullPage:true,
+  group: 'during', title: 'ชำระเงิน', code: 'C308', ref: 'C11', host: 'home', tall: true, fullPage:true,
   /* C308.1-13 keep the numbers the owner already reviewed; states added 19/10 night go after them (14-17), 20/10 night 18-20 */
-  states: [['normal', 'รับที่ร้าน (ค่าเริ่มต้น)'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['noaddr', 'ยังไม่มีที่อยู่'], ['form', 'กำลังเพิ่มที่อยู่'], ['closed', 'ร้านปิด'], ['card', 'จ่ายด้วยบัตร'], ['otp', 'บัตร: หน้ายืนยันของธนาคาร'], ['qr', 'หน้า QR พร้อมเพย์'], ['qrexp', 'QR หมดอายุ'], ['bankon', 'พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['bankapp', 'QR พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['checking', 'กำลังตรวจสอบการชำระ'],
-    ['expmap', '', false], ['exppin', '', false], ['locdeny', '', false], ['far', 'กรุงเทพแต่เกิน 15 กม.'],
-    ['outzone', 'ที่อยู่นอกเขตส่งยา'], ['recvoff', 'เภสัชกรปิดบางทาง'], ['cold', 'มียาเก็บเย็น'], ['unlock', 'ส่งด่วนเกินระยะ รับที่ร้านแทน'], ['map-ready', '', false], ['map-outside', '', false], ['map-error', '', false],['map-saved', '', false], ['coupon-valid','โค้ดส่วนลดใช้ได้'], ['coupon-invalid','โค้ดส่วนลดไม่ถูกต้อง'], ['coupon-expired','โค้ดส่วนลดหมดอายุ'], ['order-expired','หมดเวลาชำระค่ายา']],
+  states: [['normal', 'รับที่ร้าน (ค่าเริ่มต้น)'], ['parcel', 'จัดส่งพัสดุ · เลือก Flash หรือ DHL'], ['express', 'ส่งด่วน'], ['noaddr', 'ยังไม่มีที่อยู่', false], ['form', 'กำลังเพิ่มที่อยู่', false], ['closed', 'ร้านปิด'], ['card', 'จ่ายด้วยบัตร'], ['otp', 'บัตร: หน้ายืนยันของธนาคาร'], ['qr', 'หน้า QR พร้อมเพย์'], ['qrexp', 'QR หมดอายุ'], ['bankon', 'พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['bankapp', 'QR พร้อมเพย์ (แทนแอปธนาคารเดิม)', false], ['checking', 'กำลังตรวจสอบการชำระ'],
+    ['expmap', '', false], ['exppin', '', false], ['locdeny', '', false], ['far', 'กรุงเทพแต่เกิน 15 กม.', false],
+    ['outzone', 'ที่อยู่นอกเขตส่งยา'], ['recvoff', 'เภสัชกรปิดบางทาง'], ['cold', 'มียาเก็บเย็น', false], ['unlock', 'ส่งด่วนเกินระยะ รับที่ร้านแทน'], ['map-ready', '', false], ['map-outside', '', false], ['map-error', '', false],['map-saved', '', false], ['coupon-valid','โค้ดส่วนลดใช้ได้'], ['coupon-invalid','โค้ดส่วนลดไม่ถูกต้อง'], ['coupon-expired','โค้ดส่วนลดหมดอายุ', false], ['order-expired','หมดเวลาชำระค่ายา', false],['tax-picker','เลือกข้อมูลใบกำกับภาษี']],
   notes:['วิธีรับยาเรียงแนวตั้งแบบ radio 3 แถว แสดงเวลาและค่าส่ง ไม่มีเส้นคั่นท้ายส่วนรับยาและใบกำกับภาษี','ใบกำกับภาษีใช้การ์ดเลือกผู้รับรูปแบบเดียวกับใบเสร็จ เปิดรายชื่อที่บันทึกไว้ก่อนเลือก ไม่มีแท็บซ้อนในหน้าชำระ และไม่แสดงลิงก์ยกเลิกรายการหรือนโยบายท้ายฟอร์ม','เลือกได้ระหว่างรับที่ร้าน ส่งด่วน และจัดส่งปกติ โดยจัดส่งปกติร้านจัดขนส่งให้ ได้รับสินค้าภายใน 1-3 วันทำการ','ลำดับ: ตรวจรายการยา เลือกวิธีรับยาและที่อยู่ เลือกวิธีชำระ ตรวจยอดรวมก่อนยืนยัน','การจัดส่งต้องมีที่อยู่ในเขตบริการและทราบค่าส่งก่อนชำระ ส่งด่วนต้องอยู่ในระยะส่งด่วน ยาเก็บเย็นรับที่ร้านเท่านั้น','โหมดสนทนาเริ่มเวลาชำระ 15 นาทีเมื่อเปิดหน้าชำระครั้งแรก ไม่เริ่มใหม่เมื่อเปิดซ้ำหรือเปลี่ยนวิธีรับ','ต้นแบบจำลองราคาและการจ่ายเงินจริงยังไม่เชื่อม gateway'],
   prep(S) {
     ensureOrder(); const st = S.st.pay || 'normal';
@@ -4448,6 +4461,7 @@ TP.sheetDef('pay', {
     p.method = ['card', 'otp'].includes(st) ? 'card' : 'promptpay';
     if (st === 'form' || st === 'noaddr') p.form = { id: null };
     if (['qr', 'qrexp', 'otp', 'bankapp', 'checking'].includes(st)) p.auto = st==='bankapp'?'qr':st;
+    if (st === 'tax-picker') p.auto = 'tax-picker';
   },
   render(ctx) {
     if(!ensureOrder())return ui.note(C()?.order?.status==='expired'?'รายการนี้หมดเวลาชำระแล้ว':'รายการนี้ชำระไม่ได้แล้ว',{icon:'clock'});
@@ -4482,7 +4496,8 @@ TP.sheetDef('pay', {
     if (!el._payWired) { el._payWired = 1; el.addEventListener('input', onInput); el.addEventListener('pointerdown', pinDrag); el.addEventListener('keydown', onKey); el.addEventListener('focusin', () => requestAnimationFrame(unshift)); }
     TP.odo($('#payTot', el), TP.money(totals().total)); payLbl();
     const auto = P().auto; delete P().auto;
-    if (auto === 'qr' || auto === 'qrexp') { P().method = 'promptpay'; showQR(auto === 'qrexp'); }
+    if (auto === 'tax-picker') setTimeout(() => TP.ACTS.payTaxPickOpen?.(), 0);
+    else if (auto === 'qr' || auto === 'qrexp') { P().method = 'promptpay'; showQR(auto === 'qrexp'); }
     else if (auto) showStep(auto);
   }
 });
@@ -4569,6 +4584,7 @@ TP.act('payRecv', t => {
   /* nothing saved yet: open the form right away instead of a warning popup */
   if(p.recv!=='pickup'&&!addr())TP.notify('ยังไม่มีที่อยู่ที่เลือกจากหน้าแรก กรุณาเลือกรับที่ร้าน',{icon:'map-pin'});
 });
+TP.act('payCourier', t => { if (!TP.COURIERS.some(c => c.id === t.dataset.v)) return; const f = curTot(); P().courier = t.dataset.v; requote(); sync(f); });
 TP.act('payViaGo', () => { goTo('#payRecv'); $('[data-radio="recv"][aria-checked="true"]')?.focus({ preventScroll: true }); });
 TP.act('payMeth', t => {
   if(!['promptpay','card'].includes(t.dataset.v))return;
@@ -4874,7 +4890,7 @@ async function paid() {
   const c = C(), p = P(), a = addr();
   c.order.status = 'paid';
   (TP.S.history||[]).filter(h=>h.id===c.id).forEach(h=>{h.orderStatus='paid';h.bought=c.order.total;h._case=c;});
-  c.order.paid = { ...totals(), recv: p.recv, courier: p.recv === 'cold' ? TP.COLD.id : null, addr: p.recv === 'pickup' ? null : { ...a }, method: p.method, bank: p.bank, date: TP.NOW.date, at: TP.roomNow?.() || TP.NOW.time };
+  c.order.paid = { ...totals(), recv: p.recv, courier: p.recv === 'cold' ? TP.COLD.id : p.recv === 'parcel' ? (p.courier || TP.COURIERS?.[0]?.id || 'flash') : null, addr: p.recv === 'pickup' ? null : { ...a }, method: p.method, bank: p.bank, date: TP.NOW.date, at: TP.roomNow?.() || TP.NOW.time };
   if(p.taxWant){const recipient=TP.taxSelected(p.taxWho||'me');if(recipient)c.order.tax={who:p.taxWho||'me',pending:{...recipient}};}
   TP.setFulfillment(c,'preparing');
   TP.saveReceipt?.(c);
@@ -6447,28 +6463,42 @@ function receiptTaxPicker(S) {
   return `<div class="tax-profile-page rc-tax-picker">${ui.seg('receiptTaxKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],kind,{a:'receiptTaxKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${rows.length})</span></h3>${ui.btn('เพิ่มข้อมูล',{kind:'secondary',icon:'plus',a:'rcTaxPickerAdd'})}</div><div class="tax-profile-list">${rows.length?rows.map(r=>`<button type="button" class="card tax-summary tax-summary-compact rc-tax-pick-card" data-a="rcTaxPickerChoose" data-v="${kind}" data-key="${esc(r.profileKey)}" aria-label="เลือก ${esc(r.name)}"><header class="tax-summary-head"><b>${esc(r.name)}</b>${r.profileKey===selected?.profileKey?ic('circle-check',20):ic('chevron-right',20)}</header><div class="tax-summary-content"><p>${esc(TP.taxAddress(r))}</p>${kind==='co'&&r.business?`<p>ชื่อธุรกิจ : ${esc(r.business)}</p>`:''}<p>โทรศัพท์ : ${esc(r.phone||'—')}</p><p>${kind==='co'?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(('xxxxxxxxx'+String(r.id||'').slice(-4)))}</p></div></button>`).join(''):`<div class="rc-tax-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`;
 }
 // Checkout uses the same saved-recipient cards and visual pattern as the receipt.
+/* C308 keeps showing behind the picker: it is a bottom panel inside the payment sheet, not a separate sheet. */
+const payPickerBody = () => receiptTaxPicker(TP.S).replaceAll('rcTaxPickerChoose','payTaxPickerChoose').replaceAll('rcTaxPickerAdd','payTaxPickerAdd');
+const payPickerClose = () => { const o = $('#payTaxPicker', $('#sheet')); if (!o) return; const prev = o._prev; o.remove(); if (prev?.isConnected) prev.focus({ preventScroll: true }); };
 TP.act('payTaxPickOpen',()=>{
   TP.S._receiptTaxKind=TP.S.pay?.taxWho||'me';
   TP.S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;
-  return TP.sheet('checkouttaxpicker');
+  const sh=$('#sheet');
+  if(TP.sheetOpen()?.id!=='pay'||!sh)return TP.sheet('checkouttaxpicker');
+  payPickerClose();
+  const o=document.createElement('div');o.id='payTaxPicker';o.className='pay-picker';o._prev=document.activeElement;
+  o.innerHTML=`<div class="pay-picker-scrim" data-a="payTaxPickerClose"></div><section class="pay-picker-panel" role="dialog" aria-modal="true" aria-labelledby="payTaxPickerTitle"><header class="pay-picker-head"><h2 id="payTaxPickerTitle">เลือกข้อมูลใบกำกับภาษี</h2><button type="button" class="ibtn" data-a="payTaxPickerClose" aria-label="ปิด">${ic('x',22,2)}</button></header><div class="pay-picker-body" id="payTaxPickerBody">${payPickerBody()}</div></section>`;
+  o.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();e.preventDefault();payPickerClose();}});
+  sh.appendChild(o);TP.icons(o);
+  if(!TP.RED())A($('.pay-picker-panel',o),[{transform:'translateY(100%)'},{transform:'none'}],{d:SP.soft.d,e:SP.soft.e});
+  setTimeout(()=>$('.pay-picker-head .ibtn',o)?.focus({preventScroll:true}),60);
 });
+TP.act('payTaxPickerClose',()=>payPickerClose());
 TP.act('payTaxPickerChoose',async b=>{
   const record=TP.taxChoose(b.dataset.v,b.dataset.key);if(!record)return;
   Object.assign(TP.S.pay,{taxWho:b.dataset.v,taxWant:true});
+  if($('#payTaxPicker',$('#sheet'))){payPickerClose();TP.redrawPayTax?.();return;}
   await TP.closeSheet();
 });
 TP.act('payTaxPickerAdd',()=>{
   const d=taxProfileDraft(TP.S);d.kind=TP.S._receiptTaxKind||'me';d.editKey=null;d.errors={};d.drafts[d.kind]=taxProfileEntry(null,{},d.kind==='co');
-  TP.sheetOpen().ctx.params.editing=true;
+  payPickerClose();
+  if(TP.sheetOpen()?.id==='checkouttaxpicker')TP.sheetOpen().ctx.params.editing=true;
   return TP.sheet('checkouttaxedit');
 });
 TP.sheetDef('checkouttaxpicker',{
-  group:'during',title:'เลือกข้อมูลใบกำกับภาษี',hidden:true,host:'room',tall:true,
+  group:'during',title:'เลือกข้อมูลใบกำกับภาษี',hidden:true,host:'home',owner:'pay',tall:true,
   render:ctx=>receiptTaxPicker(ctx.S).replaceAll('rcTaxPickerChoose','payTaxPickerChoose').replaceAll('rcTaxPickerAdd','payTaxPickerAdd'),
   close(ctx){if(!ctx.params.editing)setTimeout(async()=>{await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;},450);}
 });
 TP.act('rcTaxPickOpen',()=>{TP.S._receiptTaxKind=TP.cur()?.ctx?.rc?.tax?.who||'me';return TP.sheet('receipttaxpicker');});
-TP.act('receiptTaxKind',b=>{TP.S._receiptTaxKind=b.dataset.v;const sheet=TP.sheetOpen(),body=$('.sh-b',sheet.el);body.innerHTML=receiptTaxPicker(TP.S);if(sheet.id==='checkouttaxpicker')body.innerHTML=body.innerHTML.replaceAll('rcTaxPickerChoose','payTaxPickerChoose').replaceAll('rcTaxPickerAdd','payTaxPickerAdd');TP.icons(body);});
+TP.act('receiptTaxKind',b=>{TP.S._receiptTaxKind=b.dataset.v;const inPay=$('#payTaxPickerBody',$('#sheet'));if(inPay){inPay.innerHTML=payPickerBody();TP.icons(inPay);return;}const sheet=TP.sheetOpen(),body=$('.sh-b',sheet.el);body.innerHTML=receiptTaxPicker(TP.S);if(sheet.id==='checkouttaxpicker')body.innerHTML=body.innerHTML.replaceAll('rcTaxPickerChoose','payTaxPickerChoose').replaceAll('rcTaxPickerAdd','payTaxPickerAdd');TP.icons(body);});
 TP.act('rcTaxPickerChoose',async b=>{
   const o=TP.cur()?.ctx?.rc,kind=b.dataset.v,record=TP.taxRecords(kind).find(r=>r.profileKey===b.dataset.key);
   if(!o||!record)return;
@@ -6576,7 +6606,7 @@ TP.sheetDef('taxprofileedit',{
   close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(taxProfileRecord(ctx.S,d),ctx.S.user,d.kind==='co');}
 });
 TP.act('payTaxEditProfile',()=>{const S=TP.S,d=taxProfileDraft(S),pay=S.pay;d.kind=pay?.taxWho||'me';d.editKey=TP.taxSelected(d.kind)?.profileKey;d.errors={};d.drafts[d.kind]=taxProfileEntry(TP.taxSelected(d.kind),S.user,d.kind==='co');S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;return TP.sheet('checkouttaxedit');});
-TP.sheetDef('checkouttaxedit',{group:'during',title:'แก้ไขข้อมูลออกใบกำกับภาษี',hidden:true,host:'room',tall:true,render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');setTimeout(async()=>{await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;},450);}});
+TP.sheetDef('checkouttaxedit',{group:'during',title:'แก้ไขข้อมูลออกใบกำกับภาษี',hidden:true,host:'home',owner:'pay',tall:true,render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');setTimeout(async()=>{await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;},450);}});
 TP.act('rcProfileNew',()=>{const d=taxProfileDraft(TP.S),o=TP.cur()?.ctx?.rc;d.kind=o?.tax?.who||'me';d.editKey=null;d.errors={};d.drafts.me=taxProfileEntry(TP.S._taxProfile?.preview?.me||TP.S.taxWho,TP.S.user,false);d.drafts.co=taxProfileEntry(TP.S._taxProfile?.preview?.co||TP.S.taxCo,TP.S.user,true);return TP.sheet('receiptprofile');});
 TP.act('rcProfileEdit',b=>{const S=TP.S,d=taxProfileDraft(S);d.kind=b.dataset.v;d.editKey=TP.taxSelected(d.kind)?.profileKey;d.errors={};d.drafts[d.kind]=taxProfileEntry(TP.taxSelected(d.kind),S.user,d.kind==='co');return TP.sheet('receiptprofile');});
 TP.sheetDef('receiptprofile',{group:'after',title:'ข้อมูลออกใบกำกับภาษี',hidden:true,host:'receipt',tall:true,render:ctx=>`${ui.seg('receiptProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],taxProfileDraft(ctx.S).kind,{a:'receiptProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}${taxProfileForm(ctx.S,true)}`,mount:taxProfileMount,close(ctx){const d=taxProfileDraft(ctx.S);d.errors={};d.drafts[d.kind]=taxProfileEntry(d.kind==='co'?ctx.S.taxCo:ctx.S.taxWho,ctx.S.user,d.kind==='co');}});
