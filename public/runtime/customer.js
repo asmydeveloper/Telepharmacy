@@ -2707,9 +2707,9 @@ function homeActiveCaseCard(S) {
   const help=waiting?(S.notif===false?'เปิดแอปไว้เพื่อติดตามคิว การแจ้งเตือนปิดอยู่':'ออกจากหน้านี้ได้ เราจะแจ้งเตือนเมื่อเภสัชกรรับคิว'):'การปรึกษานี้ยังไม่จบ กลับไปคุยในห้องเดิมได้';
   const cta=waiting?'ดูคิวปรึกษา':c.fromOf?'อ่านคำตอบ':'กลับไปปรึกษาต่อ';
   return `<article class="hm-active-case case-progress-card" aria-labelledby="hmActiveTitle" data-in="1">
-    <header class="hm-active-top case-progress-head"><span class="case-progress-icon" aria-hidden="true">${ic(paused?'pause':waiting?'clock':pending?'credit-card':idle?'message-circle':'stethoscope',22,1.8)}</span><span class="hm-active-label">การปรึกษาของคุณ</span><span class="hm-active-status" data-tone="${waiting?'waiting':'active'}"><i class="hm-active-status-dot" aria-hidden="true"></i>${status}</span></header>
-    <div class="case-progress-body"><h2 id="hmActiveTitle">${esc(title)}</h2>
-    <div class="hm-active-provider">${ui.av('',{ini:ph.ini,img:TP.demoProfiles?.[ph.id==='tp'?'pharmacist_m':'pharmacist_f']})}<div><b>${esc(ph.short)}</b><span>${waiting?'เภสัชกรประจำสาขา':'เภสัชกรผู้ดูแล'} · ${esc(b.name)}</span></div></div>
+    <div class="consult-status-hero"><header class="hm-active-top case-progress-head"><span class="case-progress-icon" aria-hidden="true">${ic(paused?'pause':waiting?'clock':pending?'credit-card':idle?'message-circle':'stethoscope',22,1.8)}</span><span class="hm-active-label">การปรึกษาของคุณ</span><span class="hm-active-status" data-tone="${waiting?'waiting':'active'}"><i class="hm-active-status-dot" aria-hidden="true"></i>${status}</span></header>
+    <h2 id="hmActiveTitle" class="consult-status-title" aria-label="${esc(title)}">${waiting&&pos>1?`<span>มีผู้รอก่อนคุณ</span><span class="consult-queue-count"><strong class="num">${pos-1}</strong><span>คน</span></span>`:esc(title)}</h2></div>
+    <div class="case-progress-body"><div class="hm-active-provider">${ui.av('',{ini:ph.ini,img:TP.demoProfiles?.[ph.id==='tp'?'pharmacist_m':'pharmacist_f']})}<div><b>${esc(ph.short)}</b><span>${waiting?'เภสัชกรประจำสาขา':'เภสัชกรผู้ดูแล'} · ${esc(b.name)}</span></div></div>
     ${!waiting||paused||S.notif===false?`<p class="hm-active-help">${ic(waiting?'bell':'info',16,2)}<span>${esc(help)}</span></p>`:''}
     </div><footer class="case-progress-foot">${ui.btn(cta,{go:waiting?'queue':'room',via:waiting?'morph':'cover',iconRight:'arrow-right',cls:'hm-active-cta'})}</footer>
   </article>`;

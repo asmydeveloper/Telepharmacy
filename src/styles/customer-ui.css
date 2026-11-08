@@ -2069,7 +2069,6 @@ select {
   padding: 0;
   gap: 0;
   border: 1px solid var(--color-brand-200);
-  border-top: var(--space-1) solid var(--semantic-primary);
   border-radius: var(--radius-xl);
   background: var(--semantic-surface);
   box-shadow: none;
@@ -2081,9 +2080,9 @@ select {
   flex-wrap: wrap;
   gap: var(--space-2);
   padding: var(--space-4) var(--space-4) var(--space-3);
-  background: var(--semantic-surface);
+  background: var(--semantic-primary);
   border-bottom: 0;
-  color: var(--semantic-primary);
+  color: var(--semantic-surface);
   font-size: var(--type-label-mobile-size);
   font-weight: var(--weight-semibold);
 }
@@ -2095,7 +2094,7 @@ select {
   flex: none;
   border-radius: var(--radius-md);
   color: var(--semantic-surface);
-  background: var(--semantic-primary);
+  background: color-mix(in srgb, var(--semantic-surface) 16%, transparent);
 }
 .phone .case-progress-head :is(.tag, .hm-active-status) {
   margin-left: auto;
@@ -2105,7 +2104,7 @@ select {
   gap: var(--space-3);
   position: relative;
   margin-top: 0;
-  padding: var(--space-2) var(--space-4) var(--space-4);
+  padding: var(--space-4);
   border-radius: 0;
   background: var(--semantic-surface);
 }
@@ -2143,10 +2142,10 @@ select {
   gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
   border-top: 1px solid var(--color-brand-100);
-  background: var(--color-brand-50);
+  background: var(--semantic-surface);
 }
 .phone .case-progress-foot > .btn {
-  width: auto;
+  width: 100%;
   max-width: 100%;
   min-height: 44px;
   margin: 0;
@@ -2187,10 +2186,10 @@ select {
 }
 
 .phone .case-progress-card .hm-active-provider {
-  padding: var(--space-3);
+  padding: 0;
   gap: var(--space-3);
-  border-radius: var(--radius-md);
-  background: var(--semantic-surface-muted);
+  border-radius: 0;
+  background: transparent;
 }
 .phone .case-progress-card .hm-active-provider > .av {
   width: 44px;
@@ -2199,8 +2198,58 @@ select {
 }
 .phone .case-progress-card .hm-active-status {
   padding: var(--space-1) var(--space-2);
-  border: 1px solid currentColor;
+  border: 0;
   font-weight: var(--weight-semibold);
+}
+
+.phone .consult-status-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--semantic-primary);
+  color: var(--semantic-surface);
+}
+.phone .consult-status-hero::after {
+  content: '';
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  right: -110px;
+  bottom: -120px;
+  border: 28px solid color-mix(in srgb, var(--semantic-surface) 7%, transparent);
+  border-radius: var(--radius-pill);
+  pointer-events: none;
+}
+.phone .consult-status-hero .case-progress-head { background: transparent; }
+.phone .consult-status-title {
+  position: relative;
+  margin: 0;
+  padding: var(--space-2) var(--space-4) var(--space-5);
+  color: inherit;
+  font-size: var(--type-h3-mobile-size);
+  line-height: var(--type-h3-mobile-line);
+  font-weight: var(--weight-semibold);
+}
+.phone .consult-status-title > span:first-child {
+  display: block;
+  font-size: var(--type-label-mobile-size);
+  font-weight: var(--weight-medium);
+}
+.phone .consult-queue-count {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.phone .consult-queue-count strong {
+  font-size: 48px;
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+}
+.phone .consult-queue-count > span { font-size: var(--type-label-mobile-size); }
+.phone .hm-active-case .case-progress-foot {
+  border-top: 0;
+  padding-top: 0;
+  padding-bottom: var(--space-4);
 }
 
 /* Gallery isolates the same live cards without the home-page chrome. */
