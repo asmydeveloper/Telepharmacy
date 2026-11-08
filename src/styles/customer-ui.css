@@ -3160,13 +3160,12 @@ body:has(.consultation-card-preview) nextjs-portal {
   scrollbar-width: none;
   overscroll-behavior-x: contain;
   -webkit-overflow-scrolling: touch;
-  cursor: grab;
 }
 .phone .fu-order-carousel::-webkit-scrollbar { display: none; }
-.phone .fu-order-carousel.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
 .phone .fu-order-carousel > .fu-order-summary { flex-basis: 88%; scroll-snap-stop: always; }
 .fu-order-pagination .fu-order-dot { position: relative; padding: 0; border: 0; cursor: pointer; transition: width 0.2s ease; }
-.fu-order-pagination .fu-order-dot::after { content: ''; position: absolute; inset: -19px -8px; }
+.fu-order-pagination { min-height: 44px; }
+.fu-order-pagination .fu-order-dot::after { content: ''; position: absolute; inset: -8px -6px; }
 @media (prefers-reduced-motion: reduce) { .fu-order-pagination .fu-order-dot { transition: none; } }
 
 /* card position on each order card, e.g. 2/6 */

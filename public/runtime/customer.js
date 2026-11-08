@@ -7729,32 +7729,6 @@ function mountFollowOrderPagination(el) {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     e.preventDefault(); goTo(Math.max(0, current) + (e.key === 'ArrowRight' ? 1 : -1));
   });
-  /* mouse drag in the desktop preview; touch keeps native swipe and snap */
-  let drag = null;
-  carousel.addEventListener('pointerdown', e => {
-    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button,a,input,label')) return;
-    drag = { x: e.clientX, left: carousel.scrollLeft, moved: false, id: e.pointerId };
-  });
-  carousel.addEventListener('pointermove', e => {
-    if (!drag || e.pointerId !== drag.id) return;
-    const dx = e.clientX - drag.x;
-    if (!drag.moved && Math.abs(dx) < 4) return;
-    if (!drag.moved) { drag.moved = true; carousel.setPointerCapture(e.pointerId); carousel.classList.add('is-dragging'); }
-    carousel.scrollLeft = drag.left - dx;
-  });
-  const endDrag = e => {
-    if (!drag) return;
-    const moved = drag.moved; drag = null;
-    carousel.classList.remove('is-dragging');
-    if (!moved) return;
-    if (carousel.hasPointerCapture?.(e.pointerId)) carousel.releasePointerCapture(e.pointerId);
-    /* a drag is not a tap on the card underneath; then settle on the nearest card */
-    carousel._justDragged = true; setTimeout(() => { carousel._justDragged = false; }, 0);
-    current = -1; update(); goTo(current);
-  };
-  carousel.addEventListener('pointerup', endDrag);
-  carousel.addEventListener('pointercancel', endDrag);
-  carousel.addEventListener('click', e => { if (carousel._justDragged) { e.preventDefault(); e.stopPropagation(); } }, true);
   carousel.addEventListener('scroll', update, { passive: true });
   update();
 }
