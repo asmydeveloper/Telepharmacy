@@ -3030,7 +3030,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 .fu-order-heading { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
 .fu-order-heading h2 { margin: 0; font-size: var(--text-body); }
 .fu-order-heading .small { white-space: nowrap; }
-.fu-order-carousel { display: flex; gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--space-2); }
+.fu-order-carousel { display: flex; gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: var(--space-1); }
 .fu-order-carousel > .fu-order-summary { flex: 0 0 90%; min-width: 0; margin: 0; scroll-snap-align: start; display: flex; flex-direction: column; }
 .fu-order-header { display: grid; gap: var(--space-2); padding: var(--space-1) var(--space-4) var(--space-4); }
 .fu-order-line { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); font-size: var(--text-small); }
@@ -3195,7 +3195,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .fu-order-carousel::-webkit-scrollbar { display: none; }
 .phone .fu-order-carousel > .fu-order-summary { flex-basis: 88%; scroll-snap-stop: always; }
 .fu-order-pagination .fu-order-dot { position: relative; padding: 0; border: 0; cursor: pointer; transition: width 0.2s ease; }
-.fu-order-pagination { min-height: 44px; }
+.fu-order-pagination { min-height: 24px; padding-block: 0; }
 .fu-order-pagination .fu-order-dot::after { content: ''; position: absolute; inset: -8px -6px; }
 @media (prefers-reduced-motion: reduce) { .fu-order-pagination .fu-order-dot { transition: none; } }
 
@@ -3207,7 +3207,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 .fu-order-card-head {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  row-gap: var(--space-1);
+  row-gap: var(--space-3);
 }
 .fu-order-card-head .fu-order-ident { display: contents; }
 .fu-order-card-head .fu-order-index { grid-column: 1; grid-row: 1; justify-self: start; align-self: center; }
