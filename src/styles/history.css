@@ -480,9 +480,9 @@
 .history-order-identity { flex: 1; min-width: 0; }
 .history-order-identity > span { color: var(--ink-3); font-size: var(--text-caption); }
 .history-order-identity > div { display: flex; align-items: center; gap: var(--space-1); }
-.history-order-identity b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-small); font-weight: var(--weight-semibold); }
+.history-order-identity b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-body); font-weight: var(--weight-semibold); }
 .history-order-status { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-1); flex: none; color: var(--brand); }
-.phone .history-card .history-order-status .tag { white-space: nowrap; font-size: var(--text-small); font-weight: var(--weight-bold); padding: var(--space-2) var(--space-3); }
+.phone .history-card .history-order-status .tag { white-space: nowrap; font-size: var(--text-caption); font-weight: var(--weight-bold); padding: var(--space-2) var(--space-3); }
 .history-order-status > .ic { flex: none; }
 .history-card-open { gap: var(--space-2); padding: var(--space-3) var(--space-4); }
 .history-order-date { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); color: var(--ink-3); font-size: var(--text-caption); }
@@ -492,9 +492,10 @@
 .history-order-amount > b { color: var(--ink); font-weight: var(--weight-semibold); }
 .history-payment-action { position: relative; z-index: 2; }
 
-.history-order-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: var(--space-3); font-size: var(--text-body); line-height: 1.5; }
+.history-order-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: var(--space-3); font-size: var(--text-small); line-height: 1.6; }
 .history-order-row > span { color: var(--ink-3); }
-.history-order-row > b { text-align: right; font-weight: var(--weight-semibold); overflow-wrap: anywhere; }
+.history-order-row > b { text-align: right; font-weight: var(--weight-medium, 500); overflow-wrap: anywhere; }
+.history-order-price > b { font-size: var(--text-body); font-weight: var(--weight-semibold); }
 .history-order-price { padding-top: var(--space-2); border-top: 1px solid var(--line-soft); }
 
 .history-status-tabs .seg { width: 100%; }
