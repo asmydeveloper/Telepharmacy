@@ -46,18 +46,6 @@
       "state": "adr",
       "label": "ตอบเรื่องอาการหลังใช้ยา",
       "url": "/?screen=lock&state=adr&splash=0"
-    },
-    {
-      "code": "C301.8",
-      "state": "fudose",
-      "label": "เตือนกินยา",
-      "url": "/?screen=lock&state=fudose&splash=0"
-    },
-    {
-      "code": "C301.9",
-      "state": "fucheck",
-      "label": "ถามอาการระหว่างใช้ยา",
-      "url": "/?screen=lock&state=fucheck&splash=0"
     }
   ]
 }

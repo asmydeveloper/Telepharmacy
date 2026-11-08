@@ -103,11 +103,11 @@ knownReport.consultationId='expired';
 const missing=provenance.run('adrCaseDetails(TP.S,TP.S.adrReports[0],true)');
 assert(missing.includes('ไม่มีข้อมูลการปรึกษาต้นทางของยานี้'));
 assert(!missing.includes('data-a="adrOpenSource"'));
-knownReport.consultationId='preview-follow-2';knownReport.consultationPreview=true;
-provenance.TP.followPreviewPlan=id=>id==='preview-follow-2'?{id,date:'17/10/2026',topic:'เจ็บคอ'}:null;
+knownReport.consultationId='preview-med-2';knownReport.consultationPreview=true;
+provenance.TP.medicationPreviewRecord=id=>id==='preview-med-2'?{id,date:'17/10/2026',topic:'เจ็บคอ'}:null;
 provenance.actions.adrOpenSource({dataset:{v:knownReport.id}});
-assert.equal(provenance.calls.at(-1)[1].params.id,'preview-follow-2');
-assert.equal(provenance.calls.at(-1)[1].params.followPreview,true,'preview origin opens its own summary rather than unrelated history');
+assert.equal(provenance.calls.at(-1)[1].params.id,'preview-med-2');
+assert.equal(provenance.calls.at(-1)[1].params.medPreview,true,'preview origin opens its own summary rather than unrelated history');
 
 const custom=harness();custom.run("adrDraft(TP.S,{who:'me'})");Object.assign(custom.S._adr,{drug:'store',unknown:true,sym:['อื่น ๆ'],since:'today',level:'mild'});assert(!custom.run('adrReady(TP.S._adr)'));custom.S._adr.note='ระบุอาการที่เป็น';assert(custom.run('adrReady(TP.S._adr)'));
 for(const state of ['patient-report','patient-reply','unknown-drug']){S.st.adrsent=state;screens.adrsent.prep(S);assert(screens.adrsent.render({S,state,params:{}}).includes('ข้อมูลที่ส่ง'));}

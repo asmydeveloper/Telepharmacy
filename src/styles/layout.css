@@ -151,32 +151,6 @@
   min-width: 0;
   max-width: 100%;
 }
-.fu-entry {
-  display: grid;
-  grid-template-columns: var(--icon-tile-size) minmax(0, 1fr) 18px;
-  align-items: center;
-  padding: var(--card-padding);
-  gap: var(--space-3);
-  margin-top: var(--content-gap);
-  border-radius: var(--card-radius);
-}
-.fu-entry .fu-ic {
-  width: var(--icon-tile-size);
-  height: var(--icon-tile-size);
-  border-radius: var(--radius-control);
-}
-.fu-entry-t {
-  min-width: 0;
-  overflow-wrap: anywhere;
-}
-.fu-entry-t b {
-  font-size: var(--text-body);
-  line-height: var(--leading-body);
-}
-.fu-entry-t > span:not(.fu-tags) {
-  font-size: var(--text-small);
-  line-height: var(--leading-body);
-}
 @container app (max-width:360px) {
   .app-page,
   .sheet,

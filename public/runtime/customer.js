@@ -1517,7 +1517,7 @@ function restart(mob) {
   const g = TP.S.g;
   TP.S = TP.fresh();
   if (g) { TP.S.g = { ...g }; Object.assign(TP.S, g); }
-  if (TP.S.firstTime) Object.assign(TP.S, { loggedIn: false, consent: false, notifAsked: false, notif: false, follow: null });
+  if (TP.S.firstTime) Object.assign(TP.S, { loggedIn: false, consent: false, notifAsked: false, notif: false });
   TP.emit('state');
   if (mob) toggle(false);
   TP.go(TP.SCREENS.splash ? 'splash' : 'home', { via: 'fade', root: true, force: true });
@@ -1578,7 +1578,7 @@ TP.act('stCall', t => { let p = {}; try { p = JSON.parse(t.dataset.p || '{}'); }
 const isNewNumber = S => S.newAccount ?? S.firstTime;
 /* a brand-new number must never inherit the mock account (family, allergies, meds, history) */
 const freshAccount = S => {
-  Object.assign(S, { family: [], history: [], inbox: [], case: null, addrs: [], follow: null, _clog: [] });
+  Object.assign(S, { family: [], history: [], inbox: [], case: null, addrs: [], _clog: [] });
   Object.assign(S.user, { allergies: [], allergyState: 'unknown', allergySrc: '', meds: [], weight: '', conditions: [], condNone: false });
 };
 
@@ -1924,7 +1924,7 @@ function regConsentDocument(){const p=REG_HEALTH_POLICY;return `<article class="
 <section><h3>6. ถอนความยินยอมและใช้สิทธิ</h3><p>ท่านถอนความยินยอมได้ผ่านเมนูบัญชี → ความยินยอม หรือช่องทางติดต่อผู้ควบคุมข้อมูลที่ระบุในเอกสารนี้ โดยต้องทำได้ง่าย การถอนจะไม่กระทบความชอบด้วยกฎหมายของการดำเนินการที่ได้ทำไปก่อนถอน บริษัทจะแจ้งผลกระทบต่อบริการก่อนดำเนินการ และอาจเก็บหรือใช้ข้อมูลบางส่วนต่อได้เมื่อมีฐานกฎหมายอื่นรองรับ</p><p>ท่านมีสิทธิขอเข้าถึงหรือรับสำเนา แก้ไข ขอให้ลบหรือจำกัดการใช้ คัดค้าน หรือขอรับและโอนข้อมูลเมื่อเข้าเงื่อนไขกฎหมาย และมีสิทธิร้องเรียนต่อสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล การใช้สิทธิแต่ละประเภทอาจมีเงื่อนไขหรือข้อยกเว้นตามกฎหมาย</p></section>
 <section><h3>7. ข้อมูลของผู้เยาว์หรือบุคคลอื่น</h3><p>ความยินยอมนี้ใช้กับข้อมูลของเจ้าของบัญชีตามขอบเขตที่ระบุ ไม่ถือเป็นความยินยอมแทนบุคคลอื่นโดยอัตโนมัติ หากกฎหมายกำหนดให้ต้องได้รับความยินยอมจากผู้ใช้อำนาจปกครอง ผู้อนุบาล หรือผู้พิทักษ์ บริษัทต้องตรวจสอบและดำเนินการให้ถูกต้องก่อนอาศัยความยินยอมดังกล่าว</p></section>
 <section><h3>8. การแสดงเจตนา</h3><p>เมื่อท่านเลือกช่องยินยอมที่หน้าตรวจทานและกดยืนยันสมัครสมาชิก หรือเลือกช่องยินยอมและกดบันทึกที่เมนูความยินยอม จะถือเป็นการแสดงเจตนาให้ความยินยอมตามขอบเขตเอกสารฉบับที่แสดงให้ท่านอ่าน การเปิด อ่าน หรือปิดเอกสารนี้เพียงอย่างเดียวไม่ถือเป็นการให้ความยินยอม</p></section>
-<section><h3>9. การปรึกษาและติดตามผ่านแอป</h3><p>ท่านอาจปรึกษาทางแชทหรือวิดีโอคอล ข้อความ รูปที่ท่านส่ง ใบสรุป และข้อมูลการจ่ายยาอาจเป็นส่วนหนึ่งของบันทึกบริการตามวัตถุประสงค์ข้างต้น สำหรับการบันทึกภาพหรือเสียงวิดีโอ บริษัทต้องแจ้งให้ทราบอย่างชัดเจนและมีฐานกฎหมายที่เหมาะสมก่อนดำเนินการ เอกสารนี้ไม่ถือเป็นการยินยอมให้บันทึกวิดีโอคอลโดยอัตโนมัติ</p><p>เภสัชกรอาจแนะนำให้ติดตามการใช้ยาหรืออาการหลังปรึกษา คำตอบของท่านใช้เพื่อดูแลความปลอดภัย หากรายงานอาการผิดปกติ ข้อมูลจะถูกส่งให้ผู้เกี่ยวข้องประเมิน ไม่ใช่การยืนยันว่าแพ้ยาหรือรับประกันการตอบกลับทันที</p><p>การแจ้งเตือนผ่านระบบของอุปกรณ์อาจอาศัยผู้ให้บริการภายนอก เช่น Apple หรือ Google บริษัทต้องจำกัดข้อมูลที่ส่งและที่แสดงบนหน้าจอล็อกให้เหมาะสม พร้อมแจ้งผู้ให้บริการและการโอนข้อมูลตามการใช้งานจริง การอนุญาตแจ้งเตือนของอุปกรณ์แยกจากความยินยอมใช้ข้อมูลสุขภาพ</p></section>
+<section><h3>9. การปรึกษาและติดตามผ่านแอป</h3><p>ท่านอาจปรึกษาทางแชทหรือวิดีโอคอล ข้อความ รูปที่ท่านส่ง ใบสรุป และข้อมูลการจ่ายยาอาจเป็นส่วนหนึ่งของบันทึกบริการตามวัตถุประสงค์ข้างต้น สำหรับการบันทึกภาพหรือเสียงวิดีโอ บริษัทต้องแจ้งให้ทราบอย่างชัดเจนและมีฐานกฎหมายที่เหมาะสมก่อนดำเนินการ เอกสารนี้ไม่ถือเป็นการยินยอมให้บันทึกวิดีโอคอลโดยอัตโนมัติ</p><p>หากท่านแจ้งอาการหลังใช้ยา ข้อมูลจะถูกส่งให้ผู้เกี่ยวข้องประเมิน ไม่ใช่การยืนยันว่าแพ้ยาหรือรับประกันการตอบกลับทันที</p><p>การแจ้งเตือนผ่านระบบของอุปกรณ์อาจอาศัยผู้ให้บริการภายนอก เช่น Apple หรือ Google บริษัทต้องจำกัดข้อมูลที่ส่งและที่แสดงบนหน้าจอล็อกให้เหมาะสม พร้อมแจ้งผู้ให้บริการและการโอนข้อมูลตามการใช้งานจริง การอนุญาตแจ้งเตือนของอุปกรณ์แยกจากความยินยอมใช้ข้อมูลสุขภาพ</p></section>
 <section id="careConsentContacts" class="reg-consent-contacts"><h3>10. ติดต่อสาขาและช่องทางอื่น</h3><p>หากยังไม่พร้อมให้ความยินยอมหรือถอนความยินยอม ท่านสอบถามเรื่องบริการและทางเลือกในการปรึกษาที่ร้านได้ตามข้อมูลติดต่อด้านล่าง ช่องทางนี้ไม่ใช่ช่องทางติดต่อผู้ควบคุมข้อมูลเรื่อง PDPA แทนรายละเอียดที่บริษัทยังต้องยืนยัน</p>${TP.callRows?ui.group(TP.callRows()):'<p class="hint">ยังไม่มีข้อมูลติดต่อสาขา</p>'}</section></article>`;}
 TP.registrationConsentDocument=regConsentDocument;
 
@@ -2821,7 +2821,7 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง', false], ['busy', 'สาขาใกล้สุดพัก', false], ['closed', 'ร้านปิด', false], ['address-alt', 'เลือกที่อยู่คลองเตย', false], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง', false],['quick-unknown','ยังไม่ทราบจำนวนคิว', false],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room', 'การปรึกษา ยังไม่จบ', false],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],['case-queue2', "จำลอง รออีก 2 คิว", false],['case-queue1', "จำลอง รออีก 1 คิว", false],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก", false],["case-matched", "จำลอง รับคิวแล้ว", false],["case-chat", "จำลอง กำลังปรึกษา"],["case-reply", "จำลอง รอคำตอบจากคุณ", false],["case-payment", "จำลอง รอชำระเงิน", false],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],['case-payment-soon', "เหลือชำระ 1 นาที", false],["case-closed-payexpired","จบแชท หมดเวลาชำระ", false],['case-video-request', "เภสัชกรขอวิดีโอคอล", false],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · จัดส่งสำเร็จ", false],['branch-statuses', 'สาขาครบทุกสถานะ', false], ['medication-new', 'ข้อมูลยาใหม่หลังชำระเงินสำเร็จ'], ['medication-read', 'เปิดข้อมูลยาแล้ว ไม่มี Badge'], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน']],
+  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['active', 'มีเคสค้าง', false], ['busy', 'สาขาใกล้สุดพัก', false], ['closed', 'ร้านปิด', false], ['address-alt', 'เลือกที่อยู่คลองเตย', false], ['noaddress', 'ไม่มีที่อยู่', false], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา'], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้'], ['banner-edge', 'แบนเนอร์เต็มขอบ', false], ['blue-canvas', 'พื้นหลังเทาอมฟ้าอ่อน', false], ['pharmacy-banner', 'ภาพร้านยาและเฟดข้อความ', false], ['mini-menu', 'มินิเมนูสุขภาพใต้แบนเนอร์', false], ['compact-store', 'การ์ดสาขาแบบกระชับ', false], ['named-address', 'ชื่อที่อยู่และดรอปดาวน์', false], ['plain-mini-menu', 'มินิเมนูไม่มีกรอบ', false], ['branch-tile', 'การ์ดรูปซ้ายและเลือกวิธีปรึกษา', false], ['white-canvas', 'พื้นหลังสีขาว', false], ['layout-system', 'กริดและระยะกลางทั้งแอป', false], ['store-list', 'ลิสต์ร้านยา 6 ร้าน', false], ['care-shortcuts', 'ติดตามยาและประวัติในมินิเมนู', false], ['figma-system', 'Figma tokens และ component กลาง', false], ['real-photos', 'ภาพถ่ายและรูปมุมมน', false], ['pastel-icons', 'ไอคอนภาพประกอบพาสเทล', false], ['banner-actions', 'ปุ่มแบนเนอร์เสมอกัน ไม่มี badge', false], ['refined-store-list', 'ลิสต์ร้านจัดลำดับข้อมูลใหม่', false], ['distinct-store-photos', 'ภาพจำลองแต่ละร้านต่างกัน', false], ['soft-status', 'แท็กเปิดรับปรึกษาพื้นเขียวอ่อน', false],  ['bear-banner', 'ปกหมีเภสัชกร 3D', false], ['banner-safe-area', 'ภาพปกเต็ม safe area เฟดต่อเนื่อง', false], ['bright-bear', 'หมีสดใส เฟดเฉพาะด้านบน', false], ['tritone-icons', 'ไอคอน Flat 3 สี CI', false], ['personal-greeting', 'ทักทายชื่อจริงและหัวใจขาวเต็ม', false], ['counter-bear', 'หมีอยู่หลังเคาน์เตอร์เป็นธรรมชาติ', false], ['soft-rounded-icons', 'ไอคอนมนสี CI อ่อนและแนวปุ่มที่อยู่', false], ['glass-tabs', 'เมนูล่าง Liquid Glass', false], ['female-pharmacist-banner', 'ปกเภสัชกรหญิงหลังเคาน์เตอร์', false],['quick-consult','ปุ่มกลาง เลือกร้านว่างใกล้สุด', false],['quick-busy','ไม่มีร้านคิวว่าง', false],['quick-unknown','ยังไม่ทราบจำนวนคิว', false],['quick-address','ปรึกษาโดยยังไม่มีที่อยู่', false],['consult-banner','แบนเนอร์ชวนปรึกษาเหนือร้านยา', false],['active-next','การปรึกษา คิวถัดไป', false],['active-room', 'การปรึกษา ยังไม่จบ', false],['active-paused','การปรึกษา พักรับคิว', false],['active-payment','การปรึกษา รอชำระ', false],['active-idle','การปรึกษา รอคำตอบ', false],["case-queue3", "จำลอง รออีก 3 คิว"],['case-queue2', "จำลอง รออีก 2 คิว", false],['case-queue1', "จำลอง รออีก 1 คิว", false],["case-next", "จำลอง คิวถัดไป"],["case-paused", "จำลอง เภสัชกรพัก", false],["case-matched", "จำลอง รับคิวแล้ว", false],["case-chat", "จำลอง กำลังปรึกษา"],["case-reply", "จำลอง รอคำตอบจากคุณ", false],["case-payment", "จำลอง รอชำระเงิน", false],["case-finished", "จำลอง จบการปรึกษา", false],["case-cancelled", "จำลอง ยกเลิกคิว", false],["case-expired", "จำลอง หมดเวลารอคำตอบ", false],["case-closed-unpaid","จบแชท รอชำระค่ายา"],['case-payment-soon', "เหลือชำระ 1 นาที", false],["case-closed-payexpired","จบแชท หมดเวลาชำระ", false],['case-video-request', "เภสัชกรขอวิดีโอคอล", false],["case-none","ไม่มีปรึกษา", false],["case-delivery-preparing","ชำระแล้ว · เตรียมยา"],["case-delivery-calling","กำลังเรียกไรเดอร์"],["case-delivery-delivering","ไรเดอร์กำลังส่งยา"],["case-delivery-delivered","จัดส่งเสร็จสิ้น", false],["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา"],["case-pickup-ready","รับที่ร้าน · พร้อมรับยา"],["case-pickup-complete","รับยาที่สาขาแล้ว", false],["case-parcel-preparing","จัดส่งปกติ · ร้านกำลังเตรียมยา", false],["case-parcel-transit","จัดส่งปกติ · กำลังขนส่ง", false],["case-parcel-out","จัดส่งปกติ · กำลังนำส่ง", false],["case-parcel-delivered","จัดส่งปกติ · จัดส่งสำเร็จ", false],['branch-statuses', 'สาขาครบทุกสถานะ', false], ['medication-new', 'ข้อมูลยาใหม่หลังชำระเงินสำเร็จ', false], ['medication-read', 'เปิดข้อมูลยาแล้ว ไม่มี Badge', false], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน']],
   notes: ['ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; delete S._homeFulfillmentPreviewCases; TP.homeScenario(S, st || 'normal'); if (!st) return;
@@ -2831,8 +2831,8 @@ TP.screen('home', {
       TP.casePreview.seed('delivery-delivering');S.case.order.no='MT202610180702';
       S._homeFulfillmentPreviewCases=[pickup];S._homeEventPreview=true;return;
     }
-    if(st==='medication-new'||st==='medication-read'){/* paid and finished order: no order-status card, the consult banner shows */TP.casePreview.seed('delivery-delivered');S.medicationSeenOrders=[];if(st==='medication-read')TP.readMedicationUpdates(S);S._homeEventPreview=true;return;}
-    if(st.startsWith('case-')){if(st.startsWith('case-parcel-') && flowPreview && new URLSearchParams(location.search).get('cardPreview')==='1')TP.fulfillmentPreview(TP.newCase(),st.slice(5));else TP.casePreview.seed(st.slice(5));if(/^case-(delivery|pickup)-/.test(st))S.medicationSeenOrders=[];S._homeEventPreview=true;return;}
+    if(st==='medication-new'||st==='medication-read'){/* retired with the medication follow-up (8 Nov 2026) */TP.casePreview.seed('delivery-delivered');S._homeEventPreview=true;return;}
+    if(st.startsWith('case-')){if(st.startsWith('case-parcel-') && flowPreview && new URLSearchParams(location.search).get('cardPreview')==='1')TP.fulfillmentPreview(TP.newCase(),st.slice(5));else TP.casePreview.seed(st.slice(5));S._homeEventPreview=true;return;}
     S.case=null;S._paymentCase=null;S.pay=null;S.call=null;S._homeEventPreview=true;
     if (st === 'active' || st.startsWith('active-')) { TP.newCase(); S._homeEventPreview=true;const c=S.case;if(st==='active-next'){c.status='queue';c.pos=1;}if(st==='active-paused')c.status='paused';if(st==='active-room'||st==='active-payment'||st==='active-idle'){c.status='room';c.idle=st==='active-idle';if(st==='active-payment')c.order={...(c.order||{}),status:'pending'};} } else if (TP.caseOpen()) S.case = null;
     S.branchState = { ...TP.fresh().branchState, tw: st === 'busy' ? 'pause' : 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' };
@@ -2851,14 +2851,8 @@ TP.screen('home', {
     }
     const head = homeBanner(S);
     if (st === 'loading') {
-      return ui.page(`<div class="hm-content">${head}<div class="hm-loading" aria-busy="true" aria-label="กำลังโหลดหน้าหลัก"><div class="hm-loading-shortcuts">${Array.from({length:4}, () => '<span class="skel"></span>').join('')}</div><div class="skel hm-loading-card"></div><div class="skel hm-loading-card"></div></div></div>`, { nonav: true });
+      return ui.page(`<div class="hm-content">${head}<div class="hm-loading" aria-busy="true" aria-label="กำลังโหลดหน้าหลัก"><div class="skel hm-loading-card"></div><div class="skel hm-loading-card"></div></div></div>`, { nonav: true });
     }
-    const quick = [
-      ['health', 'health', 'ข้อมูลสุขภาพ'],
-      ['medhub', 'medication', 'ติดตามการใช้ยา'],
-      ['addressbook', 'addressbook', 'สมุดที่อยู่'],
-      ['account', 'settings', 'ตั้งค่า']
-    ];
     const updates = [TP.orderReadyRow?.(S, { din: 2 }) || '',
       S.ofPending ? ui.group([ui.row({ icon: 'message-square-text', title: 'คำถามที่ฝากไว้', sub: `${S.ofPending.whoName} · ฝากไว้ ${S.ofPending.at} · เภสัชกรจะตอบ${TP.OF_REPLY}`, chev: false })]) : ''
     ].filter(Boolean).join('');
@@ -2869,10 +2863,9 @@ TP.screen('home', {
     const consultBanner = paymentCard || activeCase || (updates && !deliveryCard) ? '' : homeConsultBanner(S);
     const address=TP.homeAddress();
     const delivery=address?`<button type="button" class="hm-delivery-bar" data-sheet="homeaddress" aria-haspopup="dialog" aria-label="เลือกที่อยู่จัดส่ง: ${esc(TP.fmtAddr(address))}">${ic('map-pin',20,1.8)}<span>ที่อยู่จัดส่ง</span><b>${esc(TP.fmtAddr(address))}</b>${ic('chevron-down',18,2)}</button>`:'';
-    const shortcuts = `<nav class="hm-mini-menu" aria-label="ดูแลสุขภาพของคุณ">${quick.map(([go, icon, label]) => `<button type="button" class="hm-mini-item" ${go ? `data-go="${go}"` : 'aria-disabled="true"'}><span class="hm-mini-icon hm-mini-art hm-mini-art-${icon}"><img src="/assets/menu-icons/${icon}-rounded-v3.svg" alt="" width="48" height="48" decoding="async">${go==='medhub'&&TP.hasMedicationUpdates(S)?'<span class="hm-medication-badge" role="status" aria-label="มีข้อมูลยาใหม่"></span>':''}</span><span>${esc(label)}</span></button>`).join('')}</nav>`;
+    /* Quick menu under the address bar removed (user 8 Nov 2026); health, addresses and settings stay in the account tab. */
     return ui.page(`<div class="hm-content">${head}
       ${delivery}
-      ${shortcuts}
       ${paymentCard}${deliveryCard}
       ${activeCase ? heroHtml(S,st)+nearbyStoresHtml(S) : consultBanner+heroHtml(S,st)}
       ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}
@@ -3220,7 +3213,7 @@ TP.simAction({ id: 'lock', label: 'รับคิวตอนจอล็อก
 // C300 merged into C303 (user 8 Nov 2026): accepting a queue opens the same chat; C303.14 shows the moment the pharmacist joins. C300 stays reserved.
 TP.screen('lock', {
   group: 'during', title: 'แจ้งเตือนบนจอล็อก', code: 'C301', cls: 'dark lock-scr', sb: 'light',
-  states: [['accept', 'รับคิว'], ['msg', 'ข้อความใหม่'], ['order', 'รายการยา'], ['payexp', 'รายการใกล้หมดเวลา'], ['paused', 'เภสัชกรพัก'], ['summary', 'ใบสรุป'], ['adr', 'ตอบเรื่องอาการหลังใช้ยา'], ['fudose', 'เตือนกินยา'], ['fucheck', 'ถามอาการระหว่างใช้ยา']],
+  states: [['accept', 'รับคิว'], ['msg', 'ข้อความใหม่'], ['order', 'รายการยา'], ['payexp', 'รายการใกล้หมดเวลา'], ['paused', 'เภสัชกรพัก'], ['summary', 'ใบสรุป'], ['adr', 'ตอบเรื่องอาการหลังใช้ยา'], ['fudose', 'เตือนกินยา', false], ['fucheck', 'ถามอาการระหว่างใช้ยา', false]],
   notes: ['แอปส่งแจ้งเตือนแทน LINE OA: รับคิว · ข้อความใหม่ · รายการยา · ใบสรุป · ตอบเรื่องอาการหลังใช้ยา', 'ข้อความกลาง ๆ ไม่มีอาการ ชื่อยา ข้อความแชท หรือยอดเงิน (PDPA, A15)', 'ข้อมูลที่ผ่าน Apple/Google มีแค่ชนิดเหตุการณ์ (อยู่ในย่อหน้า C1)'],
   prep(S) {
     const st = S.st.lock || 'accept';
@@ -3228,7 +3221,7 @@ TP.screen('lock', {
     else ensureCase(st === 'paused' ? 'paused' : 'matched');
   },
   render(ctx) {
-    const m = { accept: ['เภสัชกรรับคิวของคุณแล้ว', 'แตะเพื่อเข้าห้องปรึกษา', 'room'], msg: ['มีข้อความใหม่จากเภสัชกร', 'แตะเพื่ออ่าน', 'room'], order: ['รายการยาพร้อมให้ชำระ', 'แตะเพื่อดูรายการ', 'room'], payexp: ['รายการยาใกล้หมดเวลาชำระ', 'ชำระได้อีก 15 นาที แตะเพื่อดู', 'room'], paused: ['เภสัชกรพักชั่วคราว', 'คิวของคุณยังอยู่ ไม่เสียคิว', 'queue'], summary: ['ใบสรุปการปรึกษาพร้อมแล้ว', 'แตะเพื่อเปิดดู', 'summary'], adr: ['เภสัชกรตอบเรื่องที่คุณแจ้งแล้ว', 'แตะเพื่ออ่าน', 'adrsent'], ...(TP.FOLLOW_LOCK || {}) }[ctx.state] || [];
+    const m = { accept: ['เภสัชกรรับคิวของคุณแล้ว', 'แตะเพื่อเข้าห้องปรึกษา', 'room'], msg: ['มีข้อความใหม่จากเภสัชกร', 'แตะเพื่ออ่าน', 'room'], order: ['รายการยาพร้อมให้ชำระ', 'แตะเพื่อดูรายการ', 'room'], payexp: ['รายการยาใกล้หมดเวลาชำระ', 'ชำระได้อีก 15 นาที แตะเพื่อดู', 'room'], paused: ['เภสัชกรพักชั่วคราว', 'คิวของคุณยังอยู่ ไม่เสียคิว', 'queue'], summary: ['ใบสรุปการปรึกษาพร้อมแล้ว', 'แตะเพื่อเปิดดู', 'summary'], adr: ['เภสัชกรตอบเรื่องที่คุณแจ้งแล้ว', 'แตะเพื่ออ่าน', 'adrsent'] }[ctx.state] || [];
     return `<div class="lk-bg" aria-hidden="true"></div>
       <div class="lk-top"><p class="lk-date">วันอาทิตย์ที่ 18 ตุลาคม</p><p class="lk-time">14:16</p></div>
       <button type="button" class="lk-note" data-a="lockOpen" data-v="${m[2]}" data-in="2"><span class="appicon">${brand.plus(22)}</span><span class="bt"><small><span>MITRAREE</span><span>ตอนนี้</span></small><b>${esc(m[0])}</b><span>${esc(m[1])}</span></span></button>
@@ -3486,10 +3479,6 @@ TP.orderNumber = c => {
 };
 TP.makeOrder = () => { const k=TP.casePlan(C()).items,items=k.length?k:[TP.ORDER_ITEMS[1]],issuedAt=Date.now();C().order={status:'pending',items,total:items.reduce((sum,i)=>sum+i.price,0),issuedAt,awaitingCheckout:(C().mode||'chat')==='chat',expiresAt:(C().mode||'chat')==='chat'?null:issuedAt+TP.ORDER_PAYMENT_MS,no:TP.orderNumber(C())};C().order.expires=TP.orderTime(C().order);TP.emit('state'); };
 TP.orderCases = S => [...new Map([S.case,...(S.history||[]).map(h=>h._case)].filter(Boolean).map(c=>[c.id,c])).values()];
-/* User 8 Nov 2026: medication information is new as soon as the order is paid (C201.65-.70), not only after delivery. */
-TP.medicationCompletedOrders = S => TP.orderCases(S).filter(c => (!c.who || c.who === 'me') && c.order?.status === 'paid').map(c => TP.orderNumber(c));
-TP.hasMedicationUpdates = S => TP.medicationCompletedOrders(S).some(no => !(S.medicationSeenOrders || []).includes(no));
-TP.readMedicationUpdates = S => { S.medicationSeenOrders = [...new Set([...(S.medicationSeenOrders || []), ...TP.medicationCompletedOrders(S)])]; };
 
 TP.pendingPaymentCase = S => TP.orderCases(S).find(c=>c.order?.status==='pending');
 /* Chat consultation: the existing order continues after the room is closed. */
@@ -3965,7 +3954,6 @@ TP.sim.closeCase = (by = 'ph', at) => {
   TP.S._disSeen = true;
   const qk = TP.cur()?.id === 'room' && $('#rmQuick', TP.cur().el); if (qk) qk.innerHTML = '';
   c.msgs.push({ kind: 'summary', time: at || now(), by, ...(c.checkoutHandoffUntil ? { handoff: true } : {}) });
-  TP.followCaseClosed?.(c);
   TP.S.history.unshift({ id: c.id, caseCode: TP.caseCode(c), note: c.note, date: c.date || TP.NOW.date, time: c.joinedAt, who: c.who, topic: c.symptoms.join(' ') || 'ถามเรื่องยา', branch: c.branch, pharm: c.pharm, bought: c.order?.status === 'paid' ? c.order.total : 0, orderStatus: c.order?.status || 'none', outcome:c.outcome, rated: 0, summary: true, _case:c });
   if (by !== 'me') TP.S.inbox.unshift({ id: 'n' + Date.now(), kind: 'summary', title: 'ใบสรุปการปรึกษาพร้อมแล้ว', body: 'แตะเพื่อเปิดดู', time: TP.NOW.date + ' 14:41', read: false, go: 'summary', p:{id:c.id} });
   if(c.order?.status==='pending')TP.S.inbox.unshift({id:'order-pending-'+c.order.no,kind:'order',title:'มีรายการยารอชำระ',body:'การปรึกษาจบแล้ว เปิดแอปเพื่อดูรายการและเวลาชำระ',time:TP.NOW.date+' '+now(),read:false,go:'summary',p:{id:c.id}});
@@ -5019,10 +5007,10 @@ function priced(meds, bought) {
 const pastOrder = (id, date, time, items) => { const sum = items.reduce((s, i) => s + i.price, 0);
   return { no: codeOf(id), items, status: 'paid', total: sum, paid: { items: sum, ship: 0, fee: 0, total: sum, recv: 'pickup', courier: null, addr: null, method: 'promptpay', date, at: addMin(time, 25) } }; };
 /* the order a receipt shows: by consult id when given, else the current case. Never opens or changes a consult */
-function rcOf(id, followPreview = false) {
+function rcOf(id, medPreview = false) {
   const S = TP.S, c = S.case;
-  if (followPreview) {
-    const h = TP.followPreviewPlan?.(id);
+  if (medPreview) {
+    const h = TP.medicationPreviewRecord?.(id);
     if (!h?.bought) return null;
     const meds = h.previewSummary?.meds || [];
     const base = Math.floor(h.bought / Math.max(meds.length, 1));
@@ -5032,7 +5020,7 @@ function rcOf(id, followPreview = false) {
   if (!id) return c?.order?.paid ? c.order : null;
   if (RC()[id]) return RC()[id];
   if (c?.id === id && c.order?.status === 'paid') return (RC()[id] = c.order.paid ? c.order : { ...pastOrder(id, TP.NOW.date, c.joinedAt, c.order.items), no: c.order.no || codeOf(id) });
-  const h = (S.history || []).find(x => x.id === id) || TP.followSummaryRecord?.(id);
+  const h = (S.history || []).find(x => x.id === id);
   if (!h?.bought) return null;
   if (h.order?.paid) return (RC()[id] = h.order);
   const meds = h.previewSummary?.meds || TP.SUMMARY?.[id]?.meds || TP.ORDER_ITEMS.slice(0, 2);
@@ -5306,7 +5294,7 @@ TP.screen('receipt', {
   },
   render(ctx) {
     const id = ctx.params?.id;
-    let o = ctx.state === 'missing' ? null : id ? rcOf(id, !!ctx.params?.followPreview) : rcOf() || order();
+    let o = ctx.state === 'missing' ? null : id ? rcOf(id, !!ctx.params?.medPreview) : rcOf() || order();
     if (!id && o && ctx.state === 'normal') {
       const items = [...TP.ORDER_ITEMS.map(i => ({...i})), {name:'ยาแก้ไอ ชนิดน้ำ', qty:'1 ขวด', price:90}];
       const total = items.reduce((sum, i) => sum + i.price, 0);
@@ -5432,7 +5420,7 @@ TP.orderReadyRow = (S, o = {}) => {
   const sub = pick ? (late ? `${b.name} · ร้านจะโทรหาเพื่อตกลงเรื่องยาและการคืนเงิน` : st ? `${b.name} · รับได้ถึง ${holdUntil(pd)}` : `${b.name} · แตะเพื่อดู QR และสถานะ`) : st && trackTxt(pd) ? `${trackTxt(pd)} · แตะเพื่อติดตาม` : 'แตะเพื่อดูสถานะคำสั่งซื้อ';
   return ui.group([ui.row({ icon: pick ? 'store' : pd.recv === 'cold' ? 'snowflake' : 'package', title, sub, go: pick ? 'paid' : 'track' })], { din: o.din });
 };
-TP.receiptSumRow = (h, followPreview = false) => h?.bought ? ui.group([ui.row({ icon: 'receipt', title: 'ใบเสร็จรับเงิน', sub: `ยอดชำระ ${TP.money(h._case?.order?.paid?.total ?? h.order?.paid?.total ?? h.bought)} · ดูใบเสร็จและใบกำกับภาษี`, go: 'receipt', p: { id: h.id, ...(followPreview ? { followPreview: true } : {}) } })], { din: 3 }) : '';
+TP.receiptSumRow = (h, medPreview = false) => h?.bought ? ui.group([ui.row({ icon: 'receipt', title: 'ใบเสร็จรับเงิน', sub: `ยอดชำระ ${TP.money(h._case?.order?.paid?.total ?? h.order?.paid?.total ?? h.bought)} · ดูใบเสร็จและใบกำกับภาษี`, go: 'receipt', p: { id: h.id, ...(medPreview ? { medPreview: true } : {}) } })], { din: 3 }) : '';
 })();
 
 /* ===== 70-after.js ===== */
@@ -5462,7 +5450,7 @@ const curEl = () => TP.cur()?.el;
 /* avatar initial = first Thai consonant (or Latin letter) of the first name, same everywhere */
 const iniOf = n => { const m = first(n).match(/[ก-ฮA-Za-z]/); return m ? m[0] : first(n).slice(0, 1); };
 /* back label follows where Back really goes (the previous screen, else the parent) */
-const BACK_L = { medhub: 'เมนูยา', home: 'หน้าแรก', account: 'บัญชี', history: 'ประวัติ', intake: 'แจ้งอาการ', family: 'สมาชิก', summary: 'ใบสรุป', inbox: 'แจ้งเตือน', health: 'ข้อมูลสุขภาพ', adrsent: 'กลับ' };
+const BACK_L = { home: 'หน้าแรก', account: 'บัญชี', history: 'ประวัติ', intake: 'แจ้งอาการ', family: 'สมาชิก', summary: 'ใบสรุป', inbox: 'แจ้งเตือน', health: 'ข้อมูลสุขภาพ', adrsent: 'กลับ' };
 const backL = fb => BACK_L[TP.hist?.[TP.hist.length - 1]?.id || fb] || 'กลับ';
 const personOf = id => !id || id === 'me' ? TP.S.user : TP.S.family.find(f => f.id === id);
 const whoLabel = id => { if (!id || id === 'me') return 'ตัวเอง'; const p = TP.S.family.find(f => f.id === id); return p ? `${first(p.name)} (${p.rel})` : 'สมาชิกในบ้าน'; };
@@ -5554,7 +5542,7 @@ const summaryRated = h => {
 };
 function summaryTarget(ctx) {
   const S = ctx.S, st = ctx.state, all = allHistory(S);
-  if (ctx.params.followPreview) return TP.followPreviewPlan(ctx.params.id);
+  if (ctx.params.medPreview) return TP.medicationPreviewRecord?.(ctx.params.id);
   if (st === 'missing') return null;
   if (ctx.params.historyOutcome) return all.find(h => h.summary && historyOutcome(S, h).key === ctx.params.historyOutcome) || null;
   let id = ctx.params.id;
@@ -5563,14 +5551,14 @@ function summaryTarget(ctx) {
     return all.find(h => h.summary && Boolean(sumOf(h).meds?.length) === withMedicine) || null;
   }
   if (!id && st === 'closed' && S.case?.status === 'closed') id = S.case.id;
-  return id ? all.find(h => h.id === id) || TP.followSummaryRecord?.(id) : all[0];
+  return id ? all.find(h => h.id === id) : all[0];
 }
 function docHtml(S, h, options = {}) {
   const P = TP.PHARM[h.pharm] || TP.PHARM.kj, b = TP.branch(h.branch) || TP.branch(), sm = sumOf(h);
   const p = h.who && h.who !== 'me' ? S.family.find(f => f.id === h.who) : null;
   const identity = historyIdentity(S,h.who,h);
   const who = identity.name;
-  const follow = TP.followDocLine?.(h) || sm.follow;
+  const follow = sm.follow;
   const expiry = plusYear(h.date);
   const list = items => `<ul class="af-ul">${items.map(item=>`<li>${esc(item)}</li>`).join('')}</ul>`;
   const visitCase = h._case || (S.case?.id === h.id ? S.case : null) || (h.order ? {order:h.order} : null);
@@ -5621,14 +5609,11 @@ function rateHtml(h) {
   </section>`;
 }
 TP.historyDetailContent = (S, h, options = {}) => {
-  const assessment = TP.completedMedicationOrder(S, h)
-    ? ui.btn('ประเมินอาการ', {kind:'secondary', sheet:'historyassessment', p:{id:h.id}, icon:'clipboard-list'}) : '';
   return docHtml(S, h, {hideHero:options.hideHero}) +
-    (TP.followSumCard?.(h) || '') +
-    (options.hideReceipt ? '' : TP.receiptSumRow?.(h, !!options.followPreview) || '') +
-    (options.followPreview ? '' : rateHtml(h)) +
+    (options.hideReceipt ? '' : TP.receiptSumRow?.(h, !!options.medPreview) || '') +
+    (options.medPreview ? '' : rateHtml(h)) +
     `<div class="af-visit-actions">${ui.btn('แจ้งอาการหลังใช้ยา', {kind:'secondary', icon:'heart-pulse', go:'adr', p:{from:h.id}})}</div>` +
-    (assessment ? `<div class="af-visit-actions">${assessment}</div>` : '');
+''
 };
 TP.screen('summary', {
   group: 'after', title: 'ใบสรุปการปรึกษา', code: 'C401', ref: 'C13', parent: 'history',
@@ -5636,7 +5621,7 @@ TP.screen('summary', {
   notes: ['ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'แยกข้อมูลรับบริการ ยาที่ได้รับ คำแนะนำ และการติดตาม','ได้ใบสรุปทุกครั้ง แม้ไม่ได้ซื้อยา','ให้ดาวได้ครั้งเดียวต่อเคสและซ่อนหลังส่ง','เก็บใบสรุป 1 ปีนับจากวันปิดเคส'],
   wait: ['ข้อความในใบสรุปจริงมาจากคอนโซลเภสัชกร (ตอนนี้เป็นตัวอย่าง)'],
   prep(S) {
-    const st = S.st.summary; if (!st || TP.cur()?.params?.followPreview) return;
+    const st = S.st.summary; if (!st || TP.cur()?.params?.medPreview) return;
     const c = TP.cur(); if (c?.id === 'summary') delete c.params.id;
     if (!S.history.length) S.history = TP.fresh().history;
     if (st === 'closed' && S.case?.status !== 'closed') S.case = closedCase();
@@ -5649,13 +5634,13 @@ TP.screen('summary', {
     const caseForSummary = h._case || (S.case?.id === h.id ? S.case : null);
     const fulfillment = TP.fulfillmentInfo(caseForSummary);
     if (fulfillment && !fulfillment.done) { S._paymentCase = caseForSummary; S._paidFromHome = false; return TP.SCREENS.paid.render(ctx); }
-    return nav + ui.page(TP.historyDetailContent(S,h,{followPreview:ctx.params.followPreview}) +
+    return nav + ui.page(TP.historyDetailContent(S,h,{medPreview:ctx.params.medPreview}) +
       (TP.paymentReminderCard?.(S, caseForSummary) || ''));
   }
 });
 TP.act('afRate', (t, ctx) => {
   const h = ctx?.h, n = Number(t.dataset.v);
-  if (!h || ctx.params?.followPreview || !Number.isInteger(n) || n < 1 || n > 5 || summaryRated(h)) return;
+  if (!h || ctx.params?.medPreview || !Number.isInteger(n) || n < 1 || n > 5 || summaryRated(h)) return;
   h.rated = n;
   const c = h._case || TP.S.case;
   if (c?.id === h.id) c.rated = n;
@@ -5930,7 +5915,7 @@ function adrReports(S,who) { return who==='me'?(S.adrReports||[]).filter(r=>!r.w
 function adrStoreReport(S,d) {
   if(d.who!=='me')throw Error('Only the account owner can submit a report');
   const m=d.medicine || medsFor(S,d.who).find(m=>m.v===d.drug),b=m?.branch || S.branch;
-  const r={id:'AR-'+Date.now().toString(36)+'-'+((S.adrReports||[]).length+1),patientReport:true,who:d.who,whoName:historyIdentity(S,d.who).name,drug:adrMedicineName(S,d),image:m?.image,known:!!m,consultationId:m?.hid || '',consultationPreview:!!m?.followPreview,sym:[...d.sev,...d.sym],since:d.since,level:d.level,note:d.note.trim(),generic:d.generic.trim(),strength:d.strength.trim(),form:d.form.trim(),reason:d.reason.trim(),doses:d.doses.trim(),route:d.route.trim(),onset:d.onset,attachments:[...(d.attachments||[])],pharm:m?.pharm || TP.branch(b)?.pharm || 'kj',branch:b,at:TP.NOW.time,date:TP.NOW.date,severe:!!d.sev.length,replied:false};
+  const r={id:'AR-'+Date.now().toString(36)+'-'+((S.adrReports||[]).length+1),patientReport:true,who:d.who,whoName:historyIdentity(S,d.who).name,drug:adrMedicineName(S,d),image:m?.image,known:!!m,consultationId:m?.hid || '',consultationPreview:!!m?.medPreview,sym:[...d.sev,...d.sym],since:d.since,level:d.level,note:d.note.trim(),generic:d.generic.trim(),strength:d.strength.trim(),form:d.form.trim(),reason:d.reason.trim(),doses:d.doses.trim(),route:d.route.trim(),onset:d.onset,attachments:[...(d.attachments||[])],pharm:m?.pharm || TP.branch(b)?.pharm || 'kj',branch:b,at:TP.NOW.time,date:TP.NOW.date,severe:!!d.sev.length,replied:false};
   S.adrReports=[r,...(S.adrReports||[])]; S._adrSent=r; delete S._adrDrafts?.[d.who];S._adr=null;return r;
 }
 function adrCaseReports(S, report) {
@@ -5957,7 +5942,7 @@ function adrReplyCard(report, message = report.reply) {
 function adrReportConsultation(S,report) {
   if (!report.consultationId) return null;
   const source = report.consultationPreview
-    ? TP.followPreviewPlan?.(report.consultationId)
+    ? TP.medicationPreviewRecord?.(report.consultationId)
     : allHistory(S).find(visit=>visit.id===report.consultationId);
   return source && (source.who || 'me') === (report.who || 'me') ? source : null;
 }
@@ -6064,7 +6049,7 @@ function adrCaseCards(S,reports) {
   }).join('')}</div></section>`).join('');
 }
 TP.screen('adrcare',{
-  group:'after',title:'แพ้ยาและอาการหลังใช้ยา',code:'C416',parent:'medhub',
+  group:'after',title:'แพ้ยาและอาการหลังใช้ยา',code:'C416',parent:'home',
   states:[["normal", "ยังไม่มีรายงาน"], ["empty", "ยังไม่มีรายงาน", false], ["reported", "มีรายงานรอประเมิน"], ["loading", "กำลังโหลด"], ["error", "โหลดไม่สำเร็จ"], ["grouped-days", "หลายรายงาน แบ่งตามวัน"], ["report-statuses", "ตัวอย่างสถานะรายงาน", false]],
   notes:['ดูประวัติและแจ้งอาการของเจ้าของบัญชีเท่านั้น','การส่งรายงานยังไม่ยืนยันว่าแพ้ยา','ค้นหาจากยาที่เจ้าของบัญชีเคยได้รับ รูปยาเป็นภาพประกอบ ไม่ใช้ยืนยันชนิดยา'],
   prep(S){const st=S.st.adrcare;S._adrWho='me'; if(st==='grouped-days'||st==='report-statuses'){
@@ -6103,8 +6088,8 @@ TP.screen('adrcare',{
   },mount(el,ctx){$('#adrCareWho',el)?.addEventListener('change',e=>{ctx.S._adrWho=e.target.value;TP.refresh({anim:false})});if(ctx.state==='loading')ctx.later(()=>{ctx.S.st.adrcare='normal';TP.refresh()},1400)}
 });
 TP.act('adrCareBack',()=>{
-  if(!TP.hist?.length||TP.hist.at(-1)?.id==='medhub')return TP.back();
-  return TP.go('medhub',{via:'back',replace:true});
+  if(TP.hist?.length)return TP.back();
+  return TP.go('home',{via:'back',replace:true});
 });
 TP.act('adrCareRetry',()=>{TP.S.st.adrcare='normal';TP.refresh()});
 TP.act('adrOpenReport',t=>{
@@ -6114,7 +6099,7 @@ TP.act('adrOpenSource',t=>{
   const report=adrReports(TP.S,'me').find(item=>item.id===t.dataset.v);
   const source=report && adrReportConsultation(TP.S,report);
   if (!source) return TP.notify('ไม่พบใบสรุปการปรึกษาของยานี้',{icon:'info'});
-  return TP.go('summary',{params:{id:source.id,followPreview:!!report.consultationPreview,adrReportId:report.id}});
+  return TP.go('summary',{params:{id:source.id,medPreview:!!report.consultationPreview,adrReportId:report.id}});
 });
 TP.act('adrSummaryBack',async(t,ctx)=>{
   const reportId=ctx.params.adrReportId;
@@ -6172,7 +6157,7 @@ function adrProgress(d) {
 TP.screen('adr',{
   group:'after',title:'แจ้งอาการหลังใช้ยา',code:'C412',ref:'C15',parent:'adrcare',
   states:[["normal","เลือกยาที่ใช้อยู่"],["filled","กรอกครบหลายรายการ"],["severe","อาการเร่งด่วน",false],["search","ค้นหายา"],["no-results","ค้นหาไม่พบ"],["symptoms","กรอกอาการในกล่องยา"],["submit-error","ส่งไม่สำเร็จ ข้อมูลยังอยู่"],["no-active","ไม่มียาที่ใช้อยู่"]],
-  notes:['เลือกยาได้หลายรายการและกรอกอาการในกล่องยาแต่ละตัวบนหน้าเดียว','แสดงยาจากแผนที่ยังใช้อยู่ เท่านั้น','รายงานเป็นของเจ้าของบัญชีและไม่เพิ่มประวัติแพ้ยาอัตโนมัติ','คงคำเตือนฉุกเฉินด้านบน แต่ไม่มีหมวดเลือกอาการเร่งด่วนและข้อมูลการใช้ยาเพิ่มเติม', 'ปุ่มปรึกษาเภสัชเปิดห้องรอคิวหรือห้องเดิมที่ยังเปิด พร้อมข้อความยา อาการ เวลาเริ่ม และระดับความรบกวนอัตโนมัติ แสดงเป็นข้อความบับเบิ้ลละยา ชื่อยาและรายการอาการเรียงลงมา ไม่มีการ์ดรายงานหรือรูปยา รายงานทุกตัวเชื่อมกับเคสสนทนาเดียวกัน'],
+  notes:['เลือกยาได้หลายรายการและกรอกอาการในกล่องยาแต่ละตัวบนหน้าเดียว','แท็บยาที่ใช้อยู่แสดงยาจากเคสล่าสุดที่ชำระแล้ว แท็บยาที่ใช้ใน 7 วันแสดงยาจากประวัติการปรึกษาของเจ้าของบัญชี','รายงานเป็นของเจ้าของบัญชีและไม่เพิ่มประวัติแพ้ยาอัตโนมัติ','คงคำเตือนฉุกเฉินด้านบน แต่ไม่มีหมวดเลือกอาการเร่งด่วนและข้อมูลการใช้ยาเพิ่มเติม', 'ปุ่มปรึกษาเภสัชเปิดห้องรอคิวหรือห้องเดิมที่ยังเปิด พร้อมข้อความยา อาการ เวลาเริ่ม และระดับความรบกวนอัตโนมัติ แสดงเป็นข้อความบับเบิ้ลละยา ชื่อยาและรายการอาการเรียงลงมา ไม่มีการ์ดรายงานหรือรูปยา รายงานทุกตัวเชื่อมกับเคสสนทนาเดียวกัน'],
   prep(S) {
     S._adrDrafts={};
     const d=adrDraft(S);
@@ -7205,1295 +7190,67 @@ TP.act('afFaq', t => {
 });
 })();
 
-/* ===== 72-follow.js ===== */
-/* =====================================================================
-   72 · Follow-up after a consult where medicine was bought.
-        ทำใหม่ 19/10/2026 ตามเจ้าของ: แอปเตือนกินยา + แตะ "กินแล้ว" ครั้งเดียวต่อมื้อ ·
-        เภสัชกรถามอาการแค่กลางคอร์สและตอนครบคอร์ส (ตอบแตะเดียว แบบการ์ด LINE ของ LMA)
-        follow C405 · fucheck C406 · furesult C407 · fulog C408 · fudone C409 ·
-        sheets fureminder C410, fuoff C411. Mock state: TP.S.follow (one plan, or null).
-        Hooks other files call: TP.followHomeCard(S, {din}) · TP.followSumCard(h) ·
-        TP.followHistRow(h) · TP.FOLLOW_LOCK. Plain lucide icons, no "+" texture here.
-        20/10/2026 item 82 (owner "ใช่ทำได้"): a consult with no medicine can be followed too:
-        one question at 19:00, tomorrow or in 3 days (the pharmacist picks on S305), no reminders (plan.sym).
-   ===================================================================== */
+/* ===== 72-medications.js ===== */
+/* Medication follow-up (C405-C411, C418, C420) removed by the user 8 Nov 2026: no dose reminders,
+   intake log, check-ins or after-course assessment. Codes C405-C411, C418 and C420 stay reserved.
+   What remains is a neutral medicine-source adapter for the ADR report (C412/C416/C419). */
 (() => {
-const { $, $$, esc, ic, ui, A, E, SP } = TP;
-
-/* lucide icons only this module uses (added when missing, 00-core untouched) */
-const MORE = {
-  sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/>',
-  sunrise: '<path d="M12 2v8"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m8 6 4-4 4 4"/><path d="M16 18a4 4 0 0 0-8 0"/>',
-  sunset: '<path d="M12 10V2"/><path d="m4.93 10.93 1.41 1.41"/><path d="M2 18h2"/><path d="M20 18h2"/><path d="m19.07 10.93-1.41 1.41"/><path d="M22 22H2"/><path d="m16 6-4 4-4-4"/><path d="M16 18a4 4 0 0 0-8 0"/>',
-  smile: '<circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
-  meh: '<circle cx="12" cy="12" r="10"/><line x1="8" x2="16" y1="15" y2="15"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
-  frown: '<circle cx="12" cy="12" r="10"/><path d="M16 16s-1.5-2-4-2-4 2-4 2"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
-  'alarm-clock': '<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M5 3 2 6"/><path d="m22 6-3-3"/><path d="M6.38 18.7 4 21"/><path d="M17.64 18.67 20 21"/>',
-  'calendar-check': '<path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/>',
-  'bell-ring': '<path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M22 8c0-2.3-.8-4.3-2-6"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/><path d="M4 2C2.8 3.7 2 5.7 2 8"/>',
-  check: '<path d="M20 6 9 17l-5-5"/>'
-};
-Object.entries(MORE).forEach(([k, v]) => { if (!TP.PATH[k]) TP.PATH[k] = v; });
-
-const SLOTS = ['m', 'n', 'e', 'b'];
-const SLOT = { m: ['เช้า', 'sunrise'], n: ['กลางวัน', 'sun'], e: ['เย็น', 'sunset'], b: ['ก่อนนอน', 'moon'] };
-/* one tap answers, like the LMA LINE card (ดีขึ้น / ยังไม่หาย / แย่ลง answered inside the card) + one danger row */
-const ANS = {
-  better: ['ดีขึ้น', 'smile', 'อาการเบาลง'],
-  same: ['เหมือนเดิม', 'meh', 'ยังไม่ต่างจากเดิม'],
-  worse: ['แย่ลง', 'frown', 'อาการมากขึ้น หรือมีอาการใหม่'],
-  danger: ['มีอาการรุนแรง', 'octagon-alert', 'หายใจลำบาก เจ็บแน่นหน้าอก ปาก หน้า หรือตาบวม ผื่นลามเป็นตุ่มน้ำ']
-};
-const END = { healed: ['หายดีแล้ว', 'smile', 'ไม่มีอาการแล้ว'], still: ['ยังมีอาการ', 'meh', 'ยังไม่หาย หรือกลับมาเป็นอีก'] };
-/* answer label + tag tone (text always, never colour alone) */
-const MOOD = { better: ['ดีขึ้น', 'ok'], same: ['เหมือนเดิม', 'muted'], worse: ['แย่ลง', 'warn'], danger: ['มีอาการรุนแรง', 'danger'], healed: ['หายดีแล้ว', 'ok'], still: ['ยังมีอาการ', 'warn'] };
-const AT = { mid: 'กลางคอร์ส', end: 'หลังครบคอร์ส', self: 'บอกเอง', once: 'ถามอาการหลังปรึกษา' };
-/* generic wording, the pharmacist must confirm it (some medicines need their own rule) */
-const HOURS = '09:00-21:00';
-/* owner 19/10/2026: "worse" answers get a call back within 2 hours in opening hours (closed: counted from 09:00, by 11:00) */
-const BACK = `ภายใน 2 ชั่วโมง ในเวลาทำการ ${HOURS}`;
-
-/* ---------- small helpers ---------- */
-const RM = () => TP.RED();
-const curEl = () => TP.cur()?.el;
-const pad = n => String(n).padStart(2, '0');
 const toD = s => { const [d, m, y] = String(s).split('/').map(Number); return new Date(y, m - 1, d); };
-const addD = (s, n) => { const d = toD(s); d.setDate(d.getDate() + n); return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`; };
-const toM = t => { const [a, b] = String(t).split(':').map(Number); return a * 60 + b; };
-const addH = (t, h) => { const m = toM(t) + h * 60; return m >= 1440 ? '' : `${pad(Math.floor(m / 60))}:${pad(m % 60)}`; };
-/* the follow module's own mock clock: the reminder simulation moves it to the dose time (TP.NOW stays 14:12) */
-const now = () => TP.S.follow?.clock || TP.NOW.time;
-const firstN = n => String(n || '').trim().split(/\s+/)[0];
-const fam = id => (id && id !== 'me' ? TP.S.family.find(f => f.id === id) : null);
-const ph = p => TP.PHARM[p.src.pharm] || TP.PHARM.kj;
-const shake = el => el && A(el, [{ transform: 'none' }, { transform: 'translateX(-7px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(-4px)' }, { transform: 'none' }], { d: 420, e: E.apple });
-const pop = el => el && A(el, [{ transform: 'scale(.85)' }, { transform: 'none' }], { d: SP.spring.d, e: SP.spring.e });
-const rvHtml = (id, on, inner) => `<div class="fu-rv${on ? ' open' : ''}" id="${id}" ${on ? '' : 'inert'}><div><div class="fu-rv-in">${inner}</div></div></div>`;
-const rv = (el, on) => { if (!el) return; el.classList.toggle('open', !!on); el.toggleAttribute('inert', !on); };
-const emArt = n => ui.emptyArt(n);
-const BACK_L = { home: 'หน้าแรก', history: 'ประวัติ', summary: 'ใบสรุป', inbox: 'แจ้งเตือน', follow: 'ติดตามยา', fulog: 'บันทึก' };
-const backL = fb => { const id = TP.hist?.[TP.hist.length - 1]?.id || fb; return id === 'follow' && TP.S.follow?.sym ? 'ติดตามอาการ' : BACK_L[id] || 'กลับ'; };
-const moodTag = (k, pre = '') => ui.tag(pre + MOOD[k][0], MOOD[k][1]);
-
-/* =====================================================================
-   Plan model. log "day|slot|med" -> {t}; prn "day|med" -> [times];
-   checks [{at: mid|end|self, day, date, time, mood}]
-   ===================================================================== */
-const SRC = { id: 'TC-261016-0058', date: '16/10/2026', time: '10:20', note: 'มีไข้ ไอ และน้ำมูกมา 2 วัน รู้สึกระคายคอและไอมากขึ้นช่วงกลางคืน พักผ่อนไม่ค่อยเพียงพอ ต้องการปรึกษาวิธีใช้ยาและการดูแลตัวเองระหว่างมีอาการ', topic: 'ไข้ ไอ น้ำมูก', sym: ['ไข้', 'ไอ', 'น้ำมูก คัดจมูก'], branch: 'tw', pharm: 'kj', who: 'me', bought: 190 };
-/* the summary for the mock consult, so its document matches the plan (registered only if missing) */
-if (TP.SUMMARY && !TP.SUMMARY[SRC.id]) TP.SUMMARY[SRC.id] = {
-  sym: 'ไข้ต่ำ ๆ ไอมีเสมหะ น้ำมูกใส เป็นมา 2 วัน · ไม่มีหอบเหนื่อย',
-  advice: ['ดื่มน้ำอุ่นบ่อย ๆ พักผ่อนให้เพียงพอ', 'ยาแก้แพ้อาจทำให้ง่วง เลี่ยงการขับรถหลังกินยา', 'เภสัชกรจะถามอาการในแอปกลางคอร์ส และเมื่อครบคอร์ส'],
-  meds: [
-    { name: 'ยาแก้ไอ ชนิดน้ำ', qty: '1 ขวด', how: 'ครั้งละ 10 มล. วันละ 3 ครั้ง หลังอาหาร เช้า กลางวัน เย็น ใช้ 5 วัน' },
-    { name: 'ยาแก้แพ้ ลดน้ำมูก', qty: '1 แผง', how: 'ครั้งละ 1 เม็ด ก่อนนอน ใช้ 5 วัน อาจทำให้ง่วง' },
-    { name: 'พาราเซตามอล 500 มก.', qty: '1 แผง', how: 'ครั้งละ 1 เม็ด เมื่อมีไข้ ห่างกันอย่างน้อย 6 ชั่วโมง ไม่เกิน 4 ครั้งต่อวัน' }
-  ],
-  warn: ['หายใจลำบาก หรือเจ็บแน่นหน้าอก', 'ไข้สูงเกิน 39 องศา หรือไข้ไม่ลดภายใน 3 วัน', 'มีผื่นขึ้น ปาก หน้า หรือตาบวมหลังใช้ยา'],
-  follow: 'แอปเตือนเวลากินยา และเภสัชกรจะถามอาการกลางคอร์สกับตอนครบคอร์ส ถ้าไม่ดีขึ้น ปรึกษาใหม่ได้ทุกเมื่อ'
-};
-/* the pharmacist picks on close (S305): ask only after the course ('end') or mid-course too ('both') · mid = that day, 0 = none */
-function basePlan(src, meds, o = {}) {
-  const days = o.days || 5;
-  return { src: { ...src }, start: src.date, startAt: o.startAt || '', days, today: o.today || 1, on: true, end: '',
-    remind: true, times: { m: '08:00', n: '12:30', e: '18:00', b: '21:30' }, askAt: '19:00', ask: o.ask === 'both' ? 'both' : 'end', mid: o.ask === 'both' ? Math.ceil(days / 2) : 0,
-    meds, log: {}, prn: {}, checks: [], contact: null, offline: false, clock: '' };
-}
-/* mock: consult 16/10 10:20, today 18/10 14:12 = day 3 of 5 (mid-course question today), day 2 lunch was missed */
-function mockPlan(st) {
-  const p = basePlan(SRC, [
-    { id: 'cough', image: '/assets/photos/cough-syrup-mock-v1.png', name: 'ยาแก้ไอ ชนิดน้ำ', dose: 'ครั้งละ 10 มล.', slots: ['m', 'n', 'e'], meal: 'หลังอาหาร' },
-    { id: 'spray', name: 'สเปรย์พ่นคอ', dose: 'ใช้ตามฉลากตัวอย่าง', slots: ['m', 'n', 'e'] },
-    { id: 'allergy', image: '/assets/photos/medicine-v1.png', name: 'ยาแก้แพ้ ลดน้ำมูก', dose: 'ครั้งละ 1 เม็ด', slots: ['b'], meal: '', tip: 'อาจทำให้ง่วง' },
-    { id: 'para', name: 'พาราเซตามอล 500 มก.', dose: 'ครั้งละ 1 เม็ด', prn: 'เมื่อมีไข้', gap: 6, max: 4 }
-  ], { today: 3, startAt: '10:30', ask: st === 'endonly' ? 'end' : 'both' });
-  const take = (d, s, m, t) => { p.log[`${d}|${s}|${m}`] = { t }; if (m === 'cough') p.log[`${d}|${s}|spray`] = { t }; };
-  take(1, 'n', 'cough', '12:40'); take(1, 'e', 'cough', '18:20'); take(1, 'b', 'allergy', '21:40');
-  take(2, 'm', 'cough', '08:10'); take(2, 'e', 'cough', '18:30'); take(2, 'b', 'allergy', '21:35');
-  take(3, 'm', 'cough', '08:20'); if (st !== 'missed') take(3, 'n', 'cough', '12:45');
-  Object.assign(p.prn, { '1|para': ['10:40', '17:00'], '2|para': ['08:00'], '3|para': ['07:50'] });
-  return p;
-}
-/* item 82: no medicine given, the pharmacist (S305) picks one question at 19:00, tomorrow (d1) or in 3 days (d3).
-   No medicine list, no reminders. today = days since the consult (0 = consult day); the question is due when today >= n */
-function symPlan(src, ask, today = 0) {
-  const n = ask === 'd3' ? 3 : 1;
-  return { ...basePlan(src, [], { days: n }), sym: true, ask, n, today, remind: false };
-}
-const srcOf = c => ({ id: c.id, caseCode: TP.caseCode(c), note: c.note, date: TP.NOW.date, time: c.joinedAt || TP.NOW.time, topic: (c.symptoms || []).join(' ') || 'ถามเรื่องยา', sym: [...(c.symptoms || [])], branch: c.branch || 'tw', pharm: c.pharm || 'kj', who: c.who || 'me', bought: 0 });
-/* panel mocks: d3 = consulted this morning, asks in 3 days · d1 = consulted yesterday, asks today 19:00 */
-const SYM_SRC = {
-  d3: { id: 'TC-261018-0098', date: '18/10/2026', time: '10:40', note: 'ปวดหัวช่วงบ่าย นอนน้อยมา 2 คืน', topic: 'ปวดหัว', sym: ['ปวดหัว'], branch: 'tw', pharm: 'kj', who: 'me', bought: 0 },
-  d1: { id: 'TC-261017-0063', date: '17/10/2026', time: '18:30', note: 'ถ่ายเหลว 2 ครั้งตั้งแต่เช้า', topic: 'ท้องเสีย', sym: ['ท้องเสีย'], branch: 'tw', pharm: 'kj', who: 'me', bought: 0 }
-};
-const SYM_IDS = Object.values(SYM_SRC).map(s => s.id);
-const SYM_SUM = {
-  'TC-261018-0098': { sym: 'ปวดศีรษะตื้อ ๆ ช่วงบ่าย นอนน้อย 2 คืน · ไม่มีไข้ ไม่อาเจียน', advice: ['นอนพักให้เพียงพอ ดื่มน้ำมาก ๆ', 'เลี่ยงการจ้องจอนาน ๆ และกาแฟช่วงเย็น', 'เภสัชกรแนะนำให้ดูอาการก่อน ยังไม่ต้องใช้ยา'],
-    warn: ['ปวดศีรษะรุนแรงทันที หรือปวดมากที่สุดเท่าที่เคยเป็น', 'แขนขาอ่อนแรง พูดไม่ชัด หรือตามัว', 'ไข้สูงร่วมกับคอแข็ง'], follow: 'เภสัชกรจะถามอาการในแอปอีก 3 วัน ถ้าแย่ลงก่อนนั้น ปรึกษาใหม่ได้ทุกเมื่อ' },
-  'TC-261017-0063': { sym: 'ถ่ายเหลว 2 ครั้งตั้งแต่เช้า ยังกินได้ · ไม่มีไข้ ไม่มีเลือดปน', advice: ['จิบน้ำเกลือแร่บ่อย ๆ ครั้งละน้อย', 'กินอาหารอ่อน ย่อยง่าย เลี่ยงของมัน', 'เภสัชกรแนะนำให้ดูอาการก่อน ยังไม่ต้องใช้ยา'],
-    warn: ['ถ่ายเป็นน้ำบ่อยมาก หรือมีเลือดปน', 'ปากแห้ง ปัสสาวะน้อย อ่อนเพลียมาก', 'ไข้สูง หรือปวดท้องมาก'], follow: 'เภสัชกรจะถามอาการในแอปพรุ่งนี้ ถ้าแย่ลงก่อนนั้น ปรึกษาใหม่ได้ทุกเมื่อ' }
-};
-Object.entries(SYM_SUM).forEach(([id, s]) => { if (TP.SUMMARY && !TP.SUMMARY[id]) TP.SUMMARY[id] = { ...s, meds: [] }; });
-function mockSym(st) {
-  if (st === 'sym') return symPlan(SYM_SRC.d3, 'd3', 0);
-  const p = symPlan(SYM_SRC.d1, 'd1', 1), said = (mood, time) => { p.checks.push({ at: 'once', day: 1, date: TP.NOW.date, time, mood }); p.end = mood; };
-  if (st === 'symworse') said('worse', '13:40');
-  if (st === 'symdone') said('better', '13:20');
-  return p;
-}
-/* order items the pharmacist sold -> schedule (the real one comes from the pharmacist console) */
-const KNOWN = {
-  'ยาอมบรรเทาอาการเจ็บคอ': { dose: 'ครั้งละ 1 เม็ด', prn: 'เมื่อเจ็บคอ', gap: 3, max: 8 },
-  'พาราเซตามอล 500 มก.': { dose: 'ครั้งละ 1 เม็ด', prn: 'เมื่อปวดหรือมีไข้', gap: 6, max: 4 },
-  'สเปรย์พ่นคอ': { dose: 'พ่น 2 ครั้ง', slots: ['m', 'n', 'e'], meal: 'หลังอาหาร' }
-};
-const medFrom = (it, i) => { const k = KNOWN[it.name]; const med = { id: 'm' + i, name: it.name, image: it.image }; return k ? { ...med, ...k } : { ...med, info: it.how || 'ใช้ตามฉลาก' }; };
-function dayOnePlan(c) {
-  const items = c?.order?.items?.length ? c.order.items : TP.ORDER_ITEMS;
-  const src = c ? { id: c.id, caseCode: TP.caseCode(c), note: c.note, date: TP.NOW.date, time: c.joinedAt || TP.NOW.time, topic: (c.symptoms || []).join(' ') || 'ถามเรื่องยา', sym: [...(c.symptoms || [])], branch: c.branch || 'tw', pharm: c.pharm || 'kj', who: c.who || 'me' }
-    : { id: 'TC-261018-0142', date: TP.NOW.date, time: TP.NOW.time, note: 'มีไข้และเจ็บคอมา 2 วัน', topic: 'ไข้ เจ็บคอ', sym: ['ไข้', 'เจ็บคอ'], branch: 'tw', pharm: 'kj', who: 'me' };
-  const pl = basePlan(src, items.map(medFrom), { today: 1, startAt: TP.NOW.time, ask: c?.followAsk || 'end' });
-  const recv = c?.order?.paid?.recv; if (recv && !c.order.picked && !c.order.paid.deliv) pl.waitRecv = recv;
-  return pl;
-}
-/* the active plan; a newly closed + paid consult replaces it once (the pharmacist sets it on close) */
-function F() {
-  const S = TP.S, c = S.case;
-  if (c && (!c.who||c.who==='me') && c.status === 'closed' && S._fuSeen !== c) {
-    if (c.order?.status === 'paid' && c.order.items?.length) { S._fuSeen = c; S.follow = dayOnePlan(c); }
-    /* no medicine: only when the pharmacist switched follow-up on at closing (S305 sends d1 or d3) */
-    else if (c.followAsk === 'd1' || c.followAsk === 'd3') { S._fuSeen = c; S.follow = symPlan(srcOf(c), c.followAsk); }
-  }
-  if (S.follow === undefined) S.follow = S.firstTime || !S.user?.name ? null : mockPlan('normal');
-  if (S.follow?.waitRecv && S.follow.src?.id === c?.id && (c.order?.picked || c.order?.paid?.deliv)) {
-    S.follow.waitRecv = '';
-    S.follow.start = TP.NOW.date;
-    S.follow.startAt = c.order.paid.deliv || TP.NOW.time;
-  }
-  return S.follow?.src?.who && S.follow.src.who!=='me' ? null : S.follow;
-}
-const ensure = S => F() || (S.follow = mockPlan('normal'));
-/* panel scenarios only: put the mock consult in history so summary + history links resolve */
-function ensureSrc(S, src) {
-  if (!(src.id === SRC.id || SYM_IDS.includes(src.id)) || !Array.isArray(S.history) || S.history.some(h => h.id === src.id)) return;
-  S.history.unshift({ id: src.id, caseCode: TP.caseCode(src), note: src.note, date: src.date, time: src.time, who: src.who, topic: src.topic, branch: src.branch, pharm: src.pharm, bought: src.bought || 0, rated: 0, summary: true });
-}
-
-/* ---------- derived status ---------- */
-const dateOf = (p, day) => addD(p.start, day - 1);
-const cday = p => Math.min(p.today, p.days);
-const active = p => !!p && p.on && !p.end && p.today <= p.days;
-const medsAt = (p, s) => p.meds.filter(m => m.slots?.includes(s));
-const slotsOn = (p, day) => SLOTS.filter(s => medsAt(p, s).length && !(day === 1 && p.startAt && p.times[s] < p.startAt));
-const lk = (day, s, m) => `${day}|${s}|${m.id}`;
-/* a meal time is one tap: taken when every medicine of that time is ticked */
-function slotState(p, day, s) {
-  if (medsAt(p, s).every(m => p.log[lk(day, s, m)]?.t)) return 'taken';
-  if (day < p.today) return 'missed';
-  if (day > p.today) return 'future';
-  const late = toM(now()) - toM(p.times[s]);
-  return late < 0 ? 'due' : late < 60 ? 'now' : 'late';
-}
-const takenAt = (p, day, s) => medsAt(p, s).map(m => p.log[lk(day, s, m)]?.t).filter(Boolean).sort().pop() || '';
-const daySlots = (p, day) => slotsOn(p, day).map(s => ({ s, st: slotState(p, day, s) }));
-const hasSched = p => p.meds.some(m => m.slots);
-/* the next meal time still to come: later today, else the first one of the coming days */
-function upNext(p) {
-  if (!active(p) || p.waitRecv) return null;
-  const t = daySlots(p, p.today).find(x => x.st === 'due');
-  if (t) return { day: p.today, s: t.s };
-  for (let d = p.today + 1; d <= p.days; d++) { const f = slotsOn(p, d)[0]; if (f) return { day: d, s: f }; }
-  return null;
-}
-const whenPre = (p, day) => (day === p.today ? '' : day === p.today + 1 ? 'พรุ่งนี้ ' : `วันที่ ${day} `);
-const chk = (p, at) => p?.checks.filter(c => c.at === at).pop();
-const midDue = p => active(p) && !p.waitRecv && !!p.mid && p.today >= p.mid && !chk(p, 'mid');
-const endDue = p => !!p && !p.sym && p.on && !p.end && p.today > p.days;
-const lastCheck = p => p?.checks[p.checks.length - 1];
-const isBad = c => !!c && (c.mood === 'worse' || c.mood === 'danger');
-/* a "worse" answer stays on top of C405 the day it was sent */
-const recentBad = p => { const c = lastCheck(p); return isBad(c) && !c.talked && c.day === (p.sym ? p.today : cday(p)) ? c : null; };
-/* item 58 (owner 20/10): the pharmacist talked about this report in a new consult and ticked it at close (S305) */
-const recentTalked = p => { const c = lastCheck(p); return isBad(c) && c.talked && c.day === (p.sym ? p.today : cday(p)) ? c : null; };
-const kindOf = c => (c.mood === 'danger' ? 'danger' : c.mood === 'worse' ? (TP.S.storeOpen ? 'worse' : 'closed') : c.mood);
-const inHist = (S, id) => S.history.some(h => h.id === id) || (S.case?.status === 'closed' && S.case.id === id);
-/* no-medicine plan (item 82): waiting for its one question / the question is due */
-const symDate = p => addD(p.start, p.n);
-const symWait = p => !!p?.sym && p.on && !p.end;
-const symDue = p => symWait(p) && p.today >= p.n;
-const symWhen = p => (p.today >= p.n ? 'วันนี้' : p.n - p.today === 1 ? 'พรุ่งนี้' : `อีก ${p.n - p.today} วัน`);
-const symGo = p => (symDue(p) && !recentBad(p) ? 'fucheck' : 'follow');
-/* the call back after "worse" as a clock time (real-user 20/10: "within 2 hours" left people unsure when to give up waiting) */
-/* console round 5: the pharmacist calls from the shop phone, show that number so the call is picked up */
-const telLine = (p, cls = '') => { const t = TP.branch(p?.src?.branch)?.phone; return t ? `<p class="fu-tel${cls}">${ic('phone', 14, 2)}<span>ร้านโทรจากเบอร์ <b class="num nowrap">${esc(t)}</b></span></p>` : ''; };
-/* item 72 (owner 20/10 "ให้กรอบเวลามันเป็นไปได้จริงหน่อยกับเวลาเปิดปิดร้าน"): the 2 hours count only while the store is open.
-   13:40 -> 15:40 · 20:15 -> 45 minutes today, the rest from 09:00 tomorrow = 10:15 พรุ่งนี้ · reported while closed -> 11:00 */
-const OPEN_M = 540, SHUT_M = 1260, hm = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
-const backAt = c => { const m = toM(c.time); if (m < OPEN_M) return { t: '11:00', day: '' }; if (m >= SHUT_M) return { t: '11:00', day: 'พรุ่งนี้' }; const left = SHUT_M - m; return left >= 120 ? { t: hm(m + 120), day: '' } : { t: hm(OPEN_M + 120 - left), day: 'พรุ่งนี้' }; };
-const backBy = c => { const b = backAt(c); return b.day ? `${b.t} ${b.day}` : b.t; };
-const backLate = c => !!backAt(c).day && toM(c.time) < SHUT_M;
-const backTxt = c => (!TP.S.storeOpen ? 'ร้านเปิด 09:00 จะติดต่อกลับภายใน 11:00' : backBy(c) ? `ร้านจะติดต่อกลับก่อน ${backBy(c)}` : 'ร้านจะติดต่อกลับภายใน 2 ชั่วโมง ในเวลาทำการ');
-/* a severe answer always says hospital, never "wait for the store" (real-user 20/10 P1) */
-const badTag = c => [c.mood === 'danger' ? 'มีอาการรุนแรง' : 'แจ้งว่าแย่ลง', 'danger'];
-/* real-user 20/10: after "consult now" the customer is in a new consult, the card says so instead of the call-back time */
-const inNew = () => !!TP.S._fuTalk && !!TP.caseOpen?.();
-const badLine = c => (c.mood === 'danger' ? 'คุณแจ้งว่ามีอาการรุนแรง · ไปโรงพยาบาลทันที แตะเพื่อโทร 1669' : inNew() ? `คุณแจ้งว่าแย่ลง ${c.time} · คุยเรื่องนี้ในการปรึกษาที่เปิดอยู่ได้เลย` : `คุณแจ้งว่าแย่ลง ${c.time} · ${backTxt(c)}`);
-/* the severe row for a no-medicine consult: that consult's own warning signs (real-user 20/10 P1: drug-allergy signs only) */
-const symDanger = p => { const w = TP.SUMMARY?.[p.src.id]?.warn; return w ? `${w.join(' · ')} (ข้อ 4 ในใบสรุป)` : 'หายใจลำบาก เจ็บแน่นหน้าอก ซึม สับสน อาเจียนหรือถ่ายเป็นเลือด หรืออาการในข้อ 4 ของใบสรุป'; };
-/* what the pharmacist asks next, in plain words */
-function nextAsk(p) {
-  if (p.sym) return chk(p, 'once') ? 'เภสัชกรถามครั้งเดียว ปิดการติดตามของการปรึกษานี้แล้ว' : chk(p, 'self') ? `เภสัชกรยังจะถามตามนัด ${symWhen(p)} ${symDate(p)} ${p.askAt} เพื่อดูว่าหายดีไหม` : `เภสัชกรจะถามอาการ${symWhen(p)} ${symDate(p)} ${p.askAt}`;
-  if (p.mid && !chk(p, 'mid') && p.today <= p.mid) return `เภสัชกรจะถามอาการกลางคอร์ส ${dateOf(p, p.mid)}`;
-  return `เภสัชกรจะถาม${p.mid ? 'อีกครั้ง' : 'อาการ'}หลังครบคอร์ส ${dateOf(p, p.days + 1)}`;
-}
-function statusOf(p) {
-  if (p.sym) {
-    const c = chk(p, 'once'), bad = recentBad(p), tk = recentTalked(p), d = symDate(p);
-    if (bad) return { line: badLine(bad), short: c ? 'ติดตามอาการ · ตอบแล้ว' : `ติดตามอาการ · ถาม ${d.slice(0, 5)}`, tag: badTag(bad) };
-    if (tk) return { line: `คุยเรื่องนี้กับเภสัชกรแล้ว ${tk.talked.at}`, short: c ? 'ติดตามอาการ · ตอบแล้ว' : `ติดตามอาการ · ถาม ${d.slice(0, 5)}`, tag: null };
-    if (c) return { line: `ตอบเภสัชกรแล้ว · ${MOOD[c.mood][0]}`, short: 'ติดตามอาการ · ตอบแล้ว', tag: null };
-    if (!p.on) return { line: 'หยุดติดตามแล้ว · เปิดอีกครั้งได้', short: 'หยุดติดตามแล้ว', tag: null };
-    if (p.today > p.n) return { line: 'ยังไม่ได้ตอบเภสัชกรเรื่องอาการ · แตะเพื่อตอบ ไม่ถึงนาที', short: 'ยังไม่ได้ตอบเภสัชกร', tag: ['ยังไม่ได้ตอบ', 'warn'] };
-    if (symDue(p)) return { line: now() < p.askAt ? `เภสัชกรขอถามอาการวันนี้ ${p.askAt} · ตอบได้เลยตอนนี้` : 'เภสัชกรขอถามอาการ · แตะเพื่อตอบ ไม่ถึงนาที', short: `ตอบเภสัชกร ${d.slice(0, 5)}`, tag: ['ถามอาการวันนี้', 'solid'] };
-    return { line: `เภสัชกรจะถามอาการ${symWhen(p)} ${d} ${p.askAt}`, short: `ติดตามอาการ · ถาม ${d.slice(0, 5)}`, tag: null };
-  }
-  if (p.end) return { line: p.end === 'healed' ? 'ปิดการติดตามแล้ว · แจ้งว่าหายดีแล้ว' : 'ครบคอร์สแล้ว · แจ้งว่ายังมีอาการ', short: 'ติดตามยา · จบแล้ว', tag: null };
-  if (!p.on) return { line: 'หยุดติดตามแล้ว · เปิดอีกครั้งได้', short: 'หยุดติดตามแล้ว', tag: null };
-  if (p.waitRecv) return { line: 'รอรับยา · เริ่มนับวันที่ 1 เมื่อได้รับยา', short: 'ติดตามยา · รอรับยา', tag: ['รอรับยา', 'muted'] };
-  if (p.today > p.days) return { line: `ครบคอร์สแล้ว ${dateOf(p, p.days)} · บอกเภสัชกรว่าตอนนี้เป็นอย่างไร`, short: `ตอบเภสัชกร ${dateOf(p, p.days + 1).slice(0, 5)}`, tag: ['รอบอกอาการ', 'solid'] };
-  const late = daySlots(p, p.today).filter(x => x.st === 'late' || x.st === 'now').length, nx = upNext(p), bad = recentBad(p);
-  const tag = bad ? badTag(bad) : midDue(p) ? ['ถามอาการวันนี้', 'solid'] : late ? [`ยังไม่ได้กิน ${late} มื้อ`, 'warn'] : null;
-  const next = !hasSched(p) ? 'กินยาเมื่อมีอาการ' : nx ? `มื้อถัดไป ${whenPre(p, nx.day)}${SLOT[nx.s][0]} ${p.times[nx.s]}` : 'วันนี้กินครบทุกมื้อแล้ว';
-  return { line: bad?.mood === 'danger' ? badLine(bad) : `วันที่ ${p.today} จาก ${p.days} · ${next}`, short: `ติดตามการใช้ยา · ${p.today}/${p.days}`, tag };
-}
-const adrRow = (S, p) => ui.row({ icon: 'heart-pulse', title: 'สงสัยว่าเป็นผลจากยา', sub: 'แจ้งอาการหลังใช้ยา เช่น ผื่น บวม ใจสั่น', go: 'adr', p: inHist(S, p.src.id) ? { from: p.src.id } : undefined });
-const dangerNote = () => ui.note('<b>ถ้ามีอาการรุนแรง</b> เช่น หายใจลำบาก เจ็บแน่นหน้าอก ปากหรือหน้าบวม ไปโรงพยาบาลหรือโทร 1669 ทันที', { tone: 'danger', icon: 'octagon-alert' });
-const footHtml = p => `<p class="fu-foot" data-rv>${ic('lock', 14, 2)}<span>${p?.sym ? 'ข้อมูลอาการ' : 'ข้อมูลการกินยาและอาการ'} ใช้เพื่อการดูแลของเภสัชกรเท่านั้น อยู่ภายใต้ความยินยอมการปรึกษา</span></p>`;
-const call1669 = () => `<a class="btn danger" href="tel:1669" data-a="fuCall" data-v="1669">${ic('phone', 20, 2)}<span>โทร 1669 สายด่วนฉุกเฉิน</span></a>`;
-/* finished course for panel scenarios: every remaining dose taken, mid-course answer "better" */
-function finish(p) {
-  for (let d = p.today; d <= p.days; d++) slotsOn(p, d).forEach(s => medsAt(p, s).forEach(m => { const k = lk(d, s, m); if (!p.log[k]) p.log[k] = { t: p.times[s] }; }));
-  if (p.mid && !chk(p, 'mid')) p.checks.push({ at: 'mid', day: p.mid, date: dateOf(p, p.mid), time: '19:05', mood: 'better' });
-  p.today = p.days + 1; p.clock = '';
-}
-/* meal times whose time has come (a dose taken early counts too) */
-function doseStats(p) {
-  let tk = 0, n = 0;
-  for (let d = 1; d <= cday(p); d++) daySlots(p, d).forEach(x => { if (x.st === 'due' || x.st === 'future') return; n++; if (x.st === 'taken') tk++; });
-  return { tk, n };
-}
-
-/* =====================================================================
-   Hooks for other screens (they call these; '' when there is nothing to show)
-   ===================================================================== */
-const entryHtml = (icon, title, line, tag, go, din) => `<button type="button" class="card fu-entry" data-go="${go}"${din != null ? ` data-in="${din}"` : ''}>
-  <span class="fu-ic">${ic(icon, 22, 1.9)}</span>
-  <span class="fu-entry-t"><b>${esc(title)}</b><span>${esc(line)}</span>${tag ? `<span class="fu-tags">${ui.tag(tag[0], tag[1])}</span>` : ''}</span>
-  <span class="chev">${ic('chevron-right', 18, 2)}</span></button>`;
-/* home (C201): under the hero card */
-TP.followHomeCard = (S, o = {}) => {
-  const p = F(); if (!p || !p.on || (p.end && !(p.sym && recentBad(p)))) return '';
-  ensureSrc(S, p.src);
-  const st = statusOf(p), w = fam(p.src.who);
-  if (p.sym) return entryHtml('message-circle', 'ติดตามอาการ' + (w ? ' · ' + firstN(w.name) : ''), st.line, st.tag, symGo(p), o.din);
-  return entryHtml('pill', 'ติดตามการใช้ยา' + (w ? ' · ' + firstN(w.name) : ''), st.line, st.tag, p.today > p.days ? 'fudone' : 'follow', o.din);
-};
-/* summary (C401) of the consult the plan came from */
-TP.followSumCard = h => {
-  const p = h ? F() : null; if (!p || p.src.id !== h.id) return '';
-  const st = statusOf(p), fresh = p.today === 1 && p.on && !p.end;
-  if (p.sym) return entryHtml('calendar-check', 'ติดตามอาการ', symWait(p) && !symDue(p) && !recentBad(p) ? `ครั้งนี้ไม่มียา เภสัชกรจะถามอาการในแอป${symWhen(p)} ${symDate(p)} ${p.askAt} ครั้งเดียว` : st.line, st.tag, symGo(p), 2).replace('fu-entry"', 'fu-entry fu-sum"');
-  return '';
-};
-/* history (C403): one short chip under that consult (coordinator 19/10: one button, chip under ~22 chars, at most one tag) */
-TP.followHistRow = h => {
-  const p = h ? F() : null; if (!p || p.src.id !== h.id) return '';
-  const st = statusOf(p), tag = st.tag && ['danger', 'warn'].includes(st.tag[1]) ? st.tag : null;
-  return `<button type="button" class="fu-hrow" data-go="${p.sym ? symGo(p) : p.today > p.days && !p.end && p.on ? 'fudone' : 'follow'}"><span class="fu-hchip">${ic(p.sym ? 'message-circle' : 'pill', 15, 2)}<span>${esc(st.short)}</span>${ic('chevron-right', 15, 2.2)}</span>${tag ? ui.tag(tag[0], tag[1]) : ''}</button>`;
-};
-/* lock-screen notification text [title, body, screen]: neutral, no drug names or symptoms */
-/* room (C303) under "ใบสรุปพร้อมแล้ว" and the summary document (C401): when the one no-medicine question comes (real-user 20/10) */
-TP.followCloseLine = c => { const p = c ? F() : null; return p?.sym && p.src.id === c.id && symWait(p) ? `<div class="msg-sys"><span>เภสัชกรจะถามอาการในแอป${symWhen(p)} ${symDate(p)} ${p.askAt}</span></div>` : ''; };
-TP.followDocLine = h => { const p = h ? F() : null; return p?.sym && p.src.id === h.id && symWait(p) ? `เภสัชกรจะถามอาการในแอป${symWhen(p)} ${symDate(p)} ${p.askAt} ครั้งเดียว ถ้าแย่ลงก่อนนั้น ปรึกษาใหม่ได้ทุกเมื่อ` : ''; };
-TP.FOLLOW_LOCK = { fudose: ['ถึงเวลากินยามื้อเย็น', 'แตะเพื่อดูรายการยา', 'follow'], fucheck: ['เภสัชกรขอถามอาการ', 'แตะเพื่อตอบ ใช้เวลาไม่ถึงนาที', 'fucheck'] };
-
-/* =====================================================================
-   C405 Follow: next dose + reminder · when the pharmacist asks · today's doses
-   ===================================================================== */
-function followHeroHtml(S, p) {
-  const sched = hasSched(p), nx = upNext(p), on = p.remind && S.notif, ds = daySlots(p, p.today);
-  const cur = ds.find(x => x.st === 'now'), left = ds.filter(x => x.st !== 'taken').length;
-  const segs = Array.from({ length: p.days }, (_, i) => `<i class="${i + 1 < p.today ? 'on' : i + 1 === p.today ? 'cur' : ''}"></i>`).join('');
-  const offTxt = !p.remind ? 'ปิดเตือนกินยาอยู่ จะไม่มีแจ้งเตือน' : 'การแจ้งเตือนของแอปปิดอยู่ จะไม่มีเสียงเตือน';
-  let k, big, sub, act = '';
-  if (!sched) { k = 'ยาชุดนี้'; big = 'กินเมื่อมีอาการ'; sub = 'ไม่ต้องกินตามเวลา จึงไม่มีแจ้งเตือน'; }
-  else if (cur) {
-    /* the reminder just went off: one tap right here too */
-    k = 'ถึงเวลาตามแผน'; big = `${SLOT[cur.s][0]} ${p.times[cur.s]}`; sub = 'แตะ “กินแล้ว” หลังใช้ยามื้อนี้';
-    act = `<button type="button" class="fu-take go fu-take-l" data-a="fuTake" data-v="${p.today}|${cur.s}" aria-pressed="false" aria-label="${esc(`มื้อ${SLOT[cur.s][0]} ${p.times[cur.s]} แตะเมื่อกินแล้ว`)}">${ic('check', 18, 2.4)}<span>กินแล้ว</span></button>`;
-  } else if (nx) {
-    k = `มื้อถัดไป${nx.day === p.today ? '' : nx.day === p.today + 1 ? ' · พรุ่งนี้' : ` · วันที่ ${nx.day}`}`;
-    big = `${SLOT[nx.s][0]} ${p.times[nx.s]}`;
-    sub = on ? '' : offTxt;
-  } else if (left) { k = 'วันสุดท้ายของคอร์ส'; big = `ยังไม่ได้บันทึก ${left} มื้อ`; sub = 'กินแล้วแตะ กินแล้ว ที่มื้อนั้นด้านล่าง'; }
-  else { k = 'วันนี้'; big = 'บันทึกครบทุกมื้อ'; sub = 'วันนี้เป็นวันสุดท้ายของคอร์ส'; }
-  return `<section class="card fu-hero fu-dose-overview${cur ? ' now' : ''}" data-in="1" aria-label="${esc(k)}">
-    <div class="fu-dose-main">
-      <img class="fu-dose-art" src="/assets/follow/medication-dose-illustration.png" alt="" width="360" height="360">
-      <div class="fu-dose-copy">
-        <span class="fu-k">${esc(k)}</span>
-        <b class="fu-big">${esc(big)}</b>
-        ${sub ? `<span class="fu-s1">${ic(!sched ? 'pill' : on ? 'bell-ring' : 'bell-off', 15, 2)}<span>${esc(sub)}</span></span>` : ''}
-        ${act ? `<div class="fu-hero-a">${act}</div>` : ''}
-      </div>
-    </div>
-    <div class="fu-dose-progress">
-      <div class="fu-dose-progress-label"><b>วันที่ ${p.today} จาก ${p.days}</b><span>วันสุดท้าย ${esc(dateOf(p, p.days))}</span></div>
-      <div class="fu-segs" aria-hidden="true">${segs}</div>
-    </div>
-    <button type="button" class="fu-source-link" data-a="fuOpenSummary">
-      ${ic('file-text', 18, 2)}<span>ดูใบสรุปการปรึกษา</span>${ic('chevron-right', 18, 2)}
-    </button>
-  </section>`;
-}
-function checkHtml(S, p) {
-  const li = (cls, title, sub, tag) => `<li class="${cls}"><i class="fu-dot" aria-hidden="true"></i><span class="grow"><b>${esc(title)}</b><span>${esc(sub)}</span></span>${tag}</li>`;
-  const rows = [];
-  if (p.mid) {
-    const c = chk(p, 'mid'), due = midDue(p), over = p.today > p.mid;
-    rows.push(li(c ? 'done' : due ? 'on' : '', 'กลางคอร์ส', `วันที่ ${p.mid} · ${dateOf(p, p.mid)}${c ? ` · ตอบ ${c.time}` : ` · ${p.askAt}`}`,
-      c ? moodTag(c.mood, 'ตอบแล้ว ') : due ? ui.tag(over ? 'ยังไม่ได้ตอบ' : 'วันนี้', over ? 'warn' : 'solid') : ''));
-  }
-  rows.push(li('', 'หลังครบคอร์ส', `${dateOf(p, p.days + 1)} · ${p.askAt}`, ''));
-  const due = midDue(p);
-  return `<section class="card fu-ask" data-in="2" aria-labelledby="fuAskH">
-    <p class="fu-cap" id="fuAskH">${ic('message-circle', 16, 2)}<span>${esc(ph(p).short)} · นัดติดตามอาการ</span></p>
-    <ol class="fu-ckl">${rows.join('')}</ol>
-    ${due ? `<div class="mt12">${ui.btn('บอกอาการกลางคอร์ส', { a: 'fuAsk', p: { at: 'mid' }, icon: 'message-circle' })}</div><p class="small mt8">${now() < p.askAt ? `แจ้งเตือนเวลา ${p.askAt} ตอบก่อนได้ · ` : ''}เลือกคำตอบที่ตรงกับอาการตอนนี้</p>` : `<p class="small mt8">ดูวันและเวลานัดด้านบน</p>`}
-  </section>`;
-}
-function slotRow(p, s) {
-  const st = slotState(p, p.today, s), ms = medsAt(p, s), at = takenAt(p, p.today, s), k = `${p.today}|${s}`;
-  const meds = ms.map(m => `<span class="fu-med fu-med-with-photo">${TP.medicineImage(m) || `<span class="fu-med-placeholder" aria-hidden="true">${ic(m.id === 'cough' ? 'flask-conical' : 'pill',18,1.8)}</span>`}<span><strong>${esc(m.name)}</strong><span>${esc(`${m.dose}${m.meal ? ' ' + m.meal : ''}${m.tip ? ' · ' + m.tip : ''}`)}</span></span></span>`).join('');
-  const line = st === 'taken' ? `<span class="fu-st ok">${ic('clock', 15, 2.2)}กินตอน ${esc(at)}</span>`
-    : st === 'now' ? `<span class="fu-st now">${ic('bell-ring', 15, 2.2)}ถึงเวลาแล้ว</span>`
-    : st === 'late' ? `<span class="fu-st warn">${ic('triangle-alert', 15, 2.2)}เลยเวลา · ยังไม่ได้บันทึก</span>` : '';
-  const lbl = st === 'taken' ? `มื้อ${SLOT[s][0]} กินแล้ว ${at} แตะเพื่อยกเลิก` : `มื้อ${SLOT[s][0]} ${p.times[s]} แตะเมื่อกินแล้ว`;
-  return `<div class="fu-srow fu-meal ${st}" data-meal="${s}"><span class="fu-slot-i">${ic(SLOT[s][1], 18, 2)}</span>
-    <div class="grow"><b>มื้อ${SLOT[s][0]} <span class="num">· ${esc(p.times[s])}</span></b>${line}</div>
-    <button type="button" class="fu-take${st === 'now' || st === 'late' ? ' go' : ''}" data-a="fuTake" data-v="${k}" aria-pressed="${st === 'taken'}" aria-label="${esc(lbl)}">${st === 'taken' ? ic('check', 17, 2.6) : ''}<span>กินแล้ว</span></button><div class="fu-meal-meds">${meds}</div>${st === 'late' ? `<p class="fu-miss">${ic('info', 15, 2.2)}<span>ดูคำแนะนำเฉพาะยาบนฉลาก หรือสอบถามเภสัชกร</span></p>` : ''}</div>`;
-}
-function prnRow(p, m) {
-  const k = `${p.today}|${m.id}`, list = p.prn[k] || [], last = list[list.length - 1];
-  const nextT = last ? addH(last, m.gap) : '', full = list.length >= m.max, wait = !!last && (!nextT || toM(nextT) > toM(now()));
-  const why = full ? `ครบ ${m.max} ครั้งของวันนี้แล้ว` : wait ? (nextT ? `กินครั้งถัดไปได้หลัง ${nextT}` : 'กินครั้งถัดไปได้พรุ่งนี้') : '';
-  return `<section class="card pad0 fu-multi-card fu-meal-card fu-prn-card">
-    <header class="fu-multi-head"><span class="fu-multi-icon">${ic('pill',20,2)}</span><div><h2>กินเมื่อมีอาการ</h2><p class="small">บันทึกแต่ละครั้งที่ใช้ยา</p></div></header>
-    <div class="fu-prn-body">${TP.medicineImage(m) || ic('pill',20,2)}<div><b>${esc(m.name)}</b><p class="small">${esc(`${m.dose} ${m.prn}`)}</p><p>${esc(`ห่างกันอย่างน้อย ${m.gap} ชั่วโมง ไม่เกิน ${m.max} ครั้งต่อวัน`)}</p>
-    <p class="small">${ic('clock',15,2)} ${list.length ? `วันนี้กิน ${list.length} ครั้ง · ล่าสุด ${esc(last)}` : 'วันนี้ยังไม่ได้กิน'}${why ? ` · ${esc(why)}` : ''}</p></div>
-    <button type="button" class="fu-med-check" ${p.waitRecv ? 'disabled title="เริ่มบันทึกเมื่อได้รับยา"' : ''} role="checkbox" aria-checked="${full || wait}" data-a="${full || wait ? 'fuPrnUndo' : 'fuPrn'}" data-v="${esc(k)}" aria-label="${esc(`${full || wait ? 'ยกเลิกบันทึกครั้งล่าสุด' : 'บันทึกการใช้'} ${m.name}`)}">${full || wait ? ic('check',16,2) : ''}</button></div></section>`;
-}
-function todayHtml(p) {
-  const slots = slotsOn(p, p.today), prn = p.meds.filter(m => m.prn), info = p.meds.filter(m => m.info);
-  const tk = daySlots(p, p.today).filter(x => x.st === 'taken').length;
-  const start = p.today === 1 && p.startAt && slots.length ? ` · เริ่มมื้อ${SLOT[slots[0]][0]}วันนี้` : '';
-  return `${ui.secH('รายการยาวันนี้', { din: 3 })}<p class="fu-date" data-in="3">${esc(dateOf(p, p.today))}${slots.length ? ` · กินแล้ว ${tk} จาก ${slots.length} มื้อ` : ''}${esc(start)}</p>
-    ${slots.length ? `<div class="fu-list" data-in="4">${slots.map(s => slotRow(p, s)).join('')}</div>` : ''}
-    ${prn.length ? `<h3 class="group-h">กินเมื่อมีอาการ</h3><div class="fu-list" data-in="5">${prn.map(m => prnRow(p, m)).join('')}</div>` : ''}
-    ${info.length ? ui.group(info.map(m => ui.row({ icon: 'pill', title: m.name, sub: m.info })), { title: 'ยาอื่นในชุดนี้' }) : ''}`;
-}
-function worseCard(S, p, c) {
-  const P = ph(p), red = c.mood === 'danger', open = S.storeOpen;
-  const by = open ? backBy(c) : '';
-  const txt = red ? `ไปโรงพยาบาลทันที ไม่ต้องรอเภสัชกร ${open ? 'ร้านจะโทรหาคุณโดยเร็วที่สุด' : 'ร้านปิดอยู่ เภสัชกรจะเห็นเมื่อร้านเปิด 09:00'}`
-    : by ? `${backLate(c) ? 'ร้านปิด 21:00 จึงนับเวลาต่อตอนร้านเปิด ' : ''}${P.short} จะติดต่อกลับก่อน ${by} ทางโทรศัพท์หรือข้อความในแอป ถ้าเลยเวลานี้ยังไม่มีใครติดต่อ กดปรึกษาตอนนี้ได้เลย` : open ? `${P.short} จะติดต่อกลับ${BACK}` : 'ร้านปิดอยู่ เภสัชกรจะเห็นเมื่อร้านเปิด 09:00 และติดต่อกลับภายใน 11:00';
-  const reply = p.contact ? `<div class="fu-reply">${ui.av('', { ini: P.ini, size: 'sm' })}<div class="grow"><b>${esc(P.short)}</b><small>วันนี้ ${esc(p.contact.at)}</small><p>${esc(p.contact.text)}</p></div></div>` : '';
-  const now2 = !red && inNew();
-  const act = red ? call1669() : now2 ? ui.btn('ไปที่การปรึกษา', { kind: 'secondary', a: 'fuConsult', icon: 'message-circle' }) : ui.btn(open ? 'ไม่อยากรอ ปรึกษาตอนนี้' : 'ฝากคำถามถึงเภสัชกร', { kind: 'secondary', a: 'fuConsult', icon: 'message-circle' });
-  const wait = red ? '' : `<p class="fu-tel d">${ic('octagon-alert', 14, 2)}<span>ระหว่างรอ ถ้าหายใจลำบาก เจ็บแน่นหน้าอก หรือหน้าบวม ไปโรงพยาบาลทันที</span></p>`;
-  return `<section class="fu-alert${red ? ' red' : ''}" data-in="1" role="${red ? 'alert' : 'status'}"><p class="fu-alert-h">${ic(red ? 'octagon-alert' : 'triangle-alert', 20, 2)}<b>${red ? 'คุณแจ้งว่ามีอาการรุนแรง' : 'คุณแจ้งว่าอาการแย่ลง'} ${esc(c.time)}</b></p><p>${esc(now2 ? 'คุณเข้าปรึกษาใหม่แล้ว เล่าเรื่องนี้กับเภสัชกรได้เลย คุยแล้วร้านไม่ต้องโทรอีก' : txt)}</p>${now2 ? '' : telLine(p)}${wait}${reply}<div class="fu-alert-a">${act}</div></section>`;
-}
-function talkedCard(S, p, c) {
-  const t = c.talked, more = p.sym ? '' : active(p) ? ' · ติดตามการใช้ยาต่อตามเดิม' : '';
-  return stateCard('circle-check', 'คุยกับเภสัชกรแล้ว ไม่ต้องรอโทร', `คุณแจ้งว่า${c.mood === 'danger' ? 'มีอาการรุนแรง' : 'อาการแย่ลง'} ${c.time} · เภสัชกรคุยเรื่องนี้ในการปรึกษาเมื่อ ${t.at} แล้ว${more}`,
-    inHist(S, t.id) ? ui.btn('ดูใบสรุปครั้งนั้น', { kind: 'tint', sm: true, go: 'summary', p: { id: t.id } }) : '');
-}
-function stateCard(icon, title, body, btn, muted) {
-  return `<div class="card fu-state" data-in="1"><span class="fu-ic${muted ? ' muted' : ''}">${ic(icon, 22, 1.9)}</span><div class="grow"><b>${esc(title)}</b><p class="small">${esc(body)}</p>${btn}</div></div>`;
-}
-function endCard(p) {
-  const end = dateOf(p, p.days);
-  if (!p.on && !p.end) return stateCard('bell-off', 'หยุดติดตามแล้ว', 'ไม่มีการเตือนกินยาและไม่ถามอาการของแผนนี้ บันทึกที่ผ่านมายังอยู่', ui.btn('เปิดติดตามอีกครั้ง', { kind: 'tint', sm: true, icon: 'bell', a: 'fuOn' }), true);
-  if (p.end === 'healed') return stateCard('calendar-check', 'ปิดการติดตามแล้ว', `คุณแจ้งว่าหายดีแล้ว · ครบคอร์ส ${end}`, ui.btn('ดูสรุปคอร์ส', { kind: 'tint', sm: true, go: 'fudone' }));
-  if (p.end === 'still') return stateCard('calendar-check', 'ครบคอร์สแล้ว ยังมีอาการ', 'ควรปรึกษาเภสัชกรอีกครั้ง หรือพบแพทย์', ui.btn('ปรึกษาเภสัชกรอีกครั้ง', { sm: true, a: 'fuConsult', icon: 'message-circle' }));
-  return stateCard('calendar-check', 'ครบคอร์สยาแล้ว', `ครบ ${p.days} วันเมื่อ ${end} · ${ph(p).short} ขอถามอาการครั้งสุดท้าย`, ui.btn('บอกอาการหลังครบคอร์ส', { sm: true, go: 'fudone', iconRight: 'arrow-right' }));
-}
-function linksHtml(S, p) {
-  const rows = [ui.row({ icon: 'history', title: 'บันทึกการกินยา', sub: 'ดูมื้อที่บันทึกและคำตอบเรื่องอาการ', go: 'fulog' })];
-
-  if (inHist(S, p.src.id)) rows.push(ui.row({ icon: 'file-text', title: 'ใบสรุปการปรึกษา', sub: `${p.src.date} · วิธีใช้ยาทุกตัว`, go: 'summary', p: { id: p.src.id } }));
-  const settings = p.on && !p.end ? ui.group([
-    ui.row({ icon: 'bell-off', title: 'หยุดติดตาม', sub: 'ปิดการเตือนกินยาและการถามอาการ', sheet: 'fuoff', chev: false })
-  ], { title: 'จัดการการติดตาม', rv: true }) : '';
-  const symptomRows = active(p) && !p.waitRecv ? [
-    ui.row({ icon: 'message-circle', title: 'บอกอาการเพิ่มเติม', sub: 'แจ้งเมื่ออาการเปลี่ยนหรือมีอาการใหม่', a: 'fuAsk' })
-  ] : [];
-  return ui.group([...symptomRows, adrRow(S, p)], { title: 'แจ้งอาการ', rv: true })
-    + ui.group(rows, { title: 'บันทึกและคำแนะนำ', rv: true }) + settings;
-}
-const remNote = (html, label, a) => `<div class="fu-mb" data-in="1">${ui.note(html, { icon: 'bell-off' })}<div class="mt8">${ui.btn(label, { kind: 'tint', sm: true, icon: 'bell', a })}</div></div>`;
-function bodyHtml(S, p, ctx) {
-  const out = [];
-  if (p.offline) out.push(`<div class="fu-mb" data-in="1">${ui.note('<b>ไม่มีอินเทอร์เน็ต</b><br>ยังบันทึกการใช้ยาในเครื่องได้ การส่งคำตอบต้องเชื่อมต่ออินเทอร์เน็ต', { tone: 'warn', icon: 'wifi-off' })}</div>`);
-  if (!active(p)) out.push(endCard(p));
-  else {
-    if (!S.notif) out.push(remNote('<b>การแจ้งเตือนของแอปปิดอยู่</b><br>ตั้งเวลาไว้แล้ว แต่จะไม่มีแจ้งเตือนกินยา', 'เปิดการแจ้งเตือน', 'fuNotifOn'));
-    else if (hasSched(p) && !p.remind) out.push(remNote('<b>ปิดเตือนกินยาอยู่</b><br>กด กินแล้ว ได้ตามปกติ แต่จะไม่มีแจ้งเตือน', 'เปิดเตือนกินยา', 'fuRemOn'));
-    const bad = recentBad(p), tk = recentTalked(p); if (bad) out.push(worseCard(S, p, bad)); else if (tk) out.push(talkedCard(S, p, tk));
-    out.push(followMultiHtml(ctx));
-  }
-  return out.join('');
-}
-/* item 82: C405 for the no-medicine plan - when the one question comes and how to answer, nothing about doses */
-function symHero(S, p) {
-  const due = symDue(p), late = p.today > p.n, on = S.notif, s = p.checks.filter(x => x.at === 'self').pop();
-  const k = due ? (late ? 'ยังไม่ได้ตอบเภสัชกร' : 'เภสัชกรขอถามอาการวันนี้') : 'เภสัชกรจะถามอาการ 1 ครั้ง';
-  const big = due ? 'ตอนนี้อาการเป็นอย่างไร' : `${symWhen(p)} ${p.askAt}`;
-  const sub = due ? `${!late && now() < p.askAt ? `แจ้งเตือนเวลา ${p.askAt} ตอบก่อนได้ · ` : ''}เลือกคำตอบที่ตรงกับอาการตอนนี้` : `${symDate(p)} · ตอนนี้ไม่ต้องทำอะไร ${on ? 'แอปจะแจ้งเตือนเมื่อถึงเวลา' : 'เปิดการแจ้งเตือนด้านบน เพื่อไม่พลาดคำถาม'}`;
-  return `<section class="card fu-hero sym${due ? ' now' : ''}" data-in="1" aria-label="${esc(k)}">
-    <div class="fu-hero-h"><span class="fu-ic${due || on ? '' : ' muted'}">${ic(due ? 'message-circle' : on ? 'bell-ring' : 'bell-off', 22, 1.9)}</span>
-      <div class="grow"><span class="fu-k">${esc(k)}</span><b class="fu-big">${esc(big)}</b><span class="fu-s1">${esc(sub)}</span>${s ? `<span class="fu-s1 fu-self">${ic('check', 15, 2.4)}<span>${esc(`คุณบอกเองแล้ว${s.day === p.today ? ' วันนี้' : ` ${s.date}`} ${s.time} · ${MOOD[s.mood][0]} · เภสัชกรยังจะถามตามนัด`)}</span></span>` : ''}
-      ${due ? `<div class="fu-hero-a">${ui.btn('บอกอาการ', { a: 'fuAsk', p: { at: 'once' }, icon: 'message-circle' })}</div>` : ''}</div></div>
-    <p class="fu-hero-f">ครั้งนี้ไม่มียา จึงไม่มีเตือนกินยา</p>
-  </section>`;
-}
-function symBodyHtml(S, p) {
-  const out = [], c = chk(p, 'once'), bad = recentBad(p), tk = recentTalked(p), rows = [];
-  if (symWait(p) && !S.notif) out.push(remNote('<b>การแจ้งเตือนของแอปปิดอยู่</b><br>จะไม่มีแจ้งเตือนตอนเภสัชกรถามอาการ', 'เปิดการแจ้งเตือน', 'fuNotifOn'));
-  if (bad) out.push(worseCard(S, p, bad)); else if (tk) out.push(talkedCard(S, p, tk));
-  if (c) { if (!bad && !tk) out.push(stateCard('calendar-check', 'ตอบเภสัชกรแล้ว', `คุณตอบว่า${MOOD[c.mood][0]} ${c.date} ${c.time} · เภสัชกรถามครั้งเดียว ปิดการติดตามของการปรึกษานี้แล้ว`,
-    c.mood === 'same' ? ui.btn(S.storeOpen ? 'ปรึกษาเภสัชกรอีกครั้ง' : 'ฝากคำถามถึงเภสัชกร', { kind: 'tint', sm: true, a: 'fuConsult', icon: 'message-circle' }) : '')); }
-  else if (!p.on) out.push(stateCard('bell-off', 'หยุดติดตามแล้ว', 'เภสัชกรจะไม่ถามอาการของการปรึกษานี้ ใบสรุปยังอยู่', ui.btn('เปิดติดตามอีกครั้ง', { kind: 'tint', sm: true, icon: 'bell', a: 'fuOn' }), true));
-  else out.push(symHero(S, p));
-  if (symWait(p) && !symDue(p)) rows.push(ui.row({ icon: 'message-circle', title: 'บอกอาการเอง', sub: 'แย่ลงหรือมีอาการใหม่ บอกเภสัชกรได้ทุกเมื่อ', a: 'fuAsk' }));
-  if (inHist(S, p.src.id)) rows.push(ui.row({ icon: 'file-text', title: 'ใบสรุปการปรึกษา', sub: `${p.src.date} · คำแนะนำ และอาการที่ต้องไปพบแพทย์`, go: 'summary', p: { id: p.src.id } }));
-  if (symWait(p)) rows.push(ui.row({ icon: 'bell-off', title: 'หยุดติดตาม', sub: 'เภสัชกรจะไม่ถามอาการของการปรึกษานี้', sheet: 'fuoff', chev: false }));
-  if (rows.length) out.push(ui.group(rows, { title: 'เพิ่มเติม', rv: true }));
-  out.push(footHtml(p));
-  return out.join('');
-}
-// Preview fixtures stay separate from the patient's saved plan and consultation history.
-function followPreviewPlans() {
-  const { meds, times } = mockPlan('normal');
+const HISTORY_DAYS = 7;
+// Preview fixtures only: sample medicines for ADR cases. Never written into the patient's history.
+const PREVIEW_MEDS = [
+  { id: 'cough', image: '/assets/photos/cough-syrup-mock-v1.png', name: 'ยาแก้ไอ ชนิดน้ำ', dose: 'ครั้งละ 10 มล.', meal: 'หลังอาหาร' },
+  { id: 'spray', name: 'สเปรย์พ่นคอ', dose: 'ใช้ตามฉลากตัวอย่าง' },
+  { id: 'allergy', image: '/assets/photos/medicine-v1.png', name: 'ยาแก้แพ้ ลดน้ำมูก', dose: 'ครั้งละ 1 เม็ด', tip: 'อาจทำให้ง่วง' }
+];
+const PREVIEW_SRC = { time: '10:20', branch: 'tw', pharm: 'kj', who: 'me' };
+function previewRecords() {
   return [
-    { id: 'preview-follow-1', date: '16/10/2026', days: 5, today: 3, note: 'ไอมีเสมหะมา 2 วัน รู้สึกระคายคอ ไอมากช่วงกลางคืนและหลังตื่นนอน ต้องการคำแนะนำเรื่องการใช้ยา การพักผ่อน และอาการที่ควรสังเกตเพิ่มเติม', topic: 'ไอมีเสมหะ', med: meds[0] },
-    { id: 'preview-follow-2', date: '17/10/2026', days: 3, today: 2, note: 'เจ็บคอ เวลากลืนแล้วเจ็บ อยากปรึกษาวิธีใช้ยา', topic: 'เจ็บคอ', med: meds[1] },
-    { id: 'preview-follow-3', date: '18/10/2026', days: 4, today: 1, note: 'มีน้ำมูกใสและจามตั้งแต่เช้า', topic: 'น้ำมูกไหล', med: meds[2] },
-    { id: 'preview-follow-4', date: '17/10/2026', days: 7, today: 2, note: 'ไอแห้งช่วงกลางคืน ต้องการคำแนะนำการใช้ยา', topic: 'ไอแห้ง', med: meds[0] },
-    { id: 'preview-follow-5', date: '18/10/2026', days: 3, today: 1, note: 'ระคายคอหลังตื่นนอน', topic: 'ระคายคอ', med: meds[1] }
-  ].map(plan => ({
-    ...SRC, ...plan, times, bought: ({'preview-follow-1':90,'preview-follow-2':225,'preview-follow-3':60,'preview-follow-4':90,'preview-follow-5':225})[plan.id],
+    { id: 'preview-med-1', date: '16/10/2026', note: 'ไอมีเสมหะมา 2 วัน รู้สึกระคายคอ ไอมากช่วงกลางคืนและหลังตื่นนอน ต้องการคำแนะนำเรื่องการใช้ยา การพักผ่อน และอาการที่ควรสังเกตเพิ่มเติม', topic: 'ไอมีเสมหะ', med: PREVIEW_MEDS[0], bought: 90 },
+    { id: 'preview-med-2', date: '17/10/2026', note: 'เจ็บคอ เวลากลืนแล้วเจ็บ อยากปรึกษาวิธีใช้ยา', topic: 'เจ็บคอ', med: PREVIEW_MEDS[1], bought: 225 },
+    { id: 'preview-med-3', date: '18/10/2026', note: 'มีน้ำมูกใสและจามตั้งแต่เช้า', topic: 'น้ำมูกไหล', med: PREVIEW_MEDS[2], bought: 60 },
+    { id: 'preview-med-4', date: '17/10/2026', note: 'ไอแห้งช่วงกลางคืน ต้องการคำแนะนำการใช้ยา', topic: 'ไอแห้ง', med: PREVIEW_MEDS[0], bought: 90 },
+    { id: 'preview-med-5', date: '18/10/2026', note: 'ระคายคอหลังตื่นนอน', topic: 'ระคายคอ', med: PREVIEW_MEDS[1], bought: 225 }
+  ].map(record => ({
+    ...PREVIEW_SRC, ...record,
     previewSummary: {
-      sym: plan.topic, advice: 'จากอาการที่เล่ามา แนะนำให้พักผ่อนให้เพียงพอและดื่มน้ำสม่ำเสมอ ใช้ยาตามฉลากที่ได้รับ หากมีข้อสงสัยเกี่ยวกับการใช้ยา สามารถสอบถามเภสัชกรได้ค่ะ\nหากอาการไม่ดีขึ้นหรือแย่ลง ควรปรึกษาเภสัชกรหรือพบแพทย์เพื่อประเมินเพิ่มเติมค่ะ',
-      meds: [{ ...plan.med, how: [plan.med.dose, plan.med.meal, plan.med.tip, `แผน ${plan.days} วัน`].filter(Boolean).join(' · ') }],
-      warn: [], follow: 'สังเกตอาการระหว่างใช้ยา หากอาการไม่ดีขึ้นหรือมีอาการใหม่ สามารถปรึกษาเภสัชกรได้ค่ะ'
+      sym: record.topic, advice: 'จากอาการที่เล่ามา แนะนำให้พักผ่อนให้เพียงพอและดื่มน้ำสม่ำเสมอ ใช้ยาตามฉลากที่ได้รับ หากมีข้อสงสัยเกี่ยวกับการใช้ยา สามารถสอบถามเภสัชกรได้ค่ะ\nหากอาการไม่ดีขึ้นหรือแย่ลง ควรปรึกษาเภสัชกรหรือพบแพทย์เพื่อประเมินเพิ่มเติมค่ะ',
+      meds: [{ ...record.med, how: [record.med.dose, record.med.meal, record.med.tip].filter(Boolean).join(' · ') }],
+      warn: [], follow: 'หากอาการไม่ดีขึ้นหรือมีอาการใหม่ สามารถปรึกษาเภสัชกรได้ค่ะ'
     }
   }));
 }
-TP.adrActiveMedicines = params => {
-  if (params.multiPlan) return followPreviewPlans().map(plan => ({
-    ...plan.med, v: plan.id, hid: plan.id, followPreview: true, pharm: plan.pharm, branch: plan.branch, sub: plan.topic
-  }));
-  const plan = F();
-  if (!active(plan) || plan.sym || plan.waitRecv) return [];
-  return plan.meds.map((med,index) => ({
-    ...med, v: `${plan.src.id}:${index}`, hid: plan.src.id, pharm: plan.src.pharm, branch: plan.src.branch,
-    sub: [med.dose,med.meal].filter(Boolean).join(' · ')
-  }));
-};
-TP.followPreviewPlan = id => id === 'preview-follow-completed' ? followCompletedPreview() : followPreviewPlans().find(plan => plan.id === id);
-TP.followSummaryRecord = id => {
-  const plan = F();
-  if (!plan?.src || plan.src.id !== id) return null;
-  const snapshot = TP.SUMMARY?.[id];
-  if (!snapshot) return null;
-  return {...plan.src, previewSummary: {...snapshot, meds: plan.meds.map(med => ({...med, how: [med.dose,med.meal,med.prn,med.tip,(med.slots || []).map(slot => SLOT[slot][0]).join(' / ')].filter(Boolean).join(' · ')}))}};
-};
-const followReminderButton = `<button type="button" class="ibtn" data-sheet="fureminder" aria-label="ตั้งเวลาเตือนกินยา" aria-haspopup="dialog">${ic('alarm-clock', 22, 2)}</button>`;
-const multiReminderSettings = ctx => (ctx.params.multiReminder ||= { times: { ...followPreviewPlans()[0].times }, remind: true });
-// Both ordinary navigation and multi-plan previews use the approved card layout.
-// Preview medicines never replace the patient's saved plan.
-function followDisplayPlans(ctx) {
-  if (ctx.state === 'multi-plan') return followPreviewPlans().map(plan => ({ ...plan, meds: [plan.med], preview: true }));
-  const plan = F();
-  return plan?.meds?.length ? [{ ...plan.src, days: plan.days, today: plan.today, times: plan.times,
-    endDate: dateOf(plan, plan.days), meds: plan.meds, savedPlan: plan }] : [];
-}
-const followDirections = med => [med.dose, med.meal, med.prn, med.tip, med.how].filter(Boolean).join(' · ');
-const followPastPlan = plan => !!plan.savedPlan && (!plan.savedPlan.on || !!plan.savedPlan.end || plan.today > plan.days);
-function followMedicationHistory(ctx, displayed) {
-  const ids = new Set(displayed.map(plan => plan.id));
-  const ended = displayed.filter(followPastPlan).map(plan => ({ ...plan,
-    historyLabel: !plan.savedPlan.on && !plan.savedPlan.end ? 'หยุดติดตามแล้ว' : 'สิ้นสุดแผนแล้ว' }));
-  // Only use medicine snapshots tied to this patient's exact case, never a generic fallback list.
-  const previous = TP.consultationHistory(ctx.S).filter(record => (!record.who || record.who === 'me') && !ids.has(record.id)).flatMap(record => {
+TP.medicationPreviewRecord = id => previewRecords().find(record => record.id === id);
+const medSub = med => [med.dose, med.meal].filter(Boolean).join(' · ');
+/* the patient's own consultations with medicine, tied to the exact case (never a generic list) */
+function ownMedicineRecords(S) {
+  return TP.consultationHistory(S).filter(record => !record.who || record.who === 'me').flatMap(record => {
     const snapshot = record.previewSummary || TP.SUMMARY?.[record.id];
     const paid = record._case?.order?.status === 'paid' ? record._case.order.items : [];
-    const meds = snapshot?.meds || paid || [];
-    return meds.length ? [{ ...record, meds, historyLabel: 'เคยได้รับ' }] : [];
-  });
-  return [...ended, ...previous].sort((a,b) => toD(b.date) - toD(a.date));
-}
-TP.adrHistoryMedicines = ctx => followMedicationHistory(ctx, followDisplayPlans(ctx)).filter(plan => { const last = plan.endDate || (plan.days && plan.date ? addD(plan.date, plan.days - 1) : plan.date); const elapsed = (toD(TP.NOW.date) - toD(last)) / 86400000; return Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 7; }).flatMap(plan => plan.meds.map((med,index)=>({...med,v:`history:${plan.id}:${index}`,hid:plan.id,followPreview:!!plan.preview,pharm:plan.pharm,branch:plan.branch,sub:`ปรึกษา ${plan.date || ''}`})));
-const followCourseCompleted = plan => !!plan.completed || !!plan.savedPlan?.end || (!!plan.savedPlan?.on && plan.today > plan.days);
-function followPlanCard(plan, historical = false, compact = false, pos = null) {
-  const completed = followCourseCompleted(plan);
-  return `<section class="card pad0 fu-multi-card fu-multi-plan${compact ? ' fu-order-summary' : ''}${completed ? ' fu-course-completed' : ''}"${pos ? ` aria-label="คำสั่งซื้อที่ ${pos.i} จาก ${pos.n}"` : ''}>
-    ${compact ? `<button type="button" class="fu-order-card-open" ${ui.route({go:'summary',p:{id:plan.id,...(plan.preview?{followPreview:true}:{})}})} aria-label="เปิดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}"></button>` : ''}
-    ${compact ? `<header class="fu-order-card-head"><span class="fu-order-ident">${pos ? `<span class="fu-order-index num" aria-hidden="true">${pos.i}/${pos.n}</span>` : ''}<strong class="num">#${esc(TP.orderNumber(plan))}</strong></span><button type="button" class="txtbtn fu-order-view" ${ui.route({ go: 'summary', p: { id: plan.id, ...(plan.preview ? { followPreview: true } : {}) } })} aria-label="ดูรายละเอียดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}">${ic('eye',18,2)}<span>ดูข้อมูล</span></button></header><div class="fu-order-header">
-      <div class="fu-order-line fu-order-concern"><p>${esc(TP.consultationText(plan) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p></div>
-    </div>` : `<header class="fu-multi-head"><span class="fu-multi-icon">${ic('file-text', 20, 2)}</span>
-      <div class="fu-plan-identity"><h2>${compact ? `คำสั่งซื้อ #${esc(TP.orderNumber(plan))}` : `รหัสเคส ${esc(TP.caseCode(plan))}`}</h2><p class="small">ปรึกษา ${esc(plan.date)}</p></div>
-      <b class="fu-multi-chip">${historical ? (plan.historyLabel || 'เคยได้รับ') : `เหลือ ${Math.max(0, plan.days - plan.today + 1)} วัน`}</b>
-      <p class="consultation-note"><span>เรื่องที่ปรึกษา</span>${esc(TP.consultationText(plan) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p>
-    </header>`}
-    ${compact ? '' : `<div class="fu-plan-body">${plan.meds.map(med => `<div class="fu-multi-plan-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b>
-      <p class="small">${esc([followDirections(med), (med.slots || []).map(slot => SLOT[slot][0]).join(' / ')].filter(Boolean).join(' · '))}</p>
-    </div></div>`).join('')}</div>`}
-    <footer class="fu-plan-footer">${plan.days && !completed ? `<div class="fu-multi-progress">
-      <div><b>${completed ? 'จบคอร์สแล้ว' : historical ? `ระยะเวลาตามแผน ${plan.days} วัน` : `วันที่ ${plan.today} จาก ${plan.days}`}</b><span>สิ้นสุด ${esc(plan.endDate || addD(plan.date, plan.days - 1))}</span></div>
-      ${historical || completed ? '' : `<progress aria-label="วันที่ของแผนการใช้ยา" value="${plan.today}" max="${plan.days}"></progress>`}
-    </div>` : ''}
-    ${completed ? ui.btn('ประเมินอาการหลังจบคอร์ส', {kind:'secondary', sheet:'historyassessment', p:{id:plan.id, ...(plan.preview ? {followPreview:true} : {})}, icon:'clipboard-list'}) : ''}
-    ${compact ? '' : ui.btn('ดูใบสรุปการปรึกษา', { go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) }, kind: 'tint', sm: true, icon: 'file-text' })}
-  </footer></section>`;
-}
-// The showcase adapter adds mock orders without changing the saved medication plan.
-function followCompletedPreview() {
-  const source = followPreviewPlans()[4];
-  return {...source, id:'preview-follow-completed', date:'12/10/2026', days:5, today:6,
-    completed:true, preview:true, meds:[source.med], note:'ระคายคอและไอหลังตื่นนอน ได้รับคำแนะนำและใช้ยาตามแผนแล้ว'};
-}
-TP.followCompletedPreview = followCompletedPreview;
-function followOrderOverview(ctx, plans) {
-  if (!plans.length) return '';
-  const orders = ctx.state === 'multi-plan' ? plans : [plans[0], ...followPreviewPlans().slice(0, 4).map(plan => ({...plan, meds:[plan.med], preview:true}))];
-  orders.push(followCompletedPreview());
-  const visibleOrders = orders
-    .filter(plan => !ctx.S.historyAssessmentPlans?.[plan.id]?.checks?.length)
-    .sort((a, b) => Number(followCourseCompleted(b)) - Number(followCourseCompleted(a)));
-  if (!visibleOrders.length) return '';
-  return `<section class="fu-order-overview" aria-label="คำสั่งซื้อที่ติดตาม"><div class="fu-order-heading"><h2>คำสั่งซื้อที่ติดตาม</h2><span class="small">${visibleOrders.length} คำสั่งซื้อ</span></div><div class="fu-order-carousel" tabindex="0" aria-label="เลื่อนดูคำสั่งซื้อ">${visibleOrders.map((plan, i) => followPlanCard(plan,followPastPlan(plan),true,{i:i+1,n:visibleOrders.length})).join('')}</div><div class="fu-order-pagination">${visibleOrders.map((_,index)=>`<button type="button" class="fu-order-dot${index===0?' is-active':''}" data-index="${index}" aria-label="ไปคำสั่งซื้อที่ ${index+1}"${index===0?' aria-current="true"':''}></button>`).join('')}<span class="sr" id="fuOrderPos" role="status" aria-live="polite">คำสั่งซื้อที่ 1 จาก ${visibleOrders.length}</span></div></section>`;
-}
-function mountFollowOrderPagination(el) {
-  const carousel = $('.fu-order-carousel', el), pagination = $('.fu-order-pagination', el);
-  if (!carousel || !pagination) return;
-  const cards = [...carousel.children], dots = [...pagination.querySelectorAll('.fu-order-dot')];
-  let current = -1;
-  const update = () => {
-    const viewport = carousel.getBoundingClientRect();
-    const index = cards.reduce((best, card, i) => Math.abs(card.getBoundingClientRect().left - viewport.left) < Math.abs(cards[best].getBoundingClientRect().left - viewport.left) ? i : best, 0);
-    if (index === current) return;
-    current = index;
-    dots.forEach((dot, i) => { dot.classList.toggle('is-active', i === index); if (i === index) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current'); });
-    const pos = $('#fuOrderPos', pagination); if (pos) pos.textContent = `คำสั่งซื้อที่ ${index + 1} จาก ${cards.length}`;
-  };
-  /* card start inside the scroller, respecting the scroll padding used for the full-bleed edge */
-  const goTo = i => {
-    const card = cards[Math.max(0, Math.min(cards.length - 1, i))]; if (!card) return;
-    const pad = parseFloat(getComputedStyle(carousel).scrollPaddingInlineStart) || 0;
-    carousel.scrollTo({ left: card.offsetLeft - carousel.offsetLeft - pad, behavior: TP.RED() ? 'auto' : 'smooth' });
-  };
-  dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
-  carousel.addEventListener('keydown', e => {
-    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
-    e.preventDefault(); goTo(Math.max(0, current) + (e.key === 'ArrowRight' ? 1 : -1));
-  });
-  carousel.addEventListener('scroll', update, { passive: true });
-  update();
-}
-function followMedicationSections(ctx) {
-  const plans = followDisplayPlans(ctx);
-  const current = plans.filter(plan => !followPastPlan(plan));
-  const history = followMedicationHistory(ctx, plans);
-  return `<div class="fu-multi fu-medication-sections">
-    <section class="fu-info-section" aria-label="ยาที่ใช้อยู่">
-      ${current.length ? current.map(plan => followPlanCard(plan)).join('') : '<p class="fu-info-empty small">ยังไม่มีรายการยาที่ใช้อยู่</p>'}
-    </section>
-    ${history.length ? `<section class="fu-info-section" aria-labelledby="fuHistoryTitle"><header class="fu-info-heading"><h2 id="fuHistoryTitle">ประวัติการใช้ยา</h2></header>${history.map(plan => followPlanCard(plan,true)).join('')}</section>` : ''}
-  </div>`;
-}
-function followMultiHtml(ctx) {
-  if (ctx.params.medInfo) return followMedicationSections(ctx);
-  const plans = followDisplayPlans(ctx);
-  const log = ctx.params.multiLog || {};
-  const entries = plans.flatMap(plan => plan.meds.map((med,index) => ({ plan, med, index })));
-  const isTaken = ({plan,med,index},slot) => plan.preview ? !!log[`${plan.id}|${slot}|${med.id || index}`] : !!plan.savedPlan.log[lk(plan.today,slot,med)]?.t;
-  const slots = SLOTS.filter(slot => entries.some(({med}) => med.slots?.includes(slot)));
-  const summary = plan => ({ go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) } });
-  const directions = followDirections;
-  const today = slots.map(slot => {
-    const due = entries.filter(({med}) => med.slots?.includes(slot));
-    const count = due.filter(entry => isTaken(entry,slot)).length;
-    const plan = due[0].plan;
-    const time = plan.preview ? multiReminderSettings(ctx).times[slot] : plan.times[slot];
-    return `<section class="card pad0 fu-multi-card fu-meal-card"><header class="fu-multi-head">
-      <span class="fu-multi-icon">${ic(SLOT[slot][1], 20, 2)}</span>
-      <div><h2>${SLOT[slot][0]}</h2><p class="small">บันทึกแล้ว ${count} จาก ${due.length} รายการ</p></div>
-      <b class="fu-multi-chip">${esc(time)}</b>
-    </header><div class="fu-meal-body">
-      ${due.map(({plan,med,index}) => `<div class="fu-multi-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b><p class="small">${esc(directions(med))}</p>
-        <button type="button" class="fu-multi-origin" ${ui.route(summary(plan))} aria-label="ดูข้อมูลคำสั่งซื้อ">${ic('file-text', 14, 2)}<span>ดูข้อมูลคำสั่งซื้อ</span>${ic('chevron-right', 14, 2)}</button>
-      </div><button type="button" class="fu-med-check" ${plan.savedPlan?.waitRecv ? 'disabled title="เริ่มบันทึกเมื่อได้รับยา"' : ''} role="checkbox" aria-checked="${isTaken({plan,med,index},slot)}" aria-label="ทาน ${esc(med.name)} มื้อ${SLOT[slot][0]}แล้ว" data-a="fuMedicationTake" data-plan="${esc(plan.id)}" data-med="${index}" data-slot="${slot}">${isTaken({plan,med,index},slot) ? ic('check',16,2) : ''}</button></div>`).join('')}
-      </div></section>`;
-  }).join('');
-  const saved = plans.find(plan => plan.savedPlan)?.savedPlan;
-  const prn = saved?.meds.filter(med => med.prn) || [];
-  return `<div class="fu-multi">${followOrderOverview(ctx, plans)}${entries.length ? '<header class="fu-order-heading fu-medication-heading"><h2>บันทึกการกินยา</h2><p class="small">เช็กลิสต์การกินยาเริ่มใหม่ทุกวันเวลา 00:00 น.</p></header>' : ''}${today}${!ctx.params.medInfo && prn.length ? `<div class="fu-list">${prn.map(med => prnRow(saved,med)).join('')}</div>` : ''}${entries.length ? `<div class="fu-report-action">${ui.btn('แจ้งอาการ', { go: 'adr', p: plans.some(plan => plan.preview) ? {multiPlan:true} : {}, kind: 'danger', icon: 'triangle-alert' })}</div>` : ''}</div>`;
-}
-TP.act('fuMedicationTake', (button, ctx) => {
-  const plan = followDisplayPlans(ctx).find(plan => plan.id === button.dataset.plan);
-  const index = Number(button.dataset.med), med = plan?.meds[index], slot = button.dataset.slot;
-  if (!med || !med.slots?.includes(slot) || plan.savedPlan?.waitRecv) return;
-  if (plan.preview) {
-    const log = ctx.params.multiLog ||= {}, key = `${plan.id}|${slot}|${med.id || index}`;
-    if (log[key]) delete log[key]; else log[key] = true;
-  } else {
-    const log = plan.savedPlan.log, key = lk(plan.today,slot,med);
-    if (log[key]?.t) delete log[key]; else log[key] = {t:now()};
-    TP.emit('state');
-  }
-  return TP.refresh({anim:false});
-});
-
-TP.screen('medhub', {
-  group: 'after', title: 'ติดตามการใช้ยา', code: 'C418', parent: 'home',
-  states: [['normal', 'แผนยาและบันทึกการกินยา'], ['empty', 'ยังไม่มีแผนยา'], ['loading', 'กำลังโหลด'], ['multi-plan', 'หลายคำสั่งซื้อ']],
-  notes: ['เข้าจากข้อมูลยาบนหน้าแรกแล้วแสดงคำสั่งซื้อที่ติดตามและบันทึกการกินยาทั้งหน้า ใช้หน้าจอและการทำงานเดียวกับ C405 ไม่มีแบนเนอร์เมนู 3 ก้อน', 'ติ๊กบันทึกรายตัวยา ตั้งเวลาเตือน แจ้งอาการ และประเมินอาการหลังจบคอร์สได้ตามแผนเดิม'],
-  prep(S) {
-    if (!S.st.medhub || S.st.medhub === 'normal') return;
-    const previous = S.st.follow;
-    S.st.follow = S.st.medhub;
-    try { TP.def('follow').prep(S); }
-    finally { if (previous === undefined) delete S.st.follow; else S.st.follow = previous; }
-  },
-  render(ctx) { return TP.def('follow').render(ctx); },
-  mount(el, ctx) { TP.readMedicationUpdates(ctx.S); return TP.def('follow').mount(el, ctx); }
-});
-function followMedicineInfo(ctx) {
-  const nav = ui.nav({back:backL('medhub'),title:'ข้อมูลใช้ยา'});
-  return nav+ui.page(followMultiHtml(ctx));
-}
-
-TP.screen('follow', {
-  group: 'after', title: 'ติดตามการใช้ยา', code: 'C405', parent: 'home',
-  states: [['normal', 'วันที่ 3 ปกติ'], ['missed', 'ลืมมื้อกลางวัน'], ['checked', 'ตอบกลางคอร์สแล้ว'], ['endonly', 'เภสัชกรเลือกถามหลังครบคอร์สอย่างเดียว'], ['worse', 'แจ้งว่าแย่ลง'], ['day1', 'เพิ่งเริ่มวันนี้'], ['done', 'ครบคอร์ส'], ['remoff', 'ปิดเตือนกินยา'], ['off', 'หยุดติดตาม'], ['offline', 'ไม่มีเน็ต'], ['empty', 'ไม่มีแผน'], ['loading', 'กำลังโหลด'],
-    ['sym', 'ไม่มียา ถามอีก 3 วัน'], ['symdue', 'ไม่มียา ถึงวันถามอาการ'], ['symworse', 'ไม่มียา แจ้งว่าแย่ลง'], ['symdone', 'ไม่มียา ตอบแล้ว'], ['talked', 'แจ้งว่าแย่ลง คุยในการปรึกษาใหม่แล้ว'], ['multi-plan', '5 คำสั่งซื้อ ระยะเวลาแตกต่างกัน']],
-  notes: ['มีการ์ดจบคอร์สพร้อมปุ่มประเมินอาการ C420 ตามคำสั่งซื้อ ไม่เพิ่มยาในบันทึกมื้อปัจจุบัน และไม่ถือว่าทานยาครบจากการจบแผนเวลาเพียงอย่างเดียว', 'ด้านบนเป็นการ์ดหัวและท้ายแผนยา 5 คำสั่งซื้อ เลื่อนแนวนอน ไม่มีรายการยาในแถบนี้ ไม่มีปุ่มดูใบสรุปในการ์ดภาพรวม ข้อมูลจำลองแยกจากบันทึกยาจริง การ์ดยาตามอาการใช้แพทเทิร์นเดียวกับมื้อยา ระยะห่างกระชับ แยกหัวข้อบันทึกการกินยา ยาตามอาการใช้ checkbox ด้านข้าง ท้ายภาพรวมพื้น primary กับหลอดปลายมน และมีปุ่มแจ้งอาการสีแดงเพียงปุ่มเดียวท้ายรายการ',
-    '19/10 เจ้าของสั่ง "ทำให้ simple กว่านี้": เหลือ 3 อย่าง คือ มื้อถัดไปและเวลาเตือน · เภสัชกรจะถามอาการเมื่อไร · ยาวันนี้ ติ๊ก checkbox รายตัวยา',
-    '19/10 เจ้าของสั่ง "ตั้งเวลาเตือนต้องมีผลแจ้งเตือนในแอปได้จริง": ตั้งเวลาที่ C410 แล้วกด "จำลองว่าถึงเวลากินยา" ในแผง จะมีแจ้งเตือนบนจอพร้อมปุ่ม กินแล้ว แตะแล้วจอนี้อัปเดตทันที กดซ้ำได้ เวลาเดินไปมื้อถัดไป',
-    'มีปุ่มแจ้งอาการเพียงปุ่มเดียวใต้การ์ดยาทั้งหมด ไม่มีปุ่มแจ้งอาการซ้ำในแต่ละมื้อหรือยาตามอาการ',
-    'การ์ดมื้อยาใช้ checkbox รายตัวยา บันทึกตามแผน วัน และมื้อ เอาปุ่มทานแล้วทั้งมื้อออก ติ๊กซ้ำยกเลิกเฉพาะตัวนั้น ช่องว่างพื้นขาวขอบ primary ชัดเจน',
-    '19/10 เจ้าของสั่ง "ตามระหว่างทาง หรือตามทีเดียวตอนจบคอร์สก็ได้": ไม่ถามทุกวันแล้ว · บอกเองได้ทุกเมื่อจาก "บอกอาการเอง"',
-    '19/10 เจ้าของเคาะ "ให้เภสัชเลือกได้ตั้งแต่ต้น": ตอนปิดเคส (S305) เภสัชกรเลือก ถามหลังครบคอร์สอย่างเดียว (ค่าตั้งต้น) หรือ ถามกลางคอร์สด้วย · จอนี้บอกจำนวนครั้งตามที่เลือก (ดูสถานะ เภสัชกรเลือกถามหลังครบคอร์สอย่างเดียว)',
-    'ตัดออก: รายการยาในแผน (ดูในใบสรุป) · ข้ามมื้อ · ปุ่มนาฬิกาบนแถบบน',
-    'ยากินเมื่อมีอาการ บอกเวลาที่กินครั้งถัดไปได้ และจำนวนครั้งต่อวัน กันกินถี่เกิน',
-    'สถานะทุกอย่างมีข้อความ + ไอคอน ไม่ใช้สีอย่างเดียว · จำลองวันที่ 3 = 18/10/2026 14:12',
-    '20/10 ข้อ 82 เจ้าของเคาะ "ใช่ทำได้": ปรึกษาแล้วไม่ได้จ่ายยา เภสัชกรเปิดติดตามได้ แอปถามอาการ 1 ครั้ง เวลา 19:00 พรุ่งนี้หรืออีก 3 วัน ตามที่เภสัชกรเลือกตอนปิดเคส (S305) · ไม่มีรายการยาและเตือนกินยา · ถึงวันถาม การ์ดหน้าแรกพาไปตอบได้เลย · ตอบแล้วปิดการติดตาม แย่ลง = ร้านติดต่อกลับเหมือนเดิม (สถานะ C405.13-16 · ลองปุ่ม ปิดเคส ไม่จ่ายยา ในแผงตอนอยู่ในห้องปรึกษา)',
-    'ผู้ใช้จริง 20/10 (docs/qa/2026-10-20-real-user-82-follow-nomeds.md): ตอบว่ามีอาการรุนแรง การ์ดหน้าแรกบอกให้ไปโรงพยาบาล ไม่ใช่รอร้านโทร (ใช้กับแบบมียาด้วย) · แย่ลง บอกเวลาที่ร้านจะติดต่อกลับเป็นนาฬิกา · ไม่มียา: บอกว่าตอนนี้ไม่ต้องทำอะไร · บอกอาการเองแล้วขึ้นบนการ์ด · ห้องปรึกษาและใบสรุปบอกวันเวลาที่จะถาม',
-    '20/10 ข้อ 58 เจ้าของเคาะ (ตามที่แนะนำ): แจ้งว่าแย่ลงแล้วกด ไม่อยากรอ ปรึกษาตอนนี้ เภสัชกรคุยเรื่องนั้นในเคสใหม่ แล้วติ๊กตอนปิดเคส (S305) = นับว่าติดต่อแล้ว · การ์ดเปลี่ยนจาก ร้านจะติดต่อกลับ เป็น คุยเรื่องนี้กับเภสัชกรแล้ว ไม่ต้องรอโทร (สถานะ C405.17 · หรือเล่นต่อจาก C405.5: ปรึกษาตอนนี้ แล้วกด ปิดเคส ในแผง)'],
-  wait: ['ข้อมูลการกินยาและอาการเป็นข้อมูลสุขภาพ ตอนนี้ถือว่าอยู่ใต้ความยินยอมการปรึกษา ของจริงต้องผ่านการตรวจ PDPA ก่อน',
-    'ข้อความ "ลืมกิน" ต้องให้เภสัชกรยืนยัน และยาบางกลุ่ม (เช่น ยาปฏิชีวนะ) ต้องมีข้อความเฉพาะ',
-    'มีหลายแผนพร้อมกันได้ไหม (หลายการปรึกษา) ตัวอย่างหลายแผนดูได้ในสถานะ multi-plan'],
-  prep(S) {
-    const st = S.st.follow; if (!st || st === 'multi-plan') return;
-    S._fuSeen = S.case; /* the panel scenario wins over a closed consult */
-    if (st === 'empty') { S.follow = null; return; }
-    if (st.startsWith('sym')) { const p = mockSym(st); S.follow = p; ensureSrc(S, p.src); return; }
-    if (st === 'day1') { S.follow = dayOnePlan(S.case?.status === 'closed' && S.case.order?.status === 'paid' ? S.case : null); return; }
-    const p = mockPlan(st);
-    if (st === 'checked') p.checks.push({ at: 'mid', day: 3, date: TP.NOW.date, time: '13:05', mood: 'better' });
-    if (st === 'worse') p.checks.push({ at: 'mid', day: 3, date: TP.NOW.date, time: '13:40', mood: 'worse' });
-    if (st === 'talked') p.checks.push({ at: 'mid', day: 3, date: TP.NOW.date, time: '13:40', mood: 'worse', talked: { at: '14:05', id: '' } });
-    if (st === 'done') finish(p);
-    if (st === 'remoff') p.remind = false;
-    if (st === 'off') p.on = false;
-    if (st === 'offline') p.offline = true;
-    S.follow = p; ensureSrc(S, p.src);
-  },
-  render(ctx) {
-    if (ctx.params.medInfo) return followMedicineInfo(ctx);
-    if (ctx.state === 'multi-plan') return ui.nav({ back: backL('home'), title: 'ติดตามการใช้ยา', right: followReminderButton }) + ui.page(followMultiHtml(ctx));
-    const S = ctx.S, p = F();
-    const canSetReminder = ctx.state !== 'loading' && p && !p.sym && active(p) && !p.waitRecv && hasSched(p);
-    const nav = ui.nav({
-      back: backL('home'),
-      title: p?.sym ? 'ติดตามอาการ' : 'ติดตามการใช้ยา',
-      right: canSetReminder ? followReminderButton : ''
-    });
-    if (ctx.state === 'loading') {
-      return nav + ui.page(`<div aria-busy="true" aria-label="กำลังโหลดการติดตาม">${ui.skel('100%', 170, 14)}<div class="mt12">${ui.skel('100%', 120, 14)}</div><div class="mt24">${ui.skel('36%', 18)}</div><div class="mt12">${ui.skel('100%', 220, 14)}</div></div>`);
-    }
-    if (!p) return nav + ui.page(ui.empty({ title: 'ยังไม่มีการติดตาม', body: 'เมื่อเภสัชกรนัดติดตามหลังปรึกษา แอปจะถามอาการให้ที่นี่ ถ้าได้ยาไป จะเตือนเวลากินยาด้วย', btn: { label: 'ดูประวัติการปรึกษา', a: 'fuHistory' }, art: emArt('pill') }));
-    const checkNote=ctx.state==='checked'?ui.note('ตอบประเมินอาการกลางคอร์สแล้ว',{icon:'circle-check'}):ctx.state==='endonly'?ui.note('เภสัชกรนัดประเมินอาการหลังครบคอร์สเท่านั้น',{icon:'calendar'}):'';
-    return nav + ui.page(checkNote+(p.sym ? symBodyHtml(S, p) : bodyHtml(S, p, ctx)));
-  },
-  mount(el, ctx) { mountFollowOrderPagination(el); if (ctx.state === 'loading') ctx.later(() => { ctx.S.st[ctx.id || 'follow'] = 'normal'; TP.refresh(); }, 1200); }
-});
-const refreshPop = sel => TP.refresh({ anim: false }).then(() => { const el = curEl(); if (el && !RM()) pop($(sel, el)); });
-/* one tap per meal time: every medicine of that time, at the follow clock */
-function takeSlot(p, day, s, t) {
-  const ms = medsAt(p, s), was = ms.every(m => p.log[lk(day, s, m)]?.t);
-  ms.forEach(m => { if (was) delete p.log[lk(day, s, m)]; else p.log[lk(day, s, m)] = { t }; });
-  return !was;
-}
-TP.act('fuTake', t => {
-  const p = F(), [d, s] = String(t.dataset.v || '').split('|'); if (!p || !SLOT[s]) return;
-  const on = takeSlot(p, +d, s, now());
-  TP.notify(!on ? 'ยกเลิกบันทึกมื้อนี้แล้ว' : p.offline ? 'บันทึกในเครื่องแล้ว' : `บันทึกแล้ว กินยามื้อ${SLOT[s][0]}`, { icon: on ? 'check' : 'rotate-ccw' });
-  TP.emit('state'); refreshPop(`.fu-take[data-v="${t.dataset.v}"]`);
-});
-TP.act('fuPrn', t => {
-  if (F()?.waitRecv) return;
-  const p = F(), k = t.dataset.v; if (!p || !k) return;
-  const med = p.meds.find(m => `${p.today}|${m.id}` === k && m.prn);
-  if (!med) return;
-  const doses = p.prn[k] || [], last = doses[doses.length - 1], next = last ? addH(last, med.gap) : '';
-  if (doses.length >= med.max || (last && (!next || toM(next) > toM(now())))) return;
-  p.prn[k] = [...doses, now()]; TP.emit('state');
-  TP.notify('บันทึกเวลากินยาแล้ว', { icon: 'check' }); refreshPop(`.fu-take[data-v="${k}"]`);
-});
-TP.act('fuPrnUndo', t => {
-  const p = F(), k = t.dataset.v; if (!p || !p.prn[k]?.length) return;
-  p.prn[k] = p.prn[k].slice(0, -1); TP.emit('state');
-  TP.notify('ลบครั้งล่าสุดแล้ว', { icon: 'rotate-ccw' }); TP.refresh({ anim: false });
-});
-TP.act('fuOn', () => { const p = F(); if (!p) return; p.on = true; TP.emit('state'); TP.notify('เปิดติดตามอีกครั้งแล้ว', { icon: 'bell' }); TP.refresh({ anim: false }); });
-TP.act('fuRemOn', () => { const p = F(); if (!p) return; p.remind = true; TP.emit('state'); TP.notify('เปิดเตือนกินยาแล้ว', { icon: 'bell' }); TP.refresh({ anim: false }); });
-TP.act('fuNotifOn', t => {
-  TP.S.notif = true; TP.S.notifAsked = true; TP.emit('state');
-  TP.notify('เปิดการแจ้งเตือนแล้ว', { icon: 'bell' });
-  if (TP.sheetOpen()) t.closest('.fu-mb')?.remove(); else TP.refresh({ anim: false });
-});
-TP.act('fuAsk', t => {
-  const p = F(); if (!p) return;
-  let at = ''; try { at = JSON.parse(t.dataset.p || '{}').at || ''; } catch { at = ''; }
-  TP.go('fucheck', { params: { at: at || (midDue(p) ? 'mid' : symDue(p) ? 'once' : 'self') } });
-});
-TP.act('fuOpenSummary', () => {
-  const p = F();
-  if (!p?.src?.id) return;
-  ensureSrc(TP.S, p.src);
-  TP.go('summary', { params: { id: p.src.id } });
-});
-TP.act('fuHistory', () => TP.tab('history'));
-TP.act('fuHome', () => TP.tab('home'));
-TP.act('fuCall', (t, c, e) => { e?.preventDefault(); TP.notify('กำลังโทร ' + (t.dataset.v || ''), { icon: 'phone' }); });
-TP.act('fuBackFollow', () => (TP.hist[TP.hist.length - 1]?.id === 'follow' ? TP.back() : TP.go('follow', { replace: true })));
-/* consult again: prefill intake with what the customer reported (store closed -> leave a question) */
-TP.act('fuConsult', () => {
-  const S = TP.S, p = assessmentResultPlan(S, TP.cur()?.ctx.params.assessmentId) || F(); if (!p) return;
-  if (TP.caseOpen?.()) { TP.notify('มีการปรึกษาที่ยังไม่จบ พากลับไปที่เดิม', { icon: 'message-circle' }); TP.go(['matched', 'room'].includes(S.case.status) ? 'room' : 'queue', { via: 'cover' }); return; }
-  const over = !!p.end || p.today > p.days, c = over ? null : lastCheck(p);
-  const said = c ? ` · ${c.day === p.today ? 'วันนี้' : `วันที่ ${c.day}`} แจ้งว่า${MOOD[c.mood][0]}` : '';
-  const sc = p.sym ? lastCheck(p) : null;
-  const what = p.sym ? `ไม่ได้รับยา${sc ? ` · ${sc.day === p.today ? 'วันนี้' : sc.date} แจ้งว่า${MOOD[sc.mood][0]}` : ''}` : over ? 'กินยาครบคอร์สแล้วยังมีอาการ' : `วันที่ ${p.today} ของคอร์สยา${said}`;
-  S._fuTalk = !!recentBad(p);
-  Object.assign(S.intake, { who: p.src.who || 'me', symptoms: (p.src.sym || []).filter(x => TP.SYMPTOMS.includes(x)), custom: [], urgent: [], note: `ติดตามหลังปรึกษา ${p.src.date} · ${what}`, photos: 0 });
-  if (S.storeOpen) TP.go('intake');
-  else if (TP.SCREENS.offline) TP.go('offline');
-  else TP.notify('ร้านปิดอยู่ เปิดอีกครั้ง 09:00', { icon: 'moon' });
-});
-
-/* =====================================================================
-   C406 Check-in: one tap sends (LMA card style) · danger row goes straight to hospital + 1669
-   ===================================================================== */
-const ansBtn = (k, at, map = ANS, a = 'fuAns') => `<button type="button" class="fu-ans ${k}" data-a="${a}" data-v="${k}" data-at="${at}">
-  <span class="fu-ans-i">${ic(map[k][1], 26, 1.8)}</span><span class="fu-ans-t"><b>${esc(map[k][0])}</b><span>${esc(map[k][2])}</span></span><span class="chev">${ic('chevron-right', 18, 2)}</span></button>`;
-const checkNote = (S, p) => (S.storeOpen ? `แตะคำตอบเดียว ส่งถึง ${ph(p).short} ทันที · ถ้าแย่ลง ร้านจะติดต่อกลับ${BACK}` : 'ร้านปิดอยู่ เภสัชกรจะเห็นคำตอบเมื่อร้านเปิด 09:00 ถ้าอาการรุนแรง ไปโรงพยาบาลได้เลย');
-function assessmentPlan(S, id, preview = false) {
-  if (preview && id === 'preview-follow-completed') {
-    S.historyAssessmentPlans ||= {};
-    return S.historyAssessmentPlans[id] ||= {...dayOnePlan({...followCompletedPreview(), order:{items:followCompletedPreview().meds}}), src:followCompletedPreview(), days:5, today:6};
-  }
-  const record = TP.consultationHistory(S).find(h => h.id === id);
-  const order = record && TP.completedMedicationOrder(S, record);
-  if (!order) return null;
-  if (S.follow?.src?.id === id) return S.follow;
-  S.historyAssessmentPlans ||= {};
-  if (!S.historyAssessmentPlans[id]) {
-    const plan = dayOnePlan({ ...record, order });
-    plan.src.date = record.date || plan.src.date;
-    plan.src.time = record.time || plan.src.time;
-    S.historyAssessmentPlans[id] = plan;
-  }
-  return S.historyAssessmentPlans[id];
-}
-const assessmentResultPlan = (S, id) => id
-  ? S.historyAssessmentPlans?.[id] || (S.follow?.src?.id === id ? S.follow : null)
-  : null;
-
-TP.sheetDef('historyassessment', {
-  group: 'after', title: 'ประเมินอาการ', code: 'C420', host: 'summary', hostParams: { historyOutcome: 'order-complete' },
-  states: [['normal', 'เลือกอาการจากคำสั่งซื้อที่สำเร็จ']],
-  render(ctx) {
-    const id = ctx.params.id || TP.cur()?.ctx.h?.id;
-    const p = assessmentPlan(ctx.S, id, !!ctx.params.followPreview);
-    ctx.assessmentPlan = p;
-    if (!p) return '<p>ไม่พบคำสั่งซื้อที่ประเมินอาการได้</p>';
-    return `<div class="history-assessment"><p class="body">ตอนนี้อาการเป็นอย่างไร</p>
-      <div class="fu-anss mt12">${['better', 'same', 'worse', 'danger'].map(k => ansBtn(k, 'self')).join('')}</div>
-      <p class="fu-exp fu-exp-s">${ic('send', 16, 2)}<span>${esc(checkNote(ctx.S, p))}</span></p>
-      <div id="fuErr" class="mt12" hidden>${ui.note('ส่งไม่สำเร็จ ตรวจอินเทอร์เน็ตแล้วลองอีกครั้ง', { tone: 'danger', icon: 'wifi-off' })}</div></div>`;
-  }
-});
-TP.screen('fucheck', {
-  group: 'after', title: 'บอกอาการ', code: 'C406', parent: 'follow',
-  states: [['normal', 'กลางคอร์ส ยังไม่ตอบ'], ['self', 'บอกเองระหว่างคอร์ส'], ['closed', 'ตอนร้านปิด'], ['error', 'ส่งไม่สำเร็จ'], ['sym', 'ไม่มียา ถามครั้งเดียว']],
-  notes: ['19/10 เจ้าของสั่ง "icon โดนบรรทัดเลื่อน จัด UI ใหม่": เปลี่ยนเป็นแถวใหญ่ ไอคอนซ้าย ข้อความขวา ไอคอนตรงกับบรรทัดแรกทุกแถว ข้อความยาวกี่บรรทัดไอคอนก็ไม่เลื่อน',
-    'สั้นลงแบบการ์ด LINE ของ LMA: แตะคำตอบเดียวส่งเลย ไม่มีปุ่มส่ง · ตัดช่องเล่าเพิ่มและรายการอาการอันตราย 6 ปุ่ม',
-    'มีอาการรุนแรง = ไปจอ "ไปโรงพยาบาลทันที + โทร 1669" ทันที ไม่รอส่ง (ส่งให้ร้านตามหลัง)',
-    'บอกชัดว่าเภสัชกรเห็นเมื่อไร: ในเวลาทำการ 09:00-21:00 · ร้านปิด = เห็นตอน 09:00',
-    'ส่งไม่สำเร็จ = บอกว่ายังไม่ถึงเภสัชกร แตะคำตอบอีกครั้งเพื่อส่งใหม่ (สถานะนี้ แตะอีกครั้งจะส่งได้)',
-    '20/10 ข้อ 82: ไม่มียา (C406.5) ใช้คำตอบ 4 แถวเดิม ไม่มีแถว สงสัยว่าเป็นผลจากยา · แถว มีอาการรุนแรง ใช้อาการที่ต้องไปพบแพทย์ของการปรึกษานั้น (ผู้ใช้จริง: อาการแพ้ยาอย่างเดียว คนท้องเสียหาอาการตัวเองไม่เจอ) · ตอบแล้วปิดการติดตาม ตอบผิดแก้ได้ในวันเดียวกันที่ C407'],
-  wait: ['รายการอาการรุนแรงจริงจากเภสัชกร (ตอนนี้เป็นตัวอย่าง)'],
-  prep(S) {
-    const st = S.st.fucheck; if (!st) return;
-    if (st === 'sym') { S._fuSeen = S.case; const q = mockSym('symdue'); S.follow = q; ensureSrc(S, q.src); S._fuErrShow = false; S.storeOpen = TP.flag('storeOpen'); TP.emit('state'); return; }
-    if (F()?.sym) { S._fuSeen = S.case; S.follow = mockPlan('normal'); }
-    const p = ensure(S); p.on = true; p.end = ''; if (p.today > p.days) p.today = 3;
-    p.checks = p.checks.filter(x => x.at !== 'mid');
-    /* "ส่งไม่สำเร็จ" opens as the moment after a failed send: the note shows once, the next tap goes through */
-    S._fuErrShow = st === 'error';
-    S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); TP.emit('state');
-  },
-  mount(el) { if (!TP.S._fuErrShow) return; TP.S._fuErrShow = false; const box = $('#fuErr', el); if (box) box.hidden = false; },
-  render(ctx) {
-    const S = ctx.S, p = ensure(S), w = fam(p.src.who), day = cday(p);
-    const at = AT[ctx.params.at] ? ctx.params.at : S.st.fucheck === 'self' ? 'self' : midDue(p) ? 'mid' : symDue(p) ? 'once' : 'self';
-    return ui.nav({ back: backL('follow'), title: 'บอกอาการ' }) + ui.page(`
-      <div class="fu-anss" data-in="1">${['better', 'same', 'worse'].map(k => ansBtn(k, at)).join('')}</div>
-      <div class="fu-anss mt16" data-in="2">${ansBtn('danger', at, p.sym ? { danger: [ANS.danger[0], ANS.danger[1], symDanger(p)] } : ANS)}</div>
-      <p class="fu-exp fu-exp-s" data-in="3">${ic('send', 16, 2)}<span>${esc(checkNote(S, p))}</span></p>
-      <div id="fuErr" class="mt12" hidden>${ui.note('<b>ส่งไม่สำเร็จ ยังไม่ถึงเภสัชกร</b><br>ตรวจอินเทอร์เน็ตแล้วแตะคำตอบอีกครั้ง', { tone: 'danger', icon: 'wifi-off' })}</div>
-      ${p.sym ? '' : `<div class="mt16" data-in="4">${ui.group([adrRow(S, p)])}</div>`}
-      ${footHtml(p)}`, { lt: `ตอนนี้${w ? firstN(w.name) : ''}อาการเป็นอย่างไร`, sub: p.sym ? `${AT[at]} · ปรึกษาเมื่อ ${esc(p.src.date)} · ส่งให้ ${esc(ph(p).short)}` : `${AT[at]} · วันที่ ${day} จาก ${p.days} · ส่งให้ ${esc(ph(p).short)}` });
-  }
-});
-TP.act('fuAns', async t => {
-  const assessment = TP.sheetOpen()?.id === 'historyassessment' ? TP.sheetOpen() : null;
-  const S = TP.S, p = assessment ? assessment.ctx.assessmentPlan : F(), el = assessment?.el || curEl(), k = t.dataset.v, at = AT[t.dataset.at] ? t.dataset.at : 'self';
-  if (!p || !el || !ANS[k] || t.classList.contains('busy')) return;
-  /* danger never waits for the network: the hospital + 1669 screen shows at once, the answer is sent behind it */
-  if (k !== 'danger') {
-    const all = $$('.fu-ans', el); all.forEach(b => { if (b !== t) b.disabled = true; });
-    t.classList.add('busy'); t.setAttribute('aria-busy', 'true');
-    await TP.wait(RM() ? 50 : 650);
-    if (assessment && TP.sheetOpen() !== assessment) return;
-    /* no internet (C405 "ไม่มีเน็ต"): the answer cannot reach the pharmacist, say so and let them tap again */
-    if (p.offline) {
-      t.classList.remove('busy'); t.removeAttribute('aria-busy'); all.forEach(b => { b.disabled = false; });
-      const box = $('#fuErr', el); if (box) { box.hidden = false; shake(box); box.scrollIntoView({ block: 'nearest', behavior: RM() ? 'auto' : 'smooth' }); }
-      TP.live('ส่งไม่สำเร็จ ยังไม่ถึงเภสัชกร แตะคำตอบอีกครั้ง'); return;
-    }
-  }
-  const day = p.sym ? p.today : cday(p), c = { at, day, date: assessment ? TP.NOW.date : p.sym ? addD(p.start, p.today) : dateOf(p, day), time: now(), mood: k };
-  if (at === 'mid' || at === 'once') p.checks = p.checks.filter(x => x.at !== at);
-  /* the one no-medicine question ends the follow-up (item 82) */
-  if (at === 'once') p.end = k;
-  p.checks.push(c); p.contact = null;
-  if (!assessment) S.st.furesult = (p.sym && (k === 'better' || k === 'same') ? 'sym' : '') + kindOf(c);
-  TP.emit('state');
-  if (assessment) await TP.closeSheet({ instant: true });
-  TP.go('furesult', { replace: !assessment, params: assessment ? { assessmentId: p.src.id } : {}, via: k === 'danger' ? 'fade' : 'push' });
-});
-
-/* =====================================================================
-   C407 Answer sent: lean like the LMA reply (one line per answer) + who got it, when
-   ===================================================================== */
-const resTop = (tone, icon, title, body, sent, tel = '') => `<div class="fu-res" data-in="0"><span class="fu-badge ${tone}">${ic(icon, 36, 1.8)}</span><h2 class="h2">${esc(title)}</h2><p class="body">${esc(body)}</p>${tel}${sent ? `<p class="fu-sentl">${ic('send', 14, 2)}<span>${esc(sent)}</span></p>` : ''}</div>`;
-TP.screen('furesult', {
-  group: 'after', title: 'ส่งคำตอบแล้ว', code: 'C407', parent: 'follow',
-  states: [['better', 'ดีขึ้น'], ['same', 'เหมือนเดิม'], ['worse', 'แย่ลง'], ['danger', 'มีอาการรุนแรง'], ['closed', 'แย่ลง ตอนร้านปิด'], ['symbetter', 'ไม่มียา ดีขึ้น'], ['symsame', 'ไม่มียา เหมือนเดิม'], ['late', 'แย่ลง ก่อนร้านปิดไม่ถึง 2 ชั่วโมง']],
-  notes: ['19/10 เจ้าของสั่ง "เอา lma เดิมมาดูว่าเราวาง flow ไว้ยังไง ขอ lean": LMA ตอบกลับข้อความเดียวต่อคำตอบ จึงเหลือ ไอคอน + 1 ประโยค + ส่งถึงใครเมื่อไร + ปุ่มกลับ · ตัดตารางสรุปคำตอบออก',
-    'ดีขึ้น = ขอบคุณ กินต่อให้ครบ · เหมือนเดิม = กินต่อตามเวลา บอกได้ทุกเมื่อ · ทั้งสองบอกว่าเภสัชกรจะถามครั้งถัดไปเมื่อไร',
-    'แย่ลง = ร้านติดต่อกลับภายใน 2 ชั่วโมงในเวลาทำการ (เจ้าของเคาะ) · ร้านปิด = เห็นตอน 09:00 ติดต่อกลับภายใน 11:00 · ไม่อยากรอ ปรึกษาใหม่ได้ (เติมอาการให้แล้ว)',
-    'เจ้าของเคาะ 20/10 ข้อ 72 "ให้กรอบเวลามันเป็นไปได้จริงหน่อยกับเวลาเปิดปิดร้าน": 2 ชั่วโมงนับเฉพาะเวลาร้านเปิด 09:00-21:00 · แจ้ง 13:40 ติดต่อกลับก่อน 15:40 · แจ้ง 20:15 วันนี้เหลือ 45 นาที นับต่อพรุ่งนี้ ติดต่อกลับก่อน 10:15 พรุ่งนี้ (C407.8) · แจ้งตอนร้านปิด ก่อน 11:00 · ทุกจอบอกให้ไปโรงพยาบาลหรือโทร 1669 ถ้าอาการรุนแรง · ตรงกับคอนโซล S401.12',
-    'มีอาการรุนแรง = ไปโรงพยาบาลทันที + โทร 1669 + โทรหาร้าน · 1669 อยู่เฉพาะจออาการรุนแรง',
-    '20/10 ข้อ 82 ไม่ได้จ่ายยา (C407.6-7): ไม่พูดเรื่องกินยา ให้ดูแลตามใบสรุป · ปุ่มกลับหน้าแรก เพราะปิดการติดตามแล้ว · แย่ลง/รุนแรง ใช้จอเดิม'],
-  wait: ['คำแนะนำตอน "เหมือนเดิม" ต้องให้เภสัชกรยืนยันถ้อยคำ'],
-  prep(S) {
-    const st = S.st.furesult; if (!st) return;
-    if (st === 'symbetter' || st === 'symsame') { S._fuSeen = S.case; const q = mockSym('symdue'), m = st.slice(3); q.checks.push({ at: 'once', day: 1, date: TP.NOW.date, time: '14:10', mood: m }); q.end = m; S.follow = q; ensureSrc(S, q.src); S.storeOpen = TP.flag('storeOpen'); TP.emit('state'); return; }
-    if (F()?.sym) { S._fuSeen = S.case; S.follow = mockPlan('normal'); }
-    const p = ensure(S); p.on = true; p.end = ''; if (p.today > p.days) p.today = 3;
-    const day = cday(p); p.checks = p.checks.filter(x => x.at !== 'mid'); p.contact = null;
-    p.checks.push({ at: 'mid', day, date: dateOf(p, day), time: { danger: '14:05', worse: '13:40', closed: '22:05', late: '20:15' }[st] || now(), mood: ['better', 'same', 'danger'].includes(st) ? st : 'worse' });
-    S.storeOpen = st === 'closed' ? false : TP.flag('storeOpen'); TP.emit('state');
-  },
-  render(ctx) {
-    const S = ctx.S, assessment = assessmentResultPlan(S, ctx.params.assessmentId), p = assessment || ensure(S), c = lastCheck(p) || { at: 'self', day: cday(p), time: now(), mood: 'better' };
-    const kind = String((assessment ? '' : S.st.furesult) || kindOf(c)).replace(/^sym/, ''), P = ph(p), sent = `ส่งถึง ${P.short} แล้ว ${c.time}`;
-    const nav = ui.nav({ back: backL('follow'), title: '' }), back = (k = 'primary') => assessment ? ui.btn('กลับไปหน้ารายละเอียด', { kind: k, back: true }) : ui.btn('กลับไปหน้าติดตาม', { kind: k, a: 'fuBackFollow' });
-    const next = `<p class="fu-foot" data-in="1">${ic('calendar-check', 14, 2)}<span>${esc(nextAsk(p))}</span></p>`;
-    if (p.sym && (kind === 'better' || kind === 'same')) {
-      /* item 82: no medicine to keep taking; the one question closes the follow-up, so home is the way out */
-      const out = c.at === 'once' ? ui.btn('กลับหน้าแรก', { a: 'fuHome' }) : back();
-      const body = kind === 'better' ? 'ดีใจที่อาการดีขึ้น ดูแลตัวเองตามคำแนะนำในใบสรุปต่อ ถ้ามีอาการอีก ปรึกษาเภสัชกรได้ทุกเมื่อ' : 'ดูแลตัวเองตามคำแนะนำในใบสรุปต่อ ถ้าอาการไม่ดีขึ้น หรืออยากให้เภสัชกรดูอีกครั้ง ปรึกษาได้เลย';
-      /* real-user 20/10: one tap closes the follow-up, so a wrong tap can be taken back the same day */
-      const fix = c.at === 'once' && c.day === p.today ? `<div class="fu-fix" data-in="2">${ui.btn('ตอบผิด แก้คำตอบ', { kind: 'ghost', sm: true, a: 'fuReAns', icon: 'rotate-ccw' })}</div>` : '';
-      return nav + ui.page(`${resTop(kind === 'better' ? 'ok' : '', ANS[kind][1], 'ขอบคุณที่บอกอาการ', body, sent)}${next}${fix}`) +
-        ui.dock(out + (kind === 'same' ? ui.btn(S.storeOpen ? 'ปรึกษาเภสัชกรตอนนี้' : 'ฝากคำถามถึงเภสัชกร', { kind: 'ghost', a: 'fuConsult', icon: 'message-circle' }) : inHist(S, p.src.id) ? ui.btn('ดูใบสรุปการปรึกษา', { kind: 'ghost', go: 'summary', p: { id: p.src.id } }) : ''));
-    }
-    if (kind === 'better') return nav + ui.page(`${resTop('ok', 'smile', 'ขอบคุณที่บอกอาการ', 'ดีใจที่อาการดีขึ้น กินยาต่อให้ครบตามที่เภสัชกรแนะนำ', sent)}${next}`) + ui.dock(back());
-    if (kind === 'same') {
-      return nav + ui.page(`${resTop('', 'meh', 'ขอบคุณที่บอกอาการ', 'กินยาต่อตามเวลา บางอาการใช้เวลา 2-3 วันกว่าจะดีขึ้น ถ้าแย่ลง บอกเภสัชกรได้ทุกเมื่อ', sent)}${next}`) +
-        ui.dock(back() + ui.btn(S.storeOpen ? 'ปรึกษาเภสัชกรตอนนี้' : 'ฝากคำถามถึงเภสัชกร', { kind: 'ghost', a: 'fuConsult', icon: 'message-circle' }));
-    }
-    if (kind === 'danger') {
-      return nav + ui.page(`<div class="fu-danger fu-sev" data-in="0" role="alert">
-          <p class="fu-danger-h">${ic('octagon-alert', 24, 2)}<b>ไปโรงพยาบาลทันที ไม่ต้องรอเภสัชกร</b></p>
-          <p>อาการที่แจ้งอาจรุนแรง ไปโรงพยาบาลใกล้ที่สุด ถ้าไปเองไม่ไหว โทรสายด่วนฉุกเฉิน</p>${call1669()}</div>
-        <p class="fu-sentl fu-left" data-in="1">${ic('send', 14, 2)}<span>${esc(sent)} · ${S.storeOpen ? 'ร้านจะโทรหาคุณโดยเร็วที่สุด แต่อย่ารอ' : 'ร้านปิดอยู่ เภสัชกรจะเห็นเมื่อร้านเปิด 09:00 อย่ารอ'}</span></p>${telLine(p)}
-        ${ui.callHelp({ branch: p.src.branch, din: 2 })}`) + ui.dock(back('secondary'));
-    }
-    const closed = kind === 'closed' || !S.storeOpen;
-    const late = !closed && backLate(c);
-    return nav + ui.page(`${resTop('warn', closed ? 'moon' : 'phone', closed ? 'เภสัชกรจะเห็นเมื่อร้านเปิด 09:00' : late ? `ร้านจะติดต่อกลับภายใน ${backBy(c)}` : 'ร้านจะติดต่อกลับภายใน 2 ชั่วโมง',
-        closed ? 'และจะติดต่อกลับภายใน 11:00 ทางโทรศัพท์หรือข้อความในแอป' : late ? `ร้านปิด 21:00 จึงนับเวลาต่อตอนร้านเปิด 09:00 ${P.short} จะโทรหรือส่งข้อความในแอปก่อน ${backBy(c)}` : backBy(c) ? `${P.short} จะโทรหรือส่งข้อความในแอปก่อน ${backBy(c)} ถ้าเลยเวลานี้ยังไม่มีใครติดต่อ กดปรึกษาตอนนี้ได้เลย` : `${P.short} จะโทรหรือส่งข้อความในแอป ในเวลาทำการ ${HOURS}`, sent, telLine(p, ' c'))}
-      <div class="mt16" data-in="1">${dangerNote()}</div>`) +
-      ui.dock(back() + ui.btn(closed ? 'ฝากคำถามถึงเภสัชกร' : 'ไม่อยากรอ ปรึกษาตอนนี้', { kind: 'ghost', a: 'fuConsult', icon: 'message-circle' }));
-  }
-});
-
-TP.act('fuReAns', () => { const p = F(); if (!p?.sym) return; p.checks = p.checks.filter(x => x.at !== 'once'); p.end = ''; TP.emit('state'); TP.go('fucheck', { replace: true, params: { at: 'once' } }); });
-
-/* =====================================================================
-   C408 Log: one line per day + the one or two answers (owner: not a detailed diary)
-   ===================================================================== */
-function logHtml(p) {
-  const { tk, n } = doseStats(p), last = cday(p), dayRows = [];
-  for (let d = 1; d <= last; d++) {
-    const ds = daySlots(p, d), t = ds.filter(x => x.st === 'taken').length, miss = ds.filter(x => x.st === 'missed' || x.st === 'late');
-    const today = d === p.today, title = `วันที่ ${d} · ${dateOf(p, d)}${today ? ' · วันนี้' : ''}`;
-    if (!ds.length) { dayRows.push(ui.row({ icon: 'pill', title, sub: 'กินเมื่อมีอาการ' })); continue; }
-    const sub = miss.length ? `${today ? 'ยังไม่ได้กิน' : 'ลืม'}มื้อ${miss.map(x => SLOT[x.s][0]).join(' ')} · กิน ${t} จาก ${ds.length} มื้อ` : today ? `กินแล้ว ${t} จาก ${ds.length} มื้อ ถึงตอนนี้` : `กิน ${t} จาก ${ds.length} มื้อ`;
-    dayRows.push(ui.row({ icon: 'pill', title, sub, tag: miss.length ? [today ? `ยังไม่ได้กิน ${miss.length} มื้อ` : `ลืม ${miss.length} มื้อ`, 'warn'] : today && t < ds.length ? null : ['ครบทุกมื้อ', 'ok'] }));
-  }
-  if (p.today < p.days) dayRows.push(ui.row({ icon: 'calendar', title: `วันที่ ${p.today + 1}${p.today + 1 < p.days ? ` ถึง ${p.days}` : ''}`, sub: 'ยังไม่ถึง' }));
-  p.meds.filter(m => m.prn).forEach(m => { const tot = Object.entries(p.prn).filter(([k]) => k.endsWith('|' + m.id)).reduce((a, [, l]) => a + l.length, 0); if (tot) dayRows.push(ui.row({ icon: /ไข้/.test(m.prn) ? 'thermometer' : 'pill', title: m.name, sub: `กิน${m.prn} รวม ${tot} ครั้ง` })); });
-  const ck = (at, day, date) => { const c = chk(p, at), due = at === 'mid' ? midDue(p) : endDue(p); return ui.row({ icon: 'message-circle', title: AT[at], sub: `${day ? `วันที่ ${day} · ` : ''}${date}${c ? ` · ตอบ ${c.time}` : ''}`, tag: c ? [MOOD[c.mood][0], MOOD[c.mood][1]] : !due ? ['ยังไม่ถึง', 'muted'] : at === 'mid' && p.today > p.mid ? ['ยังไม่ได้ตอบ', 'warn'] : [at === 'mid' ? 'วันนี้' : 'ถึงเวลาแล้ว', 'solid'] }); };
-  const ckRows = [...(p.mid ? [ck('mid', p.mid, dateOf(p, p.mid))] : []), ...p.checks.filter(c => c.at === 'self').map(c => ui.row({ icon: 'message-circle', title: 'บอกเอง', sub: `วันที่ ${c.day} · ${c.date} · ${c.time}`, tag: [MOOD[c.mood][0], MOOD[c.mood][1]] })), ck('end', 0, dateOf(p, p.days + 1))];
-  const asked = p.checks.filter(c => c.at !== 'self').length, plan = p.mid ? 2 : 1;
-  return `<div class="card fu-stats" data-in="1"><div><b class="num">${tk}<small> / ${n}</small></b><span>มื้อที่กินแล้ว</span></div><div><b class="num">${asked}<small> / ${plan}</small></b><span>ครั้งที่ตอบเภสัชกร</span></div></div>
-    <div data-in="2">${ui.group(dayRows, { title: 'การกินยา' })}</div><div data-in="3">${ui.group(ckRows, { title: 'เภสัชกรถามอาการ' })}</div>${footHtml()}`;
-}
-TP.screen('fulog', {
-  group: 'after', title: 'บันทึกการกินยา', code: 'C408', parent: 'follow',
-  states: [['normal', 'ระหว่างคอร์ส'], ['done', 'ครบคอร์สแล้ว'], ['empty', 'เพิ่งเริ่ม ยังไม่มี'], ['loading', 'กำลังโหลด']],
-  notes: ['19/10 เจ้าของสั่ง "ไม่ต้องตามละเอียดขนาดนั้น": เหลือวันละบรรทัด (ครบทุกมื้อ หรือลืมมื้อไหน) + คำตอบเภสัชกร 1-2 ครั้ง · ตัดไทม์ไลน์รายมื้อและข้อความที่เล่าออก',
-    'ลืม / ครบ / ยังไม่ถึง เป็นข้อความ ไม่ใช้สีอย่างเดียว',
-    'เภสัชกรเห็นสรุปเดียวกันนี้ในคอนโซล (S401)'],
-  wait: ['เก็บบันทึกการกินยาและอาการนานเท่าไร'],
-  prep(S) {
-    const st = S.st.fulog; if (!st) return;
-    S._fuSeen = S.case;
-    if (st === 'empty') { S.follow = dayOnePlan(null); return; }
-    const p = mockPlan('normal');
-    if (st === 'done') { finish(p); p.end = 'healed'; p.checks.push({ at: 'end', day: p.days + 1, date: dateOf(p, p.days + 1), time: '19:10', mood: 'healed' }); }
-    S.follow = p; ensureSrc(S, p.src);
-  },
-  render(ctx) {
-    const p = F(), nav = ui.nav({ back: backL('follow'), title: 'บันทึกการกินยา' });
-    if (ctx.state === 'loading') return nav + ui.page(`<div aria-busy="true" aria-label="กำลังโหลดบันทึก">${ui.skel('100%', 84, 14)}<div class="mt24">${ui.skel('100%', 230, 14)}</div><div class="mt24">${ui.skel('100%', 120, 14)}</div></div>`, { lt: 'บันทึกการกินยา' });
-    const any = p && (Object.keys(p.log).length || Object.values(p.prn).some(a => a.length) || p.checks.length);
-    if (!any) return nav + ui.page(ui.empty({ title: 'ยังไม่มีบันทึก', body: 'เมื่อกด กินแล้ว หรือตอบเภสัชกรเรื่องอาการ จะเก็บไว้ที่นี่', btn: p ? { label: 'กลับไปหน้าติดตาม', a: 'fuBackFollow' } : undefined, art: emArt('history') }), { lt: 'บันทึกการกินยา' });
-    return nav + ui.page(logHtml(p), { lt: 'บันทึกการกินยา', sub: `จากการปรึกษา ${esc(p.src.date)} · ${esc(ph(p).short)}` });
-  },
-  mount(el, ctx) { if (ctx.state === 'loading') ctx.later(() => { ctx.S.st.fulog = 'normal'; TP.refresh(); }, 1200); }
-});
-
-/* =====================================================================
-   C409 Course finished: the pharmacist's last question (2 big rows, same as C406)
-   ===================================================================== */
-TP.screen('fudone', {
-  group: 'after', title: 'ครบคอร์สยาแล้ว', code: 'C409', parent: 'follow',
-  states: [['ask', 'ถามหลังครบคอร์ส'], ['healed', 'หายดีแล้ว'], ['still', 'ยังมีอาการ']],
-  notes: ['19/10 เจ้าของสั่ง "ตามทีเดียวตอนจบคอร์สก็ได้": คำถามสุดท้ายของเภสัชกร 2 ทางเลือก หายดีแล้ว / ยังมีอาการ แถวใหญ่แบบเดียวกับ C406 แตะเดียวส่ง',
-    'หายดี = ปิดการติดตาม หยุดเตือน + วิธีเก็บยาที่เหลือ · ยังมีอาการ = ชวนปรึกษาใหม่ + ช่องทางติดต่อคน',
-    'ไม่ถามซ้ำหลังจบคอร์สแล้ว · จำลองวันที่ 21/10/2026'],
-  wait: ['คำแนะนำเรื่องยาที่เหลือ ต้องให้เภสัชกรยืนยัน'],
-  prep(S) {
-    const st = S.st.fudone; if (!st) return;
-    S._fuSeen = S.case;
-    const p = mockPlan('normal'); finish(p);
-    if (st !== 'ask') { p.end = st; p.checks.push({ at: 'end', day: p.days + 1, date: dateOf(p, p.days + 1), time: '19:10', mood: st }); }
-    S.follow = p; ensureSrc(S, p.src);
-  },
-  render(ctx) {
-    const S = ctx.S, p = ensure(S), st = p.end || 'ask', w = fam(p.src.who), { tk, n } = doseStats(p), mc = chk(p, 'mid');
-    S.st.fudone = st;
-    const stats = din => `<div class="card fu-said" data-in="${din}">${ui.kv([['กินยาตามเวลา', `${tk} จาก ${n} มื้อ`], ...(mc ? [['กลางคอร์สตอบว่า', esc(MOOD[mc.mood][0])]] : []), ['ผู้ดูแล', esc(ph(p).name)]])}</div>`;
-    const nav = ui.nav({ back: backL('follow'), title: '' });
-    if (st === 'healed') {
-      return nav + ui.page(`${resTop('ok', 'circle-check', 'ขอบคุณที่บอก', 'ปิดการติดตามของแผนนี้แล้ว ไม่มีแจ้งเตือนกินยาอีก')}${stats(1)}
-        <div class="mt12" data-in="2">${ui.note('<b>ยาที่เหลือ</b> เก็บในที่แห้ง พ้นแสงและมือเด็ก ไม่แบ่งให้คนอื่นใช้ ถ้ามีอาการอีก ปรึกษาเภสัชกรได้ทุกเมื่อ', { icon: 'info' })}</div>${footHtml()}`) +
-        ui.dock(ui.btn('กลับหน้าแรก', { a: 'fuHome' }) + ui.btn('ดูบันทึกการกินยา', { kind: 'ghost', go: 'fulog' }));
-    }
-    if (st === 'still') {
-      return nav + ui.page(`${resTop('warn', 'triangle-alert', 'ควรปรึกษาเภสัชกรอีกครั้ง', 'กินยาครบแล้วยังมีอาการ อาจต้องเปลี่ยนยา หรือควรพบแพทย์')}
-        <div class="mt12" data-in="1">${dangerNote()}</div>${ui.callHelp({ branch: p.src.branch, din: 2 })}<div class="mt16" data-in="3">${ui.group([adrRow(S, p)])}</div>`) +
-        ui.dock(ui.btn(S.storeOpen ? 'เริ่มปรึกษาใหม่' : 'ฝากคำถามถึงเภสัชกร', { a: 'fuConsult', icon: 'message-circle' }) + ui.btn('กลับหน้าแรก', { kind: 'ghost', a: 'fuHome' }));
-    }
-    return nav + ui.page(`${resTop('', 'calendar-check', 'ครบคอร์สยาแล้ว', `ยาจากการปรึกษาวันที่ ${p.src.date} ครบ ${p.days} วันเมื่อ ${dateOf(p, p.days)}`)}${stats(1)}
-      <h3 class="fu-h mt24" data-in="2">ตอนนี้${w ? esc(firstN(w.name)) : ''}อาการเป็นอย่างไร</h3>
-      <div class="fu-anss" data-in="2">${['healed', 'still'].map(k => ansBtn(k, 'end', END, 'fuEnd')).join('')}</div>
-      <p class="fu-exp fu-exp-s" data-in="3">${ic('send', 16, 2)}<span>${esc(S.storeOpen ? `แตะคำตอบเดียว ส่งถึง ${ph(p).short} ทันที นี่เป็นคำถามสุดท้ายของคอร์สนี้` : 'ร้านปิดอยู่ เภสัชกรจะเห็นคำตอบเมื่อร้านเปิด 09:00')}</span></p>${footHtml()}`);
-  }
-});
-TP.act('fuEnd', async t => {
-  const S = TP.S, p = F(), el = curEl(), v = t.dataset.v; if (!p || !END[v] || t.classList.contains('busy')) return;
-  $$('.fu-ans', el).forEach(b => { if (b !== t) b.disabled = true; }); t.classList.add('busy'); t.setAttribute('aria-busy', 'true');
-  await TP.wait(RM() ? 50 : 550);
-  p.end = v; p.clock = ''; p.checks = p.checks.filter(x => x.at !== 'end');
-  p.checks.push({ at: 'end', day: p.days + 1, date: dateOf(p, p.days + 1), time: TP.NOW.time, mood: v });
-  S.st.fudone = v; TP.emit('state');
-  TP.notify(v === 'healed' ? 'ปิดการติดตามแล้ว' : 'ส่งให้เภสัชกรแล้ว', { icon: 'check' });
-  TP.refresh();
-});
-
-/* =====================================================================
-   C410 Reminder sheet: one switch + meal times · C411 stop follow-up
-   ===================================================================== */
-TP.sheetDef('fureminder', {
-  group: 'after', title: 'ตั้งเวลาเตือน', code: 'C410', host: 'follow', tall: true,
-  states: [['normal', 'เปิดเตือน'], ['off', 'ปิดเตือนอยู่'], ['notifoff', 'ปิดแจ้งเตือนของแอป'], ['error', 'เวลาไม่เรียง']],
-  notes: ['19/10 เจ้าของสั่ง "พอมีไอคอนติ้กถูกแล้ว บันทึกมันเลื่อนไม่กึ่งกลาง": คำว่า บันทึก อยู่กึ่งกลางปุ่มพอดีเหมือน ยกเลิก ไอคอนอยู่ข้างซ้ายโดยไม่ดันข้อความ (ปุ่มหยุดติดตาม C411 แก้แบบเดียวกัน)',
-    '19/10 เจ้าของสั่ง "ตั้งเวลาเตือนต้องมีผลจริง": สวิตช์เดียว เตือนกินยา + เวลามื้อ · บันทึกแล้วกด "จำลองว่าถึงเวลากินยา" ในแผง จะเห็นแจ้งเตือนพร้อมปุ่ม กินแล้ว',
-    'ปิดเตือน = ซ่อนเวลามื้อ ยังกด กินแล้ว ในหน้าติดตามได้ · ตัดสวิตช์เตือนทีละยาและเตือนตอบคำถามออก (คำถามเภสัชกรแจ้งเตือนเสมอ)',
-    'เวลามื้อต้องเรียงจากเช้าไปก่อนนอน ผิด = บอกเหตุผล · ข้อความเตือนไม่บอกชื่อยาหรืออาการ (PDPA)'],
-  wait: ['ข้อความเตือน "ถึงเวลากินยามื้อเย็น" พอไหม หรือต้องกลางกว่านี้'],
-  prep(S) {
-    if (F()?.sym) { S._fuSeen = S.case; S.follow = mockPlan('normal'); }
-    const st = S.st.fureminder, p = ensure(S); p.on = true; p.end = ''; if (p.today > p.days) p.today = 3;
-    if (!st) return;
-    S.notif = st !== 'notifoff'; p.remind = st !== 'off';
-    S._fuRemBad = st === 'error'; /* shown once by mount: lunch typed before breakfast */
-    TP.emit('state');
-  },
-  render() {
-    const S = TP.S, host = TP.cur()?.ctx;
-    const multi = ['follow','medhub'].includes(host?.id) && host.state === 'multi-plan';
-    const p = multi ? multiReminderSettings(host) : ensure(S);
-    const used = SLOTS.filter(s => multi ? followPreviewPlans().some(plan => plan.med.slots.includes(s)) : medsAt(p, s).length);
-    const timeRows = used.map(slot => {
-      const time = p.times[slot];
-      const [hour, minute] = time.split(':');
-      return `<details class="fu-time-picker" name="fu-reminder-time">
-        <summary class="row fu-trow"><span class="r-ic">${ic(SLOT[slot][1], 19, 1.9)}</span><span class="r-t"><b>${SLOT[slot][0]}</b><span>แจ้งเตือนกินยา</span></span><span class="fu-time"><span data-fu-time>${esc(time)}</span>${ic('chevron-down', 16)}</span></summary>
-        <input type="hidden" id="fuT-${slot}" value="${esc(time)}">
-        <div class="fu-time-options">
-          ${reminderTimeOptions(slot, 'hour', 'ชั่วโมง', 24, hour)}
-          ${reminderTimeOptions(slot, 'minute', 'นาที', 60, minute)}
-        </div>
-      </details>`;
-    });
-    return `${S.notif ? '' : `<div class="fu-mb">${ui.note('<b>การแจ้งเตือนของแอปปิดอยู่</b><br>ตั้งเวลาไว้ได้ แต่จะไม่มีแจ้งเตือนจนกว่าจะเปิด', { tone: 'warn', icon: 'bell-off' })}<div class="mt8">${ui.btn('เปิดการแจ้งเตือน', { kind: 'tint', sm: true, a: 'fuNotifOn', icon: 'bell' })}</div></div>`}
-      ${ui.group([ui.switchRow({ icon: 'bell', title: 'เตือนกินยา', sub: remSub(p.remind), on: p.remind, id: 'fuR-on', a: 'fuRemSw' })])}
-      ${used.length ? rvHtml('fuTimes', p.remind, ui.group(timeRows, { title: 'เวลาแจ้งเตือนแต่ละมื้อ', foot: 'ตั้งเวลาแจ้งเตือนตามแผนการใช้ยาของคุณ' })) : ''}
-      <p class="fu-err" id="fuRemErr" role="alert" hidden>${ic('circle-x', 16, 2)}<span></span></p>
-      ${multi ? '' : `<p class="fu-foot fu-left">${ic('message-circle', 14, 2)}<span>คำถามอาการจากเภสัชกร แจ้งเตือนเวลา ${esc(p.askAt)} ของวันที่ถามเสมอ</span></p>`}
-      <p class="fu-foot fu-left">${ic('lock', 14, 2)}<span>ข้อความเตือนไม่บอกชื่อยาหรืออาการ เช่น "ถึงเวลากินยามื้อเย็น"</span></p>`;
-  },
-  foot: () => ui.btn('บันทึก', { a: 'fuRemSave', icon: 'check', cls: 'fu-cbtn' }) + ui.btn('ยกเลิก', { kind: 'ghost', closeSheet: true }),
-  mount(el) {
-    const body = $('.sh-b', el);
-    el.querySelectorAll('.fu-time-picker').forEach(picker => {
-      picker.addEventListener('toggle', () => {
-        if (!picker.open) return;
-        const options = $('.fu-time-options', picker);
-        const overflow = options.getBoundingClientRect().bottom - body.getBoundingClientRect().bottom;
-        if (overflow > 0) body.scrollTop += overflow + 8;
-      });
-    });
-    el.addEventListener('click', event => {
-      const picker = $('.fu-time-picker[open]', el);
-      if (picker && !picker.contains(event.target)) picker.open = false;
-    });
-    el.addEventListener('keydown', event => {
-      const picker = $('.fu-time-picker[open]', el);
-      if (event.key !== 'Escape' || !picker) return;
-      event.stopPropagation();
-      picker.open = false;
-      $('summary', picker).focus();
-    });
-    if (!TP.S._fuRemBad) return;
-    TP.S._fuRemBad = false;
-    const n = $('#fuT-n', el); if (n) { setReminderTime(n.closest('details'), '07:30'); checkTimes(el, false); }
-  }
-});
-function reminderTimeOptions(slot, part, label, count, selected) {
-  const options = Array.from({length: count}, (_, index) => {
-    const value = String(part === 'hour' ? (index + 1) % count : index).padStart(2, '0');
-    return `<button type="button" aria-label="${label} ${value}" aria-pressed="${value === selected}" data-a="fuRemTime" data-slot="${slot}" data-part="${part}" data-v="${value}">${value}</button>`;
-  }).join('');
-  return `<div class="fu-time-part" role="group" aria-label="${label}"><b>${label}</b><div class="fu-time-values">${options}</div></div>`;
-}
-function setReminderTime(picker, time) {
-  $('input', picker).value = time;
-  $('[data-fu-time]', picker).textContent = time;
-  const [hour, minute] = time.split(':');
-  picker.querySelectorAll('[data-part]').forEach(button => {
-    button.setAttribute('aria-pressed', String(button.dataset.v === (button.dataset.part === 'hour' ? hour : minute)));
+    const meds = paid?.length ? paid : snapshot?.meds || [];
+    return meds.length ? [{ ...record, meds }] : [];
   });
 }
-TP.act('fuRemTime', button => {
-  const picker = button.closest('.fu-time-picker');
-  const time = $('input', picker).value.split(':');
-  time[button.dataset.part === 'hour' ? 0 : 1] = button.dataset.v;
-  setReminderTime(picker, time.join(':'));
-  const sheet = $('#sheet');
-  if (!$('#fuRemErr', sheet).hidden) checkTimes(sheet, false);
-});
-const remSub = on => (on ? 'แจ้งเตือนในแอปตามเวลามื้อ แตะ กินแล้ว ในแจ้งเตือนได้เลย' : 'ปิดอยู่ ไม่มีแจ้งเตือน ยังกด กินแล้ว ในหน้าติดตามได้');
-const badTimes = vals => vals.map((v, i) => !v || (i > 0 && !!vals[i - 1] && v <= vals[i - 1]));
-const timeMsg = vals => (vals.some(v => !v) ? 'ใส่เวลาให้ครบทุกมื้อ' : 'เวลามื้อต้องเรียงจากเช้าไปก่อนนอน และไม่ซ้ำกัน');
-/* marks wrong meal times and says why; returns the values when they are fine */
-function checkTimes(sh, loud = true) {
-  const used = SLOTS.filter(s => $('#fuT-' + s, sh)), vals = used.map(s => $('#fuT-' + s, sh).value), bad = badTimes(vals);
-  used.forEach((s, i) => { const inp = $('summary', $('#fuT-' + s, sh).closest('details')); inp.classList.toggle('err', bad[i]); if (bad[i]) inp.setAttribute('aria-invalid', 'true'); else inp.removeAttribute('aria-invalid'); });
-  const err = $('#fuRemErr', sh);
-  if (bad.some(Boolean)) { const msg = timeMsg(vals); $('span', err).textContent = msg; err.hidden = false; if (loud) { shake(err); TP.live(msg); } return null; }
-  if (err) err.hidden = true;
-  return { used, vals };
-}
-TP.act('fuRemSw', t => {
-  const on = t.getAttribute('aria-checked') === 'true', sub = t.closest('.row')?.querySelector('.r-t span');
-  rv($('#fuTimes', $('#sheet')), on); if (sub) sub.textContent = remSub(on);
-  if (!on) { $('#sheet').querySelectorAll('.fu-time-picker[open]').forEach(picker => { picker.open = false; }); const err = $('#fuRemErr', $('#sheet')); if (err) err.hidden = true; }
-});
-TP.act('fuRemSave', async t => {
-  const S = TP.S, host = TP.cur()?.ctx;
-  const multi = ['follow','medhub'].includes(host?.id) && host.state === 'multi-plan';
-  const p = multi ? multiReminderSettings(host) : F(), sh = $('#sheet'); if (!p || !sh || t.classList.contains('busy')) return;
-  const on = $('#fuR-on', sh)?.getAttribute('aria-checked') === 'true';
-  const ok = on ? checkTimes(sh) : { used: [], vals: [] }; if (!ok) return;
-  ok.used.forEach((s, i) => { p.times[s] = ok.vals[i]; });
-  p.remind = on; S._fuRemBad = false;
-  t.classList.add('busy'); await TP.wait(RM() ? 50 : 450);
-  TP.emit('state'); await TP.closeSheet();
-  const nx = multi ? null : upNext(p);
-  TP.notify(!on ? 'ปิดเตือนกินยาแล้ว' : nx ? `ตั้งเวลาแล้ว จะเตือนมื้อ${SLOT[nx.s][0]} ${p.times[nx.s]}` : 'บันทึกเวลาเตือนแล้ว', { icon: on ? 'alarm-clock' : 'bell-off' });
-  if (['follow','medhub'].includes(TP.cur()?.id)) TP.refresh({ anim: false });
-});
-TP.sheetDef('fuoff', {
-  group: 'after', title: 'หยุดติดตาม', code: 'C411', host: 'follow',
-  notes: ['ยืนยันก่อนหยุด · ไม่ลบบันทึกเดิม · เปิดอีกครั้งได้จากหน้าติดตาม', 'ย้ำว่ายังกินยาตามที่เภสัชกรแนะนำ และปรึกษาได้ทุกเมื่อ', '19/10: ข้อความปุ่ม หยุดติดตาม อยู่กึ่งกลางพอดีเหมือน ยกเลิก (แก้แบบเดียวกับ C410)'],
-  prep(S) { const p = ensure(S); p.on = true; if (p.sym) return; p.end = ''; if (p.today > p.days) p.today = 3; },
-  render: () => F()?.sym ? `<div class="fu-sh-top"><span class="fu-ic">${ic('bell-off', 22, 1.9)}</span><p class="body">เภสัชกรจะไม่ถามอาการของการปรึกษานี้ ใบสรุปยังอยู่ เปิดติดตามอีกครั้งได้ทุกเมื่อ</p></div>
-    <div class="mt12">${ui.note('ดูแลตัวเองตามคำแนะนำในใบสรุป ถ้าอาการแย่ลง ปรึกษาเภสัชกรได้ทุกเมื่อ', { icon: 'info' })}</div>` : `<div class="fu-sh-top"><span class="fu-ic">${ic('bell-off', 22, 1.9)}</span><p class="body">ไม่มีการเตือนกินยาและไม่ถามอาการของแผนนี้อีก บันทึกที่ผ่านมายังอยู่ เปิดติดตามอีกครั้งได้ทุกเมื่อ</p></div>
-    <div class="mt12">${ui.note('ยังกินยาตามที่เภสัชกรแนะนำต่อ ถ้าอาการแย่ลง ปรึกษาเภสัชกรได้ทุกเมื่อ', { icon: 'info' })}</div>`,
-  foot: () => ui.btn('หยุดติดตาม', { a: 'fuOff', icon: 'bell-off', cls: 'fu-cbtn' }) + ui.btn('ยกเลิก', { kind: 'ghost', closeSheet: true })
-});
-TP.act('fuOff', async t => {
-  const p = F(); if (!p) return;
-  t.classList.add('busy'); await TP.wait(RM() ? 50 : 450);
-  p.on = false; TP.emit('state'); await TP.closeSheet();
-  TP.notify('หยุดติดตามแล้ว', { icon: 'bell-off' });
-  if (['follow','medhub'].includes(TP.cur()?.id)) TP.refresh({ anim: false });
-});
-
-/* =====================================================================
-   In-app dose reminder: the app's push banner look (10-shell .banner) with a "กินแล้ว" action.
-   #banner itself is one button, so this is its own element next to it.
-   ===================================================================== */
-let banEl = null, banT = 0;
-function hideBan(instant) {
-  clearTimeout(banT); const el = banEl; banEl = null; if (!el) return;
-  if (instant || RM()) { el.remove(); return; }
-  const a = A(el, [{ transform: 'none', opacity: 1 }, { transform: 'translateY(-130%)', opacity: 0 }], { d: 320, e: E.in, fill: 'forwards' });
-  if (a?.finished) a.finished.then(() => el.remove(), () => el.remove()); else el.remove();
-}
-const reRender = () => { const id = TP.cur()?.id; if (!TP.sheetOpen() && ['follow', 'medhub', 'home', 'fulog'].includes(id)) return TP.refresh({ anim: false }); return Promise.resolve(); };
-function doseBanner(p, day, s) {
-  hideBan(true);
-  const at = p.times[s], el = document.createElement('div');
-  el.className = 'banner fu-ban'; el.setAttribute('role', 'alertdialog'); el.setAttribute('aria-label', `แจ้งเตือน ถึงเวลากินยามื้อ${SLOT[s][0]}`);
-  el.innerHTML = `<button type="button" class="fu-ban-o" data-fuban="open"><span class="appicon">${TP.brand.plus(20)}</span><span class="bt"><small><span>MITRAREE</span><span>${esc(at)}</span></small><b>${esc(`ถึงเวลากินยามื้อ${SLOT[s][0]}`)}</b><span>แตะเพื่อดูรายการยา</span></span></button>
-    <div class="fu-ban-a"><button type="button" class="btn primary sm" data-fuban="take">${ic('check', 18, 2.4)}<span>กินแล้ว</span></button><button type="button" class="btn secondary sm" data-fuban="later"><span>ไว้ทีหลัง</span></button></div>`;
-  el.addEventListener('click', async e => {
-    const b = e.target.closest('[data-fuban]'); if (!b) return;
-    e.stopPropagation();
-    const what = b.dataset.fuban; hideBan();
-    if (what === 'take') {
-      if (!medsAt(p, s).every(m => p.log[lk(day, s, m)]?.t)) takeSlot(p, day, s, at);
-      TP.emit('state'); TP.notify(`บันทึกแล้ว กินยามื้อ${SLOT[s][0]} ${at}`, { icon: 'check' });
-      await reRender(); if (['follow','medhub'].includes(TP.cur()?.id) && !RM()) pop($(`.fu-take[data-v="${day}|${s}"]`, curEl()));
-    } else if (what === 'open') { if (['follow','medhub'].includes(TP.cur()?.id)) reRender(); else TP.go('follow', { via: 'cover' }); }
-    else TP.notify('กด กินแล้ว ได้ที่หน้าติดตามการใช้ยา', { icon: 'info' });
-  });
-  ($('#banner')?.parentElement || TP.phone).appendChild(el); banEl = el;
-  TP.live(`ถึงเวลากินยามื้อ${SLOT[s][0]} ${at}`);
-  if (!RM()) A(el, [{ transform: 'translateY(-130%) scale(.96)', opacity: 0 }, { transform: 'none', opacity: 1 }], { d: SP.spring.d, e: SP.spring.e, fill: 'backwards' });
-  banT = setTimeout(() => hideBan(), 15000);
-  setTimeout(() => el.querySelector('[data-fuban="take"]')?.focus({ preventScroll: true }), 60);
-}
-TP.on('screen', () => { if (banEl && !TP.S.follow) hideBan(true); });
-
-/* =====================================================================
-   Panel simulation: dose reminders, the pharmacist's question, course end, reply to "worse"
-   ===================================================================== */
-const doseLabel = () => { const p = TP.S.follow, nx = p && upNext(p); return nx ? `จำลองว่าถึงเวลากินยา (${whenPre(p, nx.day)}${SLOT[nx.s][0]} ${p.times[nx.s]})` : 'จำลองว่าถึงเวลากินยา'; };
-TP.simAction?.({
-  id: 'fuDose', get label() { return doseLabel(); }, when: S => !!upNext(S.follow),
-  run() {
-    const S = TP.S, p = S.follow, nx = p && upNext(p); if (!nx) return;
-    /* the follow clock moves to that meal time (and to the next day when today is done) */
-    p.today = nx.day; p.clock = p.times[nx.s]; TP.emit('state');
-    reRender();
-    if (!p.remind) { TP.notify('ปิดเตือนกินยาอยู่ แอปจึงไม่แจ้งเตือน', { icon: 'bell-off' }); return; }
-    if (!S.notif) { TP.notify('การแจ้งเตือนของแอปปิดอยู่ จึงไม่มีแจ้งเตือน', { icon: 'bell-off' }); return; }
-    doseBanner(p, nx.day, nx.s);
-  }
-});
-TP.simAction?.({
-  id: 'fuAskNow', label: 'จำลองแจ้งเตือนเภสัชกรถามอาการ', when: S => midDue(S.follow) || endDue(S.follow) || symWait(S.follow),
-  run: () => {
-    const p = TP.S.follow;
-    /* no-medicine plan: the clock moves to the day of the question, then the notification */
-    if (symWait(p)) { if (p.today < p.n) p.today = p.n; p.clock = p.askAt; TP.emit('state'); reRender(); TP.banner({ title: TP.FOLLOW_LOCK.fucheck[0], body: TP.FOLLOW_LOCK.fucheck[1], onTap: () => TP.go('fucheck', { params: { at: 'once' } }) }); return; }
-    const end = endDue(p); TP.banner({ title: end ? 'ครบคอร์สยาแล้ว' : TP.FOLLOW_LOCK.fucheck[0], body: TP.FOLLOW_LOCK.fucheck[1], onTap: () => (end ? TP.go('fudone') : TP.go('fucheck', { params: { at: 'mid' } })) }); }
-});
-TP.simAction?.({
-  id: 'fuEndNow', label: 'จำลองว่าครบคอร์สแล้ว (วันที่ 6)', when: S => active(S.follow) && !S.follow.waitRecv && !S.follow.sym,
-  run() { const p = TP.S.follow; p.today = p.days + 1; p.clock = ''; hideBan(true); TP.emit('state'); reRender(); TP.notify('จำลอง: ครบคอร์ส 5 วันแล้ว', { icon: 'calendar-check' }); }
-});
-TP.simAction?.({
-  id: 'fuReply', label: 'ตอบเรื่องอาการแย่ลง (ติดตามยา)', when: S => !!S.follow && !!recentBad(S.follow) && !S.follow.contact,
-  run() {
-    const S = TP.S, p = S.follow; if (!p) return;
-    p.contact = { at: '14:40', text: 'ได้รับคำตอบแล้วค่ะ ขอสอบถามอาการเพิ่มอีกนิด จะโทรหาภายใน 15 นาที หรือเริ่มปรึกษาในแอปได้เลยค่ะ' };
-    const n = { id: 'n' + Date.now().toString(36), kind: 'msg', title: 'มีข้อความใหม่จากเภสัชกร', body: 'แตะเพื่ออ่าน', time: `${TP.NOW.date} 14:40`, read: false, go: 'follow' };
-    S.inbox.unshift(n); TP.emit('state');
-    if (['follow','medhub'].includes(TP.cur()?.id)) { n.read = true; TP.refresh({ anim: false }); TP.notify('เภสัชกรตอบแล้ว', { icon: 'message-circle' }); }
-    else TP.banner({ title: n.title, body: n.body, onTap: () => { n.read = true; TP.emit('state'); TP.go('follow'); } });
-  }
-});
-
-/* item 82: the pharmacist closes without medicine and switches follow-up on (S305 default: ask tomorrow) */
-TP.simAction?.({
-  id: 'fuSymClose', label: 'ปิดเคส ไม่จ่ายยา + นัดถามอาการพรุ่งนี้', when: S => ['matched', 'room'].includes(S.case?.status) && (!S.case.order || S.case.order.status === 'cancelled'),
-  run() { TP.S.case.followAsk = 'd1'; TP.sim.closeCase(); F(); TP.emit('state'); }
-});
-
-/* item 58: the pharmacist ticks the open report at close (prototype: always ticked when the consult came from the follow card) */
-TP.followCaseClosed = c => {
-  const S = TP.S, p = S.follow, b = recentBad(p); if (!S._fuTalk) return;
-  S._fuTalk = false; if (!b) return;
-  b.talked = { at: TP.roomNow?.() || now(), id: c.id }; p.contact = null;
+/* ยาที่ใช้อยู่: medicines of the latest paid consultation that has just closed */
+TP.adrActiveMedicines = params => {
+  if (params.multiPlan) return previewRecords().map(record => ({
+    ...record.med, v: record.id, hid: record.id, medPreview: true, pharm: record.pharm, branch: record.branch, sub: record.topic
+  }));
+  const c = TP.S.case;
+  if (!c || (c.who && c.who !== 'me') || c.status !== 'closed' || c.order?.status !== 'paid' || !c.order.items?.length) return [];
+  return c.order.items.map((med, index) => ({ ...med, v: `${c.id}:${index}`, hid: c.id, pharm: c.pharm, branch: c.branch, sub: medSub(med) }));
 };
-F(); /* TP.S.follow exists from the start (panel restart: created again on first use) */
+/* ยาที่ใช้ใน 7 วัน: medicines from the patient's consultations in the last 7 days */
+TP.adrHistoryMedicines = ctx => {
+  const activeId = TP.S.case?.status === 'closed' ? TP.S.case.id : '';
+  return ownMedicineRecords(ctx.S).filter(record => {
+    if (record.id === activeId) return false;
+    const elapsed = (toD(TP.NOW.date) - toD(record.date)) / 86400000;
+    return Number.isFinite(elapsed) && elapsed >= 0 && elapsed < HISTORY_DAYS;
+  }).flatMap(record => record.meds.map((med, index) => ({ ...med, v: `history:${record.id}:${index}`, hid: record.id, pharm: record.pharm, branch: record.branch, sub: `ปรึกษา ${record.date || ''}` })));
+};
 })();
+
 
 /* ===== 99-boot.js ===== */
 /* =====================================================================
@@ -8534,7 +7291,7 @@ TP.icons(document.getElementById('app'));
 TP.MOTIF = ['plus', 'curve', 'glow', 'type'].includes(Q.get('motif')) ? Q.get('motif') : 'glow';   /* v1.2 default = glow (owner 19/10/2026) */
 document.documentElement.dataset.motif = TP.MOTIF;
 if (Q.get('first') === '1') TP.setFlag('firstTime', true);
-if (Q.get('first') === '1') Object.assign(TP.S, { firstTime: true, loggedIn: false, consent: false, notifAsked: false, notif: false, follow: null });
+if (Q.get('first') === '1') Object.assign(TP.S, { firstTime: true, loggedIn: false, consent: false, notifAsked: false, notif: false });
 TP.panel.render();
 if (Q.get('registry') === '1' && parent !== window) {
   const title = d => typeof d.title === 'function' ? d.title({ S: TP.S, params: {} }) : d.title;

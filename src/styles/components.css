@@ -528,9 +528,6 @@
   background-size: 220% 100%;
   border-radius: var(--radius-xs);
 }
-.phone .hm-mini-menu {
-  gap: var(--space-2);
-}
 .phone .hm-section-head h2,
 .phone .hm-section-title {
   font-size: var(--type-h3-mobile-size);
@@ -649,9 +646,6 @@
 .phone .st-otp.lock .st-cell {
   background: var(--semantic-disabled-bg);
   color: var(--semantic-text-disabled);
-}
-.phone .hm-mini-icon {
-  border-radius: var(--radius-md);
 }
 .phone .sw {
   appearance: none;

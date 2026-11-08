@@ -183,52 +183,6 @@
 .phone:has(.scr[data-screen='home']) > .homebar {
   background: var(--ink);
 }
-.hm-mini-menu {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--space-2);
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-}
-.hm-mini-item {
-  display: grid;
-  grid-template-rows: 44px auto;
-  justify-items: center;
-  align-content: start;
-  gap: var(--space-2);
-  min-width: 0;
-  min-height: 72px;
-  text-align: center;
-  border-radius: var(--radius-control);
-}
-.hm-mini-icon {
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  background: var(--brand-tint);
-  color: var(--brand);
-  border-radius: var(--radius-control);
-}
-.hm-mini-item > span:last-child {
-  font-size: var(--type-caption-mobile-size);
-  line-height: 1.5;
-  font-weight: 500;
-  /* Long labels such as ติดตามการใช้ยา wrap to two balanced lines. */
-  white-space: normal;
-  text-wrap: balance;
-  overflow-wrap: anywhere;
-}
-.hm-mini-item:active .hm-mini-icon {
-  background: var(--brand);
-  color: var(--semantic-surface);
-}
-.hm-mini-item:focus-visible {
-  outline: 2px solid var(--brand);
-  outline-offset: 3px;
-}
 .hm-nearby,
 .hm-updates,
 .hm-recent {
@@ -266,16 +220,11 @@
   font-size: var(--text-small);
   font-weight: 500;
 }
-.hm-updates > .fu-entry,
 .hm-updates > .group,
 .hm-recent > .group {
   margin: 0;
   width: auto;
   min-width: 0;
-}
-.hm-updates .fu-tags {
-  gap: var(--space-2);
-  margin-top: var(--space-2);
 }
 .hm-trust {
   display: flex;
@@ -663,15 +612,6 @@
   display: grid;
   gap: var(--space-6);
 }
-.hm-loading-shortcuts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--space-3);
-}
-.hm-loading-shortcuts > span {
-  height: 64px;
-  border-radius: var(--radius-md);
-}
 .hm-loading-card {
   height: 132px;
   border-radius: var(--radius-lg);
@@ -858,42 +798,6 @@
 }
 
 /* Pastel illustration shortcuts; labels carry the accessible meaning. */
-.hm-mini-item {
-  grid-template-rows: 52px auto;
-}
-.hm-mini-icon.hm-mini-art {
-  width: 52px;
-  height: 52px;
-  border-radius: 16px;
-  background: #ecf8f5;
-  overflow: hidden;
-}
-.hm-mini-art img {
-  display: block;
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-  border-radius: 0;
-}
-.hm-mini-icon.hm-mini-art-allergy {
-  background: #fff2ec;
-}
-.hm-mini-icon.hm-mini-art-family {
-  background: #edf8f2;
-}
-.hm-mini-icon.hm-mini-art-health {
-  background: #ecf7fa;
-}
-.hm-mini-icon.hm-mini-art-medication {
-  background: #f1effb;
-}
-.hm-mini-icon.hm-mini-art-history {
-  background: #edf5fc;
-}
-.hm-mini-item:active .hm-mini-art {
-  background: var(--brand-tint);
-  transform: scale(0.96);
-}
 
 .bc-identity-head {
   display: grid;
@@ -1112,13 +1016,6 @@
 }
 
 /* Three-tone brand illustrations share one quiet presentation. */
-.hm-mini-menu .hm-mini-icon.hm-mini-art {
-  background: transparent;
-}
-.hm-mini-menu .hm-mini-art img {
-  width: 52px;
-  height: 52px;
-}
 
 .hm-banner-copy .hm-greeting {
   margin: 0 0 var(--space-2);
@@ -1143,28 +1040,7 @@
   border-inline-start: 0;
 }
 
-.hm-mini-menu .hm-mini-icon.hm-mini-art {
-  background: var(--color-brand-50);
-  border-radius: var(--radius-md);
-}
-.hm-mini-menu .hm-mini-art img {
-  width: 40px;
-  height: 40px;
-}
-
 /* Five shortcuts fit one row with consistent rounded tiles. */
-.hm-mini-menu .hm-mini-item {
-  grid-template-rows: 52px auto;
-  gap: var(--space-2);
-}
-.hm-mini-menu .hm-mini-icon.hm-mini-art {
-  width: 52px;
-  height: 52px;
-}
-.hm-mini-menu .hm-mini-art img {
-  width: 36px;
-  height: 36px;
-}
 .hm-consult-options > div:not(.bc-action-heading) {
   grid-template-columns: minmax(0, 1fr);
 }

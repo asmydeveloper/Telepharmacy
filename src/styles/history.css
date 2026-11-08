@@ -375,7 +375,7 @@
   gap: var(--space-2);
   padding: var(--space-2) var(--space-4);
 }
-.phone .history-card-extra :is(.fu-hrow, .rc-hrow) {
+.phone .history-card-extra .rc-hrow {
   margin: 0;
   padding: 0;
   min-height: var(--size-touch);

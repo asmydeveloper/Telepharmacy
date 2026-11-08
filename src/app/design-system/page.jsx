@@ -133,7 +133,7 @@ export default function Page() {
           <h2>กริดและเลย์เอาต์ทั้งแอป</h2>
           <p>ขอบหน้า 16 px · ภายในการ์ด 16 px · แผงข้อมูล 24 px · gap เมนูลัด 12 px</p>
           <div className="guide-card">
-            <strong>ติดตามการใช้ยา</strong>
+            <strong>ข้อมูลสุขภาพของฉัน</strong>
             <p>จัดข้อความและไอคอนด้วย gap 12 px</p>
           </div>
           <div className="guide-shortcuts">
