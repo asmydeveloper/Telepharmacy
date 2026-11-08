@@ -2,7 +2,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const source=fs.readFileSync('public/runtime/customer.js','utf8'),actions={},sim={},calls=[];
 let refreshCount=0;
 let current={id:'room',el:{querySelector:()=>null}};
-const TP={S:{case:{status:'room',msgs:[],draft:'draft to preserve'},call:null,st:{}},ACTS:actions,hist:[],act:(id,fn)=>actions[id]=fn,simAction:d=>sim[d.id]=d,cur:()=>current,emit(){},refresh:()=>{refreshCount++;return Promise.resolve();},banner(){},closeSheet:()=>Promise.resolve(),go:(id)=>{calls.push(id);current.id=id;return Promise.resolve();},demoProfiles:{},branch:()=>({name:'Branch'})};
+const TP={NOW:{time:"14:12"},S:{case:{status:'room',msgs:[],draft:'draft to preserve'},call:null,st:{}},ACTS:actions,hist:[],act:(id,fn)=>actions[id]=fn,simAction:d=>sim[d.id]=d,cur:()=>current,emit(){},refresh:()=>{refreshCount++;return Promise.resolve();},banner(){},closeSheet:()=>Promise.resolve(),go:(id)=>{calls.push(id);current.id=id;return Promise.resolve();},demoProfiles:{},branch:()=>({name:'Branch'})};
 const C=()=>TP.S.case;
 require('./consultation-harness.cjs')(TP);
 const ctx=vm.createContext({TP,C,P:()=>({name:'Provider',short:'Provider',lic:'123',ini:'P'}),now:()=> '14:12',esc:s=>String(s??''),ic:()=>'<svg></svg>',ui:{av:()=>'<avatar>',btn:(label,o)=>`<button data-a="${o.a}">${label}</button>`},Date,fmt:s=>String(s)});

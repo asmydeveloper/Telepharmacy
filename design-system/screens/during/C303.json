@@ -48,24 +48,6 @@
       "url": "/?screen=room&state=idleclosed&splash=0"
     },
     {
-      "code": "C303.11",
-      "state": "waiting",
-      "label": "รอในแชท อีก 3 คิว",
-      "url": "/?screen=room&state=waiting&splash=0"
-    },
-    {
-      "code": "C303.12",
-      "state": "waiting-message",
-      "label": "ส่งอาการไว้ระหว่างรอ",
-      "url": "/?screen=room&state=waiting-message&splash=0"
-    },
-    {
-      "code": "C303.13",
-      "state": "waiting-paused",
-      "label": "พักชั่วคราวในห้องแชท",
-      "url": "/?screen=room&state=waiting-paused&splash=0"
-    },
-    {
       "code": "C303.14",
       "state": "provider-joined",
       "label": "เภสัชกรเข้าห้องแล้ว · ก่อนเริ่มพิมพ์",

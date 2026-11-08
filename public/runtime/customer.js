@@ -490,6 +490,10 @@ TP.cascade = cascade;
 const INVERSE = { push: 'back', cover: 'uncover', morph: 'uncover', fade: 'fade', tab: 'fade', zoom: 'fade', none: 'none', back: 'push', uncover: 'cover' };
 /* TP.go(id, {via:'push'|'cover'|'fade'|'tab'|'morph'|'zoom'|'none', params, replace, root, from:Element}) */
 TP.go = (id, o = {}) => {
+  if (!o.force && ['queue','paused'].includes(TP.S.case?.status)) {
+    if (['room','video'].includes(id)) id='queue';
+    if (cur?.id==='queue' && !['queue','queueclosed','declined','expired'].includes(id)) return chain;
+  }
   if(id==='room'&&TP.closedChatRoute?.())return TP.finishChatNavigation(TP.S.case);
   if(SCREENS[id]?.disabled){id='account';o={root:true};}
   if(['queue','room','video','pay','shipping','receipt'].includes(id)&&TP.S.case?.who&&TP.S.case.who!=='me'){id='history';o={root:true};}
@@ -513,6 +517,7 @@ async function doGo(id, o) {
   await swap(from, entry, via, o);
 }
 TP.back = () => {
+  if (!sheet && cur?.id==='queue' && ['queue','paused'].includes(TP.S.case?.status)) return TP.sheet('cancelq');
   if(!sheet&&hist.at(-1)?.id==='room'&&TP.closedChatRoute?.()){
     if(cur?.id==='paid'&&TP.closedChatRoute().screen==='paid')return TP.go('home',{root:true,via:'uncover'});
     return TP.finishChatNavigation(TP.S.case);
@@ -2774,7 +2779,7 @@ function homeActiveCaseCard(S) {
   const status=waiting?'รอเภสัชกร':'กำลังปรึกษา';
   const title=waiting?(pos===1?'คุณเป็นคิวถัดไป':pos?`มีผู้รอก่อนคุณ ${pos-1} คน`:'รอเภสัชกรรับคิว'):c.fromOf?'เภสัชกรตอบคำถามแล้ว':'กลับไปปรึกษาต่อได้เลย';
   const help=waiting?(S.notif===false?'เปิดแอปไว้เพื่อติดตามคิว การแจ้งเตือนปิดอยู่':'ออกจากหน้านี้ได้ เราจะแจ้งเตือนเมื่อเภสัชกรรับคิว'):'การปรึกษานี้ยังไม่จบ กลับไปคุยในห้องเดิมได้';
-  const cta=waiting?'กลับเข้าห้องแชท':c.fromOf?'อ่านคำตอบ':'กลับไปปรึกษาต่อ';
+  const cta=waiting?'ดูคิวปรึกษา':c.fromOf?'อ่านคำตอบ':'กลับไปปรึกษาต่อ';
   return `<article class="hm-active-case case-progress-card" aria-labelledby="hmActiveTitle" data-in="1">
     <header class="hm-active-top case-progress-head"><span class="case-progress-icon" aria-hidden="true">${ic(paused?'pause':waiting?'clock':pending?'credit-card':idle?'message-circle':'stethoscope',22,1.8)}</span><span class="hm-active-label">การปรึกษาของคุณ</span><span class="hm-active-status" data-tone="${waiting?'waiting':'active'}"><i class="hm-active-status-dot" aria-hidden="true"></i>${status}</span></header>
     <div class="case-progress-body"><h2 id="hmActiveTitle">${esc(title)}</h2>
@@ -3058,7 +3063,7 @@ TP.miniInfo = () => {
   if (c.idle && c.status !== 'closed') return { icon:'reply', title: 'เภสัชกรรอคำตอบอยู่', sub: 'ไม่ตอบใน 2 นาที การปรึกษาจะปิด', go: 'room', cta: 'กลับไปตอบ' };
   if (c.order?.status === 'pending') return { icon:'payment', title: 'รายการยารอชำระ', sub: `เหลือเวลาชำระ ${TP.orderRemaining?.(c.order)||'15:00'}`, orderCase:c.id, go: 'room', cta: 'ชำระเงิน' };
   if (c.status === 'matched') return {icon:'chat',title:'เภสัชกรรับคิวแล้ว',sub:`${ph().short} · ${b.short}`,go:'room',cta:'เข้าห้องปรึกษา'};
-  if (c.status === 'queue') return { icon:'waiting', title: c.pos <= 1 ? 'คุณเป็นคิวถัดไป' : `รออีก ${c.pos-1} คิว`, sub: b.name, go: 'queue', cta: 'กลับเข้าแชท' };
+  if (c.status === 'queue') return { icon:'waiting', title: c.pos <= 1 ? 'คุณเป็นคิวถัดไป' : `รออีก ${c.pos-1} คิว`, sub: b.name, go: 'queue', cta: 'ดูคิวปรึกษา' };
   if (c.status === 'paused') return { icon:'paused', title: 'เภสัชกรพักชั่วคราว', sub: 'คิวของคุณยังอยู่ ไม่เสียคิว', go: 'queue', cta: 'กลับเข้าแชท' };
   return { icon:'chat', title: 'กำลังปรึกษา', sub: `${ph().short} · ${b.short}`, go: 'room', cta: 'กลับเข้าห้อง' };
 };
@@ -3095,14 +3100,40 @@ TP.act('verifyLic', t => {
 });
 
 TP.screen('queue', {
-  group:'before',title:'ห้องแชท · รอเภสัชกร',code:'C207',ref:'C08',parent:'home',
-  states:[['q2','รออีก 1 คิว'],['q1','คิวถัดไป'],['paused','เภสัชกรพัก'],['urgent','มีธงด่วน',false],['notifoff','ปิดการแจ้งเตือนไว้',false],['refined','รอในห้องแชท', false],['q4','รออีก 3 คิว'],['message','พิมพ์ข้อมูลระหว่างรอ'],['joined','ย้ายไป C300 เภสัชกรพร้อมให้บริการ',false],['offline','ส่งข้อความระหว่างรอไม่สำเร็จ'],['video-wait','รอเภสัชกรวิดีโอคอล',false],['video-next','วิดีโอคอล · คิวถัดไป',false],['outzone','ที่อยู่จัดส่งนอกเขต 15 กม.']],
-  notes:['ยกเลิก C207.4 มีธงด่วน และ C207.5 ปิดการแจ้งเตือนไว้แล้ว ไม่แสดงกล่องเตือนทั้งสองแบบระหว่างรอคิว','C207.10 (key offline เดิม) เป็นข้อความที่พิมพ์ระหว่างรอแต่ส่งไม่สำเร็จ แตะลองส่งใหม่แล้วส่งได้ คิวยังอยู่ เน็ตหลุดทั้งแอปใช้ปุ่มกลาง EV-GLOBAL-001','ยกเลิก C207.11 รอเภสัชกรวิดีโอคอล (ผู้ใช้ยืนยัน 8 พ.ย. 2569 ไม่มีเคสนี้แล้ว) สงวนเลขเดิม','ระหว่างค้นหาและรอคิวแชท แสดงหัวข้อแชทกับเภสัชกร แถบสถานะสี Primary พร้อมแสงไล่ผ่านเบา ๆ และไอคอนค้นหา ไม่แสดงชื่อเภสัชกรก่อนรับเคส ใช้จำนวนคิวจริง ไม่ประมาณเวลารอ ปุ่มกล้องอยู่ล่างซ้าย ไม่มีปุ่มแจ้งอาการลอย','เข้าห้องแชททันทีหลังแจ้งอาการ พิมพ์ข้อมูลไว้ระหว่างรอได้ เภสัชกรยังไม่ได้อ่านข้อความจนรับเคส','แถบบนแสดงคิวปัจจุบันและข้อความระบบบอกเมื่อคิวขยับ ไม่ประมาณเวลารอ','ย่อห้องแล้วกลับมาได้ คิว ข้อความ และร่างข้อความยังอยู่','เข้าห้องแล้วข้อความแรกคือข้อมูลแจ้งอาการที่ส่งอัตโนมัติ (ข้อความตัวอย่างคงที่) เมื่อรับเคสคุยต่อในห้องเดิม เปิดวิดีโอคอลหลังรับเคสเท่านั้น','ที่อยู่จัดส่งของเคสห่างสาขาเกิน 15 กม. (ต่อจาก C203 ที่อยู่หลักนอกเขต): เข้าคิวและปรึกษาได้ตามปกติ แสดงข้อความปักในห้องรอว่าถ้าซื้อยาต้องรับที่ร้าน หรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน ไม่บล็อกการรอคิว'],
+  group:'before',title:'รอคิวปรึกษาเภสัชกร',code:'C207',ref:'C08',cls:'queue-wait-screen',
+  states:[['q2','รออีก 1 คิว'],['q1','คิวถัดไป'],['paused','เภสัชกรพัก'],['urgent','มีธงด่วน',false],['notifoff','ปิดการแจ้งเตือนไว้',false],['refined','รอในห้องแชท', false],['q4','รออีก 3 คิว'],['message','ยกเลิกแชทระหว่างรอ',false],['joined','ย้ายไป C300 เภสัชกรพร้อมให้บริการ',false],['offline','ยกเลิกส่งข้อความระหว่างรอ',false],['video-wait','รอเภสัชกรวิดีโอคอล',false],['video-next','วิดีโอคอล · คิวถัดไป',false],['outzone','ที่อยู่จัดส่งนอกเขต 15 กม.']],
+  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงรหัสคิวคงที่และจำนวนคิวก่อนหน้าเด่นชัด ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ กล้อง ปุ่มย่อ หรือกลับหน้าแรก ออกได้เฉพาะยกเลิกคิวผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ที่อยู่จัดส่งนอกเขต 15 กม. ยังเข้าคิวปรึกษาได้ ถ้าซื้อยาต้องรับที่ร้านหรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน'],
   prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode=['video-wait','video-next'].includes(st)?'video':'chat';c.pos=['q1','video-next'].includes(st)?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=[];S.netOff=false;c.deliveryAddress=st==='outzone'?structuredClone(TP.ZONE_ADDR):(TP.homeAddress?.()?structuredClone(TP.homeAddress()):null);if(st==='outzone')TP.setFlag('zoneLock',true);if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='offline'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time,fail:true}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
-  render(ctx){return TP.SCREENS.room.render(ctx);},
-  mount(el,ctx){TP.SCREENS.room.mount(el,ctx);}
+  render() {
+    const c = C() || ensureCase('queue'), b = TP.branch(c.branch);
+    const paused = c.status === 'paused';
+    const ahead = Number.isFinite(c.pos) ? Math.max(0, c.pos - 1) : null;
+    c.queueCode ||= 'Q-' + TP.caseCode(c).replace(/^MR/, '');
+    return ui.nav({title:'รอคิวปรึกษา',solid:true}) + ui.page(`
+      <section class="queue-wait-content" aria-labelledby="queueWaitTitle">
+        <div class="queue-wait-symbol" aria-hidden="true">${ic(paused?'clock':'search',32,1.7)}</div>
+        <h2 id="queueWaitTitle">${paused?'เภสัชกรพักรับบริการชั่วคราว':'กำลังค้นหาเภสัชกร'}</h2>
+        <p class="queue-wait-branch">${esc(b.name)}</p>
+        <div class="queue-ticket">
+          <span class="queue-ticket-label">รหัสคิวของคุณ</span>
+          <strong class="queue-ticket-code num">${esc(c.queueCode)}</strong>
+          <div class="queue-ticket-position" role="status" aria-live="polite" aria-atomic="true">
+            ${ahead===null?'<b>กำลังตรวจสอบลำดับคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b><span>รอเภสัชกรรับบริการ</span>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong><span>คิว</span></div>`}
+          </div>
+        </div>
+        <p class="queue-wait-explanation">${paused?'คิวของคุณยังอยู่ กรุณารอเภสัชกรกลับมาให้บริการ':'เมื่อเภสัชกรรับบริการ ระบบจะพาคุณเข้าสู่แชทโดยอัตโนมัติ'}</p>
+        <div class="queue-wait-steps" aria-label="ขั้นตอนการปรึกษา">
+          <span class="done">${ic('check',16,2)}<small>ส่งอาการแล้ว</small></span>
+          <span class="current" aria-current="step">${ic('clock',16,2)}<small>รอรับบริการ</small></span>
+          <span>${ic('message-circle',16,2)}<small>เริ่มปรึกษา</small></span>
+        </div>
+        ${TP.queueZoneNote(c)}
+      </section>`, {cls:'queue-wait-page'}) + ui.dock(ui.btn('ยกเลิกคิว',{kind:'danger-line',sheet:'cancelq'}));
+  },
+  mount() {}
+
 });
-TP.act('queueMin', () => TP.go('home', {via:'uncover',root:true}));
+TP.act('queueMin', () => ['queue','paused'].includes(C()?.status) ? undefined : TP.go('home', {via:'uncover',root:true}));
 
 TP.sheetDef('cancelq', {
   group: 'before', title: 'ยกเลิกคิวไหม', code: 'C208', ref: 'C08', host: 'queue',
@@ -3122,7 +3153,8 @@ TP.sim = {
   async accept() {
     const c=C();if(!c||!['queue','paused'].includes(c.status))return;
     c.waitedInChat=true;c.status='room';c.pos=0;TP.emit('state');
-    if(['queue','room'].includes(TP.cur()?.id)&&!TP.sheetOpen()){
+    if(['queue','room'].includes(TP.cur()?.id)){
+      if(TP.sheetOpen())await TP.closeSheet();
       delete TP.S.st.room;await TP.go('room',{via:'fade',replace:true});
       TP.live('เภสัชกรเข้าห้องและพร้อมให้บริการแล้ว');
     }else{
@@ -3678,17 +3710,9 @@ TP.queueZoneNote = c => {
 const seed = c => {
   c.msgs ||= [];
   if(c.status==='closed')return;
-  if(waitingForPharmacist(c)){
-    c.waitedInChat=true;
-    /* Fixed order while waiting: the info line, then the symptom report, then what the customer typed. */
-    const info=c.msgs.find(m=>m.kind==='waiting')||{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'};
-    info.text='ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย';
-    const intake=c.msgs.find(m=>m.kind==='intake')||{who:'me',kind:'intake',time:now()};
-    c.msgs=[info,intake,...c.msgs.filter(m=>m!==info&&m!==intake)];
-    return;
-  }
-  /* C303 continues the same chat as C207: keep the waiting info line on top. */
-  if(c.waitedInChat&&!c.msgs.some(m=>m.kind==='waiting'))c.msgs.unshift({who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'});
+  if(waitingForPharmacist(c))return;
+  /* Waiting happens on C207; retain submitted reports without obsolete chat prompts. */
+  c.msgs=c.msgs.filter(m=>m.kind!=='waiting');
   if(c.waitedInChat&&!c.msgs.some(m=>m.kind==='provider-ready')){c.msgs.push({kind:'provider-ready',time:now()});c.step=0;}
   if(!c.msgs.length){c.msgs.push({who:'me',kind:'intake',time:now()},{kind:'provider-ready',time:now()});c.step=0;}
   if(!c.msgs.some(m=>m.kind==='intake'))c.msgs.splice(c.msgs[0]?.kind==='waiting'?1:0,0,{who:'me',kind:'intake',time:now()});
@@ -3703,15 +3727,11 @@ const videoQueueCard = c => `<section class="rm-video-wait" aria-labelledby="rmV
   </div>
 </section>`;
 
-TP.queueChatUpdate = text => {
-  const c=C();if(!c)return;
-  const current=TP.cur(),el=current?.el,inChat=['queue','room'].includes(current?.id);
-  if(inChat&&$('#rmList',el)){
-    const sc=$('#rmScroll',el),nearBottom=sc.scrollHeight-sc.scrollTop-sc.clientHeight<80;
-    const bar=$('#rmQueueLabel',el);if(bar)bar.textContent=queueChatLabel(c);
-    if(text){c.msgs.push({who:'sys',kind:'queue-update',text});$('#rmList',el).insertAdjacentHTML('beforeend',msgHtml(c.msgs.at(-1)));if(nearBottom)el._bottom?.();}
-    TP.live(queueChatLabel(c));
-  }else{if(text)c.msgs.push({who:'sys',kind:'queue-update',text});if(current?.id==='home')TP.refresh({anim:false});TP.mini(false);}
+TP.queueChatUpdate = () => {
+  const c=C(); if(!c)return;
+  if(TP.cur()?.id==='queue') TP.refresh({anim:false});
+  else if(TP.cur()?.id==='home') TP.refresh({anim:false});
+  TP.live(queueChatLabel(c));
 };
 
 
@@ -3720,7 +3740,7 @@ TP.queueChatUpdate = text => {
    ===================================================================== */
 TP.screen('room', {
   group: 'during', title: 'ห้องปรึกษา (แชท)', code: 'C303', ref: 'C09', parent: 'home',
-  states: [['live', 'เล่นบทสนทนา'], ['order', 'เภสัชกรส่งรายละเอียดรายการยา'], ['paid', 'ย้ายสถานะชำระแล้วไปหน้าคำสั่งซื้อ', false], ['expired', 'ยกเลิกเคสทดสอบหมดเวลาชำระในแชท', false], ['checkout-handoff', 'เภสัชกรสิ้นสุดสนทนา · ไปชำระค่ายาใน 30 วินาที'], ['closed', 'ปิดเคส + ใบสรุป'], ['call', 'คุยวิดีโออยู่'], ['idle', 'เงียบ 3 นาที ใกล้ปิดเอง'], ['idleclosed', 'ปิดเองเพราะเงียบ 5 นาที'], ['moved', 'ยกเลิกเคสทดสอบย้ายสาขา', false],['waiting','รอในแชท อีก 3 คิว'],['waiting-message','ส่งอาการไว้ระหว่างรอ'],['waiting-paused','พักชั่วคราวในห้องแชท'],['provider-joined','เภสัชกรเข้าห้องแล้ว · ก่อนเริ่มพิมพ์'],['video-request','เภสัชกรขอวิดีโอคอล'],['video-declined','เลือกคุยแชทต่อ'],['video-withdrawn','เภสัชกรถอนคำขอวิดีโอ'],['closed-unpaid','จบแชท รอชำระค่ายา'],['payment-soon','จบแชท เหลือชำระ 1 นาที'],['closed-payexpired','ยกเลิกเคสทดสอบหมดเวลาชำระหลังจบแชท', false],['offline','ไม่มีอินเทอร์เน็ต']],
+  states: [['live', 'เล่นบทสนทนา'], ['order', 'เภสัชกรส่งรายละเอียดรายการยา'], ['paid', 'ย้ายสถานะชำระแล้วไปหน้าคำสั่งซื้อ', false], ['expired', 'ยกเลิกเคสทดสอบหมดเวลาชำระในแชท', false], ['checkout-handoff', 'เภสัชกรสิ้นสุดสนทนา · ไปชำระค่ายาใน 30 วินาที'], ['closed', 'ปิดเคส + ใบสรุป'], ['call', 'คุยวิดีโออยู่'], ['idle', 'เงียบ 3 นาที ใกล้ปิดเอง'], ['idleclosed', 'ปิดเองเพราะเงียบ 5 นาที'], ['moved', 'ยกเลิกเคสทดสอบย้ายสาขา', false],['waiting','รอในแชท อีก 3 คิว',false],['waiting-message','ส่งอาการไว้ระหว่างรอ',false],['waiting-paused','พักชั่วคราวในห้องแชท',false],['provider-joined','เภสัชกรเข้าห้องแล้ว · ก่อนเริ่มพิมพ์'],['video-request','เภสัชกรขอวิดีโอคอล'],['video-declined','เลือกคุยแชทต่อ'],['video-withdrawn','เภสัชกรถอนคำขอวิดีโอ'],['closed-unpaid','จบแชท รอชำระค่ายา'],['payment-soon','จบแชท เหลือชำระ 1 นาที'],['closed-payexpired','ยกเลิกเคสทดสอบหมดเวลาชำระหลังจบแชท', false],['offline','ไม่มีอินเทอร์เน็ต']],
   notes: ['C303.5 ลำดับปิดแชท: เภสัชกรพิมพ์ข้อความปิดท้าย 3 ข้อความ (ขออนุญาตจบ, วิธีรับยาและชำระภายใน 15 นาที, ขอบคุณ) พิมพ์ข้อความละประมาณ 2.4 วินาที เว้นระหว่างข้อความ 0.9 วินาที → เว้น 3 วินาที → เภสัชกรสิ้นสุดสนทนาแล้ว พร้อมปุ่มนับถอยหลัง 30 วินาทีไป C308 ทันที ใช้ลำดับเดียวกันเมื่อลูกค้าตอบไม่มีคำถามเพิ่มเติม และเมื่อกดปิดเคสจากแผง', 'เภสัชกรจบสนทนาและมียารอชำระ: ช่องพิมพ์เปลี่ยนเป็นปุ่มชำระค่ายานับถอยหลัง 30 วินาที กดทันทีหรือเปิดชำระอัตโนมัติเมื่อครบ เวลา 15 นาทีเริ่มเมื่อเข้าชำระจริง', 'เมื่อเภสัชกรส่งรายการยา แสดงแถบตะกร้ายาเหนือช่องพิมพ์ กดเปิด C312 ตะกร้ายา เพื่อดูรูปยา จำนวน วิธีใช้ ราคา และยอดรวมจาก order เดียวกัน ไม่มีปุ่มจ่ายเงินในตะกร้า', 'หัวห้องแชทมีปุ่มจบสนทนาสีแดง เปิดยืนยันจบโดยตรง ไม่มีเมนูตัวเลือก C304; ขณะรอเภสัชแสดงยกเลิกสีแดงและยืนยันยกเลิกคิว', 'ข้อความแรกในแชทคือข้อมูลแจ้งอาการที่ส่งอัตโนมัติเป็นบับเบิ้ลของลูกค้า ใช้ข้อความตัวอย่างคงที่ ไม่ดึง state จาก C203 ข้อมูลอาการและสุขภาพจริงยังเก็บในเคสให้เภสัชกรใช้ดูแล', 'แตะรูปหรือชื่อเภสัชกรเปิดข้อมูลในป๊อปอัป C313 แล้วกลับแชทเดิมได้', 'ส่วนบนห้องแชทแสดงชื่อ ใบอนุญาต และสาขาจากเคส พร้อมปุ่มวิดีโอคอล ไม่มีปุ่มโทร ข้อความผู้ใช้สี Primary ข้อความเภสัชกรสีขาวบนพื้นเทาอ่อน ใช้ภาษาไทยทุกปุ่ม', 'เภสัชกรส่งการ์ดคำขอวิดีโอคอล ลูกค้ากดเข้าร่วมเอง ย่อคอลมาพิมพ์แชทและกลับเข้าคอลได้โดยสายไม่หลุด', 'แชทแสดงการ์ดรายการยารูปแบบหัว เนื้อหา ท้าย: รูปยา ชื่อ จำนวน วิธีใช้ ราคา และรวมค่ายา ใช้รายการเดียวกับบิลและใบสรุป ไม่มีปุ่มจ่ายเงินหรือปุ่มคำสั่งซื้อในการ์ด เมื่อจบแชทจึงเปิดหน้าชำระเงินและเริ่มนับเวลา', 'ออกจากห้อง = เคสยังเปิด กลับเข้าได้จากหน้าแรก แถบด้านล่าง และประวัติ', 'ข้อความใหม่ตอนออกจากแอป = แจ้งเตือนแบบคำกลาง ๆ', 'A4 + A9 (20/10): แชทเก็บ 1 ปีนับจากวันปิดเคส',
     'นโยบายล่าสุด: ไม่มีการตอบกลับ 3 นาที แจ้งเตือนอีก 2 นาที ก่อนสิ้นสุดเมื่อครบ 5 นาที; แยกจากเวลาชำระยา 15 นาที และไม่ยกเลิกรายการยารอชำระเมื่อจบแชท'],
   wait: ['ลูกค้าเงียบระหว่างไปจ่ายเงิน (มีรายการรอชำระ) นับเวลาเงียบไหม · ต้นแบบนับเหมือนกัน ปิดแล้วรายการยกเลิก'],
@@ -3769,6 +3789,7 @@ TP.screen('room', {
     /* a closed case stays readable in the room (its summary card lives here); only a missing case gets a new one */
     const c = TP.S.case?.status === 'closed' ? TP.S.case : TP.ensureCase(null), p = P(), b = TP.branch(c.branch);
     if(c.status==='matched'){c.waitedInChat=true;c.status='room';}
+    if (waitingForPharmacist(c)) return TP.SCREENS.queue.render(ctx);
     const waiting=waitingForPharmacist(c);
     const videoWaiting=waiting&&c.mode==='video';
     seed(c);
@@ -3784,6 +3805,7 @@ TP.screen('room', {
       `<div id="rmBasket" class="rm-basket-strip"${TP.chatBasketBar(c.order) ? '' : ' hidden'}>${TP.chatBasketBar(c.order)}</div><div class="dock rm-comp"><div class="rm-compose-row"><button type="button" class="ibtn" data-a="sendPhoto" aria-label="ส่งรูป">${ic('camera', 22, 1.8)}</button><label class="sr" for="rmIn">พิมพ์ข้อความ</label><textarea id="rmIn" class="rm-in" rows="1" placeholder="${waiting?'พิมพ์อาการเพิ่มเติมไว้ระหว่างรอ':'พิมพ์ข้อความ'}">${esc(c.draft||'')}</textarea><button type="button" class="rm-send" data-a="sendMsg" aria-label="ส่ง" disabled>${ic('arrow-up', 20, 2.4)}</button></div></div>`}`;
   },
   mount(el, ctx) {
+    if (waitingForPharmacist(C())) return TP.SCREENS.queue.mount(el,ctx);
     const c = C(), sc = $('#rmScroll', el), inp = $('#rmIn', el), send = $('.rm-send', el);
     const bottom = (smooth = true) => sc.scrollTo({ top: sc.scrollHeight, behavior: smooth && !TP.RED() ? 'smooth' : 'auto' });
     el._bottom = bottom;
@@ -3879,7 +3901,7 @@ TP.playCheckoutHandoff = async (el, c) => {
 };
 /* the bubble flies up out of the composer */
 async function sendText(text) {
-  if (C()?.status === 'closed') return;
+  if (!C() || ['closed','queue','paused'].includes(C().status)) return;
   const el = TP.cur().el, c = C();
   $('#rmQuick', el).innerHTML = ''; c.quick = null; wake(el);
   const inp = $('#rmIn', el);

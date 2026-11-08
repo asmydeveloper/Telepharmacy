@@ -1,7 +1,7 @@
 {
   "code": "C207",
   "screen": "queue",
-  "title": "ห้องแชท · รอเภสัชกร",
+  "title": "รอคิวปรึกษาเภสัชกร",
   "group": "before",
   "kind": "screen",
   "cases": [
@@ -28,18 +28,6 @@
       "state": "q4",
       "label": "รออีก 3 คิว",
       "url": "/?screen=queue&state=q4&splash=0"
-    },
-    {
-      "code": "C207.8",
-      "state": "message",
-      "label": "พิมพ์ข้อมูลระหว่างรอ",
-      "url": "/?screen=queue&state=message&splash=0"
-    },
-    {
-      "code": "C207.10",
-      "state": "offline",
-      "label": "ส่งข้อความระหว่างรอไม่สำเร็จ",
-      "url": "/?screen=queue&state=offline&splash=0"
     },
     {
       "code": "C207.13",

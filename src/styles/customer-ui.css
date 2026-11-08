@@ -2951,9 +2951,9 @@ body:has(.consultation-card-preview) nextjs-portal {
 .qr-payment-status .qr-wait { margin-top: 0; }
 
 /* C309: current-state artwork with an icon-only fulfillment stepper. */
-.pd-status-card { margin: var(--space-4) 0; }
-.pd-status-content { padding: var(--space-3) 0 var(--space-4); text-align: center; }
-.pd-status-art { display: block; width: 180px; height: 160px; object-fit: contain; margin: 0 auto var(--space-3); }
+.pd-status-card { margin: 0 0 var(--space-4); }
+.pd-status-content { padding: 0 0 var(--space-4); text-align: center; }
+.pd-status-art { display: block; width: 280px; max-width: 100%; height: 220px; object-fit: cover; margin: -16px auto var(--space-2); }
 .pd-status-title { margin: 0; color: var(--brand-deep); font-size: var(--text-h2); line-height: var(--type-body-mobile-line); }
 .pd-status-order { margin: var(--space-2) 0 0; font-size: var(--text-small); line-height: var(--type-body-sm-mobile-line); color: var(--ink-2); overflow-wrap: anywhere; }
 .pd-status-order strong { color: var(--ink); }
@@ -3130,3 +3130,27 @@ body:has(.consultation-card-preview) nextjs-portal {
 .rm-scroll.has-queue { padding-top: calc(var(--st) + 128px); }
 .rm-scroll.has-queue.has-net { padding-top: calc(var(--st) + 170px); }
 .scr:has(.rm-queue-bar) .rm-net { top: calc(var(--st) + 112px); }
+
+/* C207: a dedicated queue, before the consultation room opens. */
+.queue-wait-screen { background: var(--ground); }
+.queue-wait-page { padding-top: var(--space-5); }
+.queue-wait-content { max-width: 420px; margin: 0 auto; text-align: center; padding-bottom: var(--space-4); }
+.queue-wait-symbol { width: 72px; height: 72px; display: grid; place-items: center; margin: 0 auto var(--space-4); border-radius: 50%; background: var(--brand-tint); color: var(--brand); }
+.queue-wait-content h2 { font-size: var(--text-heading); line-height: 1.4; margin: 0; }
+.queue-wait-branch { color: var(--ink-3); margin: var(--space-2) 0 var(--space-5); }
+.queue-ticket { overflow: hidden; border: 1px solid var(--brand); border-radius: 24px; background: var(--surface); }
+.queue-ticket-label { display: block; margin-top: var(--space-5); color: var(--ink-3); font-size: var(--text-small); }
+.queue-ticket-code { display: block; color: var(--brand); font-size: 44px; line-height: 1.25; letter-spacing: .04em; padding: var(--space-2) var(--space-4) var(--space-5); }
+.queue-ticket-position { padding: var(--space-4); border-top: 1px dashed var(--line-soft); background: var(--brand-tint); color: var(--brand); }
+.queue-ticket-position > span { display: block; font-size: var(--text-small); }
+.queue-ticket-position > b { display: block; font-size: var(--text-heading); margin-bottom: var(--space-1); }
+.queue-ticket-position > div { display: flex; align-items: baseline; justify-content: center; gap: var(--space-2); }
+.queue-ticket-position strong { font-size: 40px; line-height: 1.2; }
+.queue-wait-explanation { color: var(--ink-3); font-size: var(--text-small); line-height: 1.7; max-width: 300px; margin: var(--space-4) auto var(--space-5); }
+.queue-wait-steps { display: flex; justify-content: space-between; gap: var(--space-2); color: var(--ink-3); }
+.queue-wait-steps > span { flex: 1; display: grid; justify-items: center; gap: var(--space-2); }
+.queue-wait-steps svg { box-sizing: content-box; padding: var(--space-3); border-radius: 50%; background: var(--surface); border: 1px solid var(--line-soft); }
+.queue-wait-steps .done, .queue-wait-steps .current { color: var(--brand); }
+.queue-wait-steps .current svg { background: var(--brand); border-color: var(--brand); color: var(--surface); }
+.queue-wait-steps small { font-size: var(--text-caption); }
+.queue-wait-content .rm-zone-note { text-align: left; margin-top: var(--space-4); }
