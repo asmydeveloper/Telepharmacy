@@ -312,7 +312,8 @@ TP.setFlag = (k, v) => { TP.S[k] = v; (TP.S.g || (TP.S.g = {}))[k] = v; };
 TP.prepState = (...defs) => { TP.setFlag('zoneLock', TP.FLAG0.zoneLock); defs.forEach(d => d?.prep?.(TP.S)); };
 /* Preview-only inbox examples; live notifications remain in S.inbox. */
 TP.previewInbox = (history) => {
- const summaryId=history===undefined?'TC-261002-0087':history.find(h=>h.summary)?.id;
+ const records=history===undefined?[{id:'TC-261002-0087',summary:true}]:history;
+ const summaryId=records.find(h=>h.summary)?.id;
  const today=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date()),[d,m,y]=today.split('/').map(Number);
  const samples=[
  [0,'02:50','summary','สรุปการปรึกษาพร้อมแล้ว','เปิดดูข้อมูลยาและคำแนะนำจากเภสัชกร','summary'],
@@ -326,7 +327,7 @@ TP.previewInbox = (history) => {
  [3,'12:50','delivery','กำลังเรียกไรเดอร์','ร้านเตรียมยาพร้อมแล้ว กำลังรอไรเดอร์เข้ารับ','history'],
  [7,'17:25','msg','มีข้อความจากเภสัชกร','เปิดดูข้อความและรายละเอียดการปรึกษา','history'],
  ];
- return samples.map(([days,at,kind,title,body,go],index)=>{const date=new Date(Date.UTC(y,m-1,d-days)),dateText=[String(date.getUTCDate()).padStart(2,'0'),String(date.getUTCMonth()+1).padStart(2,'0'),date.getUTCFullYear()].join('/');return {id:'preview-note-'+index,kind,title,body,time:dateText+' '+at,read:true,go:go==='summary'&&!summaryId?'history':go,...(go==='summary'&&summaryId?{p:{id:summaryId}}:{})};});
+ return samples.map(([days,at,kind,title,body,go],index)=>{const date=new Date(Date.UTC(y,m-1,d-days)),dateText=[String(date.getUTCDate()).padStart(2,'0'),String(date.getUTCMonth()+1).padStart(2,'0'),date.getUTCFullYear()].join('/');return {id:'preview-note-'+index,kind,title,body,time:dateText+' '+at,read:true,go:records.length?'summary':'history',...(records.length?{caseId:go==='summary'&&summaryId?summaryId:records[index%records.length].id,p:{id:go==='summary'&&summaryId?summaryId:records[index%records.length].id}}:{})};});
 };
 TP.fresh = () => ({
   firstTime: false,          // true = new user: sign-up, then C108 and onboarding C112
@@ -3943,7 +3944,7 @@ TP.sim.closeCase = (by = 'ph', at) => {
   c.msgs.push({ kind: 'summary', time: at || now(), by, ...(c.checkoutHandoffUntil ? { handoff: true } : {}) });
   TP.followCaseClosed?.(c);
   TP.S.history.unshift({ id: c.id, caseCode: TP.caseCode(c), note: c.note, date: c.date || TP.NOW.date, time: c.joinedAt, who: c.who, topic: c.symptoms.join(' ') || 'ถามเรื่องยา', branch: c.branch, pharm: c.pharm, bought: c.order?.status === 'paid' ? c.order.total : 0, orderStatus: c.order?.status || 'none', outcome:c.outcome, rated: 0, summary: true, _case:c });
-  TP.S.inbox.unshift({ id: 'n' + Date.now(), kind: 'summary', title: 'ใบสรุปการปรึกษาพร้อมแล้ว', body: 'แตะเพื่อเปิดดู', time: TP.NOW.date + ' 14:41', read: false, go: 'summary' });
+  TP.S.inbox.unshift({ id: 'n' + Date.now(), kind: 'summary', title: 'ใบสรุปการปรึกษาพร้อมแล้ว', body: 'แตะเพื่อเปิดดู', time: TP.NOW.date + ' 14:41', read: false, go: 'summary', p:{id:c.id} });
   if(c.order?.status==='pending')TP.S.inbox.unshift({id:'order-pending-'+c.order.no,kind:'order',title:'มีรายการยารอชำระ',body:'การปรึกษาจบแล้ว เปิดแอปเพื่อดูรายการและเวลาชำระ',time:TP.NOW.date+' '+now(),read:false,go:'summary',p:{id:c.id}});
   TP.emit('state');
   if(TP.checkoutHandoffRemaining(c)){TP.refresh({anim:false});return;}
@@ -5101,7 +5102,7 @@ TP.screen('paid', {
     const st = S.st.paid || 'pickup', recv = { night: 'pickup', ready: 'pickup', overdue: 'pickup', sent: 'parcel', rider: 'express' }[st] || st;
     S.storeOpen = st === 'night' ? false : TP.flag('storeOpen'); mockPaid(recv);
     if (['ready', 'overdue', 'sent', 'rider', 'cold'].includes(st)) setStage(C().order.paid);
-    if (st === 'overdue') { const pd = C().order.paid; pd.date = pd.packDate = LATE_PACK; S.inbox = [...pickNotes(pd, C().branch).map(n => ({ ...n, read: true })), ...TP.fresh().inbox]; }
+    if (st === 'overdue') { const pd = C().order.paid; pd.date = pd.packDate = LATE_PACK; S.inbox = [...pickNotes(pd, C().branch).map(n => ({ ...n, caseId:C().id, read: true })), ...TP.fresh().inbox]; }
   },
   render() {
     const c = C(), o = order(), pd = o.paid, b = TP.branch(c.branch), night = !TP.S.storeOpen, pick = pd.recv === 'pickup', st = pd.stage, cr = courierOf(pd), late = pick && pickLate(pd);
@@ -5144,7 +5145,7 @@ TP.simAction({
   run() {
     const S = TP.S, c = S.case, pd = c.order.paid, b = TP.branch(c.branch); setStage(pd);
     const n = pd.recv === 'pickup' ? ['ยาพร้อมรับแล้ว', `ที่${b.name} รับได้ถึง ${holdUntil(pd)} แตะเพื่อดูรหัสรับยา`] : pd.recv === 'express' ? ['ไรเดอร์รับยาแล้ว', 'แตะเพื่อติดตามการจัดส่ง'] : ['ส่งยาแล้ว', 'มีเลขพัสดุแล้ว แตะเพื่อติดตาม'];
-    const item = { id: 'n' + Date.now().toString(36), kind: 'order', title: n[0], body: n[1], time: `${TP.NOW.date} ${pd.packAt}`, read: false, go: pd.recv === 'pickup' ? 'paid' : 'track' };
+    const item = { id: 'n' + Date.now().toString(36), kind: 'order', title: n[0], body: n[1], time: `${TP.NOW.date} ${pd.packAt}`, read: false, go: pd.recv === 'pickup' ? 'paid' : 'track', caseId:c.id };
     S.inbox.unshift(item); TP.emit('state');
     if (TP.cur()?.id === 'paid') { item.read = true; TP.refresh({ anim: false }); TP.notify(n[0], { icon: pd.recv === 'pickup' ? 'store' : 'package' }); }
     else { if (TP.cur()?.id === 'home') TP.refresh({ anim: false }); TP.banner({ title: n[0], body: n[1], onTap: () => { item.read = true; TP.emit('state'); TP.go(item.go); } }); }
@@ -5155,7 +5156,7 @@ const pickRemind = day => ({
   id: 'pickD' + day, label: day === 15 ? 'ยังไม่มารับ ครบ 15 วัน (เตือนครั้งที่ 1)' : 'วันที่ 30 วันสุดท้าย (เตือนครั้งที่ 2)',
   when: S => { const pd = S.case?.order?.paid; return !!pd && pd.recv === 'pickup' && pd.stage === 'ready' && !S.case.order.picked && !pickLate(pd) && !S.inbox.some(n => n.id === 'nP' + day); },
   run() {
-    const S = TP.S, c = S.case, item = { ...pickNotes(c.order.paid, c.branch)[day === 15 ? 1 : 0] };
+    const S = TP.S, c = S.case, item = { ...pickNotes(c.order.paid, c.branch)[day === 15 ? 1 : 0], caseId:c.id };
     S.inbox.unshift(item); TP.emit('state');
     if (TP.cur()?.id === 'paid') { item.read = true; TP.emit('state'); TP.notify(item.title, { icon: 'store' }); }
     else { if (TP.cur()?.id === 'home') TP.refresh({ anim: false }); TP.banner({ title: item.title, body: item.body, onTap: () => { item.read = true; TP.emit('state'); TP.go('paid'); } }); }
@@ -5688,26 +5689,25 @@ TP.completedMedicationOrder = (S, h) => {
   return order.picked || order.paid?.got || order.paid?.deliv || TP.fulfillmentInfo?.(c)?.done ? order : null;
 };
 function histItem(h) {
-  const S=TP.S, person=historyIdentity(S,h.who,h), P=TP.PHARM[h.pharm] || TP.PHARM.kj, b=TP.branch(h.branch);
+  const S=TP.S, person=historyIdentity(S,h.who,h);
   const c=S.case?.id===h.id?S.case:h._case,o=c?.order||h.order;
   if(c)TP.expireOrder?.(c);
   const outcome=historyOutcome(S,h);
   const payable=!!(o&&TP.orderPayable?.(o));
-  const orderNumber=o?.no||h.orderNo;
-  const destination=payable?ui.route({a:'openOrderPayment',p:{caseId:h.id}}):ui.route({go:'summary',p:{id:h.id}});
+  const orderNumber=o?.no||h.orderNo||TP.orderNumber?.(c||h);
+  const paid=o?o.status==='paid':h.orderStatus==='paid'||Number(h.bought)>0;
+  const paidAmount=paid?(o?.paid?.total ?? o?.total ?? h.bought):null;
+  const amountText=paidAmount!=null?TP.money(paidAmount):o?.status==='pending'||o?.status==='expired'||o?.status==='cancelled'||h.orderNo?'ยังไม่ได้ชำระ':'ไม่มีค่าใช้จ่าย';
+  const destination=ui.route({go:'summary',p:{id:h.id}});
   const f=TP.fulfillmentInfo?.(c), active=historyInProgress(S,h);
   const activeStatus=payable?'รอชำระค่ายา':f?(f.pickup?(o.paid?.stage==='ready'?'พร้อมรับที่สาขา':'กำลังเตรียมยา'):f.title):'กำลังดำเนินการ';
-  const fulfillmentAction=(c?.order?.fulfillment?`<button type="button" class="btn primary" ${ui.route({a:'viewFulfillment',p:{caseId:h.id}})}>${ic('truck',19,1.8)}${TP.fulfillmentInfo(c)?.done?'ดูรายละเอียดการรับยา':'ติดตามสถานะรับยา'}</button>`:'');
   return `<article class="history-card${payable?' history-card-payable':''}" data-history-id="${esc(h.id)}">
-    <header class="history-card-store"><span class="history-store-picture">${b?.photo?`<img src="${esc(b.photo)}" alt="" width="40" height="40" loading="lazy">`:ic('store',22,1.8)}</span><div><b>${esc(b?.name || 'ไม่ระบุร้านยา')}</b><span>ร้านยาที่ให้คำปรึกษา</span></div><time>${esc(h.date)}<small>${esc(h.time)} น.</small></time></header>
-    <button type="button" class="history-card-open" ${destination} aria-label="${payable?'ดูรายการยาและชำระเงิน':'ดูสรุปการปรึกษา'} ${esc(person.name)} เรื่อง ${esc(h.topic)} วันที่ ${esc(h.date)}">
-      <span class="history-details">
-        ${orderNumber?`<span class="history-detail-row"><span class="history-detail-label"><span class="history-detail-icon">${ic('receipt',17,1.8)}</span><span>รหัสคำสั่งซื้อ</span></span><span class="history-detail-value">${esc(orderNumber)}</span></span>`:''}
-        <span class="history-detail-row"><span class="history-detail-label"><span class="history-detail-icon">${ic('message-circle',17,1.8)}</span><span>ข้อมูลปรึกษา</span></span><span class="history-detail-value"><span class="history-detail-note">${esc(TP.consultationText(h) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</span></span></span>
-        <span class="history-detail-row"><span class="history-detail-label"><span class="history-detail-icon">${ic('stethoscope',17,1.8)}</span><span>เภสัชกร</span></span><span class="history-detail-value">${esc(P.short)}</span></span>
-        <span class="history-detail-row"><span class="history-detail-label"><span class="history-detail-icon">${ic('clipboard-list',17,1.8)}</span><span>สถานะ</span></span><span class="history-detail-value">${ui.tag(active?activeStatus:outcome.label,active?'info':outcome.tone)}</span></span>
-      </span>
-    </button>${payable?`<div class="history-payment-action"><button type="button" class="btn primary history-payment-button" ${ui.route({a:'openOrderPayment',p:{caseId:h.id}})}>${ic('credit-card',19,1.8)}<span>ข้อมูลชำระเงิน</span><span class="history-payment-countdown">${ic('clock',16,1.8)}<b data-order-countdown data-order-case="${esc(h.id)}">${TP.orderRemaining(o)}</b></span>${ic('chevron-right',17,2)}</button></div>`:`<p class="history-outcome-reason">${esc(active?'ติดตามสถานะการรับยาได้ที่นี่':outcome.reason)}</p>`}${fulfillmentAction?`<div class="history-card-extra">${fulfillmentAction}</div>`:''}</article>`;
+    <header class="history-order-head"><b class="num">${orderNumber?`#${esc(orderNumber)}`:'การปรึกษา'}</b>${ui.tag(active?activeStatus:outcome.label,active?'info':outcome.tone)}</header>
+    <button type="button" class="history-card-open" ${destination} aria-label="ดูข้อมูลคำสั่งซื้อ ${esc(orderNumber || h.id)} ${esc(person.name)} วันที่ ${esc(h.date)}">
+      <span class="history-order-date">${esc(h.date)} · ${esc(h.time)} น.</span>
+      <span class="history-order-amount"><span>${paid?'ยอดชำระแล้ว':'การชำระเงิน'}</span><b class="${paid?'num':''}">${esc(amountText)}</b></span>
+      <span class="history-open-hint">ดูข้อมูลคำสั่งซื้อ ${ic('chevron-right',16,1.8)}</span>
+    </button>${payable?`<div class="history-payment-action"><button type="button" class="btn primary history-payment-button" ${ui.route({a:'openOrderPayment',p:{caseId:h.id}})}>${ic('credit-card',19,1.8)}<span>ข้อมูลชำระเงิน</span><span class="history-payment-countdown">${ic('clock',16,1.8)}<b data-order-countdown data-order-case="${esc(h.id)}">${TP.orderRemaining(o)}</b></span>${ic('chevron-right',17,2)}</button></div>`:''}</article>`;
 }
 function historyInProgress(S,h) {
   const c = S.case?.id === h.id ? S.case : h._case, o = c?.order || h.order;
@@ -5771,7 +5771,7 @@ function historySearchSetOpen(el,S,open) {
 TP.screen('history', {
   group:'after',title:'ประวัติ',code:'C403',ref:'C14',tab:'history',
   states:[["normal", "มีรายการ"], ["empty", "ยังไม่มี"], ["loading", "กำลังโหลด"], ["self", "เฉพาะตัวเอง", false], ["paid", "ปรึกษาสำเร็จ", false], ["no-medication", "สิ้นสุดก่อนสรุป", false], ["search", "ค้นหาประวัติ"], ["no-results", "ค้นหาไม่พบ"], ["error", "โหลดไม่สำเร็จ"], ["dark-filters", "แท็บประเภทสี CI เข้ม", false], ["shared-tabs", "แท็บกลาง ตัวอักษร 14px", false], ["store-recipient-card", "หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา", false], ["receipt-inside", "ดูใบเสร็จในใบสรุป", false], ["detail-rows", "รายละเอียดเรียงแถวพร้อมไอคอน", false], ["purchase-status", "ป้ายตามข้อมูลซื้อยา", false], ["pending-order", "รายการยารอชำระ"], ["expired-order", "รายการยาหมดอายุ"], ["cancelled-order", "ยกเลิกรายการยา"], ["tap-card", "แตะการ์ด ไม่มีข้อความลิงก์", false], ["search-below-tabs", "ช่องค้นหาอยู่ใต้แท็บ", false], ["tab-counts", "จำนวนรายการในแต่ละแท็บ", false], ["search-open", "เปิดช่องค้นหาจากหัวหน้า"], ["search-cleared", "ช่องค้นหาหลังล้างคำ", false], ["ten-records", "ประวัติ 10 รายการ หลายวันและเดือน", false],["completed","ปรึกษาสำเร็จ", false],["ended","สิ้นสุดก่อนสรุป", false],["customer-ended","คุณจบการสนทนา"],["no-response","ไม่มีการตอบกลับ 5 นาที"],["long-note","ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด", false]],
-  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม'],
+  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดแสดงเลขคำสั่งซื้อ สถานะ วันเวลา และยอดชำระจริง ไม่แสดงสาขาหรืออาการ กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
   prep(S) {
     const st=S.st.history;S._histStatus='all';
     // Replace the original built-in examples while preserving actual consultation records.
@@ -6392,16 +6392,30 @@ TP.inboxGroups = (notes,now=new Date()) => {
 function openNote(n) {
   if (!n) return;
   const S = TP.S; n.read = true; TP.emit('state');
+  // Order notices carry a stable record id; never substitute the newest order.
+  const caseId = n.caseId || (['summary','receipt','paid','track','history'].includes(n.go) ? n.p?.id : null);
+  if (caseId) {
+    const c = TP.orderCases?.(S).find(item => item.id === caseId);
+    const record = S.history.find(item => item.id === caseId);
+    if (c && TP.fulfillmentInfo?.(c) && !TP.fulfillmentInfo(c).done) {
+      S._paymentCase = c;
+      S._paidFromHome = false;
+      return TP.go(TP.fulfillmentScreen(c), { via:'cover' });
+    }
+    if (c || record) return TP.go('summary', { params:{id:caseId} });
+    TP.notify('ไม่พบข้อมูลคำสั่งซื้อนี้', {icon:'info'});
+    return TP.refresh({anim:false});
+  }
   if (!n.go || !TP.SCREENS[n.go]) { if (TP.cur()?.id === 'inbox') TP.refresh({ anim: false }); return; }
+  if (n.go === 'summary') return TP.tab('history');
   if (n.st) { S.st[n.go] = n.st; TP.SCREENS[n.go].prep?.(S); }
   if (['home', 'history', 'account'].includes(n.go)) return TP.tab(n.go);
-  const params = n.p || (n.go === 'summary' && S.history[0] ? { id: S.history[0].id } : {});
-  return TP.go(n.go, { params });
+  return TP.go(n.go, { params:n.p || {} });
 }
 TP.screen('inbox', {
  group:'after',title:'กล่องแจ้งเตือน',code:'C404',ref:'A13',tab:'inbox',
  states:[['normal','หลายรายการ แบ่งตามวัน'],['read','รายการเดิม', false],['empty','ยังไม่มี'],['many','แจ้งเตือนหลายวัน', false],['same-day','หลายรายการในวันเดียว'],['loading','กำลังโหลดแจ้งเตือน'],['error','โหลดแจ้งเตือนไม่สำเร็จ']],
- notes:['แสดงลิสต์ใหม่สุดก่อน แบ่งวันนี้ เมื่อวาน และวันที่ก่อนหน้า ตามเวลาไทย','ไม่มีข้อความอ่านแล้ว จำนวนยังไม่อ่าน หรือปุ่มอ่านทั้งหมดในหน้านี้','แสดงเฉพาะหัวข้อสถานะหลักของการปรึกษา การชำระเงิน และการรับยา เปิดรายละเอียดจากรายการแจ้งเตือน','รายการไม่มีพื้นสีหรือกรอบมน มี divider ใต้แต่ละรายการ ไอคอนทางซ้าย หัวข้อสถานะหลัก ข้อความสั้นด้านล่าง และเวลาด้านขวา ไม่ใช้ชื่อร้านแทนหัวข้อ','ข้อมูลตัวอย่าง 10 รายการแยกจากรายการแจ้งเตือนที่เข้ามาระหว่างใช้ต้นแบบ'],
+ notes:['แสดงลิสต์ใหม่สุดก่อน แบ่งวันนี้ เมื่อวาน และวันที่ก่อนหน้า ตามเวลาไทย','ไม่มีข้อความอ่านแล้ว จำนวนยังไม่อ่าน หรือปุ่มอ่านทั้งหมดในหน้านี้','แสดงเฉพาะหัวข้อสถานะหลักของการปรึกษา การชำระเงิน และการรับยา เปิดรายละเอียดจากรายการแจ้งเตือน','รายการไม่มีพื้นสีหรือกรอบมน มี divider ใต้แต่ละรายการ ไอคอนทางซ้าย หัวข้อสถานะหลัก ข้อความสั้นด้านล่าง และเวลาด้านขวา ไม่ใช้ชื่อร้านแทนหัวข้อ','ข้อมูลตัวอย่าง 10 รายการแยกจากรายการแจ้งเตือนที่เข้ามาระหว่างใช้ต้นแบบ','แจ้งเตือนคำสั่งซื้อผูกกับ id ของรายการนั้น เปิดสถานะการรับยาระหว่างจัดส่ง หรือรายละเอียดคำสั่งซื้อเมื่อสิ้นสุด ไม่เลือกคำสั่งซื้อล่าสุดแทน'],
  prep(S){const st=S.st.inbox;if(!st)return;if(st==='empty'){S.inbox=[];return;}S.inbox=TP.previewInbox(S.history);if(st==='normal')S.inbox[0].read=false;if(st==='same-day'){const first=inboxDate(S.inbox[0]).key;S.inbox=S.inbox.filter(n=>inboxDate(n).key===first);}},
  render(ctx){
   const S=ctx.S,nav=ui.nav({title:'การแจ้งเตือน',back:TP.canBack()});

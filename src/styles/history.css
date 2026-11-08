@@ -555,3 +555,14 @@
 #afHL > .history-month {
   margin-bottom: var(--space-4);
 }
+
+/* Order identity, current status, date and actual paid total at a glance. */
+.history-order-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-4) var(--space-4) var(--space-2); }
+.history-order-head > b { min-width: 0; overflow-wrap: anywhere; color: var(--brand); font-size: var(--text-small); }
+.history-order-head > .tag { flex: none; max-width: 45%; white-space: normal; }
+.history-card-open { gap: var(--space-3); padding-top: 0; }
+.history-order-date { color: var(--ink-3); font-size: var(--text-caption); }
+.history-order-amount { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); font-size: var(--text-small); }
+.history-order-amount > span { color: var(--ink-3); }
+.history-order-amount > b { color: var(--ink); font-weight: var(--weight-semibold); }
+.history-open-hint { display: flex; align-items: center; justify-content: space-between; color: var(--brand); font-size: var(--text-caption); }

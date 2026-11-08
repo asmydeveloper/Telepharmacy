@@ -27,3 +27,14 @@ assert.deepEqual(Array.from(screens.inbox.states.slice(0,3),s=>s[0]),['normal','
 assert(!render('normal').includes('data-back'));canBack=true;assert(render('normal').includes('data-back'));canBack=false;
 assert(html.includes('class="inbox-item-time"'));assert(!html.includes('ร้านยากรุงเทพ'));
 console.log('PASS: 10 linked fixtures, Bangkok calendar grouping, sorting/ISO/invalid dates, live items retained, safe rendering, same-day/empty/loading/error/retry and exact destination');
+
+// Notices must keep their own record even when another order becomes current.
+S.history=[{id:'older',summary:true},{id:'newer',summary:true}];
+S.inbox=TP.previewInbox(S.history);
+for(const note of S.inbox){assert(note.p.id);assert.equal(note.caseId,note.p.id);actions.afOpenNote({dataset:{v:note.id}});assert.equal(calls.at(-1).id,'summary');assert.equal(calls.at(-1).params.id,note.caseId);}
+let info={done:false};TP.orderCases=()=>[{id:'older',order:{}}];TP.fulfillmentInfo=()=>info;TP.fulfillmentScreen=()=> 'track';TP.notify=()=>{};
+actions.afOpenNote({dataset:{v:S.inbox[0].id}});assert.equal(calls.at(-1).id,'track');assert.equal(S._paymentCase.id,'older');
+info={done:true};actions.afOpenNote({dataset:{v:S.inbox[0].id}});assert.equal(calls.at(-1).id,'summary');assert.equal(calls.at(-1).params.id,'older');
+S.inbox.push({id:'missing',go:'summary',p:{id:'deleted'}});actions.afOpenNote({dataset:{v:'missing'}});assert(calls.at(-1).refresh);
+S.inbox.push({id:'unbound',go:'summary'});actions.afOpenNote({dataset:{v:'unbound'}});assert.equal(calls.at(-1).id,'history');
+console.log('PASS: exact multi-order notification destinations, live tracking, completed summary and missing-record fallback');

@@ -1,0 +1,14 @@
+const assert = require('node:assert/strict');
+const {harness} = require('./health-harness.cjs');
+const h = harness();
+h.context.record = {id:'compact-order',who:'me',date:'18/10/2026',time:'13:10',branch:'tw',pharm:'kj',orderNo:'MT2026101801',topic:'ไอ',outcome:'customer-ended'};
+const html = h.run('histItem(record)');
+for (const text of ['MT2026101801','18/10/2026','13:10','สิ้นสุด','ดูข้อมูลคำสั่งซื้อ']) assert(html.includes(text));
+for (const text of ['history-detail-row','history-outcome-reason','ร้านยาที่ให้คำปรึกษา','history-card-extra','history-concern','history-card-store']) assert(!html.includes(text));
+assert(html.includes('data-go="summary"'));assert(html.includes('compact-order'));
+h.TP.money=n=>'฿'+n;
+h.context.record.order={status:'paid',total:385,paid:{total:410}};assert(h.run('histItem(record)').includes('฿410'));assert(!h.run('histItem(record)').includes('฿385'));
+h.context.record.order={status:'expired',total:385};assert(h.run('histItem(record)').includes('ยังไม่ได้ชำระ'));
+h.TP.orderPayable=()=>true;h.TP.orderRemaining=()=> '14:59';h.context.record.order={status:'pending'};
+const pending=h.run('histItem(record)');assert(pending.includes('data-a="openOrderPayment"'));assert(pending.includes('data-order-countdown'));assert(pending.includes('compact-order'));
+console.log('PASS: compact order identity/date/status/detail route and retained pending-payment action');
