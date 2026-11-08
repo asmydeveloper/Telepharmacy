@@ -752,10 +752,10 @@ document.addEventListener('keydown', e => {
 /* ---------- notifications: island (chrome) / pill toast / push banner ---------- */
 TP.live = msg => { liveEl.textContent = ''; setTimeout(() => { liveEl.textContent = msg; }, 30); };
 let islT = 0, toastT = 0, banT = 0, banTok = 0;
-TP.notify = (msg, { icon = 'check' } = {}) => {
-  TP.live(msg);
+TP.notify = (msg, { icon = 'check', dismissible = false, title = '', description = '', image = '' } = {}) => {
+  TP.live([title || msg, description].filter(Boolean).join(' '));
   ptoast.dataset.tone = /alert|x|error/.test(icon) ? 'error' : /info|clock/.test(icon) ? 'info' : 'success';
-  if (document.documentElement.classList.contains('chrome') && !phone.closest('.device-real')) {
+  if (!dismissible && document.documentElement.classList.contains('chrome') && !phone.closest('.device-real')) {
     const c = $('.isl-c', island);
     c.innerHTML = `<span class="isl-i">${TP.ic(icon, 16, 2.2)}</span><b>${TP.esc(msg)}</b>`;
     kill(island); kill(c); clearTimeout(islT);
@@ -767,9 +767,11 @@ TP.notify = (msg, { icon = 'check' } = {}) => {
       A(island, [{ width: w + 'px', height: '44px', borderRadius: '24px' }, { width: '120px', height: '34px', borderRadius: '20px' }], { d: 520, e: SP.soft.e, delay: 100, fill: 'forwards' });
     }, 2400);
   } else {
-    ptoast.innerHTML = TP.ic(icon,20,2) + '<span>' + TP.esc(msg) + '</span>'; kill(ptoast); clearTimeout(toastT); ptoast.style.visibility = 'visible';
+    ptoast.classList.toggle('ptoast-rich',Boolean(title));
+    ptoast.innerHTML = (title ? (image ? '<img class="ptoast-art" src="'+TP.esc(image)+'" alt="">' : '') + '<div class="ptoast-copy"><strong>'+TP.esc(title)+'</strong><p>'+TP.esc(description)+'</p></div>' : TP.ic(icon,20,2) + '<span>' + TP.esc(msg) + '</span>') + (dismissible ? '<button type="button" class="ptoast-close" aria-label="ปิดข้อความแจ้งเตือน">'+TP.ic('x',18,2)+'</button>' : ''); kill(ptoast); clearTimeout(toastT); ptoast.style.visibility = 'visible'; ptoast.setAttribute('aria-hidden','false'); ptoast.classList.toggle('dismissible',dismissible);
+    if (dismissible) $('.ptoast-close',ptoast).onclick = () => { kill(ptoast); clearTimeout(toastT); ptoast.style.visibility='hidden'; ptoast.setAttribute('aria-hidden','true'); };
     A(ptoast, [{ transform: 'translate(-50%,-180%)' }, { transform: 'translate(-50%,0)' }], { d: SP.spring.d, e: SP.spring.e, fill: 'forwards' });
-    toastT = setTimeout(() => fin(A(ptoast, [{ transform: 'translate(-50%,0)' }, { transform: 'translate(-50%,-180%)' }], { d: 320, e: E.in, fill: 'forwards' })).then(() => { ptoast.style.visibility = 'hidden'; }), 2400);
+    if (!dismissible) toastT = setTimeout(() => fin(A(ptoast, [{ transform: 'translate(-50%,0)' }, { transform: 'translate(-50%,-180%)' }], { d: 320, e: E.in, fill: 'forwards' })).then(() => { ptoast.style.visibility = 'hidden'; }), 2400);
   }
 };
 /* push banner: neutral wording only (no symptom / drug / amount, PDPA) */
@@ -1149,7 +1151,6 @@ TP.previewEventPolicy={
  'C511:typed':['พิมพ์คำยืนยันครบ','ปุ่มลบเปิดเมื่อไม่มีเคสหรือรายการค้าง กดยกเลิกไม่ล้างข้อมูล'],
  'C511:save-error':['จำลองลบบัญชีไม่สำเร็จ','ข้อมูลยังอยู่ครบ แสดงข้อผิดพลาดในแผ่นเดิมและลองซ้ำได้'],
  'C308:tax-picker':['เลือกข้อมูลใบกำกับภาษี','แผ่นเลือกข้อมูลเปิดซ้อนด้านล่างในหน้าชำระเงิน พื้นหลังยังเป็น C308 สลับบุคคลธรรมดา/นิติบุคคลได้ เลือกแล้วกลับหน้าชำระเงินและช่องใบกำกับภาษีอัปเดต ปิดได้โดยไม่เปลี่ยนข้อมูล'],
- 'C207:outzone':['ที่อยู่จัดส่งของเคสนอกเขต 15 กม.','ห้องรอแสดงข้อความปักว่าปรึกษาได้ตามปกติ ถ้าซื้อยารับที่ร้านหรือเลือกที่อยู่ในเขตตอนชำระ คิวยังรอได้และยกเลิกได้ตามเดิม'],
  'C517:invalid':['เลือกระบุข้อมูลแต่ไม่กรอกข้อความ','แสดงข้อผิดพลาดข้างช่อง ไม่บันทึกหรือแตะหมวดอื่น'],
  'C517:allergies':['แก้ประวัติแพ้ยาที่ผู้ใช้ระบุ','คงข้อความหลายบรรทัด เปิดแก้เฉพาะแพ้ยา บันทึกเปลี่ยนเฉพาะแพ้ยา ยกเลิกไม่เปลี่ยนข้อมูล'],
  'C517:meds':['แก้ยาที่ใช้ประจำ','บันทึกข้อความต่อเนื่องเฉพาะยาประจำ ไม่แก้แพ้ยา โรค หรือข้อมูลส่วนอื่น'],
@@ -2327,7 +2328,7 @@ const homeBranchStatus = (S, b) => homeBranchOutside(b) ? [TP.homeDistance(b) ==
 TP.quickConsultBranch = () => {
   if (!TP.homeAddress()) return {reason:'address'};
   const stores=TP.homeStores();
-  if (!stores.length) return {reason:'area'};
+  if (!stores.length) return {reason:TP.BRANCHES.some(b=>TP.homeDistance(b)!=null)?'area':'unknownarea'};
   if (TP.S.sysOff || TP.S.storeOpen===false) return {reason:'unavailable'};
   const open=stores.filter(b=>!homeBranchClosed(TP.S,b)&&(TP.S.branchState[b.id]||(b.demo?'open':'closed'))==='open');
   if (!open.length) return {reason:'unavailable'};
@@ -2342,11 +2343,19 @@ TP.act('quickConsult',()=>{
   if (!result.branch){
     if(result.reason==='address'){TP.notify('เลือกที่อยู่จัดส่งเพื่อหาร้านยาใกล้คุณ',{icon:'map-pin'});return TP.sheet('homeaddress');}
     if(result.reason==='unavailable') return TP.sheet('storeinfo', { branch: TP.homeStores()[0].id });
-    TP.notify('ยังไม่พบร้านในพื้นที่ที่เลือก',{icon:'info'});
-    return TP.go('home',{root:true});
+    if(result.reason==='area') return TP.sheet('outsidearea');
+    TP.notify('ยังตรวจสอบระยะจากที่อยู่นี้ไม่ได้ กรุณาตรวจสอบที่อยู่',{icon:'info',dismissible:true});
+    return;
   }
   S.branch=result.branch.id;S.branchPicked=true;S.autoReason='';
   return TP.ACTS.hmStart({dataset:{mode:'chat'}});
+});
+TP.sheetDef('outsidearea', {
+  group:'before', title:'อยู่นอกระยะการให้บริการ', code:'C216', host:'home', cls:'outside-area-sheet',
+  states:[['normal','ไม่มีร้านยาในรัศมี 15 กม.']],
+  notes:['เปิดจากปุ่มปรึกษาบนแบนเนอร์และเมนูเมื่อไม่มีร้านในรัศมี 15 กม. ไม่เริ่มเคสหรือเข้าคิว','ปิดด้วยปุ่มปิด กากบาท แตะพื้นหลัง หรือ Escape แล้วคงหน้าเดิม'],
+  render(){return '<div class="outside-area-content"><img src="/assets/illustrations/outside-service-area-2d-v1.png" alt="" width="200" height="200"><p>ยังไม่มีร้านยาในรัศมี 15 กม. จากที่อยู่ที่เลือก<br>กรุณาเปลี่ยนที่อยู่เพื่อเริ่มปรึกษา</p></div>';},
+  foot(){return ui.btn('ปิด',{closeSheet:true});}
 });
 TP.saveHomePreferences = () => {
   if (flowPreview || new URLSearchParams(location.search).has('state') || new URLSearchParams(location.search).get('registry') === '1') return;
@@ -2580,7 +2589,7 @@ function homeConsultBanner(S) {
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
   states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา', true, 8], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้', true, 9], ["case-queue3", "จำลอง รออีก 3 คิว", true, 48], ["case-next", "จำลอง คิวถัดไป", true, 51], ["case-chat", "จำลอง กำลังปรึกษา", true, 54], ["case-closed-unpaid","จบแชท รอชำระค่ายา", true, 60], ["case-delivery-preparing","ชำระแล้ว · เตรียมยา", true, 65], ["case-delivery-calling","กำลังเรียกไรเดอร์", true, 66], ["case-delivery-delivering","ไรเดอร์กำลังส่งยา", true, 67], ["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา", true, 69], ["case-pickup-ready","รับที่ร้าน · พร้อมรับยา", true, 70], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน', true, 79]],
-  notes: ['คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
+  notes: ['C201.8 ไม่มีร้านในรัศมี 15 กม. ยังคงแสดงร้านพร้อมสถานะอยู่นอกพื้นที่ให้บริการ กดเมนูหรือแบนเนอร์ปรึกษาเปิด Bottom Sheet C216 พร้อมภาพ หัวข้อ คำอธิบาย และปุ่มปิด คงหน้าเดิม ไม่เข้าฟอร์มหรือคิว; ระยะเท่ากับ 15 กม. ยังอยู่ในเขต', 'คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; delete S._homeFulfillmentPreviewCases; TP.homeScenario(S, st || 'normal'); if (!st) return;
     if(st==='multiple-fulfillments'){
@@ -2633,6 +2642,8 @@ TP.screen('home', {
 /* asked once, after the first consult (owner 19/10/2026) */
 TP.act('hmStart', t => {
   const S = TP.S;
+  if (TP.caseOpen()) return TP.go(['room','matched'].includes(S.case?.status)?'room':'queue');
+  if (!TP.homeAddress() || !TP.homeStores().length) return TP.ACTS.quickConsult();
   if (S.case && !TP.caseOpen()) Object.assign(S.intake, { who: 'me', symptoms: [], custom: [], otherOpen: false, urgent: [], note: '', photos: 0, attachments: [] });
   if (['chat','video'].includes(t?.dataset?.mode)) S.intake.mode = t.dataset.mode;
   TP.go('intake');
@@ -2861,9 +2872,9 @@ TP.act('verifyLic', t => {
 
 TP.screen('queue', {
   group:'before',title:'รอคิวปรึกษาเภสัชกร',code:'C207',ref:'C08',cls:'queue-wait-screen',
-  states:[['q2','รออีก 1 คิว'], ['q1','คิวถัดไป'], ['q4','รออีก 3 คิว', true, 7], ['outzone','ที่อยู่จัดส่งนอกเขต 15 กม.', true, 13]],
-  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงเฉพาะจำนวนคิวก่อนหน้าเด่นชัด ไม่แสดงรหัสคิว ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ หรือกล้อง กดกลับหน้าแรกได้โดยคิวยังคงอยู่ และกดการ์ดคิวเพื่อกลับมารอ ยกเลิกคิวได้ผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ที่อยู่จัดส่งนอกเขต 15 กม. ยังเข้าคิวปรึกษาได้ ถ้าซื้อยาต้องรับที่ร้านหรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน'],
-  prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode='chat';c.pos=st==='q1'?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=[];S.netOff=false;c.deliveryAddress=st==='outzone'?structuredClone(TP.ZONE_ADDR):(TP.homeAddress?.()?structuredClone(TP.homeAddress()):null);if(st==='outzone')TP.setFlag('zoneLock',true);if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='offline'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time,fail:true}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
+  states:[['q2','รออีก 1 คิว'], ['q1','คิวถัดไป'], ['q4','รออีก 3 คิว', true, 7]],
+  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงเฉพาะจำนวนคิวก่อนหน้าเด่นชัด ไม่แสดงรหัสคิว ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ หรือกล้อง กดกลับหน้าแรกได้โดยคิวยังคงอยู่ และกดการ์ดคิวเพื่อกลับมารอ ยกเลิกคิวได้ผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ตรวจระยะก่อนเริ่มปรึกษา หากไม่มีร้านในระยะ 15 กม. จะไม่เข้าคิว สงวน C207.13 ที่เลิกใช้'],
+  prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode='chat';c.pos=st==='q1'?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=[];S.netOff=false;c.deliveryAddress=TP.homeAddress?.()?structuredClone(TP.homeAddress()):null;if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='offline'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time,fail:true}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
   render() {
     const c = C() || ensureCase('queue');
     const paused = c.status === 'paused';
@@ -2880,7 +2891,6 @@ TP.screen('queue', {
           </div>
           ${paused?'<p class="queue-wait-explanation">คิวของคุณยังอยู่</p>':''}
         </div>
-        ${TP.queueZoneNote(c)}
       </section>`, {cls:'queue-wait-page'}) + ui.dock(ui.btn('ยกเลิกคิว',{sheet:'cancelq'}));
   },
   mount() {}
@@ -3352,21 +3362,13 @@ const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 const plusMin = (t, m) => { const [h, mm] = String(t || '14:20').split(':').map(Number), x = h * 60 + mm + m; return `${String(Math.floor(x / 60) % 24).padStart(2, '0')}:${String(x % 60).padStart(2, '0')}`; };
 const quietAt = c => plusMin([...c.msgs].reverse().find(m => m.time)?.time, 5);
 const idleLeft = c => Math.max(0, Math.ceil((c.idle.until - Date.now()) / 1000));
-const idleHtml = c => (c.idle && c.status !== 'closed' ? `<div class="rm-idle" id="rmIdle" role="alert"><p class="rm-idle-h">${ic('clock', 18, 2)}<b>ยังคุยต่อไหม</b><span class="rm-idle-t">ปิดใน <b class="num" id="rmIdleT">${mmss(idleLeft(c))}</b></span></p>`
-  + `<p>ไม่มีข้อความจากคุณ 3 นาที ถ้าไม่ตอบภายใน 2 นาที ระบบจะปิดการปรึกษานี้ให้ ไม่มีค่าปรึกษา ปรึกษาใหม่ได้ทุกเมื่อ</p>${ui.btn('ยังคุยอยู่', { sm: true, a: 'idleStay', icon: 'message-circle' })}</div>` : '');
-/* any message or photo from the customer ends the silence */
+const idleHtml = c => (c.idle && c.status !== 'closed' ? `<section class="rm-idle" id="rmIdle" role="alert" aria-labelledby="rmIdleTitle"><header class="rm-idle-h"><span class="rm-idle-icon" aria-hidden="true">${ic('clock', 22, 1.8)}</span><h2 id="rmIdleTitle">ยังต้องการปรึกษาต่อไหม?</h2></header>`
+  + `<div class="rm-idle-t">การปรึกษาจะสิ้นสุดใน <b class="num" id="rmIdleT">${mmss(idleLeft(c))}</b></div><p>เราไม่ได้รับข้อความจากคุณมา 3 นาที<br>กดปุ่มด้านล่างเพื่อคุยกับเภสัชกรต่อ</p><p class="rm-idle-footnote">หากหมดเวลา ระบบจะปิดการปรึกษานี้<br>ไม่มีค่าปรึกษา และเริ่มปรึกษาใหม่ได้ทุกเมื่อ</p>${ui.btn('ยังคุยอยู่ · ปรึกษาต่อ', { kind: 'secondary', cls: 'rm-idle-stay', a: 'idleStay', icon: 'message-circle' })}</section>` : '');
+
 const wake = el => { const c = C(); if (!c?.idle) return; c.idle = null; $('#rmIdle', el)?.remove(); TP.emit('state'); };
 const waitingForPharmacist = c => ['queue','paused'].includes(c.status);
 const queueChatLabel = c => c.status==='paused'?'เภสัชกรพักชั่วคราว · คิวของคุณยังอยู่':c.pos<=1?'คุณเป็นคิวถัดไป':`รออีก ${Math.max(0,c.pos-1)} คิว`;
 TP.queueChatLabel=queueChatLabel;
-/* C207 outzone: consulting is fine; buying needs pickup or an in-zone address at checkout. */
-TP.queueZoneNote = c => {
-  const a = c?.deliveryAddress, z = a && TP.zoneOf(a, c.branch);
-  if (!z || z.ok) return '';
-  const b = TP.branch(c.branch), where = `${a.dist} ${a.prov}${z.km != null ? ` ห่าง ${z.km} กม.` : ''}`;
-  /* user 8 Nov 2026: outside the 15 km radius the customer can consult only; no medicine is sold or dispensed */
-  return `<div class="rm-zone">${ui.note(`<b>อยู่นอกรัศมีให้บริการ 15 กม. จาก${esc(b.name)}</b><br>${esc(where)} · ปรึกษาเภสัชกรได้ตามปกติ แต่ซื้อหรือรับยาจากการปรึกษานี้ไม่ได้ หากต้องการซื้อยา เปลี่ยนที่อยู่จัดส่งให้อยู่ในรัศมีก่อนเริ่มปรึกษาครั้งถัดไป`, { tone: 'warn', icon: 'map-pin' })}</div>`;
-};
 const seed = c => {
   c.msgs ||= [];
   if(c.status==='closed')return;
@@ -3401,7 +3403,7 @@ TP.queueChatUpdate = () => {
 TP.screen('room', {
   group: 'during', title: 'ห้องปรึกษา (แชท)', code: 'C303', ref: 'C09', parent: 'home',
   states: [['live', 'เล่นบทสนทนา'], ['order', 'เภสัชกรส่งรายละเอียดรายการยา'], ['checkout-handoff', 'เภสัชกรสิ้นสุดสนทนา · ไปชำระค่ายาใน 30 วินาที', true, 5], ['closed', 'ปิดเคส + ใบสรุป', true, 6], ['call', 'คุยวิดีโออยู่', true, 7], ['idle', 'เงียบ 3 นาที ใกล้ปิดเอง', true, 8], ['idleclosed', 'ปิดเองเพราะเงียบ 5 นาที', true, 9], ['offline','ไม่มีอินเทอร์เน็ต', true, 21]],
-  notes: ['C303.5 ลำดับปิดแชท: เภสัชกรพิมพ์ข้อความปิดท้าย 3 ข้อความ (ขออนุญาตจบ, วิธีรับยาและชำระภายใน 15 นาที, ขอบคุณ) พิมพ์ข้อความละประมาณ 2.4 วินาที เว้นระหว่างข้อความ 0.9 วินาที → เว้น 3 วินาที → เภสัชกรสิ้นสุดสนทนาแล้ว พร้อมปุ่มนับถอยหลัง 30 วินาทีไป C308 ทันที ใช้ลำดับเดียวกันเมื่อลูกค้าตอบไม่มีคำถามเพิ่มเติม และเมื่อกดปิดเคสจากแผง', 'เภสัชกรจบสนทนาและมียารอชำระ: ช่องพิมพ์เปลี่ยนเป็นปุ่มชำระค่ายานับถอยหลัง 30 วินาที กดทันทีหรือเปิดชำระอัตโนมัติเมื่อครบ เวลา 15 นาทีเริ่มเมื่อเข้าชำระจริง', 'เมื่อเภสัชกรส่งรายการยา แสดงแถบตะกร้ายาเหนือช่องพิมพ์ กดเปิด C312 ตะกร้ายา เพื่อดูรูปยา จำนวน วิธีใช้ ราคา และยอดรวมจาก order เดียวกัน ไม่มีปุ่มจ่ายเงินในตะกร้า', 'หัวห้องแชทมีปุ่มจบสนทนาสีแดง เปิดยืนยันจบโดยตรง ไม่มีเมนูตัวเลือก C304; ขณะรอเภสัชแสดงยกเลิกสีแดงและยืนยันยกเลิกคิว', 'ข้อความแรกในแชทคือข้อมูลแจ้งอาการที่ส่งอัตโนมัติเป็นบับเบิ้ลของลูกค้า ใช้ข้อความตัวอย่างคงที่ ไม่ดึง state จาก C203 ข้อมูลอาการและสุขภาพจริงยังเก็บในเคสให้เภสัชกรใช้ดูแล', 'แตะรูปหรือชื่อเภสัชกรเปิดข้อมูลในป๊อปอัป C313 แล้วกลับแชทเดิมได้', 'ส่วนบนห้องแชทแสดงชื่อ ใบอนุญาต และสาขาจากเคส พร้อมปุ่มวิดีโอคอล ไม่มีปุ่มโทร ข้อความผู้ใช้สี Primary ข้อความเภสัชกรสีขาวบนพื้นเทาอ่อน ใช้ภาษาไทยทุกปุ่ม', 'เภสัชกรส่งการ์ดคำขอวิดีโอคอล ลูกค้ากดเข้าร่วมเอง ย่อคอลมาพิมพ์แชทและกลับเข้าคอลได้โดยสายไม่หลุด', 'แชทแสดงการ์ดรายการยารูปแบบหัว เนื้อหา ท้าย: รูปยา ชื่อ จำนวน วิธีใช้ ราคา และรวมค่ายา ใช้รายการเดียวกับบิลและใบสรุป ไม่มีปุ่มจ่ายเงินหรือปุ่มคำสั่งซื้อในการ์ด เมื่อจบแชทจึงเปิดหน้าชำระเงินและเริ่มนับเวลา', 'ออกจากห้อง = เคสยังเปิด กลับเข้าได้จากหน้าแรก แถบด้านล่าง และประวัติ', 'ข้อความใหม่ตอนออกจากแอป = แจ้งเตือนแบบคำกลาง ๆ', 'A4 + A9 (20/10): แชทเก็บ 1 ปีนับจากวันปิดเคส',
+  notes: ['C303.8 แจ้งเตือนก่อนปิดเพราะเงียบ: กล่องอำพันอ่อน ขอบอำพัน แสดงเวลาที่เหลือและปุ่มปรึกษาต่อเต็มความกว้างสีน้ำตาลอำพันเข้ม ไม่ใช้ Primary; กดแล้วคงห้องและข้อความเดิม', 'C303.5 ลำดับปิดแชท: เภสัชกรพิมพ์ข้อความปิดท้าย 3 ข้อความ (ขออนุญาตจบ, วิธีรับยาและชำระภายใน 15 นาที, ขอบคุณ) พิมพ์ข้อความละประมาณ 2.4 วินาที เว้นระหว่างข้อความ 0.9 วินาที → เว้น 3 วินาที → เภสัชกรสิ้นสุดสนทนาแล้ว พร้อมปุ่มนับถอยหลัง 30 วินาทีไป C308 ทันที ใช้ลำดับเดียวกันเมื่อลูกค้าตอบไม่มีคำถามเพิ่มเติม และเมื่อกดปิดเคสจากแผง', 'เภสัชกรจบสนทนาและมียารอชำระ: ช่องพิมพ์เปลี่ยนเป็นปุ่มชำระค่ายานับถอยหลัง 30 วินาที กดทันทีหรือเปิดชำระอัตโนมัติเมื่อครบ เวลา 15 นาทีเริ่มเมื่อเข้าชำระจริง', 'เมื่อเภสัชกรส่งรายการยา แสดงแถบตะกร้ายาเหนือช่องพิมพ์ กดเปิด C312 ตะกร้ายา เพื่อดูรูปยา จำนวน วิธีใช้ ราคา และยอดรวมจาก order เดียวกัน ไม่มีปุ่มจ่ายเงินในตะกร้า', 'หัวห้องแชทมีปุ่มจบสนทนาสีแดง เปิดยืนยันจบโดยตรง ไม่มีเมนูตัวเลือก C304; ขณะรอเภสัชแสดงยกเลิกสีแดงและยืนยันยกเลิกคิว', 'ข้อความแรกในแชทคือข้อมูลแจ้งอาการที่ส่งอัตโนมัติเป็นบับเบิ้ลของลูกค้า ใช้ข้อความตัวอย่างคงที่ ไม่ดึง state จาก C203 ข้อมูลอาการและสุขภาพจริงยังเก็บในเคสให้เภสัชกรใช้ดูแล', 'แตะรูปหรือชื่อเภสัชกรเปิดข้อมูลในป๊อปอัป C313 แล้วกลับแชทเดิมได้', 'ส่วนบนห้องแชทแสดงชื่อ ใบอนุญาต และสาขาจากเคส พร้อมปุ่มวิดีโอคอล ไม่มีปุ่มโทร ข้อความผู้ใช้สี Primary ข้อความเภสัชกรสีขาวบนพื้นเทาอ่อน ใช้ภาษาไทยทุกปุ่ม', 'เภสัชกรส่งการ์ดคำขอวิดีโอคอล ลูกค้ากดเข้าร่วมเอง ย่อคอลมาพิมพ์แชทและกลับเข้าคอลได้โดยสายไม่หลุด', 'แชทแสดงการ์ดรายการยารูปแบบหัว เนื้อหา ท้าย: รูปยา ชื่อ จำนวน วิธีใช้ ราคา และรวมค่ายา ใช้รายการเดียวกับบิลและใบสรุป ไม่มีปุ่มจ่ายเงินหรือปุ่มคำสั่งซื้อในการ์ด เมื่อจบแชทจึงเปิดหน้าชำระเงินและเริ่มนับเวลา', 'ออกจากห้อง = เคสยังเปิด กลับเข้าได้จากหน้าแรก แถบด้านล่าง และประวัติ', 'ข้อความใหม่ตอนออกจากแอป = แจ้งเตือนแบบคำกลาง ๆ', 'A4 + A9 (20/10): แชทเก็บ 1 ปีนับจากวันปิดเคส',
     'นโยบายล่าสุด: ไม่มีการตอบกลับ 3 นาที แจ้งเตือนอีก 2 นาที ก่อนสิ้นสุดเมื่อครบ 5 นาที; แยกจากเวลาชำระยา 15 นาที และไม่ยกเลิกรายการยารอชำระเมื่อจบแชท'],
   wait: ['ลูกค้าเงียบระหว่างไปจ่ายเงิน (มีรายการรอชำระ) นับเวลาเงียบไหม · ต้นแบบนับเหมือนกัน ปิดแล้วรายการยกเลิก'],
   prep(S) {
@@ -3458,7 +3460,7 @@ TP.screen('room', {
       ${!waiting?`<div class="rm-provider-bar"><button type="button" class="rm-who" data-sheet="chatprovider" aria-label="ดูข้อมูลเภสัชกร" aria-haspopup="dialog">${ui.av('', {ini:p.ini,img:p.id==='tp'?TP.demoProfiles?.pharmacist_m:'/assets/profiles/pharmacist-chat-v2.png',size:'sm',solid:true})}<span><b>${esc(p.short)} <span class="rm-provider-license">· ${esc(p.lic)}</span></b><small>${esc(b.name)}</small></span></button>${closed?'':`<button type="button" class="ibtn" data-a="chatVideo" aria-label="วิดีโอคอล">${ic('video',24,1.8)}</button>`}</div>`:''}
       ${waiting&&!videoWaiting?`<div class="rm-queue-bar" role="status" aria-live="polite" aria-atomic="true"><span class="rm-queue-icon" aria-hidden="true">${ic(c.status==='paused'?'clock':'search',24,2)}</span><span class="rm-queue-copy"><b>${c.status==='paused'?'รอเภสัชกรกลับมารับบริการ':'กำลังหาเภสัชกร...'}</b><small id="rmQueueLabel">${esc(queueChatLabel(c))}</small></span></div>`:''}
       ${call}${TP.S.netOff ? `<div class="rm-net" role="status">${ic('wifi-off', 16, 2)}<span>ไม่มีอินเทอร์เน็ต ข้อความจะส่งเมื่อกลับมาออนไลน์</span></div>` : ''}
-      <div class="scroll rm-scroll${!waiting?' has-provider':''}${call ? ' has-call' : ''}${waiting&&!videoWaiting?' has-queue':''}${TP.S.netOff ? ' has-net' : ''}${closed ? (c.endWhy === 'noreply' ? ' end2' : ' ended') : ''}" id="rmScroll">${videoWaiting?videoQueueCard(c):''}<div class="rm-day">${esc(c.day0 || 'วันนี้')}</div>${waiting?TP.queueZoneNote(c):''}<div class="rm-list" id="rmList">${c.msgs.map(msgHtml).join('')}</div><div class="rm-quick" id="rmQuick"></div>${idleHtml(c)}</div>
+      <div class="scroll rm-scroll${!waiting?' has-provider':''}${call ? ' has-call' : ''}${waiting&&!videoWaiting?' has-queue':''}${TP.S.netOff ? ' has-net' : ''}${closed ? (c.endWhy === 'noreply' ? ' end2' : ' ended') : ''}" id="rmScroll">${videoWaiting?videoQueueCard(c):''}<div class="rm-day">${esc(c.day0 || 'วันนี้')}</div><div class="rm-list" id="rmList">${c.msgs.map(msgHtml).join('')}</div><div class="rm-quick" id="rmQuick"></div>${idleHtml(c)}</div>
       ${closed && TP.checkoutHandoffRemaining(c) ? ui.dock(ui.btn(`ขั้นตอนต่อไป ชำระค่ายา (${TP.checkoutHandoffRemaining(c)} วิ)`,{a:'continueCheckout'})) : closed && c.order?.status==='pending' ? ui.dock(`${ui.btn('ดูรายการยาและชำระเงิน',{a:'openOrderPayment',icon:'credit-card'})}${ui.btn('เปิดใบสรุป',{kind:'ghost',go:'summary',p:{id:c.id}})}`,{note:`ปรึกษาเสร็จแล้ว · ชำระค่ายาภายใน ${esc(TP.orderTime(c.order))} น.`}) : closed && c.endWhy === 'noreply' ? ui.dock(`${TP.S.storeOpen ? ui.btn('ปรึกษาใหม่', { a: 'requeue', icon: 'message-circle' }) : ''}${ui.btn('เปิดใบสรุป', { kind: 'ghost', go: 'summary', p: { id: c.id } })}`, { note: TP.S.storeOpen ? 'ยังมีอาการ ปรึกษาใหม่ได้ทันทีที่สาขาเดิม ไม่ต้องกรอกอาการใหม่ · ไม่มีค่าปรึกษา' : `ร้านปิดแล้ว ฝากคำถามไว้ เภสัชกรตอบ${TP.OF_REPLY}` }) :
       closed ? ui.dock(`<p class="dock-note" style="margin:0">เคสนี้ปิดแล้ว · ดูย้อนหลังได้ในประวัติ 1 ปีนับจากวันปิดเคส</p>${ui.btn('เปิดใบสรุป', { go: 'summary', p: { id: c.id } })}`) :
       `<div id="rmBasket" class="rm-basket-strip"${TP.chatBasketBar(c.order) ? '' : ' hidden'}>${TP.chatBasketBar(c.order)}</div><div class="dock rm-comp"><div class="rm-compose-row"><button type="button" class="ibtn" data-a="sendPhoto" aria-label="ส่งรูป">${ic('camera', 22, 1.8)}</button><label class="sr" for="rmIn">พิมพ์ข้อความ</label><textarea id="rmIn" class="rm-in" rows="1" placeholder="${waiting?'พิมพ์อาการเพิ่มเติมไว้ระหว่างรอ':'พิมพ์ข้อความ'}">${esc(c.draft||'')}</textarea><button type="button" class="rm-send" data-a="sendMsg" aria-label="ส่ง" disabled>${ic('arrow-up', 20, 2.4)}</button></div></div>`}`;

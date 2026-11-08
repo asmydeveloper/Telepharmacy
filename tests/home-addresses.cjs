@@ -74,7 +74,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   assert.equal(TP.S.addrs.filter(a=>a.main).length,1);
   assert(!registrations.addressedit.render({S:TP.S}).includes('home-address-label'));
   for(const id of ['homeaddress','addressbook','addressedit']) assert.ok(registrations[id].code && registrations[id].states.length>1);
-  assert.equal(new Set(Object.values(registrations).map(d=>d.code)).size,3);
+  assert.equal(new Set(['homeaddress','addressbook','addressedit'].map(id=>registrations[id].code)).size,3);
   const modeStart=source.indexOf("TP.act('hmConsultMode'");
   vm.runInContext(source.slice(modeStart,source.indexOf("TP.act('hmChooseStore'",modeStart)),context);
   const startAction=source.indexOf("TP.act('hmStart'");
@@ -123,7 +123,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,1);assert.equal(TP.S.case,null);
   TP.caseOpen=()=>true;TP.S.case={status:'room',branch:'near'};actions.quickConsult();assert.equal(routed.at(-1)[0],'room');assert.equal(TP.S.branch,'free');assert.equal(started,1);
   TP.caseOpen=()=>false;TP.S.case=null;TP.homeAddress=()=>null;actions.quickConsult();assert.equal(sheets.at(-1)[0],'homeaddress');
-  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
+  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];const notices=[],notifyBefore=TP.notify,distanceBefore=TP.homeDistance,routeCount=routed.length;TP.homeDistance=()=>20;TP.notify=(msg,options)=>notices.push({msg,options});actions.quickConsult();assert.equal(routed.length,routeCount);assert.equal(sheets.at(-1)[0],'outsidearea');assert.equal(started,1);assert.equal(notices.length,0);TP.notify=notifyBefore;TP.homeDistance=distanceBefore;assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,2);assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.S.sysOff=true;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');
   TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;
