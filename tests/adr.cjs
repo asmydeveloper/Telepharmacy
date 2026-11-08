@@ -36,7 +36,7 @@ assert(!chatHtml.includes('<img'));
 assert.equal((chatHtml.match(/class="msg me"/g)||[]).length,2);
 assert(!chatHtml.includes('rm-adr-report'));
 assert(chatHtml.includes('- ความรบกวน: เล็กน้อย'));
-assert(chatHtml.includes('ยาตัวแรก<br>- อาการ: อาการแรก'));
+assert(chatHtml.includes('ยาตัวแรก<br>- อาการ: อาการแรก'));assert(chatHtml.includes('<p>แจ้งแพ้ยา<br>ยาตัวแรก<br>'),'each report bubble starts with the heading');
 
 assert(!('image' in submit.S.case.msgs[0].adrReports[0]));
 assert.match(submit.S.case.msgs[0].text,/ยาตัวแรก/);

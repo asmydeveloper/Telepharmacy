@@ -145,10 +145,10 @@ C506 เปิดเอกสารคอนเซนต์เต็มให้
 The user's current rule supersedes older cancellation-on-chat-close guidance: medicine orders have 15 minutes to pay from the first checkout opening for chat consultations (video retains its existing timing). Closing consultation (by pharmacist, customer or inactivity) must preserve a pending order and its original deadline. Keep consultation outcome independent from pending/paid/expired order status. Never reopen a closed consultation to pay, silently extend an expired order, or create a new consultation merely by opening checkout. See `design-system/post-consult-payment-research.md` for entry points, expiry and production reconciliation requirements.
 
 # Consultation history outcome: latest user policy
-History C403 shows consultation outcomes, not medicine purchase or money totals. Keep completed, customer-ended and no-response separate; customer-ended is not labelled a failed consultation. The current no-response threshold is 5 minutes (prototype warning after 3 minutes, then 2 minutes to respond), superseding older 15-minute inactivity wording. Medicine payment still has its separate 15-minute deadline.
+History C403 shows consultation outcomes, not medicine purchase or money totals. Keep completed, customer-ended and no-response separate. Latest user rule (8 Nov 2026): customer-ended (C305) means the consultation is cancelled; history shows "ยกเลิก". The current no-response threshold is 5 minutes (prototype warning after 3 minutes, then 2 minutes to respond), superseding older 15-minute inactivity wording. Medicine payment still has its separate 15-minute deadline.
 
 # Checkout scope: latest user policy 1 November 2026
-Checkout C308 offers store pickup and express delivery only. Parcel and cold-chain courier choices are not available. History C403 currently has no visible outcome filters; show all records, newest first. Its pending-order cards use the regular history layout with a live countdown and open the exact order checkout.
+Checkout C308 offers store pickup, express delivery by Lalamove, and parcel delivery with a choice of Flash Express or DHL Express (user decision 8 Nov 2026). Cold-chain courier is not available. History C403 currently has no visible outcome filters; show all records, newest first. Its pending-order cards use the regular history layout with a live countdown and open the exact order checkout.
 
 # คู่มือเหตุการณ์ทดสอบ — 2 พฤศจิกายน 2569
 เมื่อเพิ่มหน้าหรือ state ให้รัน `npm run screens:sync` ซึ่งสร้างคู่มือรายหน้าและทะเบียนเหตุการณ์ที่ `public/preview/events/` อัตโนมัติ และรัน `npm run screens:check` เพื่อตรวจความตรงกัน รหัสเหตุการณ์ `EV-Cxxx-state` ใช้ state key คงที่ ห้ามเปลี่ยน key หรือใช้รหัสซ้ำ แยก `EV-GLOBAL-xxx` สำหรับเหตุการณ์กลาง เพิ่ม acceptance เฉพาะกรณีใน `TP.previewEventPolicy.describe` และทดสอบ fixture/action จริง คู่มือเป็น checklist ไม่ใช่ผล QA ผ่านแล้ว ดู `docs/testing-events.md`
@@ -210,3 +210,9 @@ C505 ล่าสุด: ไม่มีกล่องชื่อเจ้า�
 
 # C207 หน้ารอคิวแยกจากแชท — 8 พฤศจิกายน 2569
 ข้อกำหนดล่าสุดแทนห้องแชทระหว่างรอ: C207 ไม่มีช่องพิมพ์ ไม่มีปุ่มย่อ/กลับ ออกได้เฉพาะยกเลิกผ่าน C208 แสดงรหัสคิวและจำนวนคิวก่อนหน้า เข้า C303 เมื่อเภสัชกรรับบริการเท่านั้น ไม่ใช้จำนวนคิวเป็น trigger รับบริการ ข้อมูลที่ส่งก่อนเข้าคิวไม่หาย C300 ยังคงสงวนและเลิกใช้
+
+# หนึ่งคนหนึ่งเคสปรึกษา — 8 พฤศจิกายน 2569
+การแจ้งอาการเพื่อปรึกษาเภสัช (C203) และการแจ้งอาการหลังใช้ยา/แพ้ยา (C412) ถือเป็นการเปิดเคสปรึกษากับเภสัชกรเหมือนกัน ผู้ใช้ 1 คนมีเคสที่ยังไม่จบได้ครั้งละ 1 เคสเท่านั้น ต้องจบเคสเดิมก่อน (เภสัชกรปิด ลูกค้าจบเอง ยกเลิกคิว หรือหมดเวลา) จึงเริ่มเคสใหม่ได้ ระหว่างมีเคสค้าง ปุ่มเริ่มปรึกษาต้องพากลับเคสเดิม ห้ามสร้างเคสที่สองหรือเข้าคิวซ้อน รายการยารอชำระหลังจบแชทไม่นับเป็นเคสที่ยังไม่จบ
+
+# ผู้ใช้กดจบสนทนา C305 — 8 พฤศจิกายน 2569
+ลูกค้ากดจบสนทนาเอง = ยกเลิกเคสปรึกษา รายการยาที่ยังไม่ชำระของเคสนั้นถูกยกเลิกด้วย ไม่มีการ์ดสถานะหรือการ์ดชำระเงินบนหน้าแรก กลับ C201 ให้เริ่มปรึกษาใหม่ได้ทันที ประวัติ C403 แสดงสถานะ ยกเลิก กฎนี้แทนข้อความเดิมที่ให้คงรายการยาค้างชำระหลังลูกค้าจบแชท ส่วนเภสัชกรจบหรือหมดเวลาเพราะไม่ตอบยังใช้กติกาชำระ 15 นาทีเดิม

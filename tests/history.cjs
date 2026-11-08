@@ -3,7 +3,7 @@ const h=harness(),{S,run,screens,actions}=h;
 S.history.find(h=>h.id==='self-old').outcome='completed';S.history.find(h=>h.id==='self-new').outcome='customer-ended';
 const ids=()=>Array.from(run('historyItems(TP.S)').map(h=>h.id));
 S.st.history='normal';S.case=null;const screen=screens.history.render({S,state:'normal',params:{}});assert(!screen.includes('data-segname="histStatus"'));assert(!screen.includes('<legend>ประเภทการปรึกษา'));assert(!screen.includes('เก็บแชท'));assert(!screen.includes('id="histCount"'));assert(!screen.includes('รายการ · ล่าสุดก่อน'));assert(!screen.includes('history-card-link'));assert(screen.includes('ผลการปรึกษา'));assert(!screen.includes('การซื้อยา'));assert(!screen.includes('ปรึกษาอย่างเดียว'));
-const outcomeCases={completed:'ปรึกษาสำเร็จ','customer-ended':'คุณจบการสนทนา','no-response':'ไม่ได้รับการตอบกลับ'};
+const outcomeCases={completed:'ปรึกษาสำเร็จ','customer-ended':'ยกเลิก','no-response':'ไม่ได้รับการตอบกลับ'};
 for(const [outcome,label] of Object.entries(outcomeCases))for(const orderStatus of ['paid','pending','expired','none']){h.context.record={id:'status',who:'me',outcome,orderStatus,bought:180};assert.equal(run('historyOutcome(TP.S,record).label'),label);S._histStatus='completed';assert.equal(run("historyItems(TP.S,'all',[record]).length"),outcome==='completed'?1:0);const html=run('histItem(record)');assert(html.includes(label));assert(!html.includes('การซื้อยา'));assert(!html.includes('ยอดเงินทั้งหมด'));if(outcome==='no-response')assert(html.includes('5 นาที'));}
 
 S.case=null;S._histWho='all';S._histStatus='all';S._histQuery='';
