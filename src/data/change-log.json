@@ -4,6 +4,18 @@
     "page": "แจ้งนอกระยะการให้บริการ",
     "path": "/?screen=outsidearea&state=normal&splash=0",
     "codes": [
+      "C216"
+    ],
+    "changes": [
+      "คงหัวข้อด้านบนซ้ายของ Bottom Sheet ตามรูปแบบเดิม",
+      "ลดช่องว่างบนล่างรูปให้แผ่นข้อมูลกระชับขึ้น"
+    ]
+  },
+  {
+    "date": "2026-11-08",
+    "page": "แจ้งนอกระยะการให้บริการ",
+    "path": "/?screen=outsidearea&state=normal&splash=0",
+    "codes": [
       "C216",
       "C201.8"
     ],

@@ -2352,7 +2352,7 @@ TP.sheetDef('outsidearea', {
   group:'before', title:'อยู่นอกระยะการให้บริการ', code:'C216', host:'home', cls:'outside-area-sheet',
   states:[['normal','ไม่มีร้านยาในรัศมี 15 กม.']],
   notes:['เปิดจากปุ่มปรึกษาบนแบนเนอร์และเมนูเมื่อไม่มีร้านในรัศมี 15 กม. ไม่เริ่มเคสหรือเข้าคิว','ปิดด้วยปุ่มปิด กากบาท แตะพื้นหลัง หรือ Escape แล้วคงหน้าเดิม'],
-  render(){return '<div class="outside-area-content"><img src="/assets/illustrations/outside-service-area-2d-v1.png" alt="" width="200" height="200"><p>ยังไม่มีร้านยาในรัศมี 15 กม. จากที่อยู่ที่เลือก<br>กรุณาเปลี่ยนที่อยู่เพื่อเริ่มปรึกษา</p></div>';},
+  render(){return '<div class="outside-area-content"><img src="/assets/illustrations/outside-service-area-2d-v1.png" alt="" width="200" height="160"><div class="outside-area-copy"><p>ยังไม่มีร้านยาในรัศมี 15 กม. จากที่อยู่ที่เลือก<br>กรุณาเปลี่ยนที่อยู่เพื่อเริ่มปรึกษา</p></div></div>';},
   foot(){return ui.btn('ปิด',{closeSheet:true});}
 });
 TP.saveHomePreferences = () => {
