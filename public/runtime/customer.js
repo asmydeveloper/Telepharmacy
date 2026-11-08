@@ -7667,10 +7667,10 @@ function followMedicationHistory(ctx, displayed) {
 }
 TP.adrHistoryMedicines = ctx => followMedicationHistory(ctx, followDisplayPlans(ctx)).filter(plan => { const last = plan.endDate || (plan.days && plan.date ? addD(plan.date, plan.days - 1) : plan.date); const elapsed = (toD(TP.NOW.date) - toD(last)) / 86400000; return Number.isFinite(elapsed) && elapsed >= 0 && elapsed < 7; }).flatMap(plan => plan.meds.map((med,index)=>({...med,v:`history:${plan.id}:${index}`,hid:plan.id,followPreview:!!plan.preview,pharm:plan.pharm,branch:plan.branch,sub:`ปรึกษา ${plan.date || ''}`})));
 const followCourseCompleted = plan => !!plan.completed || !!plan.savedPlan?.end || (!!plan.savedPlan?.on && plan.today > plan.days);
-function followPlanCard(plan, historical = false, compact = false) {
+function followPlanCard(plan, historical = false, compact = false, pos = null) {
   const completed = followCourseCompleted(plan);
-  return `<section class="card pad0 fu-multi-card fu-multi-plan${compact ? ' fu-order-summary' : ''}${completed ? ' fu-course-completed' : ''}">
-    ${compact ? `<header class="fu-order-card-head"><strong class="num">#${esc(TP.orderNumber(plan))}</strong><button type="button" class="txtbtn fu-order-view" ${ui.route({ go: 'summary', p: { id: plan.id, ...(plan.preview ? { followPreview: true } : {}) } })} aria-label="ดูรายละเอียดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}">${ic('eye',18,2)}<span>ดูข้อมูล</span></button></header><div class="fu-order-header">
+  return `<section class="card pad0 fu-multi-card fu-multi-plan${compact ? ' fu-order-summary' : ''}${completed ? ' fu-course-completed' : ''}"${pos ? ` aria-label="คำสั่งซื้อที่ ${pos.i} จาก ${pos.n}"` : ''}>
+    ${compact ? `<header class="fu-order-card-head"><span class="fu-order-ident">${pos ? `<span class="fu-order-index num" aria-hidden="true">${pos.i}/${pos.n}</span>` : ''}<strong class="num">#${esc(TP.orderNumber(plan))}</strong></span><button type="button" class="txtbtn fu-order-view" ${ui.route({ go: 'summary', p: { id: plan.id, ...(plan.preview ? { followPreview: true } : {}) } })} aria-label="ดูรายละเอียดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}">${ic('eye',18,2)}<span>ดูข้อมูล</span></button></header><div class="fu-order-header">
       <div class="fu-order-line fu-order-concern"><p>${esc(TP.consultationText(plan) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p></div>
     </div>` : `<header class="fu-multi-head"><span class="fu-multi-icon">${ic('file-text', 20, 2)}</span>
       <div class="fu-plan-identity"><h2>${compact ? `คำสั่งซื้อ #${esc(TP.orderNumber(plan))}` : `รหัสเคส ${esc(TP.caseCode(plan))}`}</h2><p class="small">ปรึกษา ${esc(plan.date)}</p></div>
@@ -7703,7 +7703,7 @@ function followOrderOverview(ctx, plans) {
     .filter(plan => !ctx.S.historyAssessmentPlans?.[plan.id]?.checks?.length)
     .sort((a, b) => Number(followCourseCompleted(b)) - Number(followCourseCompleted(a)));
   if (!visibleOrders.length) return '';
-  return `<section class="fu-order-overview" aria-label="คำสั่งซื้อที่ติดตาม"><div class="fu-order-heading"><h2>คำสั่งซื้อที่ติดตาม</h2><span class="small">${visibleOrders.length} คำสั่งซื้อ</span></div><div class="fu-order-carousel" tabindex="0" aria-label="เลื่อนดูคำสั่งซื้อ">${visibleOrders.map(plan => followPlanCard(plan,followPastPlan(plan),true)).join('')}</div><div class="fu-order-pagination" role="status" aria-label="คำสั่งซื้อที่ 1 จาก ${visibleOrders.length}">${visibleOrders.map((_,index)=>`<span class="fu-order-dot${index===0?' is-active':''}" aria-hidden="true"></span>`).join('')}</div></section>`;
+  return `<section class="fu-order-overview" aria-label="คำสั่งซื้อที่ติดตาม"><div class="fu-order-heading"><h2>คำสั่งซื้อที่ติดตาม</h2><span class="small">${visibleOrders.length} คำสั่งซื้อ</span></div><div class="fu-order-carousel" tabindex="0" aria-label="เลื่อนดูคำสั่งซื้อ">${visibleOrders.map((plan, i) => followPlanCard(plan,followPastPlan(plan),true,{i:i+1,n:visibleOrders.length})).join('')}</div><div class="fu-order-pagination">${visibleOrders.map((_,index)=>`<button type="button" class="fu-order-dot${index===0?' is-active':''}" data-index="${index}" aria-label="ไปคำสั่งซื้อที่ ${index+1}"${index===0?' aria-current="true"':''}></button>`).join('')}<span class="sr" id="fuOrderPos" role="status" aria-live="polite">คำสั่งซื้อที่ 1 จาก ${visibleOrders.length}</span></div></section>`;
 }
 function mountFollowOrderPagination(el) {
   const carousel = $('.fu-order-carousel', el), pagination = $('.fu-order-pagination', el);
@@ -7715,9 +7715,46 @@ function mountFollowOrderPagination(el) {
     const index = cards.reduce((best, card, i) => Math.abs(card.getBoundingClientRect().left - viewport.left) < Math.abs(cards[best].getBoundingClientRect().left - viewport.left) ? i : best, 0);
     if (index === current) return;
     current = index;
-    dots.forEach((dot, i) => dot.classList.toggle('is-active', i === index));
-    pagination.setAttribute('aria-label', `คำสั่งซื้อที่ ${index + 1} จาก ${cards.length}`);
+    dots.forEach((dot, i) => { dot.classList.toggle('is-active', i === index); if (i === index) dot.setAttribute('aria-current', 'true'); else dot.removeAttribute('aria-current'); });
+    const pos = $('#fuOrderPos', pagination); if (pos) pos.textContent = `คำสั่งซื้อที่ ${index + 1} จาก ${cards.length}`;
   };
+  /* card start inside the scroller, respecting the scroll padding used for the full-bleed edge */
+  const goTo = i => {
+    const card = cards[Math.max(0, Math.min(cards.length - 1, i))]; if (!card) return;
+    const pad = parseFloat(getComputedStyle(carousel).scrollPaddingInlineStart) || 0;
+    carousel.scrollTo({ left: card.offsetLeft - carousel.offsetLeft - pad, behavior: TP.RED() ? 'auto' : 'smooth' });
+  };
+  dots.forEach((dot, i) => dot.addEventListener('click', () => goTo(i)));
+  carousel.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault(); goTo(Math.max(0, current) + (e.key === 'ArrowRight' ? 1 : -1));
+  });
+  /* mouse drag in the desktop preview; touch keeps native swipe and snap */
+  let drag = null;
+  carousel.addEventListener('pointerdown', e => {
+    if (e.pointerType !== 'mouse' || e.button !== 0 || e.target.closest('button,a,input,label')) return;
+    drag = { x: e.clientX, left: carousel.scrollLeft, moved: false, id: e.pointerId };
+  });
+  carousel.addEventListener('pointermove', e => {
+    if (!drag || e.pointerId !== drag.id) return;
+    const dx = e.clientX - drag.x;
+    if (!drag.moved && Math.abs(dx) < 4) return;
+    if (!drag.moved) { drag.moved = true; carousel.setPointerCapture(e.pointerId); carousel.classList.add('is-dragging'); }
+    carousel.scrollLeft = drag.left - dx;
+  });
+  const endDrag = e => {
+    if (!drag) return;
+    const moved = drag.moved; drag = null;
+    carousel.classList.remove('is-dragging');
+    if (!moved) return;
+    if (carousel.hasPointerCapture?.(e.pointerId)) carousel.releasePointerCapture(e.pointerId);
+    /* a drag is not a tap on the card underneath; then settle on the nearest card */
+    carousel._justDragged = true; setTimeout(() => { carousel._justDragged = false; }, 0);
+    current = -1; update(); goTo(current);
+  };
+  carousel.addEventListener('pointerup', endDrag);
+  carousel.addEventListener('pointercancel', endDrag);
+  carousel.addEventListener('click', e => { if (carousel._justDragged) { e.preventDefault(); e.stopPropagation(); } }, true);
   carousel.addEventListener('scroll', update, { passive: true });
   update();
 }

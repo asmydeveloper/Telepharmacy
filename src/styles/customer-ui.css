@@ -3151,3 +3151,24 @@ body:has(.consultation-card-preview) nextjs-portal {
 .pay-picker-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4); border-bottom: 1px solid var(--semantic-border); }
 .pay-picker-head h2 { margin: 0; font-size: var(--type-body-mobile-size); font-weight: var(--weight-semibold); }
 .pay-picker-body { overflow-y: auto; padding: var(--space-4) var(--space-4) calc(var(--sb, 0px) + var(--space-4)); }
+
+/* C405/C418 order carousel: full-bleed scroll-snap row (touch swipe, mouse drag, dots, arrow keys). */
+.phone .fu-order-carousel {
+  margin-inline: calc(-1 * var(--page-gutter, var(--space-4)));
+  padding-inline: var(--page-gutter, var(--space-4));
+  scroll-padding-inline: var(--page-gutter, var(--space-4));
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+}
+.phone .fu-order-carousel::-webkit-scrollbar { display: none; }
+.phone .fu-order-carousel.is-dragging { cursor: grabbing; scroll-snap-type: none; user-select: none; }
+.phone .fu-order-carousel > .fu-order-summary { flex-basis: 88%; scroll-snap-stop: always; }
+.fu-order-pagination .fu-order-dot { position: relative; padding: 0; border: 0; cursor: pointer; transition: width 0.2s ease; }
+.fu-order-pagination .fu-order-dot::after { content: ''; position: absolute; inset: -19px -8px; }
+@media (prefers-reduced-motion: reduce) { .fu-order-pagination .fu-order-dot { transition: none; } }
+
+/* card position on each order card, e.g. 2/6 */
+.fu-order-ident { display: inline-flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.fu-order-index { flex: none; padding: 2px var(--space-2); border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.18); font-size: var(--text-small); font-weight: var(--weight-semibold); line-height: 1.4; }
