@@ -46,6 +46,14 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
    await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:c.id})}});
    assert.equal(routes.at(-1),destination);
  }
+ // Legacy history snapshots must not fall back to the latest consultation.
+ for (const [recv,destination] of [['pickup','paid'],['express','track'],['parcel','track']]) {
+  const record={id:'legacy-'+recv,status:'closed',order:{status:'paid',paid:{recv},items:[]}};
+  S.history=[record];
+  await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:record.id})}});
+  assert.equal(routes.at(-1),destination);assert.equal(S._paymentCase.id,record.id);assert.equal(S._paymentCase.order,record.order);
+ }
+ S.history=[];S._paymentCase=c;
  order.paid.recv='express';
  TP.orderStatusCard=(steps,no)=>steps.map(x=>x[1]).join(' ')+no;TP.fulfillmentDetails=c=>c.pharmacistAdvice;TP.summaryForCase=c=>'history '+c.pharmacistAdvice;
  for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);if(phase==='delivered'){assert(page.includes('history '));assert(!page.includes('สถานะการจัดส่งยา'));}else assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert.equal(TP.fulfillmentInfo(c).done,phase==='delivered');if(phase!=='delivered')assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert(!/tkGot|ได้รับยาแล้ว/.test(page));assert.equal(order.expiresAt,deadline);}

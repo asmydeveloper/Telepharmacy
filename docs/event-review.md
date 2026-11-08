@@ -268,3 +268,7 @@ C403 ล่าสุด: หัวการ์ดแถวเดียว ไม
 ### C403 order status filters - 8 November 2026
 Added All, Awaiting delivery, Completed and Cancelled filters above the list. Filters and badges share order status classification; search combines with the selected filter. Selection is exposed through aria-pressed.
 Verified all four filters in the Codex browser. Paid awaiting receipt, received orders and cancellations display in the matching groups. history/history-compact, screens:check, design:check and production build passed.
+
+
+### C403 fulfillment destination - 8 November 2026
+Paid orders awaiting receipt now open the exact order's fulfillment screen: pickup C309, express/parcel C414. Completed/cancelled orders retain summary navigation. Legacy history snapshots are supported without falling back to the latest case. Browser verified pickup navigation with the same order number; unit checks cover all three methods and legacy snapshots.

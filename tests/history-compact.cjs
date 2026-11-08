@@ -27,3 +27,15 @@ assert(h.run('histItem(record)').includes('คำสั่งซื้อสำ�
 for(const status of ['expired','cancelled']){h.context.record.order.status=status;assert(h.run('histItem(record)').includes('ยกเลิกคำสั่งซื้อ'));}
 h.context.record.order.status='pending';h.context.record.outcome='customer-ended';assert(h.run('histItem(record)').includes('ยกเลิกคำสั่งซื้อ'));
 console.log('PASS: paid awaiting receipt, fulfilled, expired and customer-cancelled order statuses');
+
+// Shipping cards use the selected order's existing fulfillment action for all methods.
+for (const recv of ['pickup','express','parcel']) {
+ h.context.record={id:'shipping-'+recv,who:'me',outcome:'completed',date:'19/10/2026',time:'09:15',order:{status:'paid',paid:{recv,total:385},items:[]}};
+ const card=h.run('histItem(record)');
+ assert(card.includes('data-a="viewFulfillment"'));
+ assert(card.includes('shipping-'+recv));
+ assert(!card.includes('data-go="summary"'));
+ h.context.record.order.paid.got=true;
+ assert(h.run('histItem(record)').includes('data-go="summary"'));
+}
+console.log('PASS: shipping history opens exact-order fulfillment; completed history opens summary');
