@@ -2356,10 +2356,13 @@ body:has(.consultation-card-preview) nextjs-portal {
 }
 
 .scr .rm-scroll {
-  background: var(--semantic-surface);
+  /* user 9 Nov 2026: chat background #f6f6f6; bubbles have no border */
+  background: #f6f6f6;
+}
+.scr .rm-scroll .msg > p {
+  border: 0;
 }
 .scr .rm-scroll .msg.ph > p {
-  border: 1px solid var(--color-border-control);
   background: var(--semantic-surface);
   color: var(--ink);
 }
