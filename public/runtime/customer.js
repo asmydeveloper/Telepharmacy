@@ -7571,7 +7571,7 @@ function prnRow(p, m) {
     <header class="fu-multi-head"><span class="fu-multi-icon">${ic('pill',20,2)}</span><div><h2>กินเมื่อมีอาการ</h2><p class="small">บันทึกแต่ละครั้งที่ใช้ยา</p></div></header>
     <div class="fu-prn-body">${TP.medicineImage(m) || ic('pill',20,2)}<div><b>${esc(m.name)}</b><p class="small">${esc(`${m.dose} ${m.prn}`)}</p><p>${esc(`ห่างกันอย่างน้อย ${m.gap} ชั่วโมง ไม่เกิน ${m.max} ครั้งต่อวัน`)}</p>
     <p class="small">${ic('clock',15,2)} ${list.length ? `วันนี้กิน ${list.length} ครั้ง · ล่าสุด ${esc(last)}` : 'วันนี้ยังไม่ได้กิน'}${why ? ` · ${esc(why)}` : ''}</p></div>
-    <button type="button" class="fu-med-check" role="checkbox" aria-checked="${full || wait}" data-a="${full || wait ? 'fuPrnUndo' : 'fuPrn'}" data-v="${esc(k)}" aria-label="${esc(`${full || wait ? 'ยกเลิกบันทึกครั้งล่าสุด' : 'บันทึกการใช้'} ${m.name}`)}">${full || wait ? ic('check',16,2) : ''}</button></div></section>`;
+    <button type="button" class="fu-med-check" ${p.waitRecv ? 'disabled title="เริ่มบันทึกเมื่อได้รับยา"' : ''} role="checkbox" aria-checked="${full || wait}" data-a="${full || wait ? 'fuPrnUndo' : 'fuPrn'}" data-v="${esc(k)}" aria-label="${esc(`${full || wait ? 'ยกเลิกบันทึกครั้งล่าสุด' : 'บันทึกการใช้'} ${m.name}`)}">${full || wait ? ic('check',16,2) : ''}</button></div></section>`;
 }
 function todayHtml(p) {
   const slots = slotsOn(p, p.today), prn = p.meds.filter(m => m.prn), info = p.meds.filter(m => m.info);
@@ -7630,10 +7630,7 @@ function bodyHtml(S, p, ctx) {
     if (!S.notif) out.push(remNote('<b>การแจ้งเตือนของแอปปิดอยู่</b><br>ตั้งเวลาไว้แล้ว แต่จะไม่มีแจ้งเตือนกินยา', 'เปิดการแจ้งเตือน', 'fuNotifOn'));
     else if (hasSched(p) && !p.remind) out.push(remNote('<b>ปิดเตือนกินยาอยู่</b><br>กด กินแล้ว ได้ตามปกติ แต่จะไม่มีแจ้งเตือน', 'เปิดเตือนกินยา', 'fuRemOn'));
     const bad = recentBad(p), tk = recentTalked(p); if (bad) out.push(worseCard(S, p, bad)); else if (tk) out.push(talkedCard(S, p, tk));
-    if (p.waitRecv) out.push(`<div class="card fu-wait" data-in="2"><p class="fu-exp">${ic('package', 18, 2)}<span>รอรับยา · เริ่มนับวันที่ 1 และเตือนกินยาเมื่อได้รับยา</span></p></div>`);
-    else {
-      out.push(followMultiHtml(ctx));
-    }
+    out.push(followMultiHtml(ctx));
   }
   return out.join('');
 }
@@ -7827,7 +7824,7 @@ function followMultiHtml(ctx) {
     </header><div class="fu-meal-body">
       ${due.map(({plan,med,index}) => `<div class="fu-multi-med">${TP.medicineImage(med) || ic('pill', 20, 2)}<div><b>${esc(med.name)}</b><p class="small">${esc(directions(med))}</p>
         <button type="button" class="fu-multi-origin" ${ui.route(summary(plan))} aria-label="ดูข้อมูลคำสั่งซื้อ">${ic('file-text', 14, 2)}<span>ดูข้อมูลคำสั่งซื้อ</span>${ic('chevron-right', 14, 2)}</button>
-      </div><button type="button" class="fu-med-check" role="checkbox" aria-checked="${isTaken({plan,med,index},slot)}" aria-label="ทาน ${esc(med.name)} มื้อ${SLOT[slot][0]}แล้ว" data-a="fuMedicationTake" data-plan="${esc(plan.id)}" data-med="${index}" data-slot="${slot}">${isTaken({plan,med,index},slot) ? ic('check',16,2) : ''}</button></div>`).join('')}
+      </div><button type="button" class="fu-med-check" ${plan.savedPlan?.waitRecv ? 'disabled title="เริ่มบันทึกเมื่อได้รับยา"' : ''} role="checkbox" aria-checked="${isTaken({plan,med,index},slot)}" aria-label="ทาน ${esc(med.name)} มื้อ${SLOT[slot][0]}แล้ว" data-a="fuMedicationTake" data-plan="${esc(plan.id)}" data-med="${index}" data-slot="${slot}">${isTaken({plan,med,index},slot) ? ic('check',16,2) : ''}</button></div>`).join('')}
       </div></section>`;
   }).join('');
   const saved = plans.find(plan => plan.savedPlan)?.savedPlan;
@@ -7837,7 +7834,7 @@ function followMultiHtml(ctx) {
 TP.act('fuMedicationTake', (button, ctx) => {
   const plan = followDisplayPlans(ctx).find(plan => plan.id === button.dataset.plan);
   const index = Number(button.dataset.med), med = plan?.meds[index], slot = button.dataset.slot;
-  if (!med || !med.slots?.includes(slot)) return;
+  if (!med || !med.slots?.includes(slot) || plan.savedPlan?.waitRecv) return;
   if (plan.preview) {
     const log = ctx.params.multiLog ||= {}, key = `${plan.id}|${slot}|${med.id || index}`;
     if (log[key]) delete log[key]; else log[key] = true;
@@ -7937,6 +7934,7 @@ TP.act('fuTake', t => {
   TP.emit('state'); refreshPop(`.fu-take[data-v="${t.dataset.v}"]`);
 });
 TP.act('fuPrn', t => {
+  if (F()?.waitRecv) return;
   const p = F(), k = t.dataset.v; if (!p || !k) return;
   const med = p.meds.find(m => `${p.today}|${m.id}` === k && m.prn);
   if (!med) return;

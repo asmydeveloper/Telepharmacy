@@ -65,6 +65,15 @@ assert.equal(plan.log['3|am|two'].t,'08:30');assert.equal(plan.log['3|am|one'].t
 assert.match(render('normal'),/บันทึกแล้ว 2 จาก 2 รายการ/);
 actions.fuMedicationTake({dataset:{plan:'real-case',med:'1',slot:'am'}},realCtx);
 assert.equal(plan.log['3|am|two'],undefined);assert.equal(plan.log['3|am|one'].t,'08:20');
+// Badge entry must retain the medication layout while an order awaits receipt.
+plan.waitRecv='parcel';
+assert.match(render('normal'),/บันทึกการกินยา/);
+assert.match(render('normal'),/disabled title="เริ่มบันทึกเมื่อได้รับยา"/);
+const waitingLog=JSON.stringify(plan.log);
+actions.fuMedicationTake({dataset:{plan:'real-case',med:'1',slot:'am'}},realCtx);
+assert.equal(JSON.stringify(plan.log),waitingLog);
+delete plan.waitRecv;
+assert(!source.includes('รอรับยา · เริ่มนับวันที่ 1 และเตือนกินยาเมื่อได้รับยา'));
 const previewCtx={state:'multi-plan',params:{},S:{history:[]}};
 actions.fuMedicationTake({dataset:{plan:'preview-case',med:'0',slot:'am'}},previewCtx);
 assert.equal(Object.keys(previewCtx.params.multiLog).length,1);assert.equal(Object.keys(plan.log).length,1);
