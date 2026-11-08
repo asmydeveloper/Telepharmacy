@@ -145,6 +145,6 @@ vm.runInContext(source.slice(bannerStart,bannerEnd),context);
 context.ui.btn=(label,o)=>`<button data-a="${o.a}">${label}</button>`;
 TP.caseOpen=()=>false;let banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('ปรึกษาเภสัช'));assert(banner.includes('data-a="quickConsult"'));assert(banner.includes('/assets/banners/pharmacy-female-counter-v1.png'));assert(fs.existsSync('public/assets/banners/pharmacy-female-counter-v1.png'));
 TP.caseOpen=()=>true;banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('คุยกับเภสัชต่อ'));
-assert(source.includes("paymentCard || deliveryCard || activeCase || updates ? '' : homeConsultBanner(S)"));
+assert(source.includes("paymentCard || activeCase || (updates && !deliveryCard) ? '' : homeConsultBanner(S)"));
 assert(source.includes('consultBanner+heroHtml(S,st)'));
 assert(source.includes('heroHtml(S,st)+nearbyStoresHtml(S)'));
