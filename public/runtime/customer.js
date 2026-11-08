@@ -3117,13 +3117,14 @@ TP.screen('queue', {
     return ui.page(`
       <section class="queue-wait-content" aria-labelledby="queueWaitTitle">
         <div class="queue-wait-summary">
+          <img class="queue-wait-art" src="/assets/illustrations/queue-wait-status.webp" width="240" height="160" alt="">
           <h2 id="queueWaitTitle">${paused?'เภสัชกรพักชั่วคราว':'กำลังรอคิวปรึกษา'}</h2>
           <div class="queue-ticket-position" role="status" aria-live="polite" aria-atomic="true">
             ${ahead===null?'<b>กำลังตรวจสอบคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong><span>คิว</span></div>`}
           </div>
           ${paused?'<p class="queue-wait-explanation">คิวของคุณยังอยู่</p>':''}
         </div>
-      </section>`, {cls:'queue-wait-page'}) + ui.dock(ui.btn('ยกเลิกคิว',{kind:'danger-line',sheet:'cancelq'}));
+      </section>`, {cls:'queue-wait-page'}) + ui.dock(ui.btn('ยกเลิกคิว',{sheet:'cancelq'}));
   },
   mount() {}
 
