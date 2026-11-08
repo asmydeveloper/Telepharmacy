@@ -3,7 +3,7 @@ const {harness} = require('./health-harness.cjs');
 const h = harness();
 h.context.record = {id:'compact-order',who:'me',date:'18/10/2026',time:'13:10',branch:'tw',pharm:'kj',orderNo:'MT2026101801',topic:'ไอ',outcome:'customer-ended'};
 const html = h.run('histItem(record)');
-for (const text of ['MT2026101801','18/10/2026','13:10','สิ้นสุด','ดูข้อมูลคำสั่งซื้อ']) assert(html.includes(text));
+for (const text of ['MT2026101801','18/10/2026','13:10','ยกเลิก','ดูข้อมูลคำสั่งซื้อ']) assert(html.includes(text));
 for (const text of ['history-detail-row','history-outcome-reason','ร้านยาที่ให้คำปรึกษา','history-card-extra','history-concern','history-card-store']) assert(!html.includes(text));
 assert(html.includes('data-go="summary"'));assert(html.includes('compact-order'));
 h.TP.money=n=>'฿'+n;
