@@ -10,7 +10,7 @@ run('TP.ORDER_PAYMENT_MS=','/* ---------- message html ---------- */');
 vm.runInContext("let chain=Promise.resolve(),pending=null,cur=null,sheet=null,hist=[],running=[];const SCREENS={room:{},home:{},track:{},paid:{},paymentsuccess:{}};async function doGo(id,o){routeCapture(id,o)}",context);context.routeCapture=(id,o)=>{routes.push(id);current={id,el:{}}};
 run('TP.go = (id, o = {}) => {','async function doGo(id, o)');run('TP.back = () => {','TP.canBack =');
 run('TP.sim.closeCase =','TP.sim.idleWarn =');
-run('async function sendText(text)','TP.act(\'quickReply\'');
+TP.RED=()=>true;TP.wait=()=>Promise.resolve();TP.swapUnderSheet=id=>{routes.push(id);current={id,el:{}};return Promise.resolve();};run('TP.CHECKOUT_CLOSING =','/* the bubble flies up');run('async function sendText(text)','TP.act(\'quickReply\'');
 const tick=()=>new Promise(resolve=>setImmediate(resolve));
 (async()=>{
  TP.mini=()=>{};context.showQuick=()=>{};
@@ -21,9 +21,10 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  // Final explicit patient answer leads the mock pharmacist to close and navigate.
  await vm.runInContext("sendText('ไม่มีคำถามเพิ่มเติม')",context);await tick();
  assert.equal(c.status,'closed');assert.equal(c.outcome,'completed');
+ const texts=c.msgs.map(m=>m.text),sumAt=c.msgs.findIndex(m=>m.kind==='summary');for(const line of TP.CHECKOUT_CLOSING){const i=texts.indexOf(line);assert(i>=0&&i<sumAt,'closing message comes before the end marker: '+line);}assert(TP.checkoutHandoffRemaining(c)>0,'countdown starts together with the end marker');assert.equal(c.msgs[sumAt].handoff,true,'end marker stays a one-line notice, never the summary card');
  assert.equal(order.expiresAt,null);assert(TP.checkoutHandoffRemaining(c)>0);assert.equal(TP.closedChatRoute(c),null);assert.equal(sheets.length,0);
  await actions.continueCheckout();await tick();
- assert.equal(c.checkoutHandoffUntil,null);deadline=order.expiresAt;assert(deadline>Date.now());assert(deadline<=Date.now()+900000);assert.equal(order.status,'pending');assert.equal(routes.at(-1),'home');assert.equal(sheets.at(-1).id,'pay');assert.equal(S._paymentCase,c);assert.equal(S.history.length,1);assert.equal(c.pharmacistAdvice,'คำแนะนำเพิ่มเติมจากเภสัชกร');
+ assert.equal(c.checkoutHandoffUntil,null);deadline=order.expiresAt;assert(!routes.slice(0,-1).includes('home'),'C308 opens over the chat; home only replaces the room underneath');assert(deadline>Date.now());assert(deadline<=Date.now()+900000);assert.equal(order.status,'pending');assert.equal(routes.at(-1),'home');assert.equal(sheets.at(-1).id,'pay');assert.equal(S._paymentCase,c);assert.equal(S.history.length,1);assert.equal(c.pharmacistAdvice,'คำแนะนำเพิ่มเติมจากเภสัชกร');
  const beforeRooms=routes.filter(x=>x==='room').length;await TP.go('room');assert.equal(routes.filter(x=>x==='room').length,beforeRooms);assert.equal(sheets.at(-1).id,'pay');
  vm.runInContext("hist.push({id:'room'})",context);await TP.back();assert.equal(routes.at(-1),'home');assert.equal(order.expiresAt,deadline);
  // Successful express payment starts the existing delivery view without reopening chat.

@@ -1,18 +1,18 @@
 {
-  "code": "C303.3",
+  "code": "C312",
   "screen": "medicinebasket",
   "title": "ตะกร้ายา",
   "group": "during",
   "kind": "sheet",
   "cases": [
     {
-      "code": "C303.3.1",
+      "code": "C312.1",
       "state": "normal",
       "label": "รายการยาจากเภสัชกร",
       "url": "/?screen=medicinebasket&state=normal&splash=0"
     },
     {
-      "code": "C303.3.2",
+      "code": "C312.2",
       "state": "empty",
       "label": "ยังไม่มีรายการยา · กรณีสำรอง",
       "url": "/?screen=medicinebasket&state=empty&splash=0"

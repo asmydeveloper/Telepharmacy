@@ -460,17 +460,6 @@ select {
 .scr:has(.rm-queue-bar) .rm-net {
   top: calc(var(--st) + 128px);
 }
-.rm-scroll.has-queue .msg-sys:first-child {
-  margin: var(--space-1) var(--space-4) var(--space-4);
-}
-.rm-scroll.has-queue .msg-sys:first-child > span {
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-lg);
-  background: var(--semantic-disabled-bg);
-  color: var(--ink-2);
-  font-size: var(--text-small);
-  line-height: var(--leading-body);
-}
 .scr:has(.rm-queue-bar) .rm-comp {
   background: var(--semantic-surface);
 }
@@ -2828,7 +2817,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 .rm-medicine-footer .mo-t > b { color: var(--brand); font-size: var(--type-body-mobile-size); }
 .scr .msg .rm-medicine-footer p { padding: 0; background: transparent; border-radius: 0; margin: var(--space-2) 0 0; font-size: var(--text-small); color: var(--ink-3); line-height: var(--type-body-mobile-line); }
 
-.scr .msg .rm-medicine-footer p.rm-medicine-notice { padding: var(--space-2) var(--space-3); background: var(--semantic-warning-background); color: var(--semantic-warning-text); border-radius: var(--radius-sm); }
+.scr .msg .rm-medicine-footer p.rm-medicine-notice { padding: var(--space-2) var(--space-3); background: var(--color-neutral-100); color: var(--semantic-text-secondary); border-radius: var(--radius-sm); }
 
 /* Pharmacist basket: separate from chat entry, with no purchase action. */
 .dock.rm-comp { flex-direction: column; align-items: stretch; gap: 0; }
@@ -3118,3 +3107,25 @@ body:has(.consultation-card-preview) nextjs-portal {
 
 /* C207 outzone: delivery-zone notice pinned above the waiting chat messages. */
 .rm-zone { padding: var(--space-3) var(--page-gutter, var(--space-4)) 0; }
+
+/* C207 info line: the copy breaks after "ระหว่างรอเภสัชกร" so the two lines stay balanced. */
+.rm-scroll .msg-sys.waiting > span { display: inline-block; }
+/* Two-line chat notices (waiting info, pharmacist joined): softer corners than a pill and a bold first line. */
+.rm-scroll .msg-sys.waiting > span,
+.rm-scroll .rm-provider-ready > span { border-radius: var(--radius-md); padding: var(--space-1) var(--space-2); line-height: 1.5; }
+/* Day label (วันนี้) shares the chat notice pattern: same tint, corners, padding and type. */
+.rm-scroll .rm-day { border-radius: var(--radius-md); padding: var(--space-1) var(--space-2); background: rgb(var(--color-ink-rgb) / 0.045); line-height: 1.5; }
+.rm-scroll .msg-sys.waiting b,
+.rm-scroll .rm-provider-ready b { font-weight: var(--weight-semibold); color: var(--ink-2); }
+
+/* C207 queue bar matches the C3xx pharmacist bar: same 60px height, padding, 36px leading circle and small type,
+   so the chat below starts at the same offset before and after a pharmacist accepts. */
+.rm-queue-bar { min-height: 60px; padding: var(--space-1) var(--space-4); }
+.rm-queue-icon { width: 36px; height: 36px; }
+.rm-queue-icon > .ic { width: 20px; height: 20px; }
+.rm-queue-copy { gap: 0; }
+.rm-queue-copy b,
+.rm-queue-copy small { font-size: var(--text-small); line-height: var(--leading-body); }
+.rm-scroll.has-queue { padding-top: calc(var(--st) + 128px); }
+.rm-scroll.has-queue.has-net { padding-top: calc(var(--st) + 170px); }
+.scr:has(.rm-queue-bar) .rm-net { top: calc(var(--st) + 112px); }

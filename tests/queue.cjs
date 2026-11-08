@@ -11,7 +11,7 @@ const start=source.indexOf("TP.screen('queue',"),end=source.indexOf("TP.act('que
 h.TP.SCREENS={room:{render:ctx=>'<div>waiting chat '+ctx.state+'</div>'}};
 for(const [state,pos]of [['q2',2],['q1',1],['q4',4],['paused',2],['offline',2],['joined',2]]){
  h.S.st.queue=state;h.screens.queue.prep(h.S);assert.equal(h.S.case.pos,pos);
- assert.equal(h.S.netOff,state==='offline');assert.equal(h.S.case.status,state==='joined'?'room':state==='paused'?'paused':'queue');
+ assert.equal(h.S.netOff,false);assert.equal(h.S.case.msgs.some(m=>m.fail),state==='offline','C207.10 is a message that failed to send');assert.equal(h.S.case.status,state==='joined'?'room':state==='paused'?'paused':'queue');
  assert.equal(h.screens.queue.render({S:h.S,state}),'<div>waiting chat '+state+'</div>');
 }
-console.log('PASS: queue fixtures delegate to the same waiting chat, positions, paused, offline and pharmacist joined');
+console.log('PASS: queue fixtures delegate to the same waiting chat, positions, paused, failed message and pharmacist joined');
