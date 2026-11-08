@@ -2229,23 +2229,6 @@ select {
   line-height: var(--type-h3-mobile-line);
   font-weight: var(--weight-semibold);
 }
-.phone .consult-status-title > span:first-child {
-  display: block;
-  font-size: var(--type-label-mobile-size);
-  font-weight: var(--weight-medium);
-}
-.phone .consult-queue-count {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-2);
-  margin-top: var(--space-2);
-}
-.phone .consult-queue-count strong {
-  font-size: 48px;
-  line-height: 1;
-  font-weight: var(--weight-semibold);
-}
-.phone .consult-queue-count > span { font-size: var(--type-label-mobile-size); }
 .phone .hm-active-case .case-progress-foot {
   border-top: 0;
   padding-top: 0;
