@@ -1,6 +1,17 @@
 [
   {
     "date": "2026-11-09",
+    "page": "ช่วยเหลือ",
+    "path": "/?screen=help&splash=0",
+    "codes": [
+      "C509"
+    ],
+    "changes": [
+      "แก้ไอคอนฝ่ายบริการลูกค้าให้อยู่กึ่งกลางกรอบ"
+    ]
+  },
+  {
+    "date": "2026-11-09",
     "page": "ใบเสร็จรับเงิน · ใบกำกับภาษี",
     "path": "/?screen=receipt&state=taxsent&splash=0",
     "codes": [

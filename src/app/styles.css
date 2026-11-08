@@ -8739,7 +8739,8 @@ ul.risk-l {
   display: block;
   font: 600 var(--type-body-mobile-size)/var(--type-body-mobile-line) var(--font);
 }
-.af-cc-h span:not(.tag) {
+/* subtitle only; the icon tile (.af-cc-i) is also a span and must keep its grid centering */
+.af-cc-h .grow > span:not(.tag) {
   display: block;
   font-size: var(--type-body-sm-mobile-size);
   color: var(--ink-3);
