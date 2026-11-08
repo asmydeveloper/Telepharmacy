@@ -2652,8 +2652,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 /* The dot sits on the tile's top-right corner and overhangs it slightly; the tile must not clip it. */
 .hm-medication-badge { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: var(--radius-pill); background: var(--semantic-error-text); outline: 2px solid var(--semantic-surface); }
 
-/* C207 outzone: delivery-zone notice pinned above the waiting chat messages. */
-.rm-zone { padding: var(--space-3) var(--page-gutter, var(--space-4)) 0; }
 
 /* C207 info line: the copy breaks after "ระหว่างรอเภสัชกร" so the two lines stay balanced. */
 .rm-scroll .msg-sys.waiting > span { display: inline-block; }
@@ -2800,7 +2798,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .consult-status-hero > :not(.case-status-watermark) { position: relative; z-index: 1; }
 
 /* C207: out-of-radius notice sits under the queue summary, aligned to the page content */
-.queue-wait-content .rm-zone { padding: 0; margin-top: var(--space-4); width: 100%; }
 
 /* C610/C611 blocking screens: icon centred on the halo */
 .st-block-ic { position: absolute; inset: 0; display: grid; place-items: center; color: var(--semantic-primary); }

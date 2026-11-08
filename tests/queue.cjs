@@ -8,11 +8,13 @@ const a=source.indexOf('const statusLine = c =>'),b=source.indexOf('/* A3 (FDA',
 h.TP.brand.halo=(n,o)=>'<svg class="'+o.cls+'"></svg>';h.TP.passHtml=()=>'<div class="pass">เภสัชกร</div>';
 const start=source.indexOf("TP.screen('queue',"),end=source.indexOf("TP.act('queueMin'",start);h.run(source.slice(start,end));
 // Preview states preserve permanent case suffixes; the waiting screen is independent of chat.
-h.context.structuredClone=structuredClone;h.TP.ZONE_ADDR={};h.context.C=()=>h.S.case;h.TP.queueZoneNote=()=>'';h.ui.nav=()=>'';h.ui.page=s=>s;h.ui.dock=s=>s;h.ui.btn=s=>s;
-for(const [state,pos]of [['q2',2],['q1',1],['q4',4],['paused',2],['outzone',2]]){
+h.context.structuredClone=structuredClone;h.TP.ZONE_ADDR={};h.context.C=()=>h.S.case;h.ui.nav=()=>'';h.ui.page=s=>s;h.ui.dock=s=>s;h.ui.btn=s=>s;
+for(const [state,pos]of [['q2',2],['q1',1],['q4',4],['paused',2]]){
  h.S.st.queue=state;h.screens.queue.prep(h.S);assert.equal(h.S.case.pos,pos);
  assert.equal(h.S.case.status,state==='paused'?'paused':'queue');
  const html=h.screens.queue.render({S:h.S,state});
  assert.match(html,/queue-wait-summary/);assert.doesNotMatch(html,/รหัสคิวของคุณ|queue-ticket-code/);assert.doesNotMatch(html,/textarea|rmList/);
 }
-console.log('PASS: dedicated queue fixtures, positions, pause and outside delivery coverage');
+console.log('PASS: dedicated queue fixtures, positions and retired outside-area case');
+
+assert(!h.screens.queue.states.some(x=>x[0]==='outzone'));assert(!source.includes('TP.queueZoneNote'));
