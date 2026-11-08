@@ -42,46 +42,16 @@
       "url": "/?screen=home&state=case-next&splash=0"
     },
     {
-      "code": "C201.52",
-      "state": "case-paused",
-      "label": "จำลอง เภสัชกรพัก",
-      "url": "/?screen=home&state=case-paused&splash=0"
-    },
-    {
-      "code": "C201.53",
-      "state": "case-matched",
-      "label": "จำลอง รับคิวแล้ว",
-      "url": "/?screen=home&state=case-matched&splash=0"
-    },
-    {
       "code": "C201.54",
       "state": "case-chat",
-      "label": "สนทนา-จ่ายยา",
+      "label": "จำลอง กำลังปรึกษา",
       "url": "/?screen=home&state=case-chat&splash=0"
-    },
-    {
-      "code": "C201.55",
-      "state": "case-reply",
-      "label": "จำลอง รอคำตอบจากคุณ",
-      "url": "/?screen=home&state=case-reply&splash=0"
-    },
-    {
-      "code": "C201.56",
-      "state": "case-payment",
-      "label": "จำลอง รอชำระเงิน",
-      "url": "/?screen=home&state=case-payment&splash=0"
     },
     {
       "code": "C201.60",
       "state": "case-closed-unpaid",
       "label": "จบแชท รอชำระค่ายา",
       "url": "/?screen=home&state=case-closed-unpaid&splash=0"
-    },
-    {
-      "code": "C201.62",
-      "state": "case-closed-payexpired",
-      "label": "จบแชท หมดเวลาชำระ",
-      "url": "/?screen=home&state=case-closed-payexpired&splash=0"
     },
     {
       "code": "C201.65",

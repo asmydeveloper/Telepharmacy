@@ -85,15 +85,14 @@ export const journey = [
             ['unknownarea', 'outarea'],
           ],
           ['A202', 'แจ้งอาการก่อนปรึกษา', 'C203', 'filled', ['normal']],
-          ['A203', 'รอเภสัชกรรับคิว', 'C207', 'q4', ['q2', 'q1', 'paused', 'video-wait']],
+          ['A203', 'รอเภสัชกรรับคิว', 'C207', 'q4', ['q2', 'q1', 'paused']],
           [
             'A204',
             'การ์ดหน้าแรก · กำลังรอคิว',
             'C201',
             'case-queue3',
-            ['case-next', 'case-paused'],
+            ['case-next'],
           ],
-          ['A205', 'การ์ดหน้าแรก · เภสัชกรรับคิวแล้ว', 'C201', 'case-matched'],
         ],
       ],
       [
@@ -101,7 +100,7 @@ export const journey = [
         [
           ['A205R', 'เภสัชกรพร้อมให้บริการ', 'C303', 'provider-joined'],
           ['A206', 'เข้าห้องและเริ่มสนทนา', 'C303', 'live'],
-          ['A207', 'การ์ดหน้าแรก · กลับเข้าห้องสนทนา', 'C201', 'case-chat', ['case-reply']],
+          ['A207', 'การ์ดหน้าแรก · กำลังปรึกษา', 'C201', 'case-chat'],
           [
             'A208',
             'เภสัชกรขอวิดีโอคอล',
@@ -124,8 +123,7 @@ export const journey = [
             'A212',
             'การ์ดหน้าแรก · รอชำระค่ายา',
             'C201',
-            'case-payment',
-            ['case-closed-unpaid', 'case-closed-payexpired'],
+            'case-closed-unpaid',
           ],
         ],
       ],
