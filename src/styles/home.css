@@ -1526,6 +1526,14 @@
 .hm-fulfillment-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
 .hm-fulfillment-heading h2 { margin: 0; font-size: var(--text-body); font-weight: var(--weight-semibold); }
 .hm-fulfillment-heading > span { flex: none; font-size: var(--text-small); color: var(--semantic-text-secondary); }
-.hm-fulfillment-list { overflow: hidden; border: 1px solid var(--semantic-border); border-radius: var(--radius-lg); background: var(--color-brand-50); }
-.hm-fulfillment-list .hm-fulfillment-banner { border: 0; border-radius: 0; background: transparent; }
-.hm-fulfillment-list .hm-fulfillment-banner + .hm-fulfillment-banner { border-top: 1px solid var(--semantic-border); }
+/* C201.79 carousel: one card per order, next card peeks (Flutter: PageView viewportFraction 0.88 + dot indicator). */
+.hm-fulfillment-carousel { display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; overscroll-behavior-x: contain; border-radius: var(--radius-lg); }
+.hm-fulfillment-carousel::-webkit-scrollbar { display: none; }
+.hm-fulfillment-carousel:focus-visible { outline: 2px solid var(--semantic-primary); outline-offset: 2px; }
+.hm-fulfillment-slide { display: flex; flex: 0 0 88%; min-width: 0; scroll-snap-align: start; }
+.hm-fulfillment-slide .hm-fulfillment-banner { min-height: 100%; }
+.hm-fulfillment-dots { display: flex; justify-content: center; gap: var(--space-3); margin-top: var(--space-2); }
+.hm-fulfillment-dot { position: relative; width: 8px; height: 8px; padding: 0; border: 0; border-radius: 999px; background: var(--semantic-text-secondary); cursor: pointer; transition: width var(--motion-default, 180ms) ease, background var(--motion-default, 180ms) ease; }
+.hm-fulfillment-dot::after { content: ''; position: absolute; inset: -18px -10px; }
+.hm-fulfillment-dot.is-active { width: 20px; background: var(--semantic-primary); }
+@media (prefers-reduced-motion: reduce) { .hm-fulfillment-dot { transition: none; } }

@@ -1501,7 +1501,6 @@ const freshAccount = S => {
 const blankUser = (S, phone) => {
   Object.assign(S.user, { name: '', last: '', full: '', born: '', birthYear: '', age: '', sex: 'none' });
   if (phone?.length === 10) S.user.phone = `${phone.slice(0, 3)}-${phone.slice(3, 6)}-${phone.slice(6)}`;
-  S._pf = null;
 };
 TP.blankUser = blankUser;
 TP.freshAccount = freshAccount;
@@ -1714,7 +1713,7 @@ function authNewAccount(S,channel,target){
   TP.freshAccount(S);TP.blankUser(S,channel==='phone'?target:'');
   S.user={name:'',last:'',full:'',phone:channel==='phone'?fmtPhone(target):'',email:channel==='email'?target:'',born:'',birthYear:'',age:'',sex:'none',allergies:[],allergyState:'unknown',allergySrc:'',meds:[],weight:'',conditions:[],condNone:false,food:'',foodNone:false};
   S.intake={who:'me',symptoms:[],custom:[],otherOpen:false,urgent:[],note:'',photos:0,mode:S.intake?.mode==='video'?'video':'chat'};
-  Object.assign(S,{loggedIn:true,firstTime:true,newAccount:true,consent:false,consentVer:0,_gone:false,_pf:null,_authFlows:{},_registration:null,_registrationIdentity:{provider:channel,email:channel==='email'?target:'',phone:channel==='phone'?digits(target):''},_registrationComplete:false,healthConsentRecord:null,ofPending:null,deliveryAddressId:null});
+  Object.assign(S,{loggedIn:true,firstTime:true,newAccount:true,consent:false,consentVer:0,_gone:false,_authFlows:{},_registration:null,_registrationIdentity:{provider:channel,email:channel==='email'?target:'',phone:channel==='phone'?digits(target):''},_registrationComplete:false,healthConsentRecord:null,ofPending:null,deliveryAddressId:null});
 }
 function authPreview(S,channel,state){
   S.loggedIn=false;S._authFlows ||= {};delete S._authFlows[channel];const f=authDraft(S,channel);
@@ -1777,53 +1776,8 @@ const KEYS = [['1', ''], ['2', 'ABC'], ['3', 'DEF'], ['4', 'GHI'], ['5', 'JKL'],
 /* =====================================================================
    Profile (C02): new phone number with no account yet, after OTP
    ===================================================================== */
-const NOW_Y = +TP.NOW.date.slice(-4);
-const PF_CHECK = {
-  first: v => v.trim() ? '' : 'ใส่ชื่อ',
-  last: v => v.trim() ? '' : 'ใส่นามสกุล',
-  house: v => (v || '').trim() ? '' : 'ใส่บ้านเลขที่',
-  building: v => String(v||'').length<=200?'':'รายละเอียดอาคารต้องไม่เกิน 200 ตัวอักษร',
-  alley: v => String(v||'').length<=100?'':'ซอยต้องไม่เกิน 100 ตัวอักษร',
-  road: v => String(v||'').length<=100?'':'ถนนต้องไม่เกิน 100 ตัวอักษร',
-  dist: v => (v || '').trim() ? '' : 'ใส่ตำบล / แขวง',
-  amp: v => (v || '').trim() ? '' : 'ใส่อำเภอ / เขต',
-  prov: v => (v || '').trim() ? '' : 'ใส่จังหวัด',
-  zip: v => /^\d{5}$/.test(v || '') ? '' : 'ใส่รหัสไปรษณีย์ 5 หลัก',
-  year: v => {
-    if (!/^\d{4}$/.test(v)) return 'ใส่ปีเกิดเป็น ค.ศ. 4 หลัก เช่น 1988';
-    const y = +v;
-    if (y >= 2443 && y <= NOW_Y + 543) return `เลขนี้น่าจะเป็นปี พ.ศ. ปี ค.ศ. คือ ${y - 543}`;
-    if (y < 1900 || y > NOW_Y) return `ปีเกิดต้องอยู่ระหว่าง 1900 ถึง ${NOW_Y}`;
-    return '';
-  }
-};
 const SEXES = [['none', 'ไม่ระบุ'], ['f', 'หญิง'], ['m', 'ชาย']];
-function pfField(k, o, d, err) {
-  const id = 'pf-' + k, e = err ? PF_CHECK[k](d[k]) : '';
-  const be = k === 'year' && /^\d{4}$/.test(d.year) && +d.year >= 2443 && +d.year <= NOW_Y + 543 ? +d.year - 543 : 0;
-  return `<div class="field st-pf-f${e ? ' err' : ''}" data-k="${k}">
-    <label for="${id}">${o.label}</label>
-    <input id="${id}" class="input" type="text" value="${esc(d[k] || '')}" placeholder="${o.ph}" autocomplete="${o.ac}"${o.im ? ` inputmode="${o.im}"` : ''} maxlength="${o.max}" aria-invalid="${!!e}" aria-describedby="${id}-h ${id}-e">
-    <p class="hint" id="${id}-h"${e ? ' hidden' : ''}>${o.hint || ''}</p>
-    <p class="err-t" id="${id}-e" role="alert"${e ? '' : ' hidden'}>${ic('circle-x', 16, 2)}<span>${esc(e)}</span>${be ? `<button type="button" class="link st-inl st-fix" data-fix="${be}">ใช้ ${be}</button>` : ''}</p>
-  </div>`;
-}
-/* a full 4-digit year that is wrong (e.g. Thai calendar 2511) explains itself while typing, not only on blur */
-const ageText = v => { const e = PF_CHECK.year(v); return !e ? `<b class="st-age">อายุ ${NOW_Y - +v} ปี</b>` : /^\d{4}$/.test(v) ? `<b class="warn-t">${e}</b>` : 'ปี ค.ศ. 4 หลัก เช่น 1988'; };
-const pfMode = ctx => ctx.params.edit || ctx.state?.startsWith('personal-edit') ? 'edit' : ctx.params.acct || ctx.state === 'acct' ? 'acct' : 'new';
-const pfAcctCard = (S, ph) => `<div class="st-acct" id="pfAcct" data-in="1" role="group" aria-labelledby="pfAcctT">
-    <p class="st-acct-t" id="pfAcctT">${ic('circle-user-round', 20, 1.9)}<span>พบบัญชีเว็บของ <b>คุณ${esc(S.user.full)}</b> <span class="num st-nw">(${esc(ph)})</span> ใช่คุณไหม</span></p>
-    <div class="st-acct-b"><button type="button" class="btn tint sm" data-x="yes">ใช่</button><button type="button" class="btn ghost sm" data-x="no">ไม่ใช่ ติดต่อฝ่ายบริการลูกค้า</button></div></div>`;
-const pfAcctOk = (S, ph) => `<p class="st-pf-ok" data-in="1">${ui.tag('บัญชีของคุณ', 'ok', { dot: true })}<span>คุณ${esc(S.user.full)} <span class="num st-nw">${esc(ph)}</span></span></p>`;
-/* consent sits on the same screen (owner 19/10/2026): short summary, link to the full text, a box that is never pre-ticked */
-const pfConsent = acct => `<h3 class="group-h st-pf-cnh" data-in="5">ความยินยอมในการใช้ข้อมูล</h3>
-    <div class="card st-pf-cn" id="pfCnBox" data-in="5">
-      <ul class="st-pf-cnl">${CN_SUM.map(([i, t, x]) => `<li>${ic(i, 16, 2)}<span><b>${esc(t)}</b> ${esc(x)}</span></li>`).join('')}</ul>
-      <p class="st-pf-cnv">${ic('file-text', 15, 2)}<span>ฉบับที่ ${CN_VER} · มีผล 18/10/2026${acct ? ' · เพิ่มหัวข้อบริการปรึกษาผ่านแอปจากฉบับที่คุณยินยอมไว้บนเว็บ' : ''} <button type="button" class="link st-inl" data-sheet="registrationconsent">อ่านฉบับเต็ม</button></span></p>
-      <div class="st-pf-cnk">${ui.check('<b>ยินยอมให้ใช้ข้อมูลสุขภาพเพื่อการปรึกษาและจ่ายยา</b><small>จำเป็นสำหรับการปรึกษา · ข้อมูลอ่อนไหวตาม พ.ร.บ.คุ้มครองข้อมูลส่วนบุคคล</small>', { id: 'pfCn', a: 'pfCn' })}
-        <p class="st-req-e" id="pfCnE" hidden>${ic('circle-x', 16, 2)}<span>ติ๊กยินยอมก่อน จึงจะเริ่มปรึกษาได้</span></p></div>
-    </div>`;
-TP.act('pfCn', () => TP.cur()?.el?._pfSync?.());
+const pfMode = ctx => ctx.params.edit || ctx.state?.startsWith('personal-edit') ? 'edit' : 'new';
 /* Registration draft: verified contact is carried from OTP, never requested twice. */
 const REG_TOPICS=[['weight','น้ำหนัก'],['height','ส่วนสูง'],['conditions','โรคประจำตัว'],['meds','ยาที่ใช้ประจำ'],['allergies','ประวัติการแพ้ยา'],['documents','เอกสารการแพ้ยา'],['food','ประวัติการแพ้อาหาร'],['follow','ติดตามอาการป่วย']];
 /* Single purpose, explicit health-data consent. Company details require owner confirmation. */
@@ -1846,7 +1800,6 @@ TP.healthConsentVersion=()=>REG_HEALTH_POLICY.version;
 TP.healthConsentNeeded=S=>!(S.consent&&S.consentVer>=4&&S.healthConsentRecord?.documentVersion===REG_HEALTH_POLICY.version);
 TP.saveHealthConsent=(S,version,method)=>{if(version!==REG_HEALTH_POLICY.version)return false;S.consent=true;S.consentVer=4;S.healthConsentRecord={documentVersion:version,controller:REG_HEALTH_POLICY.controller,purpose:'pharmaceutical-care',acceptedAt:new Date().toISOString(),method,categories:REG_TOPICS.map(([key])=>key),prototype:true};return true;};
 TP.sheetDef('registrationconsent',{group:'start',title:'ความยินยอมข้อมูลสุขภาพ',code:'C107',host:'profile',tall:true,hideClose:true,states:[['normal','อ่านความยินยอม ไม่มีช่องติ๊ก']],notes:['อ่านอย่างเดียว ปิดแล้วไม่เปลี่ยนความยินยอม','ผู้ควบคุมข้อมูล บริษัท มิตรอารีแคร์ จำกัด ตามเจ้าของโครงการยืนยัน','ฉบับร่าง รอที่อยู่ ช่องทางติดต่อ ระยะเวลา และตรวจฐานกฎหมายก่อนใช้จริง'],render:regConsentDocument,foot:()=>ui.btn('ปิด',{kind:'secondary',closeSheet:true})});
-const REG_LISTS={conditions:['ความดันโลหิตสูง','ไขมันในเลือดสูง','โรคเบาหวาน','โรคหัวใจ','โรคไตเรื้อรัง','โรคหลอดเลือดสมอง'],meds:['Activelle 28s','Aerius 5 mg','Air-X 40 mg','Air-X 80 mg','Air-X 120 mg'],allergies:['Activelle 28s','Aerius 5 mg','Air-X 40 mg','Air-X 80 mg','Air-X 120 mg'],food:['ไข่','นม','แป้งสาลี','ถั่ว','อาหารทะเล']};
 const REG_STEPS=['ข้อมูลส่วนตัว','ที่อยู่ปัจจุบัน','ข้อมูลสุขภาพ','ตรวจทานและยินยอม'];
 function regDraft(S){return S._registration ||= {step:0,first:'',last:'',nationalId:'',day:'',month:'',year:'',sex:'none',weight:'',height:'',house:'',building:'',alley:'',road:'',dist:'',amp:'',prov:'',zip:'',health:{conditions:{mode:'unknown',items:[]},meds:{mode:'unknown',items:[]},allergies:{mode:'unknown',items:[]},food:{mode:'unknown',items:[]}},documents:[],queries:{},docError:'',consents:{},errors:{},busy:false};}
 /* Signup contact state; replace this demo adapter with server-bound SMS challenges. */
@@ -1989,8 +1942,6 @@ function regHealthText(v){return v.mode==='none'?'ไม่มี':v.mode==='unk
 function regReview(ctx,d,editable=true){const c=regContact(ctx),change=n=>editable?`<button type="button" class="txtbtn" data-reg-step="${n}" aria-label="แก้ไข${REG_STEPS[n]}">แก้ไข</button>`:'';return `<section class="reg-summary"><div class="reg-section-head"><h3>${ic('user',20,1.8)}ข้อมูลส่วนตัว</h3>${change(0)}</div>${regKv([['ชื่อ–นามสกุล',d.first+' '+d.last],['เลขบัตรประชาชน','*********'+d.nationalId.slice(-4)],['วันเกิด',`${d.day}/${d.month}/${d.year} · ${regAge(d)} ปี`],['เพศ',SEXES.find(x=>x[0]===d.sex)?.[1]],['น้ำหนัก / ส่วนสูง',`${d.weight} กก. / ${d.height} ซม.`],['อีเมล',d.email||c.value],['เบอร์โทรที่ยืนยันแล้ว',d.verifiedPhone||c.value]])}</section><section class="reg-summary"><div class="reg-section-head"><h3>${ic('map-pin',20,1.8)}ที่อยู่ปัจจุบัน</h3>${change(1)}</div><p>${esc([d.addressFirst,d.addressLast,d.addressPhone].filter(Boolean).join(' '))}</p><p>${esc([d.house,d.building,d.alley,d.road,d.dist,d.amp,d.prov,d.zip].filter(Boolean).join(' '))}</p></section><section class="reg-summary"><div class="reg-section-head"><h3>${ic('heart-pulse',20,1.8)}ข้อมูลสุขภาพ</h3>${change(2)}</div>${regKv(Object.entries(d.health).map(([k,v])=>[{conditions:'โรคประจำตัว',meds:'ยาที่ใช้ประจำ',allergies:'ประวัติแพ้ยา',food:'ประวัติแพ้อาหาร'}[k],regHealthText(v)]))}<div class="reg-review-documents"><h4>เอกสารแพ้ยา${d.documents.length?` <span class="opt-t">(${d.documents.length} ไฟล์)</span>`:''}</h4>${d.documents.length?regDocumentList(d):'<p class="hint">ไม่ได้แนบเอกสาร</p>'}</div></section>`;}
 const REG_HEALTH_LABELS={conditions:'โรคประจำตัว',meds:'ยาที่ใช้ประจำ',allergies:'ประวัติการแพ้ยา',food:'ประวัติแพ้อาหาร'};
 function regHealthValues(h){if(h.mode!=='set')return [];if(h.text!==undefined)return h.text.trim()?[h.text.trim()]:[];return [...new Set([...h.items,...(h.other&&h.otherText?.trim()?[h.otherText.trim()]:[])])];}
-function regHealthToggle(h,value,checked){if(value==='__other'){h.other=checked;if(!checked)h.otherText='';return;}h.items=checked?[...new Set([...h.items,value])]:h.items.filter(x=>x!==value);}
-function regHealthOptions(d,key){const h=d.health[key],items=[...new Set([...REG_LISTS[key],...h.items])];return items.map(v=>`<label class="reg-health-choice"><input type="checkbox" data-reg-health-choice="${key}" data-v="${esc(v)}" ${h.items.includes(v)?'checked':''}><span>${esc(v)}</span></label>`).join('');}
 function regHealthBlock(d,key,title){const h=d.health[key],placeholder={conditions:'เช่น โรคที่เป็นอยู่ ระยะเวลาที่เป็น และการรักษาปัจจุบัน',meds:'เช่น ชื่อยา ขนาดยา และความถี่ที่ใช้ตามฉลาก',allergies:'เช่น ชื่อยาที่เคยแพ้ และอาการที่เกิดขึ้น',food:'เช่น อาหารที่เคยแพ้ และอาการที่เกิดขึ้น'}[key];if(h.text===undefined)h.text=[...(h.items||[]),h.otherText||''].filter(Boolean).join('\n');return `<section class="reg-health-block"><h3 id="regHealthTitle-${key}">${title}</h3>${ui.seg('regMode-'+key,[['unknown','ยังไม่ทราบ'],['none','ไม่มี'],['set','ระบุข้อมูล']],h.mode,{a:'regHealthMode',label:title})}${h.mode==='set'?`<div class="field reg-health-other"><label class="f-l" for="reg-health-text-${key}">ระบุ${title} <span class="reg-required" aria-hidden="true">*</span></label><textarea class="input" id="reg-health-text-${key}" data-reg-health-text="${key}" rows="3" maxlength="1000" required aria-required="true" aria-invalid="${!!d.errors[key]}" aria-describedby="regHealthError-${key}" placeholder="${placeholder}">${esc(h.text)}</textarea></div>`:''}<p class="err-t" id="regHealthError-${key}" role="alert" ${d.errors[key]?'':'hidden'}>${esc(d.errors[key]||'')}</p></section>`;}
 
 /* Date-of-birth zoom picker: scratch selection stays in the sheet until confirmed. */
@@ -2113,7 +2064,6 @@ if(d.step===0){
 }
 if(d.step===1)regMountAddressSelect(el,d,sync,ctx);
 const healthSync=key=>{clearConsent();const error=$('#regHealthError-'+key,el);if(error){const text=regErrors(d)[key]||'';if(text)d.errors[key]=text;else delete d.errors[key];error.textContent=text;error.hidden=!text;}sync();};
-el.addEventListener('change',e=>{const input=e.target,key=input.dataset.regHealthChoice;if(!REG_HEALTH_LABELS[key]||d.busy)return;const h=d.health[key];regHealthToggle(h,input.dataset.v,input.checked);if(input.dataset.v==='__other'){const area=$('#regHealthOther-'+key,el),text=$('#reg-health-other-'+key,el);area.hidden=!h.other;input.setAttribute('aria-expanded',String(!!h.other));if(h.other)text.focus({preventScroll:true});else text.value='';}healthSync(key);});
 el.addEventListener('input',e=>{const textKey=e.target.dataset.regHealthText;if(REG_HEALTH_LABELS[textKey]){d.health[textKey].text=e.target.value;healthSync(textKey);e.target.setAttribute('aria-invalid',String(!!regErrors(d)[textKey]));return;}const key=e.target.dataset.regHealthOther;if(!REG_HEALTH_LABELS[key]||d.busy)return;d.health[key].otherText=e.target.value;healthSync(key);});
 
 el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||d.busy)return;if(b.dataset.regStep!==undefined){d.step=+b.dataset.regStep;d.returnToReview=true;d.errors={};return TP.refresh({anim:false});}if(b.dataset.regMode){const h=d.health[b.dataset.regMode];h.mode=b.dataset.v;if(h.mode!=='set')h.items=[];clearConsent();return TP.refresh({anim:false});}const key=b.dataset.regPick||b.dataset.regAdd;if(key){const input=$('#reg-search-'+key,el),value=(b.dataset.regPick?b.dataset.v:input.value).trim();if(!value)return;const h=d.health[key];if(h.items.some(v=>v.toLocaleLowerCase()===value.toLocaleLowerCase()))return TP.live('มีรายการนี้แล้ว');h.items.push(value.slice(0,120));d.queries[key]='';h.mode='set';clearConsent();return TP.refresh({anim:false});}if(b.dataset.regRemove){d.health[b.dataset.regRemove].items.splice(+b.dataset.n,1);clearConsent();return TP.refresh({anim:false});}if(b.dataset.regDocRemove!==undefined){const removed=d.documents.splice(+b.dataset.regDocRemove,1)[0];if(removed?.url?.startsWith('blob:'))URL.revokeObjectURL(removed.url);clearConsent();return TP.refresh({anim:false});}});
@@ -2156,138 +2106,26 @@ TP.registrationPreview={
 TP.previewSavedAddressPin=function(a){a.pin=true;a.location={lat:13.7585281507793,lng:100.358974455533,code:'104801',addressKey:[a.house,...(a.building?.trim()?[a.building]:[]),a.alley,a.road,a.dist,a.amp,a.prov,a.zip].map(v=>String(v||'').trim()).join('|'),verified:true,source:'DDPM',confirmedAt:new Date().toISOString()};};
 function regPreview(S,state='empty'){const d=regDraft(S);if(state==='google-new'||state.startsWith('phone-')){regPreview(S,'filled');d.email='new.member@gmail.com';d.emailLocked=true;d.emailProvider='google';if(state==='google-new'){d.verifiedPhone='';d.phone='';}else if(state!=='phone-verified'){d.verifiedPhone='';if(state==='phone-change')d.phone='0899999999';if(['phone-sent','phone-wrong','phone-expired','phone-locked','phone-resend'].includes(state)){d.phoneRound=1;d.phoneChallenge=TP.authDemo.issue('phone',d.phone,1,S,'new');if(state==='phone-wrong'){d.phoneCode='000000';d.phoneError='รหัสไม่ถูกต้อง กรุณาตรวจสอบอีกครั้ง';d.phoneChallenge.attempts=1;}if(state==='phone-expired'){d.phoneChallenge.expiresAt=Date.now()-1;d.phoneChallenge.resendAt=0;}if(state==='phone-locked'){d.phoneChallenge.attempts=5;d.phoneChallenge.resendAt=0;d.phoneError='กรุณาขอรหัสใหม่เพื่อยืนยันเบอร์';}if(state==='phone-resend')d.phoneChallenge.resendAt=0;}if(state==='phone-send-error')d.phoneError='ส่งรหัสไม่สำเร็จ กรุณาลองอีกครั้ง';}return;}if(state==='password-partial'||state==='password-mismatch'){regPreview(S,'filled');d.passwordConfirm=state==='password-mismatch'?'Different-Preview42!':'';if(state==='password-partial')d.password='Demo';d.errors=regErrors(d);return;}if(['address-split','address-legacy','address-details-invalid'].includes(state)){regPreview(S,'address');Object.assign(d,{house:'88/12',building:'หมู่บ้านมิตรอารี อาคารบี ห้อง 1201 ชั้น 12',alley:'ทวีวัฒนา 25',road:'เลียบคลองทวีวัฒนา'});if(state==='address-legacy')Object.assign(d,{house:'88/12 หมู่บ้านมิตรอารี ซอยทวีวัฒนา 25 ถนนเลียบคลองทวีวัฒนา',building:'',alley:'',road:''});if(state==='address-details-invalid')d.building='ก'.repeat(201);d.errors=regErrors(d);return;}if(state.startsWith('map-')){regPreview(S,'address');d.pin=false;d.location=null;if(state==='map-saved')TP.previewSavedAddressPin(d);return;}if(['national-id-short','national-id-format','national-id-checksum'].includes(state)){regPreview(S,'filled');d.step=0;d.nationalId=state==='national-id-short'?'110170020345':state==='national-id-format'?'11017002034AB':'1101700203459';d.errors=regErrors(d);return;}if(['address-select','address-missing-phone','address-invalid-phone','health-text'].includes(state)){regPreview(S,state==='health-text'?'health':'address');if(state==='address-select')Object.assign(d,{prov:'',amp:'',dist:'',zip:''});if(state==='address-missing-phone')d.addressPhone='';if(state==='address-invalid-phone')d.addressPhone='0212345678';if(state==='health-text')for(const [key,h]of Object.entries(d.health))Object.assign(h,{mode:'set',text:'ข้อมูลตัวอย่าง '+REG_HEALTH_LABELS[key]});d.errors=regErrors(d);return;}if(['filled','registration-back','address','address-search','address-no-results','address-error','health','health-empty','health-filled','review','consent-partial','consent-ready','save-error','health-none','health-no-results','health-documents','health-doc-error'].includes(state)||state.startsWith('conditions-')||state==='health-all-other'||state==='health-doc-limit'){Object.assign(d,{email:d.email||'somjai@example.com',phone:'0812345678',verifiedPhone:'0812345678',phoneVerifiedAt:new Date().toISOString(),contactInitialized:true,first:'สมใจ',last:'ใจดี',nationalId:'1101700203450',password:REG_PREVIEW_PASSWORD,passwordConfirm:REG_PREVIEW_PASSWORD,day:'15',month:'6',year:'1988',weight:'55',height:'160',addressFirst:'สมใจ',addressLast:'ใจดี',addressPhone:'0812345678',house:'88/12',building:'',alley:'ซอยทวีวัฒนา',road:'',dist:'ทวีวัฒนา',amp:'ทวีวัฒนา',prov:'กรุงเทพมหานคร',zip:'10170'});const base=d.nationalId.slice(0,12);let sum=0;for(let i=0;i<12;i++)sum+=(13-i)*+base[i];d.nationalId=base+((11-sum%11)%10);}
 if(state==='error')Object.assign(d,{first:'สมใจ',last:'ใจดี',nationalId:'123',day:'31',month:'2',year:'2025',weight:'0',height:'160',errors:{nationalId:'ตรวจสอบเลขบัตรประชาชน 13 หลัก',day:'วันที่นี้ไม่มีในปฏิทิน',weight:'กรอกน้ำหนักมากกว่า 0'}});
-if(state.startsWith('address'))d.step=1;if(state==='address-no-results')d.dist='ตำบลตัวอย่างที่ไม่มี';if(state.startsWith('health'))d.step=2;if(state==='health-empty')d.health.meds.mode='set';if(state==='health-none')for(const h of Object.values(d.health))h.mode='none';if(state==='health-documents'||state==='health-doc-limit'){d.documents=[{name:'บัตรแพ้ยา-ตัวอย่าง.png',type:'image/png',size:248832,url:'/assets/preview/allergy-document.svg'},{name:'เอกสารประกอบ-ตัวอย่าง.pdf',type:'application/pdf',size:524288}];if(state==='health-doc-limit')for(let n=3;n<=5;n++)d.documents.push({name:`เอกสารตัวอย่าง-${n}.pdf`,type:'application/pdf',size:n*102400});}if(state==='health-doc-error')d.docError='ไฟล์นี้ไม่รองรับ กรุณาเลือก JPG, PNG, WEBP หรือ PDF ไม่เกิน 5 MB';if(state==='health-all-other')for(const [key,h]of Object.entries(d.health))Object.assign(h,{mode:'set',items:[REG_LISTS[key][0]],other:true,otherText:'ข้อมูลเพิ่มเติมที่ผู้ใช้ระบุ'});if(state==='health-filled'){d.health.conditions={mode:'set',items:['ความดันโลหิตสูง']};d.health.food={mode:'set',items:['ไข่']};}if(['review','consent-ready','save-error'].includes(state))d.step=3;if(['consent-ready','save-error'].includes(state)){d.consents=Object.fromEntries(REG_TOPICS.map(([k])=>[k,true]));d.healthConsentVersion=REG_HEALTH_POLICY.version;}if(state==='save-error')d.submitError='บันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองอีกครั้งได้';if(state.startsWith('conditions-')){d.step=2;d.health.conditions={mode:'set',items:['ความดันโลหิตสูง','โรคเบาหวาน']};if(state.includes('other'))Object.assign(d.health.conditions,{other:true,otherText:state==='conditions-other'?'โรคหอบหืด':''});if(state==='conditions-other-empty')d.errors.conditions='กรอกโรคประจำตัวอื่น ๆ';if(state==='conditions-no-results')Object.assign(d.health.conditions,{other:true,otherText:''});}if(state==='review-documents'){regPreview(S,'health-documents');d.step=3;}if(state.startsWith('dob-')){regPreview(S,'filled');d.step=0;}}
+if(state.startsWith('address'))d.step=1;if(state==='address-no-results')d.dist='ตำบลตัวอย่างที่ไม่มี';if(state.startsWith('health'))d.step=2;if(state==='health-empty')d.health.meds.mode='set';if(state==='health-none')for(const h of Object.values(d.health))h.mode='none';if(state==='health-documents'||state==='health-doc-limit'){d.documents=[{name:'บัตรแพ้ยา-ตัวอย่าง.png',type:'image/png',size:248832,url:'/assets/preview/allergy-document.svg'},{name:'เอกสารประกอบ-ตัวอย่าง.pdf',type:'application/pdf',size:524288}];if(state==='health-doc-limit')for(let n=3;n<=5;n++)d.documents.push({name:`เอกสารตัวอย่าง-${n}.pdf`,type:'application/pdf',size:n*102400});}if(state==='health-doc-error')d.docError='ไฟล์นี้ไม่รองรับ กรุณาเลือก JPG, PNG, WEBP หรือ PDF ไม่เกิน 5 MB';if(['review','consent-ready','save-error'].includes(state))d.step=3;if(['consent-ready','save-error'].includes(state)){d.consents=Object.fromEntries(REG_TOPICS.map(([k])=>[k,true]));d.healthConsentVersion=REG_HEALTH_POLICY.version;}if(state==='save-error')d.submitError='บันทึกข้อมูลไม่สำเร็จ ข้อมูลที่กรอกยังอยู่ ลองอีกครั้งได้';if(state==='review-documents'){regPreview(S,'health-documents');d.step=3;}if(state.startsWith('dob-')){regPreview(S,'filled');d.step=0;}}
 TP.screen('registrationsuccess',{group:'start',title:'สมัครสมาชิกสำเร็จ',code:'C108',cls:'auth-cover-screen registration-welcome-screen',sb:'dark',states:[['normal','สมัครสำเร็จด้วยเบอร์โทร'], ['long-name','ชื่อจริงยาว', true, 4]],notes:['หน้าต้อนรับหลังบันทึกข้อมูล แสดงชื่อจริงและปุ่มเริ่มใช้งาน ไปแนะนำแอป C112','ระบบยืนยันและบันทึกยังเป็นต้นแบบ ไม่ได้ส่งข้อมูลจริง'],prep(S){S._registrationComplete=true;S.loggedIn=S._registrationComplete;Object.assign(S.user,{name:'สมใจ',full:'สมใจ ใจดี',email:'',phone:'0812345678'});if(S.st.registrationsuccess==='long-name')S.user.name='กาญจนาภัทรวรรณ';},render(ctx){const S=ctx.S;if(!S._registrationComplete)return ui.nav({title:'สมัครสมาชิก'})+ui.page(ui.empty({title:'ยังสมัครสมาชิกไม่เสร็จ',body:'กลับไปตรวจสอบข้อมูลและความยินยอม',icon:'clipboard-list',btn:{label:'กลับไปสมัคร',go:'profile'}}));return `<div class="auth-cover registration-welcome" aria-label="สมัครสมาชิกสำเร็จ"><img class="auth-cover-photo reg-welcome-cover" src="/assets/auth/registration-welcome-full-v3.png" alt="" width="864" height="1824" fetchpriority="high"><div class="auth-cover-content reg-welcome-copy"><div class="reg-welcome-message"><p class="reg-welcome-status">สมัครสมาชิกเรียบร้อยแล้ว</p><h1>ยินดีต้อนรับ${S.user.name?`<br><span>คุณ${esc(S.user.name)}</span>`:''}</h1><p class="auth-cover-subtitle">พร้อมให้เภสัชกรดูแลคุณแล้ว</p><div class="auth-cover-actions">${ui.btn('เริ่มใช้งาน',{go:'onboard',root:true,iconRight:'arrow-right'})}</div></div></div></div>`;}});
 
 TP.screen('profile', {
   group: 'start', title: 'ข้อมูลของคุณและความยินยอม', code: 'C105', ref: 'C02', cls: 'st-cn',
-  states: [['empty', 'สมัครใหม่: ยังไม่กรอก'], ['filled', 'เบอร์ใหม่: กรอกแล้ว'], ['error', 'ปีเกิดไม่ถูกต้อง'], ['acct', 'มีบัญชีเว็บ: ความยินยอมฉบับใหม่'], ['email', 'สมัครใหม่ด้วยอีเมลที่ยืนยันแล้ว'], ['address','ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ'], ['address-no-results','ค้นหาที่อยู่ไม่พบ กรอกเองได้'], ['address-error','ตัวช่วยที่อยู่โหลดไม่สำเร็จ'], ['health','ขั้นข้อมูลสุขภาพ ยังไม่ทราบ'], ['health-empty','ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ'], ['health-filled','ข้อมูลสุขภาพหลายรายการ'], ['review','ตรวจทานและความยินยอม ยังไม่ติ๊ก'], ['consent-ready','เลือกยินยอมแล้ว พร้อมสมัคร', true, 14], ['save-error','บันทึกไม่สำเร็จ ข้อมูลยังอยู่', true, 15], ['health-none','ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง', true, 16], ['health-documents','แนบเอกสารแพ้ยาแล้ว', true, 18], ['health-doc-error','ไฟล์แนบไม่ผ่านเงื่อนไข', true, 19], ['conditions-multi','ระบุโรคประจำตัว', true, 22], ['conditions-other','ระบุโรคอื่น ๆ', true, 23], ['conditions-other-empty','เลือกอื่น ๆ แต่ยังไม่กรอก', true, 24], ['health-all-other','เลือกหลายข้อและอื่น ๆ ทุกกลุ่มสุขภาพ', true, 27], ['health-doc-limit','แนบเอกสารครบ 5 ไฟล์', true, 28], ['review-documents','ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์', true, 29], ["dob-years", "วันเกิด: ล้อหมุน", true, 30], ["dob-leap", "วันเกิด: ปีอธิกสุรทิน", true, 34], ["dob-future", "วันเกิด: จำกัดถึงวันนี้", true, 35], ["dob-oldest", "วันเกิด: ปี 1900", true, 36], ['address-select','เลือกจังหวัด อำเภอ ตำบล', true, 37], ['address-missing-phone','ที่อยู่ยังไม่กรอกเบอร์', true, 38], ['address-invalid-phone','รูปแบบเบอร์ติดต่อไม่ถูกต้อง', true, 39], ['health-text','ระบุสุขภาพด้วยข้อความ', true, 40], ['national-id-short','เลขประชาชนไม่ครบ 13 หลัก', true, 41], ['national-id-format','เลขประชาชนมีตัวอักษร', true, 42], ['national-id-checksum','เลขประชาชนครบแต่เลขตรวจสอบผิด', true, 43], ['address-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน', true, 48], ['address-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ', true, 49], ['address-details-invalid','รายละเอียดอาคารยาวเกินกำหนด', true, 50], ['personal-edit','แก้ไขข้อมูลส่วนตัว', true, 51], ['personal-edit-invalid','แก้ไขข้อมูลส่วนตัวไม่ครบ', true, 52], ['password-partial','รหัสผ่านยังไม่ครบเงื่อนไข', true, 53], ['password-mismatch','รหัสผ่านยืนยันไม่ตรงกัน', true, 54], ['google-new','Google สมาชิกใหม่ อีเมลแก้ไม่ได้', true, 55], ['phone-entry','กรอกเบอร์ ขอ SMS OTP', true, 56], ['phone-sent','ส่ง SMS แล้ว กรอกรหัสในฟอร์ม', true, 57], ['phone-wrong','รหัส OTP ไม่ถูกต้อง', true, 58], ['phone-expired','OTP หมดอายุ ขอใหม่ได้', true, 59], ['phone-locked','OTP ผิดครบจำนวน ขอใหม่', true, 60], ['phone-resend','ส่งรหัสใหม่ได้', true, 61], ['phone-verified','ยืนยันเบอร์แล้ว ไปขั้นที่อยู่', true, 62], ['phone-change','เปลี่ยนเบอร์ ต้องยืนยันใหม่', true, 63], ['phone-send-error','ส่ง SMS ไม่สำเร็จ ลองอีกครั้ง', true, 64]],
-  notes:['สมัครใหม่: ข้อมูลส่วนตัว → ที่อยู่ปัจจุบัน → สุขภาพ → ตรวจทานและยินยอม → C108 สมัครสำเร็จ ไม่มีหน้าไม่ยินยอม','สมัครสำเร็จแล้วตั้งที่อยู่ปัจจุบันเป็นที่อยู่หลัก หน้าแรก C201 จึงมีที่อยู่จัดส่งทันที ต้นแบบใช้ที่อยู่จำลองแทนค่าที่กรอก','อีเมล/เบอร์ที่ผ่าน OTP แล้วแสดงสถานะยืนยัน ผู้สมัครใหม่ตั้งและยืนยันรหัสผ่านในขั้นข้อมูลส่วนตัว','อ้างอิงช่องฟอร์มจากภาพเว็บที่ผู้ใช้ส่ง 1 พ.ย. 2026; ตัวเลือกยาเป็นรายการตัวอย่าง กรอกเองได้','ไม่ตั้งค่าไม่มีโรคหรือไม่แพ้ยาให้เอง; ผู้ใช้เลือกยังไม่ทราบได้','ที่อยู่ปัจจุบันไม่ถูกนำไปบันทึกเป็นที่อยู่จัดส่งโดยอัตโนมัติ','ความยินยอม1ช่องสำหรับบริการเภสัชกรรม ไม่ติ๊กล่วงหน้า เปิดC107อ่านอย่างเดียว ไม่รวมการตลาด; การบันทึกยังเป็นต้นแบบ','มีบัญชีเดิม/แก้ไขข้อมูลใช้เส้นทางเดิม คงข้อมูลและความยินยอม'],
+  states: [['empty', 'สมัครใหม่: ยังไม่กรอก'], ['filled', 'เบอร์ใหม่: กรอกแล้ว'], ['error', 'ปีเกิดไม่ถูกต้อง'], ['address','ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ', true, 6], ['address-no-results','ค้นหาที่อยู่ไม่พบ กรอกเองได้', true, 7], ['address-error','ตัวช่วยที่อยู่โหลดไม่สำเร็จ', true, 8], ['health','ขั้นข้อมูลสุขภาพ ยังไม่ทราบ', true, 9], ['health-empty','ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ', true, 10], ['review','ตรวจทานและความยินยอม ยังไม่ติ๊ก', true, 12], ['consent-ready','เลือกยินยอมแล้ว พร้อมสมัคร', true, 14], ['save-error','บันทึกไม่สำเร็จ ข้อมูลยังอยู่', true, 15], ['health-none','ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง', true, 16], ['health-documents','แนบเอกสารแพ้ยาแล้ว', true, 18], ['health-doc-error','ไฟล์แนบไม่ผ่านเงื่อนไข', true, 19], ['health-doc-limit','แนบเอกสารครบ 5 ไฟล์', true, 28], ['review-documents','ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์', true, 29], ["dob-years", "วันเกิด: ล้อหมุน", true, 30], ["dob-leap", "วันเกิด: ปีอธิกสุรทิน", true, 34], ["dob-future", "วันเกิด: จำกัดถึงวันนี้", true, 35], ["dob-oldest", "วันเกิด: ปี 1900", true, 36], ['address-select','เลือกจังหวัด อำเภอ ตำบล', true, 37], ['address-missing-phone','ที่อยู่ยังไม่กรอกเบอร์', true, 38], ['address-invalid-phone','รูปแบบเบอร์ติดต่อไม่ถูกต้อง', true, 39], ['health-text','ระบุสุขภาพด้วยข้อความ', true, 40], ['national-id-short','เลขประชาชนไม่ครบ 13 หลัก', true, 41], ['national-id-format','เลขประชาชนมีตัวอักษร', true, 42], ['national-id-checksum','เลขประชาชนครบแต่เลขตรวจสอบผิด', true, 43], ['address-split','ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน', true, 48], ['address-legacy','ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ', true, 49], ['address-details-invalid','รายละเอียดอาคารยาวเกินกำหนด', true, 50], ['personal-edit','แก้ไขข้อมูลส่วนตัว', true, 51], ['personal-edit-invalid','แก้ไขข้อมูลส่วนตัวไม่ครบ', true, 52], ['password-partial','รหัสผ่านยังไม่ครบเงื่อนไข', true, 53], ['password-mismatch','รหัสผ่านยืนยันไม่ตรงกัน', true, 54], ['google-new','Google สมาชิกใหม่ อีเมลแก้ไม่ได้', true, 55], ['phone-entry','กรอกเบอร์ ขอ SMS OTP', true, 56], ['phone-sent','ส่ง SMS แล้ว กรอกรหัสในฟอร์ม', true, 57], ['phone-wrong','รหัส OTP ไม่ถูกต้อง', true, 58], ['phone-expired','OTP หมดอายุ ขอใหม่ได้', true, 59], ['phone-locked','OTP ผิดครบจำนวน ขอใหม่', true, 60], ['phone-resend','ส่งรหัสใหม่ได้', true, 61], ['phone-verified','ยืนยันเบอร์แล้ว ไปขั้นที่อยู่', true, 62], ['phone-change','เปลี่ยนเบอร์ ต้องยืนยันใหม่', true, 63], ['phone-send-error','ส่ง SMS ไม่สำเร็จ ลองอีกครั้ง', true, 64]],
+  notes:['สมัครใหม่: ข้อมูลส่วนตัว → ที่อยู่ปัจจุบัน → สุขภาพ → ตรวจทานและยินยอม → C108 สมัครสำเร็จ ไม่มีหน้าไม่ยินยอม','สมัครสำเร็จแล้วตั้งที่อยู่ปัจจุบันเป็นที่อยู่หลัก หน้าแรก C201 จึงมีที่อยู่จัดส่งทันที ต้นแบบใช้ที่อยู่จำลองแทนค่าที่กรอก','เบอร์โทรยืนยันด้วย SMS OTP ในฟอร์ม (C105.56–.64) อีเมลไม่มีการยืนยันตัวตน สมัครด้วย Google ใช้อีเมลจาก Google แก้ไม่ได้ (C105.55) ผู้สมัครใหม่ตั้งและยืนยันรหัสผ่านในขั้นข้อมูลส่วนตัว','ข้อมูลสุขภาพแต่ละหมวด (โรคประจำตัว ยาที่ใช้ประจำ แพ้ยา แพ้อาหาร) เลือก ยังไม่ทราบ / ไม่มี / ระบุข้อมูล แล้วพิมพ์ข้อความเอง ไม่มีรายการให้ติ๊ก แนบเอกสารแพ้ยาได้สูงสุด 5 ไฟล์','ไม่ตั้งค่าไม่มีโรคหรือไม่แพ้ยาให้เอง; ผู้ใช้เลือกยังไม่ทราบได้','ความยินยอม1ช่องสำหรับบริการเภสัชกรรม ไม่ติ๊กล่วงหน้า เปิดC107อ่านอย่างเดียว ไม่รวมการตลาด; การบันทึกยังเป็นต้นแบบ','แก้ไขข้อมูลส่วนตัวจากบัญชีใช้ C105.51/.52 คงข้อมูลที่ล็อกและความยินยอมเดิม ไม่มีโหมดบัญชีเว็บเดิม'],
   prep(S) {
     const st = S.st.profile;
     if(st?.startsWith('personal-edit')){S._profileEdit=null;if(st==='personal-edit-invalid'){const d=pfEditDraft(S);d.first='';d.errors=pfEditErrors(d);}return;}
     S._registration=null;S._registrationComplete=false;
-    if(st==='email')authNewAccount(S,'email','new@example.com');
-    S._pf = st === 'filled' ? { first: 'สมศรี', last: 'มีสุข', year: '1968', sex: 'f' } : st === 'error' ? { first: 'สมศรี', last: 'มีสุข', year: '2511', sex: 'none' } : { first: '', last: '', year: '', sex: 'none' };
-    Object.assign(S, { firstTime: true, newAccount: st !== 'acct', loggedIn: true, consent: false, consentVer: st === 'acct' ? 2 : CN_VER });
-    if(st!=='acct')regPreview(S,st);
+    Object.assign(S, { firstTime: true, newAccount: true, loggedIn: true, consent: false, consentVer: CN_VER });
+    regPreview(S,st);
   },
   render(ctx) {
-    const S = ctx.S, d = S._pf || (S._pf = { first: '', last: '', year: '', sex: 'none' }), err = ctx.state === 'error', m = pfMode(ctx);
-    if(m==='new')return regRender(ctx);if(m==='edit')return pfEditRender(ctx);
-    const ph = ctx.params.email || (ctx.state==='email'?S.user.email:'') || maskPhone(ctx.params.phone || ctx.params.acct || digits(S.user.phone));
-    const form = m === 'acct' ? pfAcctOk(S, ph) : `
-      <p class="st-pf-ok" data-in="1">${ui.tag(m === 'edit' ? 'เบอร์ในบัญชี' : ctx.params.email||ctx.state==='email' ? 'ยืนยันอีเมลแล้ว' : 'ยืนยันเบอร์แล้ว', 'ok', { dot: true })}<span class="num">${esc(ph)}</span></p>
-      <div class="st-pf-name" data-in="2">${pfField('first', { label: 'ชื่อ', ph: 'ชื่อจริง', ac: 'given-name', max: 50 }, d)}${pfField('last', { label: 'นามสกุล', ph: 'นามสกุล', ac: 'family-name', max: 50 }, d)}</div>
-      <div class="mt16" data-in="3">${pfField('year', { label: 'ปีเกิด (ค.ศ.)', ph: 'เช่น 1988', ac: 'bday-year', im: 'numeric', max: 4, hint: ageText(d.year) }, d, err)}</div>
-      <div class="field mt16" data-in="4"><span class="f-l" id="pf-sex-l">เพศ <span class="opt-t">(ไม่บังคับ)</span></span>
-        <div class="chips st-sex" role="radiogroup" aria-labelledby="pf-sex-l" data-radio-scope>${SEXES.map(([v, l]) => `<button type="button" class="chip" role="radio" data-radio="sex" data-v="${v}" aria-checked="${d.sex === v}"><svg class="ck-i" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>${l}</button>`).join('')}</div></div>`;
-    const address = m === 'new' ? `<section class="ds-form-section" aria-labelledby="pfAddressTitle"><h3 class="group-h" id="pfAddressTitle">ที่อยู่ของคุณ</h3><p class="hint">บันทึกไว้สำหรับจัดส่งยา แก้ไขได้ภายหลัง</p><div class="mt16">${pfField('house',{label:'บ้านเลขที่',ph:'เช่น 88/12',ac:'address-line1',max:200},d)}${pfField('building',{label:'หมู่บ้าน / อาคาร / ห้อง / ชั้น (ไม่บังคับ)',ph:'ชื่อหมู่บ้าน อาคาร ห้อง หรือชั้น',ac:'address-line2',max:200},d)}${pfField('alley',{label:'ซอย (ไม่บังคับ)',ph:'เช่น ทวีวัฒนา 25',ac:'off',max:100},d)}${pfField('road',{label:'ถนน (ไม่บังคับ)',ph:'เช่น เลียบคลองทวีวัฒนา',ac:'off',max:100},d)}</div><div class="ds-form-grid">${[['dist','ตำบล / แขวง','address-level3',60],['amp','อำเภอ / เขต','address-level2',60],['prov','จังหวัด','address-level1',60],['zip','รหัสไปรษณีย์','postal-code',5]].map(([k,label,ac,max]) => pfField(k,{label,ph:label,ac,max,im:k === 'zip' ? 'numeric' : ''},d)).join('')}</div></section>` : '';
-    const tail = m === 'edit' ? `<p class="st-pf-fine" data-in="5">${ic('lock', 14, 2)}<span>ใช้ในบัญชีและการปรึกษาของคุณเท่านั้น</span></p>` : pfConsent(m === 'acct');
-    const head = m === 'edit' ? { lt: 'ข้อมูลส่วนตัว', sub: 'เปลี่ยนเบอร์โทรได้ที่ฝ่ายบริการลูกค้า' }
-      : m === 'acct' ? { lt: 'ยินดีต้อนรับ', sub: 'ใช้บัญชีเดียวกับเว็บไซต์ MITRAREE · ให้ความยินยอมฉบับปัจจุบันก่อนเข้าสู่หน้าหลัก' }
-      : { lt: 'ข้อมูลของคุณ', sub: `เภสัชกรต้องรู้ชื่อและอายุเพื่อแนะนำและคำนวณขนาดยาให้ปลอดภัย · บันทึกการปรึกษาเก็บ 1 ปีนับจากวันปิดเคส ${nw('ตามกฎ อย.')}` };
-    const dock = m === 'edit' ? ui.btn('บันทึก', { id: 'pfGo' })
-      : `<div class="btn-row st-cn-row"><button type="button" class="btn primary st-cn-go" id="pfGo" aria-disabled="true"><span>ยินยอมและเข้าสู่หน้าหลัก</span></button></div>`;
-    return ui.nav(m === 'edit' ? { back: true, title: 'ข้อมูลส่วนตัว' } : { title: m === 'acct' ? 'ความยินยอม' : 'ข้อมูลของคุณ' }) + ui.page((m === 'acct' ? form : `<section class="ds-form-section" aria-labelledby="pfDetailsTitle"><h3 class="group-h" id="pfDetailsTitle">ข้อมูลส่วนตัว</h3>${form}</section>`) + address + tail, head) + ui.dock(dock);
+    return pfMode(ctx)==='edit'?pfEditRender(ctx):regRender(ctx);
   },
   mount(el, ctx) {
-    const S = ctx.S, d = S._pf, m = pfMode(ctx), go = $('#pfGo', el), cn = $('#pfCn', el), cnE = $('#pfCnE', el);
-    if(m==='new')return regMount(el,ctx);if(m==='edit')return pfEditMount(el,ctx);
-    const ph = ctx.params.email || (ctx.state==='email'?S.user.email:'') || maskPhone(ctx.params.phone || ctx.params.acct || digits(S.user.phone));
-    const ok = () => m === 'acct' || (m === 'new' ? Object.keys(PF_CHECK) : ['first','last','year']).every(k => !PF_CHECK[k](d[k]));
-    const ticked = () => cn?.getAttribute('aria-checked') === 'true';
-    const show = (k, on) => {
-      const f = $(`.st-pf-f[data-k="${k}"]`, el), e = on ? PF_CHECK[k](d[k]) : '', inp = $('input', f);
-      f.classList.toggle('err', !!e); inp.setAttribute('aria-invalid', String(!!e));
-      $('.hint', f).hidden = !!e; $('.err-t', f).hidden = !e;
-      if (e) {
-        $('.err-t span', f).textContent = e;
-        $('.st-fix', f)?.remove();
-        const y = +d.year;
-        if (k === 'year' && /^\d{4}$/.test(d.year) && y >= 2443 && y <= NOW_Y + 543) $('.err-t', f).insertAdjacentHTML('beforeend', `<button type="button" class="link st-inl st-fix" data-fix="${y - 543}">ใช้ ${y - 543}</button>`);
-      }
-      return !!e;
-    };
-    const sync = () => {
-      go.disabled = !ok() || !!(cn && !ticked());
-      if (cn) { go.setAttribute('aria-disabled', String(!ticked())); if (ticked()) { cnE.hidden = true; cn.classList.remove('st-nudge'); } }
-    };
-    el._pfSync = sync;
-    $$('.st-pf-f', el).forEach(f => {
-      const k = f.dataset.k, inp = $('input', f);
-      inp.addEventListener('input', () => {
-        if (k === 'year') { const v = digits(inp.value).slice(0, 4); if (inp.value !== v) inp.value = v; }
-        d[k] = inp.value; f.dataset.touched = '1';
-        if (k === 'year') { $('.hint', f).innerHTML = ageText(d.year); if (/^\d{4}$/.test(d.year) && +d.year > NOW_Y) show(k, true); }
-        if (f.classList.contains('err')) show(k, true);
-        sync();
-      });
-      inp.addEventListener('blur', () => { if (d[k] || f.dataset.touched) show(k, true); f.dataset.touched = '1'; });
-      inp.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); const n = $$('.st-pf-f input', el)[$$('.st-pf-f input', el).indexOf(inp) + 1]; if (n) n.focus(); else inp.blur(); } });
-      /* tapping the fix must not blur the field first: the blur redraws the error line and the button under the finger */
-      f.addEventListener('pointerdown', e => { if (e.target.closest('.st-fix')) e.preventDefault(); });
-      f.addEventListener('mousedown', e => { if (e.target.closest('.st-fix')) e.preventDefault(); });
-      f.addEventListener('click', e => {
-        const b = e.target.closest('.st-fix'); if (!b) return;
-        inp.value = d.year = b.dataset.fix; show('year', true); $('.hint', f).innerHTML = ageText(d.year); sync(); inp.focus();
-        TP.live('เปลี่ยนเป็น ค.ศ. ' + d.year + ' แล้ว');
-      });
-    });
-    $('.st-sex', el)?.addEventListener('click', e => { const c = e.target.closest('[data-v]'); if (c) d.sex = c.dataset.v; });
-    /* web account: confirm it is theirs first */
-    const card = $('#pfAcct', el);
-    card?.addEventListener('click', async e => {
-      const b = e.target.closest('[data-x]'); if (!b) return;
-      if (b.dataset.x === 'yes') {
-        ctx.params.acctOk = 1; TP.live('ยืนยันบัญชีแล้ว');
-        await TP.fin(A(card, [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(-8px) scale(.98)' }], { d: 220, e: E.apple, fill: 'forwards' }));
-        card.insertAdjacentHTML('afterend', pfAcctOk(S, ph)); const n = card.nextElementSibling; card.remove(); rise(n, 0, 6);
-        return;
-      }
-      if (b.dataset.x === 'no') {
-        go.disabled = true;
-        [$('#pfCnBox', el), $('.st-pf-cnh', el)].forEach(n => { if (n) n.style.display = 'none'; });
-        card.classList.add('no');
-        card.innerHTML = `<p class="st-acct-t">${ic('headset', 20, 1.9)}<span>ติดต่อฝ่ายบริการลูกค้า <b class="num st-nw">${esc(TP.STORE?.cs || '')}</b> <span class="st-nw">(${esc(TP.STORE?.csHours || '')})</span> เพื่อตรวจสอบบัญชีที่ผูกกับเบอร์นี้ ระหว่างนี้ยังไม่ต้องใช้งานต่อ</span></p>
-          <div class="st-acct-b"><button type="button" class="btn tint sm" data-x="call">${ic('phone', 18, 2)}<span>โทรหาฝ่ายบริการลูกค้า</span></button><button type="button" class="btn ghost sm" data-x="out">ออกจากระบบ</button></div>`;
-        rise(card, 0, 6); $('[data-x="call"]', card).focus();
-        return;
-      }
-      if (b.dataset.x === 'call') TP.notify('กำลังโทร ' + (TP.STORE?.cs || ''), { icon: 'phone' });
-      if (b.dataset.x === 'out') { S.loggedIn = false; TP.emit('state'); TP.go('login', { via: 'fade', root: true }); }
-    });
-    sync();
-    const fieldsBad = () => m !== 'acct' && (m === 'new' ? Object.keys(PF_CHECK) : ['first','last','year']).map(k => show(k, true)).some(Boolean);
-    const save = () => {
-      if (m === 'acct') return;
-      const first = d.first.trim(), last = d.last.trim(), y = +d.year, p = ctx.params.phone;
-      if (m === 'new') freshAccount(S);
-      Object.assign(S.user, { name: first, last, full: `${first} ${last}`, birthYear: y, born: String(y), age: NOW_Y - y, sex: d.sex });
-      if (m === 'new') S.addrs = [{ id: 'a1', first, last, phone: p || digits(S.user.phone), house: d.house.trim(), building:(d.building||'').trim(),alley:(d.alley||'').trim(),road:(d.road||'').trim(), dist: d.dist.trim(), amp: d.amp.trim(), prov: d.prov.trim(), zip: d.zip, main: true, pin: false }];
-      if (m === 'new' && p && p.length === 10) S.user.phone = `${p.slice(0, 3)}-${p.slice(3, 6)}-${p.slice(6)}`;
-    };
-    go.addEventListener('click', async () => {
-      if (go.disabled || go.classList.contains('busy')) return;
-      if (fieldsBad()) return;
-      if (cn && !ticked()) {
-        shake(cn); cn.classList.remove('st-nudge'); cn.getBoundingClientRect(); cn.classList.add('st-nudge');
-        cnE.hidden = false; TP.live(cnE.textContent); rise(cnE, 0, 4);
-        cn.scrollIntoView({ block: 'center', behavior: TP.RED() ? 'auto' : 'smooth' }); cn.focus({ preventScroll: true });
-        return;
-      }
-      go.classList.add('busy'); go.setAttribute('aria-busy', 'true');
-      await sleep(ctx, 650);
-      save();
-      if (m === 'edit') { TP.emit('state'); TP.back(); TP.notify('บันทึกข้อมูลส่วนตัวแล้ว', { icon: 'circle-check' }); return; }
-      TP.saveHealthConsent(S,TP.healthConsentVersion(),'profile-checkbox');
-      Object.assign(S, { firstTime: false, newAccount: false });
-      TP.emit('state');
-      await TP.go('home', { via: 'none', root: true });
-      // Stay on home after registration or updated consent.
-      TP.notify(m === 'acct' ? 'บันทึกความยินยอมแล้ว' : 'บันทึกข้อมูลและความยินยอมแล้ว', { icon: 'circle-check' });
-    });
-    if (ctx.state === 'empty' && m === 'new') ctx.later(() => $('#pf-first', el)?.focus({ preventScroll: true }), 650);
+    /* C105.4 web-account consent mode removed 8 Nov 2026: profile is registration or personal edit only */
+    return pfMode(ctx)==='edit'?pfEditMount(el,ctx):regMount(el,ctx);
   }
 });
 
@@ -2295,12 +2133,6 @@ TP.screen('profile', {
    Consent (C06 · A6 + C1): summary on top, full text, required + optional
    ===================================================================== */
 const CN_VER = 4;
-const CN_SUM = [
- ['clipboard-list','ข้อมูลที่ใช้','ข้อมูลสุขภาพที่จำเป็นต่อการประเมินอาการและความเหมาะสมของยา'],
- ['stethoscope','วัตถุประสงค์','บริการเภสัชกรรมและติดตามความปลอดภัยที่เกี่ยวข้อง'],
- ['clock','ระยะเวลาเก็บ','ตามระยะเวลาหรือเกณฑ์ที่บริษัทต้องแจ้งในประกาศความเป็นส่วนตัว'],
- ['shield-check','สิทธิของคุณ','อ่านรายละเอียด ถอนความยินยอม หรือขอใช้สิทธิผ่านเมนูบัญชี']
-];
 TP.consentDoc=()=>TP.registrationConsentDocument();
 /* =====================================================================
    No consent (C06): owner 19/10/2026 consent is required to use the app at all
@@ -2734,7 +2566,7 @@ function homeConsultBanner(S) {
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
   states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา', true, 8], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้', true, 9], ["case-queue3", "จำลอง รออีก 3 คิว", true, 48], ["case-next", "จำลอง คิวถัดไป", true, 51], ["case-chat", "จำลอง กำลังปรึกษา", true, 54], ["case-closed-unpaid","จบแชท รอชำระค่ายา", true, 60], ["case-delivery-preparing","ชำระแล้ว · เตรียมยา", true, 65], ["case-delivery-calling","กำลังเรียกไรเดอร์", true, 66], ["case-delivery-delivering","ไรเดอร์กำลังส่งยา", true, 67], ["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา", true, 69], ["case-pickup-ready","รับที่ร้าน · พร้อมรับยา", true, 70], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน', true, 79]],
-  notes: ['ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
+  notes: ['คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; delete S._homeFulfillmentPreviewCases; TP.homeScenario(S, st || 'normal'); if (!st) return;
     if(st==='multiple-fulfillments'){
@@ -2780,7 +2612,8 @@ TP.screen('home', {
       ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}
 
       </div>`, { nonav: true });
-  }
+  },
+  mount(el) { TP.mountFulfillmentCarousel(el); }
 });
 /* consult switched off from the back office (C17): the start button leads to sysoff, the rest of the app still works */
 /* asked once, after the first consult (owner 19/10/2026) */
@@ -2825,7 +2658,7 @@ const intakeMock = {
 TP.screen('intake', {
   previewMock: intakeMock,
   group: 'before', title: 'แจ้งอาการ', code: 'C203', ref: 'C04', parent: 'home', cls:'intake-cover-screen', sb:'dark',
-  states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["other", "พิมพ์อาการเอง"], ["noallergy", "ยังไม่ระบุแพ้ยา"], ["fail", "เข้าคิวไม่สำเร็จ"], ["ack", "ติ๊กรับทราบแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา"], ["multi", "เลือกหลายอาการ", true, 10], ["custom-error", "ยังไม่ได้เล่ารายละเอียด", true, 11], ["photos", "แนบรูป 3 รูป", true, 12], ["photo-error", "แนบไฟล์ไม่รองรับ", true, 13]],
+  states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา", true, 7], ["photos", "แนบรูป 3 รูป", true, 12], ["photo-error", "แนบไฟล์ไม่รองรับ", true, 13]],
   notes: ['C04: ตัวเลือก 2 คอลัมน์ มีช่องติ๊ก เลือกได้หลายอาการ ไม่มีช่องค้นหา',
     'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'A11: แพ้ยาไม่บังคับ ดึงจากบัญชีมาให้ แก้ได้ในที่ · ไม่มีข้อมูล = "ยังไม่ได้ระบุ" ไม่ใช่ "ไม่แพ้"', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ไม่มีตัวเลือกวิธีปรึกษาในฟอร์ม ลำดับคือ 1 อาการที่ต้องการปรึกษา 2 ข้อมูลก่อนปรึกษา รับวิธีปรึกษาจากทางเข้าเดิมและเปิดวิดีโอในห้องได้; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"', 'แผงทดสอบมีปุ่มมอคข้อมูล เติมอาการและรายละเอียดเฉพาะช่องที่ว่าง ไม่ติ๊กรับทราบให้',
     'A2 (ประกาศ อย. ข้อ 2.1(3) "ก่อนการให้บริการ" = ทุกเคส): ติ๊ก รับทราบขั้นตอนและความเสี่ยง ก่อนกดเข้าคิว · ครั้งแรกเปิดข้อความเต็มให้อ่าน ครั้งต่อไปพับไว้ แตะเปิดอ่านได้ · ไม่ติ๊กแล้วกดเข้าคิว = พาไปที่ช่องติ๊ก บอกว่าต้องติ๊กก่อน · เก็บเวลาและเลขฉบับข้อความกับเคส ส่งให้คอนโซล (B8) · อ่านซ้ำได้ที่ C207 (C203.7)',
@@ -2833,18 +2666,15 @@ TP.screen('intake', {
   wait: ['ข้อความขั้นตอนและความเสี่ยง (A2) ให้เภสัชกรและฝ่ายกฎหมายตรวจก่อนใช้จริง', 'ฝากคำถามตอนร้านปิด ต้องติ๊กรับทราบด้วยไหม (ต้นแบบยังไม่ให้ติ๊ก)', 'ปรึกษาใหม่ต่อจากเคสที่ระบบปิดเพราะเงียบ และย้ายคิวไปสาขาอื่น ใช้การรับทราบของเคสเดิมได้ไหม (ต้นแบบใช้ของเคสเดิม ไม่ถามซ้ำ)'],
   prep(S) {
     const st = S.st.intake;
-    if (st) Object.assign(S.intake, { attachments:[], photoError:'', otherText:'', custom: [], otherOpen: false, ack: st === 'ack' || st === 'fail' });
+    if (st) Object.assign(S.intake, { attachments:[], photoError:'', otherText:'', custom: [], otherOpen: false, ack: false });
     if (st) { S.addrs = TP.fresh().addrs; if (st === 'outzone') S.addrs = [{ ...TP.ZONE_ADDR, main: true }, ...S.addrs.map(a => ({ ...a, main: false }))]; }
-    if (st === 'other') Object.assign(S.intake, { who: 'me', symptoms: ['ไข้', 'เวียนหัว'], custom: ['เวียนหัว'], otherOpen: true, otherText:'', note: 'เวียนหัวเมื่อเปลี่ยนท่า', urgent: [] });
-    else if (st === 'filled' || st === 'fail' || st === 'ack' || st === 'outzone') Object.assign(S.intake, { who: 'me', symptoms: ['ไข้', 'เจ็บคอ'], note: 'เป็นมา 2 วัน กลืนแล้วเจ็บ', urgent: [] });
+    if (st === 'filled' || st === 'outzone') Object.assign(S.intake, { who: 'me', symptoms: ['ไข้', 'เจ็บคอ'], note: 'เป็นมา 2 วัน กลืนแล้วเจ็บ', urgent: [] });
 
     else if (st) Object.assign(S.intake, { who: 'me', symptoms: [], note: '', urgent: [], photos: 0 });
     if(st==='photos')S.intake.attachments=['/assets/stores/pharmacy-thumbnail-v1.png','/assets/photos/pharmacist-v1.png','/assets/photos/customer-v1.png'].map(url=>({url,preview:true}));
     if(st==='photo-error'){S.intake.note='';S.intake.photoError='เลือกรูป JPG, PNG หรือ WEBP';S.intake.attachments=[];}
-    if (st === 'multi') S.intake.symptoms=['น้ำมูก','คัดจมูก','เจ็บคอ'];
-    if (st === 'custom-error') S.intake.note='';
     // Retired urgent preview suffix is preserved; this form no longer collects red flags.
-    if (st === 'noallergy') { S.user.allergyState = 'unknown'; S.user.allergies = []; } else if (st) { S.user.allergyState = 'set'; S.user.allergies = ['แอสไพริน']; }
+    if (st) { S.user.allergyState = 'set'; S.user.allergies = ['แอสไพริน']; }
   },
   render(ctx) {
     const S = ctx.S, I = S.intake;I.urgent=[];I.who='me';if(!['chat','video'].includes(I.mode))I.mode='chat';if(I.otherOpen&&I.otherText?.trim()){I.note=[I.note,I.otherText].filter(Boolean).join('\n');I.otherOpen=false;I.otherText='';}
@@ -2856,7 +2686,6 @@ TP.screen('intake', {
     const ready = TP.intakeReady(I), shut = S.storeOpen === false;
     const prev = TP.hist?.[TP.hist.length - 1]?.id;
     return `<div class="auth-form-scene ik-scene"><img class="auth-form-cover ik-cover" src="/assets/banners/intake-consultation-cover-v1.png" alt="" width="1536" height="1024"><button type="button" class="auth-form-back" data-back aria-label="ย้อนกลับ">${ic('arrow-left',22,2)}<span>กลับ</span></button><section class="auth-form-panel ik-form-panel" aria-labelledby="ikPageTitle">` + ui.page(`<header class="ik-intro"><h1 id="ikPageTitle">อยากปรึกษาเภสัชเรื่องอะไร</h1><p>บอกอาการหรือคำถามเรื่องยา ก่อนเริ่มคุยกับเภสัชกร</p></header>
-      ${ctx.state === 'fail' ? ui.note('<b>ยังส่งข้อมูลไม่สำเร็จ</b><br>ข้อมูลยังอยู่ครบ ลองเข้าคิวอีกครั้งได้เลย', { tone: 'danger' }) : ''}
       ${shut ? ui.note('<b>ร้านปิดรับปรึกษาอยู่</b><br>คุณยังฝากคำถามให้เภสัชกรตอบเมื่อร้านเปิดได้', {tone:'warn',icon:'moon'}) : ''}
       <section class="ik-sec ik-block"><div class="ik-section-heading"><span>1</span><h3 class="ik-h"><label for="ikNote">อาการที่ต้องการปรึกษา <span class="reg-required" aria-hidden="true">*</span></label></h3></div>
         <div class="ik-extra-fields"><div class="field"><textarea class="input" id="ikNote" rows="4" required data-bind="intake.note" data-a="symChange" placeholder="เช่น เจ็บคอมา 2 วัน กลืนแล้วเจ็บ มีไอเล็กน้อย หรือพิมพ์คำถามเรื่องยาที่ต้องการปรึกษา">${esc(I.note||'')}</textarea></div>${ctx.state==='custom-error'?ui.note('กรุณาบอกอาการหรือคำถามเรื่องยาก่อนปรึกษาเภสัชกร',{tone:'danger',icon:'triangle-alert'}):''}${intakePhotosHtml(I)}</div>
@@ -3415,7 +3244,7 @@ TP.fulfillmentInfo = c => {
  const o=c?.order;if(o?.status!=='paid'||!o.fulfillment)return null;
  if(o.paid?.recv==='parcel'){
   const pd=o.paid;
-  const [key,title,icon]=pd.deliv?['delivered','ขนส่งแจ้งว่าส่งถึงแล้ว','package-check']:pd.out?['out','กำลังนำส่ง','truck']:pd.stage?['transit','กำลังขนส่ง','truck']:TP.FULFILLMENT_PHASES[0];
+  const [key,title,icon]=pd.deliv?['delivered','ขนส่งแจ้งว่าส่งถึงแล้ว','package-check']:pd.out?['out','กำลังนำส่ง','truck']:pd.parcelStep==='packed'?['packed','แพ็กแล้ว ส่งให้บริษัทขนส่ง','truck']:pd.stage?['transit','กำลังขนส่ง','truck']:TP.FULFILLMENT_PHASES[0];
   return {key,title,icon,done:!!(pd.deliv||o.picked),pickup:false};
  }
  const phase=TP.FULFILLMENT_PHASES.find(x=>x[0]===o.fulfillment.status)||TP.FULFILLMENT_PHASES[0];
@@ -3440,22 +3269,39 @@ TP.fulfillmentPreview = (c,key) => {
 };
 TP.fulfillmentCard = (S, options = {}) => {
  const orders=TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo(c);return f && !f.done;});
- const cards=orders.map(c=>{
+ const cardsHtml=orders.map(c=>{
  const f=TP.fulfillmentInfo(c),b=TP.branch(c.branch),title=f.pickup?(c.order.paid?.stage==='ready'?'ยาพร้อมรับที่สาขาแล้ว':'กำลังเตรียมยาสำหรับรับที่สาขา'):f.title;
  if(options.compact){
-  const icon=f.pickup?(c.order.paid?.stage==='ready'?'store':'pill'):f.key==='calling'?'search':f.key==='delivering'?'motorcycle':['out','transit'].includes(f.key)?'truck':'package';
+  const icon=f.pickup?(c.order.paid?.stage==='ready'?'store':'pill'):f.key==='calling'?'search':f.key==='delivering'?'motorcycle':['out','transit','packed'].includes(f.key)?'truck':'package';
   return `<button type="button" class="hm-fulfillment-banner" ${TP.ui.route({a:'viewFulfillment',p:{caseId:c.id}})} aria-label="${TP.esc(title)} คำสั่งซื้อ ${TP.esc(c.order.no)}"><span class="hm-fulfillment-icon" aria-hidden="true">${TP.ic(icon,24,1.8)}</span><span class="hm-fulfillment-copy"><strong>${TP.esc(title)}</strong><small>คำสั่งซื้อ #${TP.esc(c.order.no)}</small>${orders.length>1?`<small>${TP.esc(b.name)} · ${f.pickup?'รับที่ร้าน':c.order.paid?.recv==='parcel'?'จัดส่งปกติ':'ส่งด่วน'}</small>`:''}</span>${TP.ic('chevron-right',18,1.8)}</button>`;
  }
  return `<article class="post-consult-payment fulfillment-card case-progress-card"><header class="post-payment-heading case-progress-head"><span class="case-status-watermark" aria-hidden="true">${TP.ic(f.pickup?'store':['calling','delivering','out','transit'].includes(f.key)?'truck':'package',160,1.4)}</span><span class="case-progress-icon" aria-hidden="true">${TP.ic(f.pickup?'store':['calling','delivering','out','transit'].includes(f.key)?'truck':'package',22,1.8)}</span><span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</header><div class="case-progress-body"><h3>${TP.esc(title)}</h3><p class="case-progress-meta">${TP.ic('map-pin',16)}<span>${TP.esc(b.name)}</span></p><p class="case-progress-order">เลขคำสั่งซื้อ <span>${TP.esc(c.order.no)}</span></p></div><footer class="case-progress-foot">${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</footer></article>`;
 
-}).join('');
+});
+ const cards=cardsHtml.join('');
  if(!options.compact || orders.length<2)return cards;
- return `<section class="hm-fulfillment-group" aria-label="คำสั่งซื้อที่กำลังดำเนินการ"><header class="hm-fulfillment-heading"><h2>คำสั่งซื้อที่กำลังดำเนินการ</h2><span>${orders.length} รายการ</span></header><div class="hm-fulfillment-list">${cards}</div></section>`;
+ /* Several paid orders (C201.79): one card per order in a swipeable carousel; the next card peeks, dots follow the scroll. */
+ const slides=orders.map((c,i)=>`<div class="hm-fulfillment-slide" role="group" aria-roledescription="slide" aria-label="คำสั่งซื้อที่ ${i+1} จาก ${orders.length}">${cardsHtml[i]}</div>`).join('');
+ const dots=orders.map((c,i)=>`<button type="button" class="hm-fulfillment-dot${i?'':' is-active'}" data-slide="${i}" aria-label="ไปคำสั่งซื้อที่ ${i+1} จาก ${orders.length}"${i?'':' aria-current="true"'}></button>`).join('');
+ return `<section class="hm-fulfillment-group" aria-roledescription="carousel" aria-label="คำสั่งซื้อที่กำลังดำเนินการ"><header class="hm-fulfillment-heading"><h2>คำสั่งซื้อที่กำลังดำเนินการ</h2><span>${orders.length} รายการ</span></header><div class="hm-fulfillment-carousel" tabindex="0" aria-label="ปัดซ้ายขวาเพื่อดูคำสั่งซื้อ">${slides}</div><div class="hm-fulfillment-dots">${dots}</div></section>`;
 };
-TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const record=TP.S.history?.find(h=>h.id===p.caseId);const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||(TP.S._homeEventPreview?TP.S._homeFulfillmentPreviewCases?.find(c=>c.id===p.caseId):null)||(record?.order?{...record,order:record.order}:null)||(!p.caseId?TP.S.case:null);if(c?.order?.status!=='paid'||!c.order.paid)return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(TP.fulfillmentScreen(c),{via:'cover'});});
+/* Carousel behaviour for the multi-order home card: dots + arrow keys scroll, scrolling updates the active dot. */
+TP.mountFulfillmentCarousel = el => {
+ const track=el?.querySelector('.hm-fulfillment-carousel'),dots=[...(el?.querySelectorAll('.hm-fulfillment-dot')||[])];
+ if(!track||!dots.length)return;
+ const slides=[...track.children];let current=0;
+ const goTo=i=>{const slide=slides[Math.max(0,Math.min(slides.length-1,i))];if(slide)track.scrollTo({left:slide.offsetLeft-track.offsetLeft,behavior:TP.RED()?'auto':'smooth'});};
+ const update=()=>{const left=track.scrollLeft;const i=slides.reduce((best,s,k)=>Math.abs(s.offsetLeft-track.offsetLeft-left)<Math.abs(slides[best].offsetLeft-track.offsetLeft-left)?k:best,0);if(i===current)return;current=i;dots.forEach((d,k)=>{d.classList.toggle('is-active',k===i);if(k===i)d.setAttribute('aria-current','true');else d.removeAttribute('aria-current');});};
+ dots.forEach((d,i)=>d.addEventListener('click',()=>goTo(i)));
+ track.addEventListener('keydown',e=>{if(e.key!=='ArrowRight'&&e.key!=='ArrowLeft')return;e.preventDefault();goTo(current+(e.key==='ArrowRight'?1:-1));});
+ track.addEventListener('scroll',TP.rafT(update),{passive:true});
+};
+/* A finished order has no status screen (user 8 Nov 2026): it opens the order summary C401 directly. */
+TP.openCompletedOrder = c => TP.go('summary', { replace: ['track','paid'].includes(TP.cur()?.id), params: { id: c.id } });
+TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const record=TP.S.history?.find(h=>h.id===p.caseId);const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||(TP.S._homeEventPreview?TP.S._homeFulfillmentPreviewCases?.find(c=>c.id===p.caseId):null)||(record?.order?{...record,order:record.order}:null)||(!p.caseId?TP.S.case:null);if(c?.order?.status!=='paid'||!c.order.paid)return;if(TP.fulfillmentInfo(c)?.done)return TP.openCompletedOrder(c);TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(TP.fulfillmentScreen(c),{via:'cover'});});
 TP.chatDeliveryPage = c => {
   const f = TP.fulfillmentInfo(c), o = c.order;
-  if (f.done) return TP.ui.nav({ right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${TP.ic('x',22,2)}</button>` }) + TP.ui.page(TP.summaryForCase(c));
+  if (f.done) return TP.SCREENS.summary.render({ S: TP.S, state: '', params: { id: c.id } });
   const phase = TP.FULFILLMENT_PHASES.findIndex(([key]) => key === f.key);
   const status = TP.orderStatusCard(
     TP.FULFILLMENT_PHASES.map(([key, label], i) => [i < phase ? 'done' : i === phase ? 'cur' : '', label, '']),
@@ -4952,8 +4798,10 @@ TP.paymentHistoryCard = c => {
 TP.fulfillmentDetails = c => {
   const o = c.order, pd = o.paid, a = pd.addr;
   const address = a ? `<div class="pd-branch"><b>${esc([a.first,a.last].filter(Boolean).join(' ') || TP.S.user.full)}</b><p>${esc(TP.fmtAddr(a))}</p>${a.phone ? `<p>โทร ${esc(a.phone)}</p>` : ''}</div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>';
-  return paidCard('ที่อยู่จัดส่ง', address, pd.recv === 'express' ? ui.btn('ติดตามไรเดอร์', {kind:'secondary', sm:true, icon:'external-link', a:'openRiderTracking'}) : '') +
-    TP.summaryForCase(c);
+  /* user 8 Nov 2026: order details live on C401; C414 shows status, address and one "ดูคำสั่งซื้อ" button (same as C309) */
+  const live = !TP.fulfillmentInfo(c)?.done;
+  return paidCard('ที่อยู่จัดส่ง', address, live && pd.recv === 'express' ? ui.btn('ติดตามไรเดอร์', {kind:'secondary', sm:true, icon:'external-link', a:'openRiderTracking'}) : '') +
+    `<div class="pd-order-link">${ui.btn('ดูคำสั่งซื้อ',{kind:'secondary',icon:'receipt',iconRight:'chevron-right',go:'summary',p:{id:c.id}})}</div>`;
 };
 
 /* ---------- paid (C12) ---------- */
@@ -4982,7 +4830,7 @@ TP.act('paymentResultStatus', () => {
 });
 TP.screen('paid', {
   group: 'during', title: 'สถานะยา', code: 'C309', ref: 'C12', parent: 'room',
-  states: [['pickup', 'รับที่ร้าน'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['night', 'จ่ายตอนร้านปิด'], ['ready', 'ยาพร้อมรับแล้ว'], ['rider', 'ไรเดอร์รับยาแล้ว', true, 7], ['overdue', 'เลยกำหนดรับยา', true, 9]],
+  states: [['pickup', 'รับที่ร้าน'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['ready', 'ยาพร้อมรับแล้ว', true, 5], ['rider', 'ไรเดอร์รับยาแล้ว', true, 7], ['overdue', 'เลยกำหนดรับยา', true, 9]],
   notes: ['ผู้ใช้ 8 พ.ย. 2569: C309 แสดงเฉพาะสถานะและข้อมูลวิธีรับยา รายละเอียดคำสั่งซื้อ (เรื่องที่ปรึกษา ข้อมูลบริการ ยา คำแนะนำ ยอดชำระ) ย้ายไปปุ่ม ดูคำสั่งซื้อ ที่เปิด C401 ของคำสั่งซื้อเดิม เมื่อรับยาหรือจัดส่งสำเร็จแล้วดูที่ C401 (ปิด C309.10) ไม่มีการยืนยันรับยาโดยผู้ใช้', 'สถานะยาแสดงภาพตรงกลางตามขั้นตอน ใต้ภาพเป็นสถานะล่าสุดและเลขคำสั่งซื้อ ตามด้วยแถบไอคอนแนวนอน ไม่มีข้อความใต้ไอคอน ใช้ข้อมูลคำสั่งซื้อเดิม', 'ลำดับและคำตามหน้าหลังจ่ายบิลเภสัชกรของเว็บ pay/receipt.blade.php: ชำระเงินสำเร็จ · สถานะ (ชำระแล้ว > กำลังเตรียมยา > พร้อมรับที่สาขา > รับแล้ว / จัดส่งแล้ว > สำเร็จ ป้าย "ตอนนี้") · เลขออเดอร์ · เวลาชำระ · วิธีชำระ · รายการยา · ยอด',
     'รับที่ร้าน: รหัสรับยาที่เคาน์เตอร์ (กติกาแอป) + การ์ดสาขา นำทาง (Google Maps) และโทร ตามเว็บ',
     '19/10 เจ้าของสั่ง: ที่อยู่ เบอร์ และหมุด Google Maps ของสาขาจริง (ตลาดเวิลด์ 082-053-9915 · อ่อนนุช 080-235-3950 เบอร์ที่เจ้าของให้ 01/10) · นำทาง เปิดหมุดจริงในแท็บใหม่',
@@ -4994,27 +4842,26 @@ TP.screen('paid', {
   wait: ['เวลาถึงโดยประมาณของไรเดอร์ ตอนสร้างจริงใช้ค่าจาก Lalamove (ต้นแบบใส่ 45 นาที)',
     'ทำตอนสร้างจริง: แจ้งเตือนวันที่ 15 และวันที่ 30 ส่งตามวันจัดยาจริง'],
   prep(S) {
-    if(S.st.paid==='pickup-complete'){TP.casePreview.seed('pickup-complete');return;}
-    const st = S.st.paid || 'pickup', recv = { night: 'pickup', ready: 'pickup', overdue: 'pickup', sent: 'parcel', rider: 'express' }[st] || st;
-    S.storeOpen = st === 'night' ? false : TP.flag('storeOpen'); mockPaid(recv);
+    const st = S.st.paid || 'pickup', recv = { ready: 'pickup', overdue: 'pickup', sent: 'parcel', rider: 'express' }[st] || st;
+    S.storeOpen = TP.flag('storeOpen'); mockPaid(recv);
     if (['ready', 'overdue', 'sent', 'rider', 'cold'].includes(st)) setStage(C().order.paid);
     if (st === 'overdue') { const pd = C().order.paid; pd.date = pd.packDate = LATE_PACK; S.inbox = [...pickNotes(pd, C().branch).map(n => ({ ...n, caseId:C().id, read: true })), ...TP.fresh().inbox]; }
   },
   render() {
-    const c = C(), o = order(), pd = o.paid, b = TP.branch(c.branch), night = !TP.S.storeOpen, pick = pd.recv === 'pickup', st = pd.stage && pd.stage !== 'preparing', cr = courierOf(pd), late = pick && pickLate(pd);
+    const c = C(), o = order(), pd = o.paid, b = TP.branch(c.branch), pick = pd.recv === 'pickup', st = pd.stage && pd.stage !== 'preparing', cr = courierOf(pd), late = pick && pickLate(pd);
     const now = ui.tag('ตอนนี้', 'ok', { dot: true });
     const fulfillment = TP.fulfillmentInfo(c);
-    if (fulfillment?.done && TP.summaryForCase) return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(TP.summaryForCase(c));
+    if (fulfillment?.done) return TP.SCREENS.summary.render({ S: TP.S, state: '', params: { id: c.id } });
     const packed = ['done', 'เตรียมยาแล้ว', `จัดยาครบ ${pd.packAt || ''}`];
     const steps = !pick && ['calling','delivering'].includes(fulfillment?.key) ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', fulfillment.title, ''], ['', 'จัดส่งสำเร็จ', '']] : late ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['done', 'เตรียมยาแล้ว', `จัดยาครบ ${pd.packDate} ${pd.packAt}`], ['cur', 'เลยกำหนดรับ', `ร้านเก็บยาไว้ให้ถึง ${holdUntil(pd)} · ร้านจะโทรหาคุณ`], ['', 'รับแล้ว', '']]
       : st && pick ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', 'พร้อมรับที่สาขา', `ร้านแจ้งเมื่อ ${pd.packAt} · แสดงรหัสรับยาที่เคาน์เตอร์`], ['', 'รับแล้ว', '']]
       : st ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', 'จัดส่งแล้ว', pd.recv === 'express' ? `ไรเดอร์ Lalamove รับยาแล้ว ${pd.packAt} · ถึงประมาณ ${addMin(pd.packAt, 45)} ติดตามตำแหน่งได้จากปุ่มด้านล่าง` : `${cr.name}${trackTxt(pd) ? ' · ' + trackTxt(pd) : ''} · ถึงใน ${cr.time}`], ['', 'สำเร็จ', 'เมื่อคุณได้รับยา']]
       : pick
-      ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', night ? 'เริ่มเตรียมยาเมื่อร้านเปิด 09:00' : 'โดยปกติพร้อมรับใน 15-30 นาที เมื่อพร้อมร้านจะแจ้งในแอป'], ['', 'พร้อมรับที่สาขา', ''], ['', 'รับแล้ว', '']]
-      : [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', night ? 'เริ่มเตรียมวันทำการถัดไป 19/10/2026' : 'วันนี้'], ['', 'จัดส่งแล้ว', pd.recv === 'express' ? 'ไรเดอร์ Lalamove ถึงใน 1-4 ชม. หลังร้านเตรียมยาเสร็จ' : pd.recv === 'cold' ? `ร้านโทรจองรถ ${TP.COLD.short} ให้ เลขพัสดุขึ้นในแอปเมื่อร้านส่งของ` : 'เลขพัสดุจะขึ้นในแอปเมื่อส่งของแล้ว'], ['', 'สำเร็จ', '']];
+      ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', 'โดยปกติพร้อมรับใน 15-30 นาที เมื่อพร้อมร้านจะแจ้งในแอป'], ['', 'พร้อมรับที่สาขา', ''], ['', 'รับแล้ว', '']]
+      : [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', 'วันนี้'], ['', 'จัดส่งแล้ว', pd.recv === 'express' ? 'ไรเดอร์ Lalamove ถึงใน 1-4 ชม. หลังร้านเตรียมยาเสร็จ' : pd.recv === 'cold' ? `ร้านโทรจองรถ ${TP.COLD.short} ให้ เลขพัสดุขึ้นในแอปเมื่อร้านส่งของ` : 'เลขพัสดุจะขึ้นในแอปเมื่อส่งของแล้ว'], ['', 'สำเร็จ', '']];
     return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(`
       ${paidStatusCard(steps,o.no,pick,!pick && pd.recv!=='express'?`${ui.btn('ติดตามการจัดส่ง',{kind:'secondary',sm:true,icon:'map-pin',go:'track'})}${pd.track?ui.btn('คัดลอกเลขพัสดุ',{kind:'ghost',sm:true,icon:'copy',a:'copyTrack'}):pd.trackUrl?ui.btn('เปิดหน้าติดตามพัสดุ',{kind:'ghost',sm:true,icon:'external-link',a:'openTrackLink'}):''}`:'',{icons:!pick&&pd.recv!=='express'?['receipt','pill','truck','check']:undefined,artwork:fulfillment?.key==='calling'?'calling':pd.recv==='parcel'&&pd.stage?(pd.deliv?'delivered':'parcel'):undefined})}
-      ${late ? paidCard('การรับยา',`<p class="pd-late" id="pdLate">${ic('clock',18,2)}<span><b>ร้านเก็บยาไว้ให้ถึงวันที่ <span class="num">${holdUntil(pd)}</span></b>ร้านจะโทรหาคุณเพื่อตกลงเรื่องยาและการคืนเงิน</span></p>`,ui.btn('โทรหาร้าน',{icon:'phone',a:'callStore'})) : pick ? paidCard('รหัสรับยา',`<div class="pd-code"><div><b class="num">${esc(o.no.slice(-4))}</b><span>แสดงรหัสนี้ที่เคาน์เตอร์${esc(b.name)} พร้อมบอกชื่อผู้สั่งซื้อ (${esc(TP.S.user.full)})</span></div></div>${st ? `<p class="pd-hold" id="pdHold">${ic('clock',16,2)}<span>ร้านเก็บยาไว้ให้ ${HOLD_DAYS} วัน มารับได้ถึงวันที่ <b class="num">${holdUntil(pd)}</b> · ถ้าเลยกำหนด ร้านจะโทรหา</span></p>` : ''}`) : ''}
+      ${late ? paidCard('การรับยา',`<p class="pd-late" id="pdLate">${ic('clock',18,2)}<span><b>ร้านเก็บยาไว้ให้ถึงวันที่ <span class="num">${holdUntil(pd)}</span></b>ร้านจะโทรหาคุณเพื่อตกลงเรื่องยาและการคืนเงิน</span></p>`) : pick ? paidCard('รหัสรับยา',`<div class="pd-code"><div><b class="num">${esc(o.no.slice(-4))}</b><span>แสดงรหัสนี้ที่เคาน์เตอร์${esc(b.name)} พร้อมบอกชื่อผู้สั่งซื้อ (${esc(TP.S.user.full)})</span></div></div>${st ? `<p class="pd-hold" id="pdHold">${ic('clock',16,2)}<span>ร้านเก็บยาไว้ให้ ${HOLD_DAYS} วัน มารับได้ถึงวันที่ <b class="num">${holdUntil(pd)}</b> · ถ้าเลยกำหนด ร้านจะโทรหา</span></p>` : ''}`) : ''}
 
       ${pd.recv==='express'?paidCard('ที่อยู่จัดส่ง',pd.addr ? `<div class="pd-branch"><b>${esc([pd.addr.first,pd.addr.last].filter(Boolean).join(' ') || TP.S.user.full)}</b>${pd.addr.phone?`<p>${esc(pd.addr.phone)}</p>`:''}<p>${esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))}</p></div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>',ui.btn('ติดตามไรเดอร์',{kind:'secondary',sm:true,icon:'external-link',a:'openRiderTracking'})):''}
       ${pick?paidCard('รับที่สาขา',`<div class="pd-branch"><b>${esc(b.name)}</b><p>${esc(b.addr)} · เปิด ${esc(b.hours)}</p></div>`,`${ui.btn('โทรหาร้าน',{kind:'secondary',icon:'phone',a:'callStore'})}${late?'':ui.btn('นำทางไปร้าน',{icon:'navigation',a:'navStore'})}`):''}
@@ -5063,48 +4910,50 @@ TP.act('callStore', () => { const b = caseBranch(); TP.notify(`กำลัง�
 
 /* ---------- C414 parcel tracking (A6, FDA notice 2.2(4): traceable the whole way, completion is reported by the carrier) ---------- */
 const TRK_AT = { hand: '18/10/2026 16:10', hub: '18/10/2026 22:40', out: '19/10/2026 09:15', deliv: '19/10/2026 11:20', got: '19/10/2026 11:42' };
+/* Parcel steps (user 8 Nov 2026): preparing → packed and handed to the courier (tracking number) → transit → out. Delivered opens C401. */
 TP.previewParcelStatus = (pd, state) => {
   setStage(pd);
+  pd.parcelStep = state;
   pd.out = state === 'out' || state === 'delivered';
   if(state==='delivered') pd.deliv=TRK_AT.deliv;
 };
-const trkState = pd => (pd.got ? 'received' : pd.deliv ? 'delivered' : !pd.stage ? 'prep' : pd.recv === 'express' ? 'rider' : pd.recv === 'cold' ? 'cold' : pd.out ? 'out' : 'transit');
+const trkState = pd => (pd.got ? 'received' : pd.deliv ? 'delivered' : !pd.stage ? 'prep' : pd.recv === 'cold' ? 'cold' : pd.out ? 'out' : 'transit');
 function trkSteps(pd, st) {
   const cr = courierOf(pd), paid = ['ชำระแล้ว', `${pd.date} ${pd.at}`], end = ['ส่งถึงแล้ว', pd.deliv || (pd.recv === 'express' ? `ถึงประมาณ ${addMin(pd.packAt || pd.at, 45)}` : pd.recv === 'parcel' ? 'ภายใน 1-3 วันทำการ' : `ถึงใน ${cr.time}`)];
+  if (st === 'prep' && pd.recv === 'parcel') return { steps: [paid, ['ร้านกำลังจัดยาและแพ็ก', 'แพ็กส่งให้ภายในวันนี้'], [pd.courier ? `แพ็กแล้ว ส่งให้ ${cr.name}` : 'แพ็กแล้ว ส่งให้บริษัทขนส่ง', ''], ['กำลังขนส่ง', ''], ['กำลังนำส่ง', ''], end], cur: 1 };
   if (st === 'prep') return { steps: [paid, ['ร้านกำลังจัดยา', pd.recv === 'cold' ? `แล้วโทรจองรถ ${TP.COLD.short} ให้` : pd.recv === 'express' ? 'แล้วเรียกไรเดอร์ให้' : 'แล้วแพ็กส่งให้วันนี้'], [pd.recv === 'express' ? 'ไรเดอร์รับยา' : pd.courier ? `ส่งให้ ${cr.name}` : 'ส่งให้ขนส่ง', ''], end], cur: 1 };
   const packed = [pd.recv === 'cold' ? 'ร้านจัดยาใส่กล่องเย็นแล้ว' : 'ร้านจัดยาและแพ็กแล้ว', `${pd.packDate} ${pd.packAt}`];
-  if (pd.recv === 'express') return { steps: [paid, packed, ['ไรเดอร์ Lalamove รับยาแล้ว', `${pd.packDate} ${pd.packAt}`], end], cur: pd.deliv ? 3 + !!pd.got : 2 };
   if (pd.recv === 'cold') return { steps: [paid, packed, [`ส่งให้ ${cr.short} แล้ว`, pd.track ? `เลขพัสดุ ${pd.track} · สถานะระหว่างทาง โทรถามร้านได้` : 'ร้านแปะลิงก์ติดตามพัสดุแล้ว · ดูสถานะได้ที่หน้าติดตามพัสดุ'], end], cur: pd.deliv ? 3 + !!pd.got : 2 };
-  const steps = [paid, packed, [`ส่งให้ ${cr.name} แล้ว`, TRK_AT.hand], ['กำลังขนส่ง', `ถึงศูนย์คัดแยก ${TRK_AT.hub}`], ['กำลังนำส่ง', pd.out || pd.deliv ? TRK_AT.out : ''], end];
-  return { steps, cur: pd.deliv ? 5 + !!pd.got : pd.out ? 4 : 3 };
+  const cur = pd.deliv ? 5 + !!pd.got : pd.out ? 4 : pd.parcelStep === 'packed' ? 2 : 3;
+  /* only steps already reached carry a time; the end step keeps its estimate */
+  const at = (i, text) => (i <= cur ? text : '');
+  const steps = [paid, packed, [`แพ็กแล้ว ส่งให้ ${cr.name}`, at(2, pd.track ? `${TRK_AT.hand} · เลขพัสดุ ${pd.track}` : TRK_AT.hand)], ['กำลังขนส่ง', at(3, `ถึงศูนย์คัดแยก ${TRK_AT.hub}`)], ['กำลังนำส่ง', at(4, TRK_AT.out)], end];
+  return { steps, cur };
 }
 TP.screen('track', {
   group: 'after', title: 'สถานะการจัดส่งยา', code: 'C414', parent: 'paid',
-  states: [['transit', 'ส่งด่วน · กำลังจัดส่ง'], ['delivered', 'ขนส่งแจ้งว่าส่งถึงแล้ว'], ['rider', 'ส่งด่วน · ไรเดอร์กำลังจัดส่ง', true, 5], ['chat-preparing','สนทนา: กำลังเตรียมยา', true, 8], ['chat-calling','สนทนา: กำลังเรียกไรเดอร์', true, 9], ['chat-delivering','สนทนา: ไรเดอร์กำลังส่งยา', true, 10], ['chat-delivered','สนทนา: จัดส่งเสร็จสิ้น', true, 11], ['parcel-preparing','จัดส่งปกติ · กำลังเตรียมยา', true, 13], ['parcel-transit','จัดส่งปกติ · กำลังขนส่ง', true, 14], ['parcel-out','จัดส่งปกติ · กำลังนำส่ง', true, 15], ['parcel-delivered','จัดส่งปกติ · จัดส่งสำเร็จ', true, 16], ['pickup-preparing','กำลังเตรียมยา', true, 17], ['pickup-ready','พร้อมรับยาที่สาขา', true, 18], ['pickup-complete','รับยาที่สาขาแล้ว', true, 19], ['pickup-overdue','เลยกำหนดรับยา', true, 20], ['pickup-night','รอร้านเปิดเพื่อเตรียมยา', true, 21]],
+  states: [['chat-preparing','สนทนา: กำลังเตรียมยา', true, 8], ['chat-calling','สนทนา: กำลังเรียกไรเดอร์', true, 9], ['chat-delivering','สนทนา: ไรเดอร์กำลังส่งยา', true, 10], ['parcel-preparing','จัดส่งปกติ · กำลังเตรียมยา', true, 13], ['parcel-packed','จัดส่งปกติ · แพ็กแล้ว ส่งให้บริษัทขนส่ง', true, 22], ['parcel-transit','จัดส่งปกติ · กำลังขนส่ง', true, 14], ['parcel-out','จัดส่งปกติ · กำลังนำส่ง', true, 15], ['pickup-preparing','กำลังเตรียมยา', true, 17], ['pickup-ready','พร้อมรับยาที่สาขา', true, 18], ['pickup-overdue','เลยกำหนดรับยา', true, 20]],
   stateGroups: [
-    {label:'รับยาที่ร้าน',keys:['pickup-preparing','pickup-night','pickup-ready','pickup-complete','pickup-overdue']},
-    {label:'ส่งด่วน',keys:['chat-preparing','chat-calling','chat-delivering','chat-delivered','transit','rider','delivered']},
-    {label:'จัดส่งปกติ',keys:['parcel-preparing','parcel-transit','parcel-out','parcel-delivered']}
+    {label:'รับยาที่ร้าน',keys:['pickup-preparing','pickup-ready','pickup-overdue']},
+    {label:'ส่งด่วน',keys:['chat-preparing','chat-calling','chat-delivering']},
+    {label:'จัดส่งปกติ',keys:['parcel-preparing','parcel-packed','parcel-transit','parcel-out']}
   ],
-  notes: ['ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
+  notes: ['จัดส่งปกติ: ชำระแล้ว → ร้านจัดยาและแพ็ก (C414.13) → แพ็กแล้ว ส่งให้บริษัทขนส่ง พร้อมเลขพัสดุ (C414.22) → กำลังขนส่ง (C414.14) → กำลังนำส่ง (C414.15) เวลาแสดงเฉพาะขั้นที่ถึงแล้ว', 'ไม่มีหน้าสถานะสำเร็จ: รับยาที่สาขาแล้ว ส่งด่วนเสร็จ หรือจัดส่งปกติส่งถึง จะเปิดใบคำสั่งซื้อ C401 ทันที (ลบ C414.11 .16 .19 สงวนรหัส .23)', 'ผู้ใช้ 8 พ.ย. 2569: C414 ทุกเคส (ส่งด่วน สนทนา จัดส่งปกติ) แสดงสถานะ ที่อยู่จัดส่ง และปุ่ม ดูคำสั่งซื้อ เปิด C401 ของคำสั่งซื้อเดิม เหมือน C309/C414.17 ไม่ฝังรายละเอียดคำสั่งซื้อในหน้า เมื่อรับยาหรือจัดส่งสำเร็จเปิด C401 ทันที', 'ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
     'รองรับรับที่ร้าน ส่งด่วน และจัดส่งปกติ ใช้ภาพสถานะล่าสุดกับแถบไอคอนแนวนอนร่วมกัน ส่งด่วนใช้ภาพไรเดอร์ จัดส่งปกติใช้ภาพพัสดุและรถขนส่ง',
-    '21/10 เจ้าของ "เอาเลขติดตามพัสดุหรือลิ้งติดตามพัสดุมาแปะ": เลข = แสดงเลขพร้อมปุ่มคัดลอก (C414.4) · ลิงก์ = ปุ่ม เปิดหน้าติดตามพัสดุ ไม่โชว์ลิงก์ยาว (C414.7 คอนโซลลิงก์มาที่นี่) · C309.8 ใช้ตัวอย่างแบบเลข',
+    'จัดส่งปกติ: เลขพัสดุแสดงพร้อมปุ่มคัดลอกตั้งแต่แพ็กแล้ว ส่งให้บริษัทขนส่ง (C414.22) ก่อนหน้านั้นแสดงว่าเลขพัสดุขึ้นเมื่อร้านส่งของ',
     'ไม่มีปุ่มยืนยันรับยาหรือแผ่น C415 เมื่อร้านบันทึกส่งมอบหรือขนส่งแจ้งส่งสำเร็จ รายการย้ายไปประวัติทันที'],
   wait: [],
   prep(S) {
-    if(S.st.track?.startsWith('pickup-')){S.st.paid={'pickup-preparing':'pickup','pickup-ready':'ready','pickup-complete':'pickup-complete','pickup-overdue':'overdue','pickup-night':'night'}[S.st.track];TP.SCREENS.paid.prep(S);return;}
+    if(S.st.track?.startsWith('pickup-')){S.st.paid={'pickup-preparing':'pickup','pickup-ready':'ready','pickup-overdue':'overdue'}[S.st.track];TP.SCREENS.paid.prep(S);return;}
     if(S.st.track?.startsWith('parcel-')){TP.ensureCase('closed');TP.fulfillmentPreview(C(),S.st.track);return;}
-    if(S.st.track?.startsWith('chat-')){TP.ensureCase('closed');TP.fulfillmentPreview(C(),'delivery-'+S.st.track.slice(5));return;}
-    const st = S.st.track || 'transit', recv = 'express';
-    mockPaid(recv); const o = C().order, pd = o.paid;
-    if (st !== 'prep') setStage(pd);
-    pd.out = st === 'out';
-    pd.deliv = ['delivered', 'received'].includes(st) ? TRK_AT.deliv : ''; pd.got = st === 'received' ? TRK_AT.got : ''; o.picked = st === 'received';
+    /* express uses the 4-phase chat delivery flow only (C414.1, .2, .5 legacy express timeline removed 8 Nov 2026; codes reserved) */
+    const key = S.st.track?.startsWith('chat-') ? S.st.track.slice(5) : 'preparing';
+    TP.ensureCase('closed'); TP.fulfillmentPreview(C(), 'delivery-' + key);
   },
   render() {
     if(C()?.order?.paid?.recv==='pickup')return TP.SCREENS.paid.render();
+    if(TP.fulfillmentInfo(C())?.done)return TP.SCREENS.summary.render({ S: TP.S, state: '', params: { id: C().id } });
     if(C()?.order?.paid?.recv==='express'&&TP.fulfillmentInfo(C()))return TP.chatDeliveryPage(C());
-    if (TP.fulfillmentInfo(C())?.done) return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(TP.summaryForCase(C()));
     const o = order(), pd = o.paid, cr = courierOf(pd), ex = pd.recv === 'express', cold = pd.recv === 'cold', st = trkState(pd), { steps, cur } = trkSteps(pd, st);
     const head = ui.card(`<div class="tk-h"><span class="tk-i">${ic(ex ? 'zap' : cold ? 'snowflake' : 'package', 22, 2)}</span><div class="grow"><b>${esc(ex ? 'ส่งด่วน Lalamove' : pd.courier ? cr.name : TP.DELIVERY.find(d => d.id === 'parcel').name)}</b><small>${pd.track ? `<span class="num">${esc(pd.track)}</span>` : pd.trackUrl ? 'ร้านแปะลิงก์ติดตามพัสดุแล้ว' : ex ? 'ไรเดอร์ส่งถึงบ้าน' : 'เลขพัสดุขึ้นเมื่อร้านส่งของ'}</small></div>${pd.track ? `<button type="button" class="ibtn" data-a="copyTrack" aria-label="คัดลอกรหัสพัสดุ" title="คัดลอกรหัสพัสดุ">${ic('copy', 20, 2)}</button>` : ''}</div>
       ${cold ? `<p class="tk-n">${ic('snowflake', 14, 2)}<span>ยาอยู่ในกล่องคุมความเย็น 2-8 องศา · สถานะระหว่างทาง โทรถามร้านได้</span></p>${pd.track ? `<button type="button" class="link tk-web" data-a="trackShip">ติดตามบนเว็บ ${esc(TP.COLD.short)} ${ic('external-link', 14, 2)}</button>` : pd.trackUrl ? ui.btn('เปิดหน้าติดตามพัสดุ', { kind: 'secondary', sm: true, icon: 'external-link', a: 'openTrackLink', cls: 'mt12' }) : ''}` : ''}`, { din: 1, cls: 'mt8' });
@@ -5118,7 +4967,7 @@ TP.screen('track', {
       ui.page(`${tl}${head}${coldTip}${TP.fulfillmentDetails(C())}`);
   }
 });
-for(const [key,label,from,to]of [['chatCalling','ร้านเตรียมยาเสร็จ · เรียกไรเดอร์','preparing','calling'],['chatDelivering','ไรเดอร์รับยาแล้ว','calling','delivering'],['chatDelivered','ไรเดอร์ส่งยาสำเร็จ','delivering','delivered']])TP.simAction({id:key,label,when:S=>S.case?.order?.paid?.recv==='express'&&S.case?.order?.fulfillment?.status===from,run(){if(TP.setFulfillment(TP.S.case,to))TP.refresh({anim:false});}});
+for(const [key,label,from,to]of [['chatCalling','ร้านเตรียมยาเสร็จ · เรียกไรเดอร์','preparing','calling'],['chatDelivering','ไรเดอร์รับยาแล้ว','calling','delivering'],['chatDelivered','ไรเดอร์ส่งยาสำเร็จ','delivering','delivered']])TP.simAction({id:key,label,when:S=>S.case?.order?.paid?.recv==='express'&&S.case?.order?.fulfillment?.status===from,run(){if(!TP.setFulfillment(TP.S.case,to))return;if(TP.fulfillmentInfo(TP.S.case)?.done&&['track','paid'].includes(TP.cur()?.id))return TP.openCompletedOrder(TP.S.case);TP.refresh({anim:false});}});
 // C415 retired: delivery completion comes from the carrier or branch, never a customer confirmation.
 
 /* ---------- receipt (ใหม่) ---------- */
@@ -6137,7 +5986,6 @@ TP.act('afDeleteResolve',async t=>{const block=TP.deleteAccountBlocked(TP.S),c=T
 TP.act('afEditProf', () => {
   TP.S._profileEdit=null;
   const u = TP.S.user, [first, ...rest] = String(u.full || u.name || '').trim().split(/\s+/);
-  TP.S._pf = { first: u.name || first || '', last: u.last || rest.join(' '), year: String(u.born || u.birthYear || ''), sex: u.sex || 'none' };
   TP.go('profile', { params: { edit: 1 } });
 });
 TP.act('afDelType',t=>{
