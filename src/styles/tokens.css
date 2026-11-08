@@ -1,88 +1,220 @@
 /* Shared customer UI tokens. Used by the app and /design-system. */
 :root {
-  --color-canvas-base:#FFFFFF;
-  --semantic-waiting-indicator:#e07816;
-  --ground:var(--color-canvas-base);
-  --glass:rgba(255,255,255,.86); --glass-strong:rgba(255,255,255,.96);
-  --radius-small:8px; --radius-control:12px; --radius-card:16px; --radius-feature:20px; --radius-pill:999px;
-  --r-sm:var(--radius-small); --r-md:var(--radius-small); --r-lg:var(--radius-control);
-  --r-xl:var(--radius-card); --r-2xl:var(--radius-feature); --r-pill:var(--radius-pill);
-  --queue-number-size:64px;
-  --size-badge:28px; --home-shortcut-height:112px; --icon-tile-size:40px;
+  /* Alert palette: pale surfaces, distinct outlines, readable foregrounds. */
+  --alert-info-bg: #f0f9ff;
+  --alert-info-border: #69b8df;
+  --alert-info-ink: #075985;
+  --alert-warning-bg: #fffbeb;
+  --alert-warning-border: #e5b94f;
+  --alert-warning-ink: #854d0e;
+  --alert-error-bg: #fff1f2;
+  --alert-error-border: #e899a4;
+  --alert-error-ink: #9f1239;
+  --alert-success-bg: #f0fdf4;
+  --alert-success-border: #79c79a;
+  --alert-success-ink: #166534;
+  --color-canvas-base: #ffffff;
+  --semantic-waiting-indicator: #e07816;
+  --ground: var(--color-canvas-base);
+  --glass: rgba(255, 255, 255, 0.86);
+  --glass-strong: rgba(255, 255, 255, 0.96);
+  --radius-small: 8px;
+  --radius-control: 12px;
+  --radius-card: 16px;
+  --radius-feature: 20px;
+  --radius-pill: 999px;
+  --r-sm: var(--radius-small);
+  --r-md: var(--radius-small);
+  --r-lg: var(--radius-control);
+  --r-xl: var(--radius-card);
+  --r-2xl: var(--radius-feature);
+  --r-pill: var(--radius-pill);
+  --queue-number-size: 64px;
+  --size-badge: 28px;
+  --home-shortcut-height: 112px;
+  --icon-tile-size: 40px;
 
-  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px;
-  --space-5:20px; --space-6:24px; --space-8:32px; --space-10:40px;
-  --text-caption:12px; --text-small:14px; --text-body:16px;
-  --text-heading:20px; --text-title:28px;
-  --leading-tight:1.4; --leading-body:1.6;
-  --weight-regular:400; --weight-medium:500; --weight-semibold:600; --weight-bold:700;
-  --size-touch:44px; --size-control:52px; --size-control-small:44px;
-  --size-icon:20px; --size-icon-small:18px;
-  --size-avatar:40px; --size-avatar-large:48px;
-  --page-gutter:20px; --section-gap:24px; --content-gap:16px;
-  --nav-height:52px; --tabbar-height:68px; --tabbar-offset:8px;
-  --minibar-height:60px; --minibar-gap:8px; --page-bottom:24px;
-  --button-height:var(--size-control); --button-height-small:var(--size-control-small);
-  --button-padding-x:var(--space-5); --button-gap:var(--space-2);
-  --button-radius:var(--radius-control); --button-font-size:var(--text-body);
-  --input-height:var(--size-control); --input-radius:var(--radius-control);
-  --card-padding:var(--space-4); --card-radius:var(--radius-card);
-  --color-action:var(--brand); --color-action-hover:var(--brand-deep);
-  --color-canvas:var(--ground); --color-surface:var(--surface);
-  --color-text:var(--ink); --color-text-secondary:var(--ink-3);
-  --color-border:var(--line-soft); --color-border-control:var(--line);
-  --color-selected:var(--brand-tint); --color-subtle:var(--brand-soft);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --text-caption: 12px;
+  --text-small: 14px;
+  --text-body: 16px;
+  --text-heading: 20px;
+  --text-title: 28px;
+  --leading-tight: 1.4;
+  --leading-body: 1.6;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --size-touch: 44px;
+  --size-control: 52px;
+  --size-control-small: 44px;
+  --size-icon: 20px;
+  --size-icon-small: 18px;
+  --size-avatar: 40px;
+  --size-avatar-large: 48px;
+  --page-gutter: 20px;
+  --section-gap: 24px;
+  --content-gap: 16px;
+  --nav-height: 52px;
+  --tabbar-height: 68px;
+  --tabbar-offset: 8px;
+  --minibar-height: 60px;
+  --minibar-gap: 8px;
+  --page-bottom: 24px;
+  --button-height: var(--size-control);
+  --button-height-small: var(--size-control-small);
+  --button-padding-x: var(--space-5);
+  --button-gap: var(--space-2);
+  --button-radius: var(--radius-control);
+  --button-font-size: var(--text-body);
+  --input-height: var(--size-control);
+  --input-radius: var(--radius-control);
+  --card-padding: var(--space-4);
+  --card-radius: var(--radius-card);
+  --color-action: var(--brand);
+  --color-action-hover: var(--brand-deep);
+  --color-canvas: var(--ground);
+  --color-surface: var(--surface);
+  --color-text: var(--ink);
+  --color-text-secondary: var(--ink-3);
+  --color-border: var(--line-soft);
+  --color-border-control: var(--line);
+  --color-selected: var(--brand-tint);
+  --color-subtle: var(--brand-soft);
 }
 /* Compatibility aliases: all customer screens resolve to the Figma source. */
 :root {
-  --brand:var(--semantic-primary); --brand-white:var(--semantic-on-primary);
-  --brand-deep:var(--semantic-primary-hover); --brand-ink:var(--semantic-primary-pressed);
-  --brand-tint:var(--semantic-surface-selected); --brand-soft:var(--color-brand-50); --brand-grey:var(--semantic-field-border);
-  --ink:var(--semantic-text); --ink-2:var(--color-neutral-600); --ink-3:var(--semantic-text-secondary); --ink-4:var(--semantic-text-muted); --ink-placeholder:var(--semantic-text-muted);
-  --ground:var(--semantic-surface); --surface:var(--semantic-surface); --card:var(--semantic-surface);
-  --cream:var(--color-neutral-50); --cream-2:var(--semantic-surface-muted); --cream-3:var(--color-neutral-200);
-  --line:var(--semantic-field-border); --line-soft:var(--semantic-border);
-  --success:var(--semantic-success-text); --success-text:var(--semantic-success-text); --success-tint:var(--semantic-success-background);
-  --warn:var(--semantic-warning-text); --warn-tint:var(--semantic-warning-background);
-  --danger:var(--semantic-error-text); --danger-tint:var(--semantic-error-background);
-  --vid-tint:var(--color-brand-50); --vid-ink:var(--color-brand-700); --vid-solid:var(--semantic-primary); --vid-solid-h:var(--semantic-primary-hover);
-  --radius-small:var(--radius-sm); --radius-control:var(--radius-md); --radius-card:var(--radius-lg); --radius-feature:var(--radius-xl);
-  --r-sm:var(--radius-xs); --r-md:var(--radius-sm); --r-lg:var(--radius-md); --r-xl:var(--radius-lg); --r-2xl:var(--radius-xl); --r-pill:var(--radius-pill);
-  --text-caption:var(--type-caption-mobile-size); --text-small:var(--type-body-sm-mobile-size); --text-body:var(--type-body-mobile-size); --text-heading:var(--type-h3-mobile-size); --text-title:var(--type-h1-mobile-size);
-  --leading-body:1.5; --leading-thai:1.5; --leading-tight:1.5;
-  --size-control:var(--component-control-md); --size-control-small:var(--component-control-sm); --size-touch:var(--component-touch-target);
-  --page-gutter:var(--layout-gutter-mobile); --section-gap:var(--space-6); --content-gap:var(--space-4);
-  --button-radius:var(--radius-pill); --button-padding-x:var(--space-6); --input-height:var(--component-control-md);
-  --card-radius:var(--radius-lg); --card-padding:var(--space-4);
-  --dur-fast:var(--motion-fast); --dur:var(--motion-default); --dur-slow:var(--motion-slow); --ease:var(--motion-easing);
-  --e-1:var(--shadow-sm); --e-2:var(--shadow-sm); --e-3:var(--shadow-md); --e-4:var(--shadow-lg); --shadow-card:var(--shadow-sm);
-  --focus-ring:0 0 0 2px var(--semantic-focus);
+  --brand: var(--semantic-primary);
+  --brand-white: var(--semantic-on-primary);
+  --brand-deep: var(--semantic-primary-hover);
+  --brand-ink: var(--semantic-primary-pressed);
+  --brand-tint: var(--semantic-surface-selected);
+  --brand-soft: var(--color-brand-50);
+  --brand-grey: var(--semantic-field-border);
+  --ink: var(--semantic-text);
+  --ink-2: var(--color-neutral-600);
+  --ink-3: var(--semantic-text-secondary);
+  --ink-4: var(--semantic-text-muted);
+  --ink-placeholder: var(--semantic-text-muted);
+  --ground: var(--semantic-surface);
+  --surface: var(--semantic-surface);
+  --card: var(--semantic-surface);
+  --cream: var(--color-neutral-50);
+  --cream-2: var(--semantic-surface-muted);
+  --cream-3: var(--color-neutral-200);
+  --line: var(--semantic-field-border);
+  --line-soft: var(--semantic-border);
+  --success: var(--semantic-success-text);
+  --success-text: var(--semantic-success-text);
+  --success-tint: var(--semantic-success-background);
+  --warn: var(--semantic-warning-text);
+  --warn-tint: var(--semantic-warning-background);
+  --danger: var(--semantic-error-text);
+  --danger-tint: var(--semantic-error-background);
+  --vid-tint: var(--color-brand-50);
+  --vid-ink: var(--color-brand-700);
+  --vid-solid: var(--semantic-primary);
+  --vid-solid-h: var(--semantic-primary-hover);
+  --radius-small: var(--radius-sm);
+  --radius-control: var(--radius-md);
+  --radius-card: var(--radius-lg);
+  --radius-feature: var(--radius-xl);
+  --r-sm: var(--radius-xs);
+  --r-md: var(--radius-sm);
+  --r-lg: var(--radius-md);
+  --r-xl: var(--radius-lg);
+  --r-2xl: var(--radius-xl);
+  --r-pill: var(--radius-pill);
+  --text-caption: var(--type-caption-mobile-size);
+  --text-small: var(--type-body-sm-mobile-size);
+  --text-body: var(--type-body-mobile-size);
+  --text-heading: var(--type-h3-mobile-size);
+  --text-title: var(--type-h1-mobile-size);
+  --leading-body: 1.5;
+  --leading-thai: 1.5;
+  --leading-tight: 1.5;
+  --size-control: var(--component-control-md);
+  --size-control-small: var(--component-control-sm);
+  --size-touch: var(--component-touch-target);
+  --page-gutter: var(--layout-gutter-mobile);
+  --section-gap: var(--space-6);
+  --content-gap: var(--space-4);
+  --button-radius: var(--radius-pill);
+  --button-padding-x: var(--space-6);
+  --input-height: var(--component-control-md);
+  --card-radius: var(--radius-lg);
+  --card-padding: var(--space-4);
+  --dur-fast: var(--motion-fast);
+  --dur: var(--motion-default);
+  --dur-slow: var(--motion-slow);
+  --ease: var(--motion-easing);
+  --e-1: var(--shadow-sm);
+  --e-2: var(--shadow-sm);
+  --e-3: var(--shadow-md);
+  --e-4: var(--shadow-lg);
+  --shadow-card: var(--shadow-sm);
+  --focus-ring: 0 0 0 2px var(--semantic-focus);
 }
 
-:root {--video-button-bg:var(--color-brand-50);--video-button-hover:var(--color-brand-100);--video-button-pressed:var(--color-brand-200);--video-button-ink:var(--color-brand-700)}
-
-:root {--store-status-open-background:color-mix(in srgb,var(--semantic-success-background) 28%,var(--semantic-surface))}
-
-:root {--store-detail-section-background:color-mix(in srgb,var(--color-neutral-50) 60%,var(--semantic-surface))}
+:root {
+  --video-button-bg: var(--color-brand-50);
+  --video-button-hover: var(--color-brand-100);
+  --video-button-pressed: var(--color-brand-200);
+  --video-button-ink: var(--color-brand-700);
+}
 
 :root {
-  --tabbar-glass-background:linear-gradient(160deg,rgba(255,255,255,.90),rgba(255,255,255,.65));
-  --tabbar-glass-border:rgba(255,255,255,.85);
-  --tabbar-glass-shadow:0 8px 28px rgb(var(--color-primary-deep-rgb) / .14),0 2px 6px rgb(var(--color-ink-rgb) / .06),inset 0 1px 1px rgba(255,255,255,.96);
-  --tabbar-active-background:color-mix(in srgb,var(--color-brand-100) 65%,rgba(255,255,255,.55));
+  --store-status-open-background: color-mix(
+    in srgb,
+    var(--semantic-success-background) 28%,
+    var(--semantic-surface)
+  );
+}
+
+:root {
+  --store-detail-section-background: color-mix(
+    in srgb,
+    var(--color-neutral-50) 60%,
+    var(--semantic-surface)
+  );
+}
+
+:root {
+  --tabbar-glass-background: linear-gradient(
+    160deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0.65)
+  );
+  --tabbar-glass-border: rgba(255, 255, 255, 0.85);
+  --tabbar-glass-shadow:
+    0 8px 28px rgb(var(--color-primary-deep-rgb) / 0.14),
+    0 2px 6px rgb(var(--color-ink-rgb) / 0.06), inset 0 1px 1px rgba(255, 255, 255, 0.96);
+  --tabbar-active-background: color-mix(
+    in srgb,
+    var(--color-brand-100) 65%,
+    rgba(255, 255, 255, 0.55)
+  );
 }
 
 /* Shared single-selection control. User-approved CI capsule variant. */
 :root {
-  --component-segment-background:var(--color-neutral-50);
-  --component-segment-active-background:var(--semantic-primary);
-  --component-segment-active-ink:var(--semantic-on-primary);
-  --component-segment-ink:var(--semantic-text-secondary);
-  --component-segment-hover-background:var(--color-brand-50);
-  --component-segment-font-size:var(--type-body-sm-mobile-size);
-  --component-segment-line-height:var(--type-body-sm-mobile-line);
-  --component-segment-radius:var(--radius-pill);
-  --component-segment-padding:var(--space-1);
-  --component-segment-gap:var(--space-1);
-  --component-segment-min-height:var(--component-touch-target);
+  --component-segment-background: var(--color-neutral-50);
+  --component-segment-active-background: var(--semantic-primary);
+  --component-segment-active-ink: var(--semantic-on-primary);
+  --component-segment-ink: var(--semantic-text-secondary);
+  --component-segment-hover-background: var(--color-brand-50);
+  --component-segment-font-size: var(--type-body-sm-mobile-size);
+  --component-segment-line-height: var(--type-body-sm-mobile-line);
+  --component-segment-radius: var(--radius-pill);
+  --component-segment-padding: var(--space-1);
+  --component-segment-gap: var(--space-1);
+  --component-segment-min-height: var(--component-touch-target);
 }

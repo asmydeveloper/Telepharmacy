@@ -1,0 +1,15 @@
+{
+  "code": "C313",
+  "screen": "chatprovider",
+  "title": "ข้อมูลเภสัชกร",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C313",
+      "state": "normal",
+      "label": "ข้อมูลเภสัชกรผู้ให้คำปรึกษา",
+      "url": "/?screen=chatprovider&state=normal&splash=0"
+    }
+  ]
+}

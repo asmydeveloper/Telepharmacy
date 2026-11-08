@@ -7,11 +7,14 @@ h.run('function ensureCase(status){if(status)TP.S.case.status=status;return TP.S
 const a=source.indexOf('const statusLine = c =>'),b=source.indexOf('/* A3 (FDA',a);h.run(source.slice(a,b));
 h.TP.brand.halo=(n,o)=>'<svg class="'+o.cls+'"></svg>';h.TP.passHtml=()=>'<div class="pass">เภสัชกร</div>';
 const start=source.indexOf("TP.screen('queue',"),end=source.indexOf("TP.act('queueMin'",start);h.run(source.slice(start,end));
-// Queue is the existing room UI; assert delegation rather than the retired ring screen.
-h.TP.SCREENS={room:{render:ctx=>'<div>waiting chat '+ctx.state+'</div>'}};
-for(const [state,pos]of [['q2',2],['q1',1],['q4',4],['paused',2],['offline',2],['joined',2]]){
+// Preview states preserve permanent case suffixes; the waiting screen is independent of chat.
+h.context.structuredClone=structuredClone;h.TP.ZONE_ADDR={};h.context.C=()=>h.S.case;h.ui.nav=()=>'';h.ui.page=s=>s;h.ui.dock=s=>s;h.ui.btn=s=>s;
+for(const [state,pos]of [['q2',2],['q1',1],['q4',4],['paused',2]]){
  h.S.st.queue=state;h.screens.queue.prep(h.S);assert.equal(h.S.case.pos,pos);
- assert.equal(h.S.netOff,state==='offline');assert.equal(h.S.case.status,state==='joined'?'room':state==='paused'?'paused':'queue');
- assert.equal(h.screens.queue.render({S:h.S,state}),'<div>waiting chat '+state+'</div>');
+ assert.equal(h.S.case.status,state==='paused'?'paused':'queue');
+ const html=h.screens.queue.render({S:h.S,state});
+ assert.match(html,/queue-wait-summary/);assert.doesNotMatch(html,/รหัสคิวของคุณ|queue-ticket-code/);assert.doesNotMatch(html,/textarea|rmList/);
 }
-console.log('PASS: queue fixtures delegate to the same waiting chat, positions, paused, offline and pharmacist joined');
+console.log('PASS: dedicated queue fixtures, positions and retired outside-area case');
+
+assert(!h.screens.queue.states.some(x=>x[0]==='outzone'));assert(!source.includes('TP.queueZoneNote'));

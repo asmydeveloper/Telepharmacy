@@ -18,28 +18,10 @@
       "url": "/?screen=health&state=unknown&splash=0"
     },
     {
-      "code": "C505.3",
-      "state": "sfx",
-      "label": "ข้อมูลเดิมที่ผู้ใช้ระบุ",
-      "url": "/?screen=health&state=sfx&splash=0"
-    },
-    {
-      "code": "C505.4",
-      "state": "edit",
-      "label": "แก้ไขข้อมูล",
-      "url": "/?screen=health&state=edit&splash=0"
-    },
-    {
       "code": "C505.5",
       "state": "none",
       "label": "ระบุว่าไม่มี",
       "url": "/?screen=health&state=none&splash=0"
-    },
-    {
-      "code": "C505.6",
-      "state": "invalid",
-      "label": "แก้ไขข้อมูลไม่ครบ",
-      "url": "/?screen=health&state=invalid&splash=0"
     },
     {
       "code": "C505.7",

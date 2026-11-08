@@ -1,7 +1,7 @@
 {
   "code": "C207",
   "screen": "queue",
-  "title": "ห้องแชท · รอเภสัชกร",
+  "title": "รอคิวปรึกษาเภสัชกร",
   "group": "before",
   "kind": "screen",
   "cases": [
@@ -18,64 +18,10 @@
       "url": "/?screen=queue&state=q1&splash=0"
     },
     {
-      "code": "C207.3",
-      "state": "paused",
-      "label": "เภสัชกรพัก",
-      "url": "/?screen=queue&state=paused&splash=0"
-    },
-    {
-      "code": "C207.4",
-      "state": "urgent",
-      "label": "มีธงด่วน",
-      "url": "/?screen=queue&state=urgent&splash=0"
-    },
-    {
-      "code": "C207.5",
-      "state": "notifoff",
-      "label": "ปิดการแจ้งเตือนไว้",
-      "url": "/?screen=queue&state=notifoff&splash=0"
-    },
-    {
-      "code": "C207.6",
-      "state": "refined",
-      "label": "รอในห้องแชท",
-      "url": "/?screen=queue&state=refined&splash=0"
-    },
-    {
       "code": "C207.7",
       "state": "q4",
       "label": "รออีก 3 คิว",
       "url": "/?screen=queue&state=q4&splash=0"
-    },
-    {
-      "code": "C207.8",
-      "state": "message",
-      "label": "พิมพ์ข้อมูลระหว่างรอ",
-      "url": "/?screen=queue&state=message&splash=0"
-    },
-    {
-      "code": "C207.9",
-      "state": "joined",
-      "label": "เภสัชกรพร้อมให้บริการ",
-      "url": "/?screen=queue&state=joined&splash=0"
-    },
-    {
-      "code": "C207.10",
-      "state": "offline",
-      "label": "อินเทอร์เน็ตขาดระหว่างรอ",
-      "url": "/?screen=queue&state=offline&splash=0"
-    },
-    {
-      "code": "C207.11",
-      "state": "video-wait",
-      "label": "รอเภสัชกรวิดีโอคอล",
-      "url": "/?screen=queue&state=video-wait&splash=0"
-    },
-    {
-      "code": "C207.12",
-      "state": "video-next",
-      "label": "วิดีโอคอล · คิวถัดไป",
-      "url": "/?screen=queue&state=video-next&splash=0"
     }
   ]
 }

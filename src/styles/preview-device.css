@@ -1,25 +1,113 @@
 /* Preview host only; excluded from the portable customer UI. */
-.device-real {width:452.881px;height:914.135px}
-.device-real>.phone {inset:auto;left:29.795px;top:29.795px;width:393px;height:854.544px;border-radius:54px;box-shadow:none}
-.device-frame-image {position:absolute;inset:0;width:100%;height:100%;display:block;z-index:110;pointer-events:none;user-select:none;filter:drop-shadow(0 18px 24px #00000026)}
-.device-real>.phone>.island {display:none}
-html.bare .device-frame-image,html.mob .device-frame-image {display:none}
-html.bare .device-real,html.mob .device-real {width:auto;height:auto}
-html.bare .device-real>.phone,html.mob .device-real>.phone {inset:0;width:auto;height:auto;border-radius:0;box-shadow:none}
-html.bare.chrome .device-real>.phone>.island {display:flex}
+.device-real {
+  width: 452.881px;
+  height: 914.135px;
+}
+.device-real > .phone {
+  inset: auto;
+  left: 29.795px;
+  top: 29.795px;
+  width: 393px;
+  height: 854.544px;
+  border-radius: 54px;
+  box-shadow: none;
+}
+.device-frame-image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  z-index: 110;
+  pointer-events: none;
+  user-select: none;
+  filter: drop-shadow(0 18px 24px #00000026);
+}
+.device-real > .phone > .island {
+  display: none;
+}
+html.bare .device-frame-image,
+html.mob .device-frame-image {
+  display: none;
+}
+html.bare .device-real,
+html.mob .device-real {
+  width: auto;
+  height: auto;
+}
+html.bare .device-real > .phone,
+html.mob .device-real > .phone {
+  inset: 0;
+  width: auto;
+  height: auto;
+  border-radius: 0;
+  box-shadow: none;
+}
+html.bare.chrome .device-real > .phone > .island {
+  display: flex;
+}
 /* Layout zoom redraws text and vectors at the target size instead of scaling a composited phone layer. */
-.stage>.device-real {position:relative;left:auto;top:auto;transform:none;zoom:var(--k,1)}
-html.bare .stage>.device-real,html.mob .stage>.device-real {position:fixed;inset:0;transform:none;zoom:1}
+.stage > .device-real {
+  position: relative;
+  left: auto;
+  top: auto;
+  transform: none;
+  zoom: var(--k, 1);
+}
+html.bare .stage > .device-real,
+html.mob .stage > .device-real {
+  position: fixed;
+  inset: 0;
+  transform: none;
+  zoom: 1;
+}
 
 /* Reviewer workspace: separate from the portable app canvas. */
-.stage {background:#F0F7F7}
-.stage::before {display:none}
+.stage {
+  background: #f0f7f7;
+}
+.stage::before {
+  display: none;
+}
 
 /* Global fault overlay: excluded from the portable app. */
-.preview-fault-message {position:absolute;left:var(--space-4);right:var(--space-4);bottom:110px;z-index:180;display:grid;gap:var(--space-3);padding:var(--space-4);box-shadow:var(--shadow-sm);border:1px solid var(--semantic-field-border);border-radius:var(--radius-md)}
-.preview-fault-message>div {display:flex;align-items:flex-start;gap:var(--space-3)}
-.preview-fault-message p {margin:var(--space-2) 0 0;line-height:1.5}
-.preview-fault-message small {font-size:12px}
-.preview-fault-message .preview-fault-actions {display:grid;grid-template-columns:1fr 1fr}
-.preview-fault-message .btn {font-size:14px;padding:var(--space-2)}
+.preview-fault-message {
+  position: absolute;
+  left: var(--space-4);
+  right: var(--space-4);
+  bottom: 110px;
+  z-index: 180;
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--semantic-field-border);
+  border-radius: var(--radius-md);
+}
+.preview-fault-message > div {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+.preview-fault-message p {
+  margin: var(--space-2) 0 0;
+  line-height: 1.5;
+}
+.preview-fault-message small {
+  font-size: 12px;
+}
+.preview-fault-message .preview-fault-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.preview-fault-message .btn {
+  font-size: 14px;
+  padding: var(--space-2);
+}
 
+/* Offscreen flow previews retain state without continuously animating. */
+.preview-inactive *,
+.preview-inactive *::before,
+.preview-inactive *::after {
+  animation-play-state: paused !important;
+}

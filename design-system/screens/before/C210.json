@@ -16,12 +16,6 @@
       "state": "empty",
       "label": "ยังไม่มีที่อยู่",
       "url": "/?screen=homeaddress&state=empty&splash=0"
-    },
-    {
-      "code": "C210.3",
-      "state": "named",
-      "label": "ที่อยู่ตั้งชื่อเอง",
-      "url": "/?screen=homeaddress&state=named&splash=0"
     }
   ]
 }

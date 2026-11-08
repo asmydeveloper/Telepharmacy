@@ -5,7 +5,7 @@ const loginStates=vm.runInNewContext(source.match(/TP\.screen\('login', \{[\s\S]
 const defs={login:{group:'start',code:'C102',title:'Login',states:loginStates},profile:{group:'start',code:'C105',title:'Signup'},home:{group:'before',code:'C201',title:'Home',states:[['normal','N'],['case-queue3','Q3'],['case-chat','Chat']]},registrationexit:{code:'C106',hidden:true,host:'profile'}};
 let id='login',sheet=null,filled=0,mockable=false;const events={},prepared=[];
 const panel={querySelectorAll:()=>[],querySelector:()=>null,addEventListener:(name,fn)=>events[name]=fn,getBoundingClientRect:()=>({top:0}),clientHeight:0,classList:{toggle(){},contains:()=>false},innerHTML:'',scrollTop:40};
-const TP={S:{st:{}},SCREENS:defs,ORDER:Object.keys(defs),GROUPS:[['start','Start'],['before','Before']],brand:{logo:()=>''},def:k=>defs[k],sheetOpen:()=>sheet,cur:()=>({id,ctx:{params:{}}}),codeOf:k=>defs[k].code,stateOf:k=>TP.S.st[k]||defs[k].states?.[0]?.[0]||'normal',icons(){},prepState:d=>prepared.push(d),refresh(){},registrationPreview:{canFill:()=>mockable,fillCurrent:()=>filled++},casePreview:{playChat:k=>played.push(k)}};
+const TP={flag:k=>TP.S.g?.[k]??false,S:{st:{}},SCREENS:defs,ORDER:Object.keys(defs),GROUPS:[['start','Start'],['before','Before']],brand:{logo:()=>''},def:k=>defs[k],sheetOpen:()=>sheet,cur:()=>({id,ctx:{params:{}}}),codeOf:k=>defs[k].code,stateOf:k=>TP.S.st[k]||defs[k].states?.[0]?.[0]||'normal',icons(){},prepState:d=>prepared.push(d),refresh(){},registrationPreview:{canFill:()=>mockable,fillCurrent:()=>filled++},casePreview:{playChat:k=>played.push(k)}};
 const played=[],ran=[],SIM=[];
 const context={TP,panel,SIM,badge:{innerHTML:''},fabCode:null,fab:{addEventListener(){},setAttribute(){},focus(){}},$:()=>null,esc:s=>String(s??''),ic:()=>'',tapped:null,anchorOf:()=>null,holdAnchor(){},keyOf:()=>'',document:{documentElement:{classList:{contains:()=>false}}},CSS:{escape:s=>s}};
 vm.createContext(context);
@@ -18,12 +18,12 @@ const click=(pn,k)=>events.click({target:{closest:()=>({dataset:k==null?{pn}:{pn
 
 context.render();
 const codes=[...panel.innerHTML.matchAll(/data-pn="state"[^>]*><b class="pn-sc">([^<]+)</g)].map(m=>m[1]);
-assert.deepEqual(codes,manifest.cases.map(c=>c.code));assert.equal(codes[0],'C102.1');assert.equal(codes.at(-1),'C102.12');
-console.log('PASS: login panel lists C102.1 to C102.12, matching the screen manifest');
+assert.deepEqual(codes,manifest.cases.map(c=>c.code));assert.equal(codes[0],'C102.1');assert.equal(codes.at(-1),'C102.15');
+console.log('PASS: login panel lists visible login codes including filled and service errors, matching the screen manifest');
 
 for(const text of ['จอนี้','ลองสถานะของจอนี้','ทั้งแอป','ไปจอ · ทั้งหมด 3 จอ','data-pn="jump" data-k="home"','data-pn="g" data-k="storeOpen"','data-pn="restart"','pn-foot'])assert(panel.innerHTML.includes(text),text);
 assert(!panel.innerHTML.includes('data-k="registrationexit"'));for(const text of ['pnMainFlow','pnAutofill','EV-GLOBAL-'])assert(!panel.innerHTML.includes(text),text);
-assert(fs.readFileSync('src/app/Shell.jsx','utf8').includes('"id": "codeBadge", "aria-hidden": "true"'));
+assert.match(fs.readFileSync('src/app/Shell.jsx','utf8'), /id:\s*['"]codeBadge['"],\s*['"]aria-hidden['"]:\s*['"]true['"]/);
 console.log('PASS: panel has the reference sections, a code badge and no sidebar controls');
 
 id='profile';context.render();assert(!panel.innerHTML.includes('ลองสถานะของจอนี้'));assert(context.badge.innerHTML.includes('C105'));
@@ -39,9 +39,32 @@ console.log('PASS: panel follows the open screen, hosted sheets and hidden retir
  await click('sim','accept');await click('sim','order');await click('sim','off');assert.deepEqual(ran,['accept']);assert.deepEqual(played,['payment']);
  SIM.length=0;mockable=true;context.render();assert(panel.innerHTML.includes('data-pn="mock"'));await click('mock');assert.equal(filled,1);
  console.log('PASS: state, simulation and mock buttons dispatch from the right panel');
+ const videoDefault=source.match(/TP\.screen\('video', \{\s*previewDefaultState: '([^']+)'/)[1];
+ defs.video={code:'C306',previewDefaultState:videoDefault};
+ const jumps=[];TP.jump=k=>jumps.push([k,TP.S.st[k]]);
+ TP.S.st.video='on';await click('jump','video');
+ assert.deepEqual(jumps.at(-1),['video','waiting-provider']);
+ await events.click({target:{closest:()=>({dataset:{pn:'jump-state',k:'video',state:'on'}})}});
+ assert.deepEqual(jumps.at(-1),['video','on']);
+ console.log('PASS: C306 main jump opens waiting cover while explicit active-call selection stays available');
 })().catch(e=>{console.error(e);process.exitCode=1});
 
 context.Event=class{constructor(type){this.type=type}};
 const field=(id,value='',type='text')=>({id,value,type,dataset:{},closest:()=>null,dispatchEvent(e){(this.events||=[]).push(e.type)}});
 const mail=field('loginEmail');TP.previewAutofill.fill({querySelectorAll:()=>[mail]},{});assert.equal(mail.value,'');
 console.log('PASS: autofill stays off without a toggle');
+
+// The reviewer's user type survives app logic that clears S.firstTime, such as finishing sign-up.
+const flags={};vm.createContext(flags);
+vm.runInContext(source.match(/TP\.FLAG0 = \{[^\n]+\n[^\n]+\nTP\.setFlag[^\n]+/)[0].replace(/^TP\./,'var TP={};TP.'),flags);
+vm.runInContext(`TP.fresh=()=>({firstTime:false,loggedIn:true,consent:true});TP.emit=()=>{};TP.SCREENS={splash:{}};TP.go=()=>{};var toggle=()=>{};TP.S=TP.fresh();${source.match(/function restart\(mob\) \{[\s\S]*?\n\}/)[0]}`,flags);
+vm.runInContext("TP.setFlag('firstTime',true);restart(false);",flags);
+assert.equal(flags.TP.S.firstTime,true);assert.equal(flags.TP.S.loggedIn,false);
+flags.TP.S.firstTime=false;
+assert.equal(vm.runInContext("TP.flag('firstTime')",flags),true);
+vm.runInContext('restart(false)',flags);
+assert.equal(flags.TP.S.firstTime,true);assert.equal(flags.TP.S.loggedIn,false);
+vm.runInContext("TP.setFlag('firstTime',false);restart(false);",flags);
+assert.equal(flags.TP.S.firstTime,false);assert.equal(flags.TP.S.loggedIn,true);
+assert(source.includes("(k === 'firstTime' ? TP.flag(k) : TP.S[k]) === v"));
+console.log('PASS: first-time user choice stays selected after sign-up and restart');

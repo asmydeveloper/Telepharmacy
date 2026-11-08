@@ -1,0 +1,13 @@
+node_modules/
+.next/
+.next-dev/
+public/
+/design-system/
+docs/
+*.md
+src/design-system/
+src/data/
+src/styles/figma-tokens.css
+# Legacy runtime tests extract exact source fragments; migrate before formatting them.
+tests/
+scripts/

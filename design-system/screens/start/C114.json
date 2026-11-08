@@ -1,27 +1,15 @@
 {
   "code": "C114",
   "screen": "googlelogin",
-  "title": "ดำเนินการด้วย Google",
+  "title": "ลงชื่อเข้าใช้ด้วย Google",
   "group": "start",
   "kind": "sheet",
   "cases": [
     {
-      "code": "C114.1",
+      "code": "C114",
       "state": "normal",
-      "label": "จำลอง Google บัญชีสมาชิก",
+      "label": "เลือกบัญชี Google: สมาชิกเดิมหรือสมาชิกใหม่",
       "url": "/?screen=googlelogin&state=normal&splash=0"
-    },
-    {
-      "code": "C114.2",
-      "state": "new-account",
-      "label": "จำลอง Google สมาชิกใหม่",
-      "url": "/?screen=googlelogin&state=new-account&splash=0"
-    },
-    {
-      "code": "C114.3",
-      "state": "error",
-      "label": "Google เข้าสู่ระบบไม่สำเร็จ",
-      "url": "/?screen=googlelogin&state=error&splash=0"
     }
   ]
 }

@@ -6,8 +6,8 @@ const a=source.indexOf('function homeActiveCaseCard(S)'),b=source.indexOf('funct
 const render=()=>vm.runInContext('homeActiveCaseCard(TP.S)',ctx);
 let html=render();assert(html.includes('คุณเป็นคิวถัดไป'));assert(html.includes('data-tone="waiting"'));assert(!html.includes('ออกจากหน้านี้ได้'));assert(!html.includes('0 คิว'));assert(html.includes('data-go="queue"'));assert(!html.includes('hm-active-topic'));assert(!html.includes('เรื่องที่ปรึกษา'));assert(html.includes('เภสัชกรประจำสาขา'));
 S.case.pos=3;assert(render().includes('มีผู้รอก่อนคุณ 2 คน'));
-S.case.status='paused';assert(render().includes('คิวของคุณยังอยู่'));
-S.case.status='matched';assert(render().includes('data-tone="waiting"'));S.case.status='room';html=render();assert(html.includes('กำลังสนทนา'));assert(html.includes('data-tone="active"'));assert(html.includes('การปรึกษานี้ยังไม่จบ'));assert(html.includes('data-go="room"'));assert(html.includes('กลับไปปรึกษาต่อ'));assert(html.includes('เภสัชกรผู้ดูแล'));
-S.case.idle=true;assert(render().includes('กลับไปตอบ'));S.case.idle=false;S.case.order={status:'pending'};assert(render().includes('ดูรายการยาและชำระเงิน'));
+S.case.status='paused';html=render();assert(html.includes('มีผู้รอก่อนคุณ 2 คน'),'paused uses the same waiting card');assert(html.includes('รอเภสัชกร'));assert(!html.includes('พักรับคิว'));
+for(const status of ['matched','room']){S.case.status=status;html=render();assert(html.includes('กำลังปรึกษา'),status);assert(html.includes('data-tone="active"'),status);}html=render();assert(html.includes('data-tone="active"'));assert(html.includes('การปรึกษานี้ยังไม่จบ'));assert(html.includes('data-go="room"'));assert(html.includes('กลับไปปรึกษาต่อ'));assert(html.includes('เภสัชกรผู้ดูแล'));
+S.case.idle=true;html=render();assert(html.includes('กำลังปรึกษา'));assert(html.includes('กลับไปปรึกษาต่อ'),'reply-waiting uses the consulting card');S.case.idle=false;S.case.order={status:'pending'};html=render();assert(html.includes('กำลังปรึกษา'));assert(!html.includes('ดูรายการยาและชำระเงิน'),'an order in the open chat is still consulting');S.case.order=null;
 S.case.status='queue';S.notif=false;assert(render().includes('การแจ้งเตือนปิดอยู่'));
-console.log('PASS: home active-case waiting, next, paused, room, idle, payment and notification-off states');
+console.log('PASS: home active-case has one waiting card (queue, next, paused) and one consulting card (accepted, chatting, reply, order in chat)');

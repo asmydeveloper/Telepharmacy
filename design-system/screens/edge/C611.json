@@ -1,0 +1,21 @@
+{
+  "code": "C611",
+  "screen": "serverdown",
+  "title": "ระบบมีปัญหาชั่วคราว",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C611.1",
+      "state": "normal",
+      "label": "ระบบมีปัญหา เชื่อมต่อไม่ได้",
+      "url": "/?screen=serverdown&state=normal&splash=0"
+    },
+    {
+      "code": "C611.2",
+      "state": "retrying",
+      "label": "กำลังตรวจสอบ",
+      "url": "/?screen=serverdown&state=retrying&splash=0"
+    }
+  ]
+}

@@ -15,5 +15,5 @@ for(const [code,error] of [['','กรุณากรอก'],['@@@','3–32'],[
 input.value='TEST50';actions.payCouponApply();c.order.total=40;assert.equal(totals().discount,0,'changing medicine subtotal invalidates earlier discount');actions.payCouponApply();assert(p.couponError.includes('100 บาท'));
 c={order:{total:385,status:'pending'}};vm.runInContext('couponState()',ctx);assert.equal(p.couponDraft,'');assert.equal(p.couponError,'');assert.equal(totals().discount,0,'new order never inherits prior discount');
 c.order.status='expired';input.value='TEST50';actions.payCouponApply();assert.equal(expired,1);assert(!c.order.discount,'expired orders cannot accept coupons');
-assert(!source.includes('หากต้องการแก้รายการยา กรุณาสอบถามเภสัชกรก่อนชำระ'));assert(source.includes('pd.discount||0'));
+assert(!source.includes('หากต้องการแก้รายการยา กรุณาสอบถามเภสัชกรก่อนชำระ'));assert(source.includes("...(pd.discount? [['ส่วนลด','−'+TP.money(pd.discount)]] : [])"));
 console.log('PASS: coupon normalization, non-stacking, remove, validation, expiry, minimum, changed order, shipping/card totals and receipt discount');

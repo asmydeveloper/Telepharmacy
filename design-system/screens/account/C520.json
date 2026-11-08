@@ -1,0 +1,21 @@
+{
+  "code": "C520",
+  "screen": "personaledit",
+  "title": "แก้ไขข้อมูลส่วนตัว",
+  "group": "account",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C520.1",
+      "state": "normal",
+      "label": "แก้ไขข้อมูลส่วนตัว",
+      "url": "/?screen=personaledit&state=normal&splash=0"
+    },
+    {
+      "code": "C520.2",
+      "state": "invalid",
+      "label": "ข้อมูลไม่ครบ",
+      "url": "/?screen=personaledit&state=invalid&splash=0"
+    }
+  ]
+}

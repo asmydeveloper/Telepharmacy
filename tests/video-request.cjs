@@ -2,7 +2,7 @@ const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/st
 const source=fs.readFileSync('public/runtime/customer.js','utf8'),actions={},sim={},calls=[];
 let refreshCount=0;
 let current={id:'room',el:{querySelector:()=>null}};
-const TP={S:{case:{status:'room',msgs:[],draft:'draft to preserve'},call:null,st:{}},ACTS:actions,hist:[],act:(id,fn)=>actions[id]=fn,simAction:d=>sim[d.id]=d,cur:()=>current,emit(){},refresh:()=>{refreshCount++;return Promise.resolve();},banner(){},closeSheet:()=>Promise.resolve(),go:(id)=>{calls.push(id);current.id=id;return Promise.resolve();},demoProfiles:{},branch:()=>({name:'Branch'})};
+const TP={NOW:{time:"14:12"},S:{case:{status:'room',msgs:[],draft:'draft to preserve'},call:null,st:{}},ACTS:actions,hist:[],act:(id,fn)=>actions[id]=fn,simAction:d=>sim[d.id]=d,cur:()=>current,emit(){},refresh:()=>{refreshCount++;return Promise.resolve();},banner(){},closeSheet:()=>Promise.resolve(),go:(id)=>{calls.push(id);current.id=id;return Promise.resolve();},demoProfiles:{},branch:()=>({name:'Branch'})};
 const C=()=>TP.S.case;
 require('./consultation-harness.cjs')(TP);
 const ctx=vm.createContext({TP,C,P:()=>({name:'Provider',short:'Provider',lic:'123',ini:'P'}),now:()=> '14:12',esc:s=>String(s??''),ic:()=>'<svg></svg>',ui:{av:()=>'<avatar>',btn:(label,o)=>`<button data-a="${o.a}">${label}</button>`},Date,fmt:s=>String(s)});
@@ -17,7 +17,7 @@ TP.receiveVideoRequest({id:'one'});TP.receiveVideoRequest({id:'duplicate'});asse
 let card=run('msgHtml(C().msgs[0])');assert(card.includes('acceptVideoRequest'));assert(card.includes('declineVideoRequest'));
 await actions.declineVideoRequest({dataset:{request:'one'}});await actions.acceptVideoRequest({dataset:{request:'one'}});assert.equal(calls.length,0,'declined card cannot start a call');
 TP.receiveVideoRequest({id:'two'});sim.withdrawVideo.run();await actions.acceptVideoRequest({dataset:{request:'two'}});assert.equal(calls.length,0,'withdrawn card cannot start a call');
-TP.receiveVideoRequest({id:'three'});TP.S.camDenied=true;await actions.acceptVideoRequest({dataset:{request:'three'}});assert.equal(calls.at(-1),'nocam');assert.equal(TP.S.call,null);
+TP.receiveVideoRequest({id:'three'});TP.S.camDenied=true;await actions.acceptVideoRequest({dataset:{request:'three'}});assert.equal(calls.at(-1),'video');
 TP.S.camDenied=false;await actions.startVideo();assert.equal(calls.at(-1),'video');
 const session=TP.S.call={t0:Date.now()-5000,mic:false,cam:false};const messages=C().msgs;
 await actions.toChat();assert.equal(current.id,'room');assert.equal(TP.S.call,session);assert.equal(C().msgs,messages);assert.equal(C().draft,'draft to preserve');

@@ -13,7 +13,7 @@ TP.medicineImage=()=>'<img>';TP.money=n=>'THB '+n;line('TP.orderMedicineList =')
 const a=s.indexOf("TP.sheetDef('pay',"),b=s.indexOf('/* ---------- live updates',a),checkout=s.slice(a,b);
 assert(checkout.includes('TP.orderMedicineDetails(o)'));assert(checkout.indexOf("sec(4, 'เลือกวิธีชำระเงิน')")<checkout.indexOf("sec(5, 'สรุปยอดชำระ')"));
 assert(s.includes("if(!recvKeys().includes(t.dataset.v)"));
-console.log('PASS: pickup/express/standard delivery, legacy values normalized, cold/restricted guard, shared chat medicine list and review order');
+console.log('PASS: pickup/express/parcel, legacy values normalized, cold/restricted guard, shared chat medicine list and review order');
 
 ctx.structuredClone=structuredClone;TP.homeAddress=()=>TP.S.addrs[0];TP.S.addrs=[{id:'home',first:'A',last:'B',phone:'0812345678',house:'123',dist:'D',amp:'A',prov:'P',zip:'10170'},{id:'other',house:'999'}];line('const addr = () => {const c=C()');const snapshot=vm.runInContext('addr()',ctx);assert.equal(snapshot.house,'123');TP.S.addrs[0].house='changed';TP.S.pay={addr:'other',recv:'express'};assert.equal(vm.runInContext('addr().house',ctx),'123');line('const fmtAddr =');line('const fmtPhone =');const ca=s.indexOf('function cardsHtml() {'),cb=s.indexOf('\nconst fld =',ca);vm.runInContext(s.slice(ca,cb),ctx);const html=vm.runInContext('cardsHtml()',ctx);assert(html.includes('123'));assert(!html.includes('999'));assert(!html.includes('button'));assert(!checkout.includes('data-a="payAddrNew"'));assert(checkout.includes('fullPage:true'));console.log('PASS: checkout full page and selected home address snapshot remains read-only after saved addresses or payment selection change');
 

@@ -40,6 +40,18 @@
       "state": "saved-company",
       "label": "บันทึกนิติบุคคลแล้ว",
       "url": "/?screen=taxprofile&state=saved-company&splash=0"
+    },
+    {
+      "code": "C518.7",
+      "state": "multiple-person",
+      "label": "บุคคลธรรมดาหลายรายการ",
+      "url": "/?screen=taxprofile&state=multiple-person&splash=0"
+    },
+    {
+      "code": "C518.8",
+      "state": "multiple-company",
+      "label": "นิติบุคคลหลายรายการ",
+      "url": "/?screen=taxprofile&state=multiple-company&splash=0"
     }
   ]
 }

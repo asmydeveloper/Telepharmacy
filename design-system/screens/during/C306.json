@@ -34,6 +34,12 @@
       "state": "pcam",
       "label": "กล้องเภสัชกรใช้ไม่ได้",
       "url": "/?screen=video&state=pcam&splash=0"
+    },
+    {
+      "code": "C306.6",
+      "state": "waiting-provider",
+      "label": "รอเภสัชกรเข้าห้องวิดีโอ",
+      "url": "/?screen=video&state=waiting-provider&splash=0"
     }
   ]
 }

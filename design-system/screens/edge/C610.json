@@ -1,0 +1,21 @@
+{
+  "code": "C610",
+  "screen": "maintenance",
+  "title": "ปิดให้บริการชั่วคราว",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C610.1",
+      "state": "normal",
+      "label": "ปิดให้บริการชั่วคราวตามแผน",
+      "url": "/?screen=maintenance&state=normal&splash=0"
+    },
+    {
+      "code": "C610.2",
+      "state": "retrying",
+      "label": "กำลังตรวจสอบ",
+      "url": "/?screen=maintenance&state=retrying&splash=0"
+    }
+  ]
+}

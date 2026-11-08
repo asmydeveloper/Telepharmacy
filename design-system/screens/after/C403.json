@@ -8,176 +8,44 @@
     {
       "code": "C403.1",
       "state": "normal",
-      "label": "มีรายการ",
+      "label": "ทั้งหมด",
       "url": "/?screen=history&state=normal&splash=0"
     },
     {
       "code": "C403.2",
-      "state": "empty",
-      "label": "ยังไม่มี",
-      "url": "/?screen=history&state=empty&splash=0"
+      "state": "tab-shipping",
+      "label": "รอจัดส่ง",
+      "url": "/?screen=history&state=tab-shipping&splash=0"
     },
     {
       "code": "C403.3",
+      "state": "tab-completed",
+      "label": "สำเร็จ",
+      "url": "/?screen=history&state=tab-completed&splash=0"
+    },
+    {
+      "code": "C403.4",
+      "state": "tab-cancelled",
+      "label": "ยกเลิก",
+      "url": "/?screen=history&state=tab-cancelled&splash=0"
+    },
+    {
+      "code": "C403.5",
+      "state": "empty",
+      "label": "ไม่มีข้อมูลการสั่งซื้อ",
+      "url": "/?screen=history&state=empty&splash=0"
+    },
+    {
+      "code": "C403.6",
       "state": "loading",
       "label": "กำลังโหลด",
       "url": "/?screen=history&state=loading&splash=0"
     },
     {
-      "code": "C403.4",
-      "state": "self",
-      "label": "เฉพาะตัวเอง",
-      "url": "/?screen=history&state=self&splash=0"
-    },
-    {
-      "code": "C403.5",
-      "state": "paid",
-      "label": "ปรึกษาสำเร็จ",
-      "url": "/?screen=history&state=paid&splash=0"
-    },
-    {
-      "code": "C403.6",
-      "state": "no-medication",
-      "label": "สิ้นสุดก่อนสรุป",
-      "url": "/?screen=history&state=no-medication&splash=0"
-    },
-    {
       "code": "C403.7",
-      "state": "search",
-      "label": "ค้นหาประวัติ",
-      "url": "/?screen=history&state=search&splash=0"
-    },
-    {
-      "code": "C403.8",
-      "state": "no-results",
-      "label": "ค้นหาไม่พบ",
-      "url": "/?screen=history&state=no-results&splash=0"
-    },
-    {
-      "code": "C403.9",
       "state": "error",
       "label": "โหลดไม่สำเร็จ",
       "url": "/?screen=history&state=error&splash=0"
-    },
-    {
-      "code": "C403.10",
-      "state": "dark-filters",
-      "label": "แท็บประเภทสี CI เข้ม",
-      "url": "/?screen=history&state=dark-filters&splash=0"
-    },
-    {
-      "code": "C403.11",
-      "state": "shared-tabs",
-      "label": "แท็บกลาง ตัวอักษร 14px",
-      "url": "/?screen=history&state=shared-tabs&splash=0"
-    },
-    {
-      "code": "C403.12",
-      "state": "store-recipient-card",
-      "label": "หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา",
-      "url": "/?screen=history&state=store-recipient-card&splash=0"
-    },
-    {
-      "code": "C403.13",
-      "state": "receipt-inside",
-      "label": "ดูใบเสร็จในใบสรุป",
-      "url": "/?screen=history&state=receipt-inside&splash=0"
-    },
-    {
-      "code": "C403.14",
-      "state": "detail-rows",
-      "label": "รายละเอียดเรียงแถวพร้อมไอคอน",
-      "url": "/?screen=history&state=detail-rows&splash=0"
-    },
-    {
-      "code": "C403.15",
-      "state": "purchase-status",
-      "label": "ป้ายตามข้อมูลซื้อยา",
-      "url": "/?screen=history&state=purchase-status&splash=0"
-    },
-    {
-      "code": "C403.16",
-      "state": "pending-order",
-      "label": "รายการยารอชำระ",
-      "url": "/?screen=history&state=pending-order&splash=0"
-    },
-    {
-      "code": "C403.17",
-      "state": "expired-order",
-      "label": "รายการยาหมดอายุ",
-      "url": "/?screen=history&state=expired-order&splash=0"
-    },
-    {
-      "code": "C403.18",
-      "state": "cancelled-order",
-      "label": "ยกเลิกรายการยา",
-      "url": "/?screen=history&state=cancelled-order&splash=0"
-    },
-    {
-      "code": "C403.19",
-      "state": "tap-card",
-      "label": "แตะการ์ด ไม่มีข้อความลิงก์",
-      "url": "/?screen=history&state=tap-card&splash=0"
-    },
-    {
-      "code": "C403.20",
-      "state": "search-below-tabs",
-      "label": "ช่องค้นหาอยู่ใต้แท็บ",
-      "url": "/?screen=history&state=search-below-tabs&splash=0"
-    },
-    {
-      "code": "C403.21",
-      "state": "tab-counts",
-      "label": "จำนวนรายการในแต่ละแท็บ",
-      "url": "/?screen=history&state=tab-counts&splash=0"
-    },
-    {
-      "code": "C403.22",
-      "state": "search-open",
-      "label": "เปิดช่องค้นหาจากหัวหน้า",
-      "url": "/?screen=history&state=search-open&splash=0"
-    },
-    {
-      "code": "C403.23",
-      "state": "search-cleared",
-      "label": "ช่องค้นหาหลังล้างคำ",
-      "url": "/?screen=history&state=search-cleared&splash=0"
-    },
-    {
-      "code": "C403.24",
-      "state": "ten-records",
-      "label": "ประวัติ 10 รายการ หลายวันและเดือน",
-      "url": "/?screen=history&state=ten-records&splash=0"
-    },
-    {
-      "code": "C403.25",
-      "state": "completed",
-      "label": "ปรึกษาสำเร็จ",
-      "url": "/?screen=history&state=completed&splash=0"
-    },
-    {
-      "code": "C403.26",
-      "state": "ended",
-      "label": "สิ้นสุดก่อนสรุป",
-      "url": "/?screen=history&state=ended&splash=0"
-    },
-    {
-      "code": "C403.27",
-      "state": "customer-ended",
-      "label": "คุณจบการสนทนา",
-      "url": "/?screen=history&state=customer-ended&splash=0"
-    },
-    {
-      "code": "C403.28",
-      "state": "no-response",
-      "label": "ไม่มีการตอบกลับ 5 นาที",
-      "url": "/?screen=history&state=no-response&splash=0"
-    },
-    {
-      "code": "C403.29",
-      "state": "long-note",
-      "label": "ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด",
-      "url": "/?screen=history&state=long-note&splash=0"
     }
   ]
 }

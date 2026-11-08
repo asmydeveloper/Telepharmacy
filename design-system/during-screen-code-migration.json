@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-08",
+  "scope": "during",
+  "reason": "Sheet codes C303.3 and C303.4 collided with the reserved C303 case codes (C303.3 paid, C303.4 payment expired). The sheets get their own unused codes; C303.3 and C303.4 stay reserved for the retired C303 cases.",
+  "mapping": [
+    {
+      "screen": "medicinebasket",
+      "old": "C303.3",
+      "code": "C312",
+      "title": "ตะกร้ายา"
+    },
+    {
+      "screen": "chatprovider",
+      "old": "C303.4",
+      "code": "C313",
+      "title": "ข้อมูลเภสัชกร"
+    }
+  ]
+}

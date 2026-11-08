@@ -1,0 +1,27 @@
+{
+  "code": "C421",
+  "screen": "receipttaxpicker",
+  "title": "เลือกข้อมูลใบกำกับภาษี",
+  "group": "after",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C421.1",
+      "state": "person",
+      "label": "เลือกบุคคลธรรมดา",
+      "url": "/?screen=receipttaxpicker&state=person&splash=0"
+    },
+    {
+      "code": "C421.2",
+      "state": "company",
+      "label": "เลือกนิติบุคคล",
+      "url": "/?screen=receipttaxpicker&state=company&splash=0"
+    },
+    {
+      "code": "C421.3",
+      "state": "empty",
+      "label": "ยังไม่มีข้อมูลผู้รับ",
+      "url": "/?screen=receipttaxpicker&state=empty&splash=0"
+    }
+  ]
+}

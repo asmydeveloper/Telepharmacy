@@ -7,30 +7,42 @@
   "cases": [
     {
       "code": "C401.1",
-      "state": "normal",
-      "label": "มียา",
-      "url": "/?screen=summary&state=normal&splash=0"
+      "state": "shipping",
+      "label": "มียา · กำลังจัดส่งยา",
+      "url": "/?screen=summary&state=shipping&splash=0"
     },
     {
       "code": "C401.2",
-      "state": "nomeds",
-      "label": "ไม่ได้ซื้อยา",
-      "url": "/?screen=summary&state=nomeds&splash=0"
+      "state": "delivered",
+      "label": "มียา · จัดส่งสำเร็จแล้ว",
+      "url": "/?screen=summary&state=delivered&splash=0"
     },
     {
       "code": "C401.3",
-      "state": "closed",
-      "label": "เพิ่งจบเคส",
-      "url": "/?screen=summary&state=closed&splash=0"
-    },
-    {
-      "code": "C401.4",
       "state": "rated",
-      "label": "ให้คะแนนแล้ว",
+      "label": "มียา · ให้คะแนนแล้ว",
       "url": "/?screen=summary&state=rated&splash=0"
     },
     {
+      "code": "C401.4",
+      "state": "nomeds",
+      "label": "ไม่มียา · ปรึกษาอย่างเดียว",
+      "url": "/?screen=summary&state=nomeds&splash=0"
+    },
+    {
       "code": "C401.5",
+      "state": "nomeds-rated",
+      "label": "ไม่มียา · ให้คะแนนแล้ว",
+      "url": "/?screen=summary&state=nomeds-rated&splash=0"
+    },
+    {
+      "code": "C401.6",
+      "state": "cancelled",
+      "label": "ยกเลิก",
+      "url": "/?screen=summary&state=cancelled&splash=0"
+    },
+    {
+      "code": "C401.7",
       "state": "missing",
       "label": "ไม่พบใบสรุป",
       "url": "/?screen=summary&state=missing&splash=0"

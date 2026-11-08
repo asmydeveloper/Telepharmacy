@@ -31,7 +31,7 @@ const expectedFiles=new Set();
 for(const screen of screens){
   if(codes.has(screen.code))throw Error('Duplicate screen code '+screen.code);codes.add(screen.code);
   const states=screen.states||[];
-  const cases=(states.length?states:[['','ปกติ']]).map(([state,label,enabled],i)=>enabled===false?null:({code:screen.code+(states.length>1?'.'+(i+1):''),state,label,url:'/?screen='+screen.screen+(state?'&state='+encodeURIComponent(state):'')+'&splash=0'})).filter(Boolean);
+  const cases=(states.length?states:[['','ปกติ']]).map(([state,label,enabled,suffix],i)=>enabled===false?null:({code:screen.code+(states.length>1||states.some(x=>x[3]!=null)?'.'+(suffix??i+1):''),state,label,url:'/?screen='+screen.screen+(state?'&state='+encodeURIComponent(state):'')+'&splash=0'})).filter(Boolean);
   const manifest={code:screen.code,screen:screen.screen,title:screen.title,group:screen.group,kind:screen.kind,cases};
   const file=path.join(root,'design-system/screens',screen.group,screen.code+'.json');
   expectedFiles.add(file);
@@ -40,7 +40,7 @@ for(const screen of screens){
   screen.cases=cases;
   count+=cases.length;
 }
-for(const group of fs.readdirSync(path.join(root,'design-system/screens'),{withFileTypes:true}).filter(d=>d.isDirectory())){const dir=path.join(root,'design-system/screens',group.name);for(const name of fs.readdirSync(dir).filter(n=>/^C\d+\.json$/.test(n))){const file=path.join(dir,name);if(!expectedFiles.has(file)){if(process.argv.includes('--check'))throw Error('Retired manifest: '+file);fs.unlinkSync(file);}}}
+for(const group of fs.readdirSync(path.join(root,'design-system/screens'),{withFileTypes:true}).filter(d=>d.isDirectory())){const dir=path.join(root,'design-system/screens',group.name);for(const name of fs.readdirSync(dir).filter(n=>/^C\d+(?:\.\d+)*\.json$/.test(n))){const file=path.join(dir,name);if(!expectedFiles.has(file)){if(process.argv.includes('--check'))throw Error('Retired manifest: '+file);fs.unlinkSync(file);}}}
 console.log(`PASS ${screens.length} screen codes and ${count} case links match the live registry`);
 
 // Event docs follow the registry whenever screens are added or changed.

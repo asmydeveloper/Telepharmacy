@@ -5,8 +5,8 @@ const FILE = { cust: '/', con: '/console' };
 const $ = (s, r = document) => r.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 /* the main path a new customer walks, from first open to the summary */
-/* lean sign-up (owner 19/10/2026): no onboarding, consent sits on the profile screen, Face ID is offered on home after the first consult */
-const MAIN = ['splash', 'login', 'loginphone', 'profile', 'registrationsuccess', 'intake', 'pushask', 'queue', 'matched', 'room', 'pay', 'paid', 'summary'];
+/* sign-up: consent sits on the profile screen; C108 leads to onboarding C112, then home */
+const MAIN = ['splash', 'login', 'loginphone', 'profile', 'registrationsuccess', 'intake', 'pushask', 'queue', 'room', 'pay', 'paid', 'summary'];
 /* the store console's main path: sign in, start the shift, take the case, consult, medicine list, payment, close, packing */
 const MAIN_CON = ['login', 'branch', 'queue', 'preview', 'room', 'order', 'pay', 'close', 'pack'];
 const TXT = {
@@ -44,7 +44,7 @@ const far = new IntersectionObserver(es => es.forEach(e => {
 /* review codes (owner 19/10/2026): C303 per screen, C303.2 per state */
 function codeFor(it, st) { const i = (it.states || []).length > 1 && st ? it.states.findIndex(x => x[0] === st) : -1; return it.code ? (i < 0 ? it.code : `${it.code}.${i + 1}`) : ''; }
 function card(it, st, n) {
-  const states = it.states || [], cur = st || (states[0] && states[0][0]) || '';
+  const states = it.states || [], cur = st || (states.find(s => s[2] !== false) || [])[0] || '';
   const kind = it.kind === 'sheet' ? '<span class="tag">แผ่นเลื่อนขึ้น</span>' : '';
   const wait = it.wait ? `<span class="tag w">รอเคาะ ${it.wait}</span>` : '';
   const chips = mode === 'one' && states.length > 1 ? `<div class="chips" role="group" aria-label="สถานะของจอ ${esc(it.title)}">${states.filter(x=>x[2]!==false).map(([k, l]) => `<button type="button" data-st="${esc(k)}" aria-pressed="${k === cur}">${esc(l)}</button>`).join('')}</div>` : '';
