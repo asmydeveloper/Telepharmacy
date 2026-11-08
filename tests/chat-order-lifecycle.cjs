@@ -60,7 +60,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  const pickup=structuredClone(c);pickup.id='pickup-two';pickup.order.no='MT202610180702';pickup.order.paid.recv='pickup';pickup.order.paid.stage='ready';pickup.order.fulfillment={status:'preparing'};
  S.history=[{id:pickup.id,_case:pickup}];
  const multiple=TP.fulfillmentCard(S,{compact:true});
- assert(multiple.includes('hm-fulfillment-group'));assert(multiple.includes('2 รายการ'));
+ assert(multiple.includes('hm-fulfillment-group'));assert(multiple.includes('2 รายการ'));assert(multiple.includes('hm-fulfillment-carousel'),'multiple orders render as a carousel');assert.equal((multiple.match(/class="hm-fulfillment-slide"/g)||[]).length,2);assert.equal((multiple.match(/class="hm-fulfillment-dot[ "]/g)||[]).length,2);assert(multiple.includes('aria-current="true"'));
  assert.equal((multiple.match(/class="hm-fulfillment-banner"/g)||[]).length,2);
  assert(multiple.includes('ยาพร้อมรับที่สาขาแล้ว'));assert(multiple.includes('รับที่ร้าน'));assert(multiple.includes('ส่งด่วน'));
  await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:pickup.id})}});
@@ -69,8 +69,9 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  assert(!TP.fulfillmentCard(S,{compact:true}).includes('hm-fulfillment-group'));
  S.history=[];S._paymentCase=c;
  order.paid.recv='express';
- TP.orderStatusCard=(steps,no)=>steps.map(x=>x[1]).join(' ')+no;TP.fulfillmentDetails=c=>c.pharmacistAdvice;TP.summaryForCase=c=>'history '+c.pharmacistAdvice;
- for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);if(phase==='delivered'){assert(page.includes('history '));assert(!page.includes('สถานะการจัดส่งยา'));}else assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert.equal(TP.fulfillmentInfo(c).done,phase==='delivered');if(phase!=='delivered')assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert(!/tkGot|ได้รับยาแล้ว/.test(page));assert.equal(order.expiresAt,deadline);}
+ TP.orderStatusCard=(steps,no)=>steps.map(x=>x[1]).join(' ')+no;TP.fulfillmentDetails=c=>c.pharmacistAdvice;TP.summaryForCase=c=>'history '+c.pharmacistAdvice;TP.SCREENS={...(TP.SCREENS||{}),summary:{render:({params})=>'C401 '+params.id+' '+c.pharmacistAdvice}};
+ assert(source.includes("go:'summary',p:{id:c.id}")&&source.slice(source.indexOf('TP.fulfillmentDetails = c =>'),source.indexOf('/* ---------- paid (C12)')).includes('ดูคำสั่งซื้อ'),'C414 links to C401 instead of inlining the summary');
+ for(const phase of ['calling','delivering','delivered']){assert(TP.setFulfillment(c,phase));const page=TP.chatDeliveryPage(c);if(phase==='delivered'){/* a finished order has no status page: it shows the order summary C401 */assert(page.includes('C401 '+c.id));}else assert(page.includes(TP.fulfillmentInfo(c).title));assert(page.includes(c.pharmacistAdvice));assert.equal(TP.fulfillmentInfo(c).done,phase==='delivered');if(phase!=='delivered')assert(TP.fulfillmentCard(S).includes(TP.fulfillmentInfo(c).title));assert(!/tkGot|ได้รับยาแล้ว/.test(page));assert.equal(order.expiresAt,deadline);}
  assert.equal(TP.setFulfillment(c,'preparing'),false);assert.equal(TP.setFulfillment(c,'delivered'),false);assert.equal(order.picked,true);assert.equal(order.paid.got,undefined);assert(order.paid.deliv);assert.equal(TP.fulfillmentCard(S),'');assert.equal(TP.fulfillmentCard(S,{compact:true}),'');assert(!source.includes("TP.act('tkGot'"));assert(!source.includes("TP.act('fuGot'"));assert(!source.includes("TP.sheetDef('gotask'"));
  await TP.go('room');assert.equal(routes.at(-1),'paid');assert.equal(c.status,'closed');
  const unpaid={id:'unpaid',status:'closed',mode:'chat',order:{status:'pending',expiresAt:Date.now()-1}};assert.equal(TP.closedChatRoute(unpaid).screen,'home');assert.equal(unpaid.order.status,'expired');assert.equal(TP.setFulfillment(unpaid,'preparing'),false);

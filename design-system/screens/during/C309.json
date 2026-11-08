@@ -24,12 +24,6 @@
       "url": "/?screen=paid&state=express&splash=0"
     },
     {
-      "code": "C309.4",
-      "state": "night",
-      "label": "จ่ายตอนร้านปิด",
-      "url": "/?screen=paid&state=night&splash=0"
-    },
-    {
       "code": "C309.5",
       "state": "ready",
       "label": "ยาพร้อมรับแล้ว",

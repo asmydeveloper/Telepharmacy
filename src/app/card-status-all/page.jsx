@@ -55,9 +55,9 @@ const groups = [
     'การ์ดสถานะคำสั่งซื้อ',
     [
       ['parcel-preparing', 'กำลังเตรียมยา'],
+      ['parcel-packed', 'แพ็กแล้ว ส่งให้บริษัทขนส่ง'],
       ['parcel-transit', 'อยู่ระหว่างขนส่ง'],
       ['parcel-out', 'กำลังนำส่ง'],
-      ['parcel-delivered', 'จัดส่งสำเร็จ'],
     ],
   ],
 ];
