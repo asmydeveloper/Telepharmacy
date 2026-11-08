@@ -7,7 +7,6 @@ import '@/styles/home.css';
 import '@/styles/components.css';
 import '@/styles/intake.css';
 import '@/styles/history.css';
-import '@/styles/adr.css';
 
 import LayoutPreview from './LayoutPreview';
 import SegmentedPreview from './SegmentedPreview';

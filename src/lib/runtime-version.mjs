@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 const runtimeFiles = [
   'public/runtime/consultation-data.js',
+  'public/runtime/customer-fixtures.js',
   'public/runtime/customer.js',
   'public/runtime/address-map.js',
   'public/runtime/address-map-engine.js',

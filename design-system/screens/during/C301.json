@@ -40,12 +40,6 @@
       "state": "summary",
       "label": "ใบสรุป",
       "url": "/?screen=lock&state=summary&splash=0"
-    },
-    {
-      "code": "C301.7",
-      "state": "adr",
-      "label": "ตอบเรื่องอาการหลังใช้ยา",
-      "url": "/?screen=lock&state=adr&splash=0"
     }
   ]
 }

@@ -5,7 +5,7 @@ let canBack=false;const TP={S,canBack:()=>canBack,SCREENS:screens,screen:(id,d)=
 for(const id of ['summary','history','health','account','addressbook','home'])screens[id]={};
 const esc=s=>String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');
 const ui={nav:o=>`${o.back?'<button data-back>กลับ</button>':''}<h1>${o.title}</h1>`,page:s=>s,skel:()=>'<i></i>',empty:o=>o.title+o.body+(o.btn?.a||'')};
-const ctx=vm.createContext({TP,ui,esc,ic:()=>'<svg></svg>',Date,Intl,Map});
+const FX=(()=>{const fx={};vm.runInContext(fs.readFileSync('public/runtime/customer-fixtures.js','utf8'),vm.createContext({window:fx}));return fx.MitrareeFixtures;})();const ctx=vm.createContext({TP,FX,ui,esc,ic:()=>'<svg></svg>',Date,Intl,Map});
 vm.runInContext(source.slice(source.indexOf('TP.previewInbox ='),source.indexOf('TP.fresh =')),ctx);
 vm.runInContext(source.slice(source.indexOf('const inboxVisible ='),source.indexOf('/* =====================================================================\n   Account (tab root)')),ctx);
 const groups=(notes,date)=>TP.inboxGroups(notes,new Date(date));
@@ -23,7 +23,7 @@ const live={id:'live',kind:'msg',title:'live',time:'01/11/2026 10:00',go:'histor
 const summary=S.inbox.find(n=>n.go==='summary');actions.afOpenNote({dataset:{v:summary.id}});assert.equal(calls.at(-1).params.id,'SUMMARY');
 S.st.inbox='same-day';screens.inbox.prep(S);assert.equal(S.inbox.length,4);assert.equal(TP.inboxGroups(S.inbox).length,1);
 S.st.inbox='empty';screens.inbox.prep(S);assert(render('empty').includes('ยังไม่มีการแจ้งเตือน'));assert(render('loading').includes('aria-busy="true"'));assert(render('error').includes('afInboxRetry'));actions.afInboxRetry();assert.equal(S.inbox.length,10);assert.equal(S.st.inbox,'normal');
-assert.deepEqual(Array.from(screens.inbox.states.slice(0,3),s=>s[0]),['normal','read','empty']);
+assert.deepEqual(Array.from(screens.inbox.states.slice(0,2),s=>s[0]),['normal','empty']);
 assert(!render('normal').includes('data-back'));canBack=true;assert(render('normal').includes('data-back'));canBack=false;
 assert(html.includes('class="inbox-item-time"'));assert(!html.includes('ร้านยากรุงเทพ'));
 console.log('PASS: 10 linked fixtures, Bangkok calendar grouping, sorting/ISO/invalid dates, live items retained, safe rendering, same-day/empty/loading/error/retry and exact destination');

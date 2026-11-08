@@ -17,11 +17,11 @@ S.case={id:'foreign',who:'mom',status:'waiting',symptoms:['secret-family-case']}
 for(const row of S.history.filter(r=>r.who==='me')){h.context.row=row;const html=run('histItem(row)');assert(html.includes(S.user.full));assert(!html.includes('history-card-store'));assert(html.includes('history-order-row'));assert(!html.includes('history-card-recipient'));assert(!html.includes('ผู้รับการปรึกษา'));assert(!html.includes('ใบเสร็จ'));}
 assert(screens.history.states.every(([state])=>!state.includes('family')&&!state.includes('profile')&&!['mother','child'].includes(state)));
 const fixture=JSON.stringify(S);for(const [state] of screens.history.states){Object.assign(S,JSON.parse(fixture));S.st.history=state;screens.history.prep(S);const html=screens.history.render({S,state,params:{}});assert(typeof html==='string'&&html.length>0,state);assert(!html.includes('history-profile-list'));}
-const freshStart=source.indexOf('TP.fresh = () => ('),freshEnd=source.indexOf('TP.S = TP.fresh();',freshStart);run(source.slice(freshStart,freshEnd));const seed=h.TP.fresh();assert.equal(seed.family.length,0);assert.equal(seed.history.length,8);assert.equal(new Set(seed.history.map(r=>r.id)).size,8);assert.equal(new Set(seed.history.map(r=>r.date)).size,8);assert(seed.history.some(r=>r.outcome==='customer-ended'));assert(seed.history.some(r=>r.outcome==='order-complete'));assert(seed.history.every(r=>r.who==='me'));
+const seed=run('FX.account()');assert.equal(seed.family.length,0);assert.equal(seed.history.length,8);assert.equal(new Set(seed.history.map(r=>r.id)).size,8);assert.equal(new Set(seed.history.map(r=>r.date)).size,8);assert(seed.history.some(r=>r.outcome==='customer-ended'));assert(seed.history.some(r=>r.outcome==='order-complete'));assert(seed.history.every(r=>r.who==='me'));
 console.log('PASS: account-only history, legacy family isolation, counts, search, cards and all active history states');
 
 // Retained household implementation is inaccessible from preview/deep links.
-for(const id of ['family','familyedit']){const start=source.indexOf("TP.screen('"+id+"'");assert(start>=0);assert(/hidden:\s*true/.test(source.slice(start,start+230)));assert(/disabled:\s*true/.test(source.slice(start,start+230)));}
+for(const id of ['family','familyedit','memberdel'])assert(!source.includes("TP.screen('"+id+"'")&&!source.includes("TP.sheetDef('"+id+"'"),'household screens are removed');
 const manifests=require('node:fs').readdirSync('design-system/screens/account');for(const code of ['C502','C503','C504'])assert(!manifests.includes(code+'.json'));
 assert(source.includes("if(TP.def(id)?.disabled)return TP.go('account',{root:true})"));
 

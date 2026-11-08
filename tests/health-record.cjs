@@ -3,9 +3,8 @@ function setup(){
  const h=harness();h.sheets={};h.TP.sheetDef=(id,d)=>h.sheets[id]=d;
  h.TP.fresh=()=>({user:{full:'สมใจ ใจดี',allergies:['แอสไพริน'],allergyState:'set',allergySrc:'บันทึกโดย ภญ.ขวัญใจ 02/10/2026',meds:['ยาประจำ'],weight:58}});
  h.entry={id:'health',params:{}};h.TP.cur=()=>h.entry;h.TP.canBack=()=>false;h.TP.sheet=(...args)=>h.calls.push(['sheet',...args]);h.TP.closeSheet=()=>Promise.resolve();h.TP.sheetOpen=()=>null;
- h.run(source.slice(source.indexOf('const newKey ='),source.indexOf('/* =====================================================================\n   Member add / edit')));
- h.run(source.slice(source.indexOf('const SFX_CPM ='),source.indexOf('function feDraft(')));
- h.run(source.slice(source.indexOf('/* =====================================================================\n   My health record'),source.indexOf('/* =====================================================================\n   Consents (A6)')));
+ h.run(source.slice(source.indexOf('const newKey ='),source.indexOf('/* =====================================================================\n   My health record')));
+ h.run(source.slice(source.indexOf('/* =====================================================================\n   My health record'),source.indexOf('/* =====================================================================\n   Delete account (N3)')));
  h.render=()=>h.screens.health.render({S:h.S,state:h.S.st.health,params:h.entry.params});
  h.preview=state=>{h.S.st.health=state;h.screens.health.prep(h.S);return h.render();};
  return h;

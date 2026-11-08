@@ -110,18 +110,6 @@
   color: var(--ink-3);
   white-space: nowrap;
 }
-.adr-person select {
-  display: block;
-  width: 100%;
-  min-height: var(--size-touch);
-  font: inherit;
-  font-weight: var(--weight-semibold);
-  color: var(--ink);
-  background: transparent;
-  border: 0;
-  padding: var(--space-2) var(--space-1);
-  text-overflow: ellipsis;
-}
 @media (forced-colors: active) {
   .history-profile[aria-pressed='true'] {
     forced-color-adjust: none;
@@ -162,15 +150,13 @@
   color: var(--ink);
   background: transparent;
 }
-.history-filters fieldset,
-.adr-form fieldset {
+.history-filters fieldset {
   border: 0;
   padding: 0;
   margin: 0;
   min-width: 0;
 }
-.history-filters legend,
-.adr-form legend {
+.history-filters legend {
   font-size: var(--text-small);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-2);

@@ -21,7 +21,8 @@ for(const by of ['ph','me','auto']){
 const archived=S.case;S.case={id:'new-chat',status:'room'};
 actions.openOrderPayment(null,{params:{caseId:archived.id}});assert.equal(S._paymentCase,archived);
 vm.runInContext('const C=()=>TP.S._paymentCase||TP.S.case;',context);
-let a=source.indexOf('const ensureOrder ='),b=source.indexOf('\n',a);run(a,b);
+TP.ORDER_ITEMS||=[{name:'A',price:120}];TP.orderNumber||=(c=>'MT-'+c.id);
+let a=source.indexOf('function mockCheckoutCase()'),b=source.indexOf('\n};',source.indexOf('const ensureOrder =',a))+3;run(a,b);
 assert(vm.runInContext('ensureOrder()',context));assert.equal(created,0);assert.equal(S.case.id,'new-chat');assert.equal(archived.status,'closed');
 // Successful payment updates the archived order once without reopening either consultation.
 vm.runInContext("const P=()=>({recv:'pickup',method:'qr'}),addr=()=>({}),totals=()=>({total:180});",context);
@@ -32,7 +33,7 @@ a=source.indexOf('async function paid()');b=source.indexOf('TP.payPaid = paid;',
  await vm.runInContext('paid()',context);assert.equal(saved,1);
  archived.order.status='pending';archived.order.expiresAt=clock+1;clock+=2;
  await vm.runInContext('paid()',context);assert.equal(archived.order.status,'expired');assert.equal(saved,1);
- assert.equal(vm.runInContext('ensureOrder()',context),false);assert.equal(archived.order.status,'expired');assert.equal(created,0);
+ /* C308 is a mockup: an expired order opens a separate payable sample, the archived order stays expired */assert.equal(vm.runInContext('ensureOrder()',context),true);assert.equal(archived.order.status,'expired');assert.equal(created,0);assert(S._paymentCase.mockCheckout&&S._paymentCase!==archived);S._paymentCase=archived;
  assert.equal(TP.expireOrder(archived),false);assert.equal(S.inbox.filter(n=>n.id==='order-expired-'+archived.order.no).length,1);
  console.log('PASS: 15-minute deadline, all closure actors, archived checkout, one-time payment and expiry guard');
 })().catch(e=>{console.error(e);process.exitCode=1;});

@@ -34,6 +34,12 @@
       "state": "service-error",
       "label": "บริการเข้าสู่ระบบไม่พร้อมใช้งาน",
       "url": "/?screen=login&state=service-error&splash=0"
+    },
+    {
+      "code": "C102.15",
+      "state": "google-denied",
+      "label": "ถูกปฏิเสธการเข้าสู่ระบบด้วย Google",
+      "url": "/?screen=login&state=google-denied&splash=0"
     }
   ]
 }

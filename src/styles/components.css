@@ -1023,10 +1023,6 @@
   margin-inline: auto;
   flex: none;
 }
-.adr-empty > .empty-illustration {
-  width: 80px;
-  height: 64px;
-}
 
 :is(#ikSymEmpty, .sug-none) > .empty-illustration {
   width: 48px;

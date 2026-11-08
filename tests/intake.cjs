@@ -6,7 +6,7 @@ let refreshed=0;
 const TP={S:{intake:{symptoms:['ไข้','ไอ'],custom:[],otherOpen:true}},SYMPTOMS:['ไข้','ไอ','ปวดหัว'],act:(key,fn)=>actions[key]=fn,cur:()=>({el:{}}),refresh:()=>refreshed++,$$:()=>chips,$:()=>empty};
 const context=vm.createContext({TP,esc:s=>String(s).replaceAll('<','&lt;'),ic:()=>'',document:{addEventListener:(type,fn)=>listeners[type]=fn},$:(sel)=>sel==='#ikOtherIn'?input:error});
 const start=source.indexOf("TP.act('ikRemoveSym'");const end=source.indexOf("TP.act('symOther',",start);vm.runInContext(source.slice(start,end),context);
-const add=source.indexOf("TP.act('symOtherAdd'");vm.runInContext(source.slice(add,source.indexOf("TP.act('pickWho'",add)),context);
+const add=source.indexOf("TP.act('symOtherAdd'");vm.runInContext(source.slice(add,source.indexOf("TP.act('symChange'",add)),context);
 actions.symOtherAdd();assert.equal(error.hidden,false);assert.equal(input['aria-invalid'],'true');
 input.value='  เวียนหัว  ';actions.symOtherAdd();assert.equal(TP.S.intake.symptoms.at(-1),'เวียนหัว');input.value='เวียนหัว';actions.symOtherAdd();assert.equal(TP.S.intake.symptoms.filter(x=>x==='เวียนหัว').length,1);
 actions.ikRemoveSym({dataset:{v:'ไข้'}});assert.deepEqual(Array.from(TP.S.intake.symptoms),['ไอ','เวียนหัว']);assert(refreshed>0);

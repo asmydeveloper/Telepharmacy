@@ -44,7 +44,7 @@ const far = new IntersectionObserver(es => es.forEach(e => {
 /* review codes (owner 19/10/2026): C303 per screen, C303.2 per state */
 function codeFor(it, st) { const i = (it.states || []).length > 1 && st ? it.states.findIndex(x => x[0] === st) : -1; return it.code ? (i < 0 ? it.code : `${it.code}.${i + 1}`) : ''; }
 function card(it, st, n) {
-  const states = it.states || [], cur = st || (states[0] && states[0][0]) || '';
+  const states = it.states || [], cur = st || (states.find(s => s[2] !== false) || [])[0] || '';
   const kind = it.kind === 'sheet' ? '<span class="tag">แผ่นเลื่อนขึ้น</span>' : '';
   const wait = it.wait ? `<span class="tag w">รอเคาะ ${it.wait}</span>` : '';
   const chips = mode === 'one' && states.length > 1 ? `<div class="chips" role="group" aria-label="สถานะของจอ ${esc(it.title)}">${states.filter(x=>x[2]!==false).map(([k, l]) => `<button type="button" data-st="${esc(k)}" aria-pressed="${k === cur}">${esc(l)}</button>`).join('')}</div>` : '';

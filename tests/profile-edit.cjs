@@ -7,7 +7,7 @@ const original=JSON.stringify(h.S.user);h.S._profileEdit.first='เปลี่�
 h.S._profileEdit.nationalId='forged';h.S._profileEdit.weight='999';h.S._profileEdit.height='999';h.S._profileEdit.first='ชื่อใหม่';const registrationBefore=JSON.stringify(h.draft());h.context.editPicker={year:1990,month:3,day:4};assert(h.run('regDobCommit(TP.S,editPicker,"profile-edit")'));assert.equal(JSON.stringify(h.draft()),registrationBefore,'editing birthday must not overwrite registration draft');await h.actions.pfEditSave();assert.equal(h.S.user.full,'ชื่อใหม่ ใจดี');assert.equal(h.S.user.birthDate,'1990-03-04');assert.equal(h.S.user.phone,'0812345678');assert.equal(h.S.user.nationalId,seed.nationalId);assert.equal(h.S.user.weight,'58');assert.equal(h.S.user.height,'160');assert.equal(h.S._profileEdit,null);assert.equal(h.calls.at(-1)[0],'back');
 // Persist a real registration draft, then open from the actual account action.
 const roundtrip=setup();roundtrip.preview('consent-ready');const registered=roundtrip.draft();
-Object.assign(registered,{first:'นลิน',last:'ทดสอบ',year:'1992',month:'9',day:'7',sex:'f',weight:'64.5',height:'168.5'});
+Object.assign(registered,{phone:'0897654321',verifiedPhone:'0897654321',first:'นลิน',last:'ทดสอบ',year:'1992',month:'9',day:'7',sex:'f',weight:'64.5',height:'168.5'});
 await roundtrip.TP.registrationService.save(roundtrip.S,registered,{channel:'phone',value:'0897654321'});
 const savedUser=JSON.stringify(roundtrip.S.user);
 roundtrip.run(source.slice(source.indexOf("TP.act('afEditProf',"),source.indexOf("TP.act('afDelType',")));

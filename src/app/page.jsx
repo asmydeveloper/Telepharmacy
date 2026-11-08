@@ -9,7 +9,6 @@ import '@/styles/home.css';
 import '@/styles/components.css';
 import '@/styles/intake.css';
 import '@/styles/history.css';
-import '@/styles/adr.css';
 import '@/styles/registration.css';
 import '@/styles/preview-device.css';
 import '@/styles/address-map.css';
@@ -21,7 +20,7 @@ export default function Page() {
     <>
       <Shell />
       <Runtime
-        prelude={`/runtime/address-map.js?v=${version}`}
+        prelude={[`/runtime/address-map.js?v=${version}`, `/runtime/customer-fixtures.js?v=${version}`]}
         src={`/runtime/customer.js?v=${version}`}
       />
     </>
