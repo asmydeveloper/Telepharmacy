@@ -559,6 +559,7 @@
 /* C403: compact order list with independent copy and detail actions. */
 .history-order-head {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2);
   margin-inline: var(--space-4);
@@ -572,8 +573,8 @@
   width: var(--size-touch);
   height: var(--size-touch);
   border-radius: var(--radius-control);
-  background: var(--color-brand-50);
-  color: var(--brand);
+  background: var(--semantic-primary);
+  color: var(--semantic-on-primary);
 }
 .history-order-identity { flex: 1; min-width: 0; }
 .history-order-identity > span { color: var(--ink-3); font-size: var(--text-caption); }
@@ -595,8 +596,8 @@
   cursor: pointer;
 }
 .history-order-copy:focus-visible { outline: 2px solid var(--semantic-focus); border-radius: var(--radius-small); }
-.history-order-status { display: flex; align-items: center; gap: var(--space-1); max-width: 35%; color: var(--brand); }
-.history-order-status .tag { white-space: normal; font-size: var(--text-caption); }
+.history-order-status { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-1); width: 100%; color: var(--brand); }
+.phone .history-card .history-order-status .tag { white-space: normal; font-size: var(--text-body); font-weight: var(--weight-bold); padding: var(--space-2) var(--space-3); }
 .history-order-status > .ic { flex: none; }
 .history-card-open { gap: var(--space-2); padding: var(--space-3) var(--space-4); }
 .history-order-date { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); color: var(--ink-3); font-size: var(--text-caption); }
@@ -605,3 +606,8 @@
 .history-order-amount > span { color: var(--ink); font-weight: var(--weight-semibold); }
 .history-order-amount > b { color: var(--ink); font-weight: var(--weight-semibold); }
 .history-payment-action { position: relative; z-index: 2; }
+
+.history-order-row { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: baseline; gap: var(--space-3); font-size: var(--text-body); line-height: 1.5; }
+.history-order-row > span { color: var(--ink-3); }
+.history-order-row > b { text-align: right; font-weight: var(--weight-semibold); overflow-wrap: anywhere; }
+.history-order-price { padding-top: var(--space-2); border-top: 1px solid var(--line-soft); }
