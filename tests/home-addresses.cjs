@@ -123,7 +123,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,1);assert.equal(TP.S.case,null);
   TP.caseOpen=()=>true;TP.S.case={status:'room',branch:'near'};actions.quickConsult();assert.equal(routed.at(-1)[0],'room');assert.equal(TP.S.branch,'free');assert.equal(started,1);
   TP.caseOpen=()=>false;TP.S.case=null;TP.homeAddress=()=>null;actions.quickConsult();assert.equal(sheets.at(-1)[0],'homeaddress');
-  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];actions.quickConsult();assert.equal(routed.at(-1)[0],'home');assert(!sheets.some(x=>x[0]==='allbranches'));
+  TP.homeAddress=()=>({id:'selected'});TP.homeStores=()=>[];const notices=[],notifyBefore=TP.notify,distanceBefore=TP.homeDistance,routeCount=routed.length;TP.homeDistance=()=>20;TP.notify=(msg,options)=>notices.push({msg,options});actions.quickConsult();assert.equal(routed.length,routeCount);assert.equal(notices.at(-1).msg,'อยู่นอกระยะการใช้งาน');assert.equal(notices.at(-1).options.dismissible,true);TP.notify=notifyBefore;TP.homeDistance=distanceBefore;assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.homeStores=()=>[{id:'free'}];TP.S.queueLen={};actions.quickConsult();assert.equal(TP.S.branch,'free');assert.equal(started,2);assert(!sheets.some(x=>x[0]==='allbranches'));
   TP.S.sysOff=true;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');TP.S.sysOff=false;TP.S.storeOpen=false;actions.quickConsult();assert.equal(sheets.at(-1)[0],'storeinfo');
   TP.S.loggedIn=false;actions.quickConsult();assert.equal(routed.at(-1)[0],'login');actions.hmStart=previousHmStart;TP.homeStores=savedStores;TP.homeAddress=savedAddress;

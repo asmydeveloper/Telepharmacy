@@ -752,10 +752,10 @@ document.addEventListener('keydown', e => {
 /* ---------- notifications: island (chrome) / pill toast / push banner ---------- */
 TP.live = msg => { liveEl.textContent = ''; setTimeout(() => { liveEl.textContent = msg; }, 30); };
 let islT = 0, toastT = 0, banT = 0, banTok = 0;
-TP.notify = (msg, { icon = 'check' } = {}) => {
+TP.notify = (msg, { icon = 'check', dismissible = false } = {}) => {
   TP.live(msg);
   ptoast.dataset.tone = /alert|x|error/.test(icon) ? 'error' : /info|clock/.test(icon) ? 'info' : 'success';
-  if (document.documentElement.classList.contains('chrome') && !phone.closest('.device-real')) {
+  if (!dismissible && document.documentElement.classList.contains('chrome') && !phone.closest('.device-real')) {
     const c = $('.isl-c', island);
     c.innerHTML = `<span class="isl-i">${TP.ic(icon, 16, 2.2)}</span><b>${TP.esc(msg)}</b>`;
     kill(island); kill(c); clearTimeout(islT);
@@ -767,9 +767,10 @@ TP.notify = (msg, { icon = 'check' } = {}) => {
       A(island, [{ width: w + 'px', height: '44px', borderRadius: '24px' }, { width: '120px', height: '34px', borderRadius: '20px' }], { d: 520, e: SP.soft.e, delay: 100, fill: 'forwards' });
     }, 2400);
   } else {
-    ptoast.innerHTML = TP.ic(icon,20,2) + '<span>' + TP.esc(msg) + '</span>'; kill(ptoast); clearTimeout(toastT); ptoast.style.visibility = 'visible';
+    ptoast.innerHTML = TP.ic(icon,20,2) + '<span>' + TP.esc(msg) + '</span>' + (dismissible ? '<button type="button" class="ptoast-close" aria-label="ปิดข้อความแจ้งเตือน">'+TP.ic('x',18,2)+'</button>' : ''); kill(ptoast); clearTimeout(toastT); ptoast.style.visibility = 'visible'; ptoast.setAttribute('aria-hidden','false'); ptoast.classList.toggle('dismissible',dismissible);
+    if (dismissible) $('.ptoast-close',ptoast).onclick = () => { kill(ptoast); clearTimeout(toastT); ptoast.style.visibility='hidden'; ptoast.setAttribute('aria-hidden','true'); };
     A(ptoast, [{ transform: 'translate(-50%,-180%)' }, { transform: 'translate(-50%,0)' }], { d: SP.spring.d, e: SP.spring.e, fill: 'forwards' });
-    toastT = setTimeout(() => fin(A(ptoast, [{ transform: 'translate(-50%,0)' }, { transform: 'translate(-50%,-180%)' }], { d: 320, e: E.in, fill: 'forwards' })).then(() => { ptoast.style.visibility = 'hidden'; }), 2400);
+    if (!dismissible) toastT = setTimeout(() => fin(A(ptoast, [{ transform: 'translate(-50%,0)' }, { transform: 'translate(-50%,-180%)' }], { d: 320, e: E.in, fill: 'forwards' })).then(() => { ptoast.style.visibility = 'hidden'; }), 2400);
   }
 };
 /* push banner: neutral wording only (no symptom / drug / amount, PDPA) */
@@ -2339,8 +2340,8 @@ TP.act('quickConsult',()=>{
   if (!result.branch){
     if(result.reason==='address'){TP.notify('เลือกที่อยู่จัดส่งเพื่อหาร้านยาใกล้คุณ',{icon:'map-pin'});return TP.sheet('homeaddress');}
     if(result.reason==='unavailable') return TP.sheet('storeinfo', { branch: TP.homeStores()[0].id });
-    TP.notify(result.reason==='area'?'อยู่นอกระยะให้บริการ ยังไม่พบร้านยาในรัศมี 15 กม.':'ยังตรวจสอบระยะจากที่อยู่นี้ไม่ได้ กรุณาตรวจสอบที่อยู่',{icon:'info'});
-    return TP.go('home',{root:true});
+    TP.notify(result.reason==='area'?'อยู่นอกระยะการใช้งาน':'ยังตรวจสอบระยะจากที่อยู่นี้ไม่ได้ กรุณาตรวจสอบที่อยู่',{icon:'info',dismissible:true});
+    return;
   }
   S.branch=result.branch.id;S.branchPicked=true;S.autoReason='';
   return TP.ACTS.hmStart({dataset:{mode:'chat'}});
@@ -2577,7 +2578,7 @@ function homeConsultBanner(S) {
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
   states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา', true, 8], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้', true, 9], ["case-queue3", "จำลอง รออีก 3 คิว", true, 48], ["case-next", "จำลอง คิวถัดไป", true, 51], ["case-chat", "จำลอง กำลังปรึกษา", true, 54], ["case-closed-unpaid","จบแชท รอชำระค่ายา", true, 60], ["case-delivery-preparing","ชำระแล้ว · เตรียมยา", true, 65], ["case-delivery-calling","กำลังเรียกไรเดอร์", true, 66], ["case-delivery-delivering","ไรเดอร์กำลังส่งยา", true, 67], ["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา", true, 69], ["case-pickup-ready","รับที่ร้าน · พร้อมรับยา", true, 70], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน', true, 79]],
-  notes: ['C201.8 ไม่มีร้านในรัศมี 15 กม. ยังคงแสดงร้านพร้อมสถานะอยู่นอกพื้นที่ให้บริการ กดเมนูหรือแบนเนอร์ปรึกษาแจ้ง Toast และไม่เข้าฟอร์มหรือคิว; ระยะเท่ากับ 15 กม. ยังอยู่ในเขต', 'คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
+  notes: ['C201.8 ไม่มีร้านในรัศมี 15 กม. ยังคงแสดงร้านพร้อมสถานะอยู่นอกพื้นที่ให้บริการ กดเมนูหรือแบนเนอร์ปรึกษาแจ้ง Toast อยู่นอกระยะการใช้งาน พร้อมปุ่มปิด คงหน้าเดิม ไม่เข้าฟอร์มหรือคิว; ระยะเท่ากับ 15 กม. ยังอยู่ในเขต', 'คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; delete S._homeFulfillmentPreviewCases; TP.homeScenario(S, st || 'normal'); if (!st) return;
     if(st==='multiple-fulfillments'){

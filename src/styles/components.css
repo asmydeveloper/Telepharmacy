@@ -1747,3 +1747,9 @@
   background: var(--color-neutral-100);
   color: var(--semantic-text-secondary);
 }
+
+/* Actionable coverage toast stays visible until explicitly dismissed. */
+.phone .ptoast.dismissible { pointer-events: auto; text-align: left; }
+.phone .ptoast.dismissible > span { flex: 1; min-width: 0; }
+.phone .ptoast-close { display: grid; place-items: center; flex: none; width: var(--button-height); height: var(--button-height); padding: 0; border: 0; border-radius: var(--radius-control); background: transparent; color: inherit; cursor: pointer; }
+.phone .ptoast-close:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
