@@ -1,6 +1,19 @@
 [
   {
     "date": "2026-11-08",
+    "page": "แจ้งนอกระยะการให้บริการ",
+    "path": "/?screen=outsidearea&state=normal&splash=0",
+    "codes": [
+      "C216",
+      "C201.8"
+    ],
+    "changes": [
+      "เปลี่ยนข้อความนอกระยะจาก Toast เป็น Modal Bottom Sheet พร้อมภาพและปุ่มปิด",
+      "ปุ่มปรึกษาทั้งสองปุ่มเปิดแผ่นข้อมูลเดียวกัน ปิดแล้วอยู่หน้าเดิม"
+    ]
+  },
+  {
+    "date": "2026-11-08",
     "page": "Toast นอกระยะพร้อมภาพประกอบ",
     "path": "/?screen=home&state=outarea&splash=0",
     "codes": [

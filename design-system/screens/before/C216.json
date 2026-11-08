@@ -1,0 +1,15 @@
+{
+  "code": "C216",
+  "screen": "outsidearea",
+  "title": "อยู่นอกระยะการให้บริการ",
+  "group": "before",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C216",
+      "state": "normal",
+      "label": "ไม่มีร้านยาในรัศมี 15 กม.",
+      "url": "/?screen=outsidearea&state=normal&splash=0"
+    }
+  ]
+}

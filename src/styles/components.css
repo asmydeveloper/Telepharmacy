@@ -1761,3 +1761,9 @@
 .phone .ptoast-rich .ptoast-copy strong { display: block; font-size: var(--type-body-lg-mobile-size); font-weight: var(--font-weight-bold); line-height: var(--type-body-lg-mobile-line); }
 .phone .ptoast-rich .ptoast-copy p { margin: var(--space-2) 0 0; color: var(--semantic-text-secondary); }
 .phone .ptoast-rich .ptoast-close { position: absolute; top: var(--space-2); right: var(--space-2); }
+
+/* Coverage notice uses the app's shared modal bottom sheet. */
+.phone .outside-area-sheet .sh-h { padding-bottom: var(--space-2); }
+.phone .outside-area-content { display: grid; justify-items: center; gap: var(--space-4); text-align: center; }
+.phone .outside-area-content img { width: 200px; height: 200px; object-fit: contain; }
+.phone .outside-area-content p { margin: 0; color: var(--semantic-text-secondary); font-size: var(--type-body-mobile-size); line-height: var(--type-body-mobile-line); }
