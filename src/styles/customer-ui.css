@@ -2598,16 +2598,16 @@ body:has(.consultation-card-preview) nextjs-portal {
 .scr:has(.rm-queue-bar) .rm-net { top: calc(var(--st) + 112px); }
 
 /* C207: a dedicated queue, before the consultation room opens. */
-.queue-wait-screen { background: var(--surface); }
+.queue-wait-screen { isolation: isolate; background: var(--surface); }
 .queue-wait-screen > .queue-wait-back { position: absolute; top: calc(var(--st) + var(--space-2)); left: var(--page-gutter); z-index: 5; color: var(--brand); }
 .phone .queue-wait-screen > .dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .phone .queue-wait-screen > .dock .btn { background: var(--semantic-primary); color: var(--surface); border: 0; box-shadow: none; }
 .phone .queue-wait-screen > .dock .btn:not(:disabled):is(:hover, :active) { background: var(--brand-deep); color: var(--surface); box-shadow: none; }
 .queue-wait-screen .queue-wait-page { padding: 0; background: transparent; }
 .queue-wait-content { position: relative; isolation: isolate; overflow: hidden; min-height: 100%; text-align: center; color: var(--ink); }
-.queue-wait-content::before { content: ""; position: absolute; z-index: -1; inset: -40px; pointer-events: none; opacity: 1; background: url("/assets/illustrations/queue-wait-waves.svg") center / 100% 100% no-repeat, radial-gradient(ellipse at 5% 25%, var(--color-brand-50), transparent 52%); animation: queue-ambient-drift 14s ease-in-out infinite alternate; }
+.queue-wait-screen::before { content: ""; position: absolute; z-index: -1; inset: -40px; pointer-events: none; opacity: 1; background: url("/assets/illustrations/queue-wait-waves.svg") center / 100% 100% no-repeat, radial-gradient(ellipse at 5% 25%, var(--color-brand-50), transparent 52%); animation: queue-ambient-drift 14s ease-in-out infinite alternate; }
 @keyframes queue-ambient-drift { from { transform: translate3d(-16px, -20px, 0) scale(1); } to { transform: translate3d(16px, 20px, 0) scale(1.08); } }
-@media (prefers-reduced-motion: reduce) { .queue-wait-content::before { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .queue-wait-screen::before { animation: none; } }
 .queue-wait-summary { padding: var(--space-5); }
 .queue-wait-art { display: block; width: 220px; max-width: 100%; height: 220px; object-fit: contain; margin: 0 auto var(--space-5); }
 .queue-wait-content h2 { font-size: var(--text-title); line-height: 1.4; margin: 0 0 var(--space-3); }
