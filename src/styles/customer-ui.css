@@ -1978,7 +1978,7 @@ select {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--space-1) var(--space-3);
-  padding: var(--space-5);
+  padding: var(--space-4);
   border: 1px solid var(--color-brand-100);
   border-radius: var(--radius-card);
   background: var(--color-brand-50);
@@ -1987,8 +1987,8 @@ select {
 .af-visit-hero h2 {
   grid-column: 1/-1;
   margin: 0;
-  font-size: var(--type-h2-mobile-size);
-  line-height: var(--type-h2-mobile-line);
+  font-size: var(--type-h3-mobile-size);
+  line-height: var(--type-h3-mobile-line);
   overflow-wrap: anywhere;
 }
 .af-visit-hero > span {
@@ -2234,16 +2234,23 @@ select {
 
 .af-visit-hero {
   position: relative;
-  min-height: calc(var(--space-8) * 4);
+  min-height: 104px;
   align-content: center;
-  background-image: url('/assets/photos/consultation-summary-cover-v2.png');
-  background-size: cover;
-  background-position: center right;
+  background-color: var(--brand-deep);
+  overflow: hidden;
+}
+.af-visit-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('/assets/illustrations/order-summary-banner-v3.webp') center right / cover no-repeat;
+  opacity: .35;
+  pointer-events: none;
 }
 .af-visit-hero > span,
 .af-visit-hero > h2,
 .af-visit-hero > small {
-  max-width: 65%;
+  max-width: 100%;
   grid-column: 1/-1;
   position: relative;
 }
