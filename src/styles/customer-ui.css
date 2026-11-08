@@ -2769,12 +2769,15 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .payment-reminder-card .payment-reminder-amount {
   font-size: var(--type-h2-mobile-size);
   line-height: var(--type-h2-mobile-line);
-  padding-bottom: var(--space-2);
+  padding-bottom: var(--space-1);
 }
 .phone .payment-reminder-card .consult-status-hero .payment-reminder-timing {
   position: relative;
-  padding: 0 var(--space-4) var(--space-4);
+  padding: 0 var(--space-4) var(--space-3);
 }
 .phone .payment-reminder-card .consult-status-hero .post-payment-deadline {
   color: var(--semantic-surface);
+  margin: 0;
+  font-size: var(--text-small);
+  line-height: var(--type-body-mobile-line);
 }
