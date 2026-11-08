@@ -4950,7 +4950,7 @@ TP.screen('receipt', {
       <p class="rc-tt"><span>รวมทั้งสิ้น<small>รวมภาษีมูลค่าเพิ่ม 7% แล้ว</small></span><b class="num">${TP.money(pd.total)}</b></p>
       <p class="rc-ft">ยาไม่รับคืน ยกเว้นร้านจัดยาผิด แจ้งภายใน 3 วัน</p></article>`;
     const doc = shortDoc;
-    return ui.nav({ back: true, title: 'ใบเสร็จรับเงิน' }) + ui.page(doc + `<div id="rcTax" class="mt24" data-in="2">${taxBox(o, late)}</div>`, {});
+    return ui.nav({ back: true, title: 'ใบเสร็จรับเงิน' }) + ui.page(doc + `<div id="rcTax" class="mt12" data-in="2">${taxBox(o, late)}</div>`, {});
   },
   mount(el) {
     el.addEventListener('input', e => { const fd = e.target.closest('#rcTax .field.err'); if (fd && e.target.value.trim()) { fd.classList.remove('err'); $('.pay-err', fd)?.remove(); } });
@@ -4969,11 +4969,12 @@ function taxBox(o, late) {
     const who = t.done || t.pending, email = TP.S.user?.email;
     const masked = email ? email.replace(/^(.)[^@]*(@.*)$/, (m, a, b) => a + '•••' + b) : 'อีเมลของบัญชี';
     return `<section class="rc-tax rc-tax-result is-sent" aria-label="ใบกำกับภาษี ส่งแล้ว">
-      <div class="rc-tax-result-head"><span class="rc-tax-result-ic" aria-hidden="true">${ic('file-text',22,1.8)}</span>
-        <h3>ใบกำกับภาษี</h3>${ui.tag('ส่งแล้ว','',{dot:true})}</div>
-      <p class="rc-tax-result-text">ส่งไปที่${email ? ` <b>${esc(masked)}</b>` : 'อีเมลของบัญชี'}แล้ว${t.sentAt ? ` เมื่อ ${esc(t.sentAt)}` : ''}</p>
-      <p class="rc-tax-result-who">${ic('user',16,1.8)}<span>${esc(who.name)} · ${esc(who.business ? 'นิติบุคคล' : 'บุคคลธรรมดา')}</span></p>
-      <p class="rc-tax-result-help">ไม่ได้รับอีเมล? <a href="${telHref}">โทร ${esc(tel)}</a></p>
+      <div class="rc-tax-sent-band" role="status"><span class="rc-tax-sent-ic" aria-hidden="true">${ic('check',20,2.6)}</span>
+        <div><h3>ส่งใบกำกับภาษีแล้ว</h3><p>ไปที่${email ? ` <b>${esc(masked)}</b>` : 'อีเมลของบัญชี'}${t.sentAt ? ` · ${esc(t.sentAt)}` : ''}</p></div></div>
+      <div class="rc-tax-sent-body">
+        <p class="rc-tax-result-who">${ic('user',16,1.8)}<span>${esc(who.name)} · ${esc(who.business ? 'นิติบุคคล' : 'บุคคลธรรมดา')}</span></p>
+        <p class="rc-tax-result-help">ไม่ได้รับอีเมล? <a href="${telHref}">โทร ${esc(tel)}</a></p>
+      </div>
     </section>`;
   }
   if (late) return `<section class="rc-tax rc-tax-result is-closed" aria-label="ใบกำกับภาษี">

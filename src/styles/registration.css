@@ -1587,6 +1587,8 @@
   align-items: center;
   gap: var(--space-1);
   min-height: 44px;
+  /* compact band (9 Nov 2026): keep the 44px tap target but let it overlap the band padding */
+  margin-block: calc(var(--space-2) * -1);
 }
 .rc-tax-selected {
   padding: 16px;
@@ -1648,3 +1650,13 @@
 .rc-tax-result-who { display: flex; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--semantic-surface-muted); font-size: var(--text-small); color: var(--ink); }
 .rc-tax-result-who > .ic { flex: none; color: var(--semantic-text-secondary); }
 .is-sent .rc-tax-result-help a { text-decoration: none; }
+/* C402.4 sent state (9 Nov 2026): white card; the solid CI check is the one strong cue. The receipt already tints its
+   table header and total with brand-50, so a third tinted block would compete (NN/g: if everything is contrasted, nothing stands out). */
+.rc-tax.rc-tax-result.is-sent { padding: 0; gap: 0; overflow: hidden; }
+.rc-tax-sent-band { display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4) var(--space-4) var(--space-3); }
+.rc-tax-sent-band h3 { margin: 0; font-size: var(--text-body); font-weight: var(--weight-semibold); color: var(--ink); }
+.rc-tax-sent-band p { margin: 2px 0 0; font-size: var(--text-small); color: var(--semantic-text-secondary); overflow-wrap: anywhere; }
+.rc-tax-sent-band p b { color: var(--ink); font-weight: var(--weight-semibold); }
+.rc-tax-sent-ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 999px; background: var(--semantic-primary); color: var(--semantic-on-primary); }
+.rc-tax-sent-body { display: grid; gap: var(--space-2); margin-inline: var(--space-4); padding: var(--space-3) 0 var(--space-4); border-top: 1px solid var(--semantic-border); }
+.is-sent .rc-tax-result-who { padding: 0; background: none; }
