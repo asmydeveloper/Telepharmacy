@@ -1625,3 +1625,23 @@
   background: var(--semantic-warning-background);
   color: var(--semantic-warning-text);
 }
+
+/* Compact fulfillment updates immediately below the home shortcuts. */
+.hm-fulfillment-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-brand-50);
+  color: var(--semantic-primary);
+  text-align: left;
+  cursor: pointer;
+}
+.hm-fulfillment-icon { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: var(--radius-md); background: var(--semantic-primary); color: var(--surface); }
+.hm-fulfillment-copy { display: grid; gap: var(--space-1); flex: 1; min-width: 0; }
+.hm-fulfillment-copy strong { font-size: var(--text-body); font-weight: var(--weight-semibold); }
+.hm-fulfillment-copy small { font-size: var(--text-small); color: var(--semantic-text-secondary); overflow-wrap: anywhere; }
+.hm-fulfillment-banner > .ic { flex: none; }

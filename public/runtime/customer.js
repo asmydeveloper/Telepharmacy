@@ -2831,7 +2831,7 @@ TP.screen('home', {
     // Isolated gallery adapter: reuse production renderers and existing preview fixtures.
     if (flowPreview && new URLSearchParams(location.search).get('cardPreview') === '1') {
       const view = {...S, history: []};
-      const card = TP.paymentReminderCard?.(view, null, { pendingOnly: true }) || TP.fulfillmentCard?.(view) || (TP.caseOpen() ? homeActiveCaseCard(view) : '');
+      const card = TP.paymentReminderCard?.(view, null, { pendingOnly: true }) || TP.fulfillmentCard?.(view, {compact:true}) || (TP.caseOpen() ? homeActiveCaseCard(view) : '');
       return ui.page('<div class="consultation-card-preview">' + card + '</div>', {nonav: true});
     }
     const head = homeBanner(S);
@@ -2849,7 +2849,7 @@ TP.screen('home', {
     ].filter(Boolean).join('');
     const cardState = S._homeEventPreview ? {...S, history:[]} : S;
     const paymentCard = TP.paymentReminderCard?.(cardState, null, { pendingOnly: true }) || '';
-    const deliveryCard = TP.fulfillmentCard?.(cardState) || '';
+    const deliveryCard = TP.fulfillmentCard?.(cardState, {compact:true}) || '';
     const activeCase = st === 'active' || TP.caseOpen();
     const consultBanner = paymentCard || deliveryCard || activeCase || updates ? '' : homeConsultBanner(S);
     const address=TP.homeAddress();
@@ -3107,32 +3107,22 @@ TP.act('verifyLic', t => {
 TP.screen('queue', {
   group:'before',title:'รอคิวปรึกษาเภสัชกร',code:'C207',ref:'C08',cls:'queue-wait-screen',
   states:[['q2','รออีก 1 คิว'],['q1','คิวถัดไป'],['paused','เภสัชกรพัก'],['urgent','มีธงด่วน',false],['notifoff','ปิดการแจ้งเตือนไว้',false],['refined','รอในห้องแชท', false],['q4','รออีก 3 คิว'],['message','ยกเลิกแชทระหว่างรอ',false],['joined','ย้ายไป C300 เภสัชกรพร้อมให้บริการ',false],['offline','ยกเลิกส่งข้อความระหว่างรอ',false],['video-wait','รอเภสัชกรวิดีโอคอล',false],['video-next','วิดีโอคอล · คิวถัดไป',false],['outzone','ที่อยู่จัดส่งนอกเขต 15 กม.']],
-  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงรหัสคิวคงที่และจำนวนคิวก่อนหน้าเด่นชัด ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ กล้อง ปุ่มย่อ หรือกลับหน้าแรก ออกได้เฉพาะยกเลิกคิวผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ที่อยู่จัดส่งนอกเขต 15 กม. ยังเข้าคิวปรึกษาได้ ถ้าซื้อยาต้องรับที่ร้านหรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน'],
+  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงเฉพาะจำนวนคิวก่อนหน้าเด่นชัด ไม่แสดงรหัสคิว ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ กล้อง ปุ่มย่อ หรือกลับหน้าแรก ออกได้เฉพาะยกเลิกคิวผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ที่อยู่จัดส่งนอกเขต 15 กม. ยังเข้าคิวปรึกษาได้ ถ้าซื้อยาต้องรับที่ร้านหรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน'],
   prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode=['video-wait','video-next'].includes(st)?'video':'chat';c.pos=['q1','video-next'].includes(st)?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=[];S.netOff=false;c.deliveryAddress=st==='outzone'?structuredClone(TP.ZONE_ADDR):(TP.homeAddress?.()?structuredClone(TP.homeAddress()):null);if(st==='outzone')TP.setFlag('zoneLock',true);if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='offline'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time,fail:true}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
   render() {
-    const c = C() || ensureCase('queue'), b = TP.branch(c.branch);
+    const c = C() || ensureCase('queue');
     const paused = c.status === 'paused';
     const ahead = Number.isFinite(c.pos) ? Math.max(0, c.pos - 1) : null;
     c.queueCode ||= 'Q-' + TP.caseCode(c).replace(/^MR/, '');
-    return ui.nav({title:'รอคิวปรึกษา',solid:true}) + ui.page(`
+    return ui.page(`
       <section class="queue-wait-content" aria-labelledby="queueWaitTitle">
-        <div class="queue-wait-symbol" aria-hidden="true">${ic(paused?'clock':'search',32,1.7)}</div>
-        <h2 id="queueWaitTitle">${paused?'เภสัชกรพักรับบริการชั่วคราว':'กำลังค้นหาเภสัชกร'}</h2>
-        <p class="queue-wait-branch">${esc(b.name)}</p>
-        <div class="queue-ticket">
-          <span class="queue-ticket-label">รหัสคิวของคุณ</span>
-          <strong class="queue-ticket-code num">${esc(c.queueCode)}</strong>
+        <div class="queue-wait-summary">
+          <h2 id="queueWaitTitle">${paused?'เภสัชกรพักชั่วคราว':'กำลังรอคิวปรึกษา'}</h2>
           <div class="queue-ticket-position" role="status" aria-live="polite" aria-atomic="true">
-            ${ahead===null?'<b>กำลังตรวจสอบลำดับคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b><span>รอเภสัชกรรับบริการ</span>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong><span>คิว</span></div>`}
+            ${ahead===null?'<b>กำลังตรวจสอบคิว</b>':ahead===0?'<b>คุณเป็นคิวถัดไป</b>':`<span>มีคิวก่อนหน้าคุณ</span><div><strong class="num">${ahead}</strong><span>คิว</span></div>`}
           </div>
+          ${paused?'<p class="queue-wait-explanation">คิวของคุณยังอยู่</p>':''}
         </div>
-        <p class="queue-wait-explanation">${paused?'คิวของคุณยังอยู่ กรุณารอเภสัชกรกลับมาให้บริการ':'เมื่อเภสัชกรรับบริการ ระบบจะพาคุณเข้าสู่แชทโดยอัตโนมัติ'}</p>
-        <div class="queue-wait-steps" aria-label="ขั้นตอนการปรึกษา">
-          <span class="done">${ic('check',16,2)}<small>ส่งอาการแล้ว</small></span>
-          <span class="current" aria-current="step">${ic('clock',16,2)}<small>รอรับบริการ</small></span>
-          <span>${ic('message-circle',16,2)}<small>เริ่มปรึกษา</small></span>
-        </div>
-        ${TP.queueZoneNote(c)}
       </section>`, {cls:'queue-wait-page'}) + ui.dock(ui.btn('ยกเลิกคิว',{kind:'danger-line',sheet:'cancelq'}));
   },
   mount() {}
@@ -3538,8 +3528,12 @@ TP.fulfillmentPreview = (c,key) => {
   if(key!=='parcel-preparing') TP.previewParcelStatus(pd,key.slice(7));
  } else if(key.startsWith('pickup-')) { c.order.paid.recv='pickup'; c.order.paid.addr=null; c.order.paid.ship=0; c.order.paid.total=c.order.total; TP.setFulfillment(c,'preparing'); if(key==='pickup-ready') { c.order.paid.stage='ready'; c.order.paid.packAt=TP.NOW.time; c.order.paid.packDate=TP.NOW.date; } if(key==='pickup-complete') c.order.picked=true; } else TP.setFulfillment(c,key.replace('delivery-',''));TP.saveReceipt?.(c);
 };
-TP.fulfillmentCard = S => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo(c);return f && !f.done;}).map(c=>{
+TP.fulfillmentCard = (S, options = {}) => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo(c);return f && !f.done;}).map(c=>{
  const f=TP.fulfillmentInfo(c),b=TP.branch(c.branch),title=f.pickup?(c.order.paid?.stage==='ready'?'ยาพร้อมรับที่สาขาแล้ว':'กำลังเตรียมยาสำหรับรับที่สาขา'):f.title;
+ if(options.compact){
+  const icon=f.pickup?(c.order.paid?.stage==='ready'?'store':'pill'):f.key==='calling'?'search':f.key==='delivering'?'motorcycle':['out','transit'].includes(f.key)?'truck':'package';
+  return `<button type="button" class="hm-fulfillment-banner" ${TP.ui.route({a:'viewFulfillment',p:{caseId:c.id}})} aria-label="${TP.esc(title)} คำสั่งซื้อ ${TP.esc(c.order.no)}"><span class="hm-fulfillment-icon" aria-hidden="true">${TP.ic(icon,24,1.8)}</span><span class="hm-fulfillment-copy"><strong>${TP.esc(title)}</strong><small>คำสั่งซื้อ #${TP.esc(c.order.no)}</small></span>${TP.ic('chevron-right',18,1.8)}</button>`;
+ }
  return `<article class="post-consult-payment fulfillment-card case-progress-card"><header class="post-payment-heading case-progress-head"><span class="case-progress-icon" aria-hidden="true">${TP.ic(f.pickup?'store':['calling','delivering','out','transit'].includes(f.key)?'truck':'package',22,1.8)}</span><span>สถานะคำสั่งซื้อ</span>${TP.ui.tag('ชำระแล้ว','ok')}</header><div class="case-progress-body"><h3>${TP.esc(title)}</h3><p class="case-progress-meta">${TP.ic('map-pin',16)}<span>${TP.esc(b.name)}</span></p><p class="case-progress-order">เลขคำสั่งซื้อ <span>${TP.esc(c.order.no)}</span></p></div><footer class="case-progress-foot">${TP.ui.btn('ติดตามสถานะยา',{a:'viewFulfillment',p:{caseId:c.id},iconRight:'arrow-right'})}</footer></article>`;
 
 }).join('');
@@ -5560,14 +5554,15 @@ function docHtml(S, h, options = {}) {
   const visitCase = h._case || (S.case?.id === h.id ? S.case : null) || (h.order ? {order:h.order} : null);
   const fulfillment = TP.fulfillmentInfo?.(visitCase), paid = visitCase?.order?.paid;
   const deliveryStatus = fulfillment ? (fulfillment.done ? (fulfillment.pickup ? 'รับยาที่สาขาแล้ว' : 'จัดส่งสำเร็จแล้ว') : fulfillment.pickup ? (paid?.stage === 'ready' ? 'พร้อมรับที่สาขา' : 'กำลังเตรียมยา') : fulfillment.title) : paid ? (visitCase.order.picked || paid.got ? (paid.recv === 'pickup' ? 'รับยาที่สาขาแล้ว' : 'จัดส่งสำเร็จแล้ว') : paid.stage ? (paid.recv === 'pickup' ? 'พร้อมรับที่สาขา' : 'จัดส่งแล้ว') : 'กำลังเตรียมยา') : h.bought ? 'ไม่มีข้อมูลสถานะ' : '';
+  const cancelled = historyOrderStatus(S, h)?.key === 'cancelled';
   const facts = [
     ['วันและเวลา',[h.date,h.time].filter(Boolean).join(' · ')],
     ['ผู้รับบริการ',who],['สาขา',b.name],['เภสัชกร',P.name],['เลขใบอนุญาต',P.lic],
     ['สถานะจัดส่ง',deliveryStatus]
   ];
   return `<article class="af-visit" aria-label="ใบสรุปการปรึกษา">
-    ${options.hideHero ? '' : `<header class="af-visit-hero">
-      <span>สรุปการรับบริการ</span>
+    ${options.hideHero ? '' : `<header class="af-visit-hero${cancelled ? ' af-visit-hero-cancelled' : ''}">
+      <span>${cancelled ? 'ยกเลิกคำสั่งซื้อ' : 'สรุปการรับบริการ'}</span>
       <h2>คำสั่งซื้อ #${esc(visitCase?.order?.no || h.orderNo || TP.orderNumber(h))}</h2>
       <small>${esc(h.date)}${h.time?' · '+esc(h.time)+' น.':''}</small>
     </header>`}

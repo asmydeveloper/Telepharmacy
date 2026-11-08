@@ -38,7 +38,7 @@ a=source.indexOf("TP.act('queueMin'");b=source.indexOf('\n',a);run(source.slice(
 (async()=>{
 const ctx={S,state:'q4',onLeave(){},later(){},every(){}};
 let html=screens.queue.render(ctx);
-assert.match(html,/Q-[0-9]+/);
+assert.doesNotMatch(html,/Q-[0-9]+|รหัสคิวของคุณ/);
 assert.match(html,/มีคิวก่อนหน้าคุณ/);
 assert.match(html,/>3<\/strong>/);
 assert.doesNotMatch(html,/textarea|rmList|ส่งรูป|queueMin|data-back|data-go=/);
