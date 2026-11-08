@@ -1298,6 +1298,23 @@
   padding-inline: var(--space-3);
   white-space: nowrap;
 }
+.reg-phone-control.is-locked {
+  grid-template-columns: minmax(0, 1fr);
+}
+.reg-phone-control.is-locked > .field > .input {
+  padding-right: 112px;
+}
+.reg-phone-change {
+  grid-column: 1;
+  grid-row: 2;
+  justify-self: end;
+  margin-right: var(--space-2);
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: var(--text-small);
+}
 .reg-phone-status {
   justify-content: space-between;
   font-size: var(--text-small);
@@ -1306,14 +1323,17 @@
 }
 .reg-phone-status .txtbtn {
   min-height: 44px;
-  padding: var(--space-2);
+  padding: 0 var(--space-2);
 }
 .reg-phone-otp {
   display: grid;
   gap: var(--space-2);
-  padding: var(--space-4);
-  background: var(--brand-tint);
-  border-radius: var(--radius-control);
+  min-width: 0;
+}
+.reg-phone-otp-label {
+  margin: 0;
+  font-size: var(--text-small);
+  font-weight: var(--weight-medium);
 }
 .reg-phone-code-row {
   display: flex;
@@ -1326,9 +1346,17 @@
   text-align: center;
   letter-spacing: 0.15em;
 }
-.reg-phone-otp > .txtbtn {
-  justify-self: start;
+.reg-phone-otp-meta {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.reg-phone-otp-meta > .txtbtn {
   min-height: 44px;
+  padding: 0;
+  font-size: var(--text-small);
 }
 
 /* Receipt invoice request: one switch, then a single recipient choice. */

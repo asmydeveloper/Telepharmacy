@@ -1358,7 +1358,7 @@ select {
 }
 .inbox-list {
   display: grid;
-  gap: var(--space-3);
+  gap: 0;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -1370,13 +1370,14 @@ select {
   align-items: start;
   width: 100%;
   min-height: 88px;
-  padding: var(--space-4) var(--space-3);
-  border: 1px solid var(--semantic-border);
-  background: var(--semantic-surface-selected);
+  padding: var(--space-4) 0;
+  border: 0;
+  border-bottom: 1px solid var(--semantic-border);
+  background: transparent;
   color: var(--semantic-text);
   font: inherit;
   text-align: left;
-  border-radius: var(--radius-lg);
+  border-radius: 0;
 }
 .inbox-item-icon {
   display: grid;
@@ -1416,14 +1417,14 @@ select {
   outline-offset: 2px;
 }
 .inbox-item:active {
-  background: var(--semantic-surface-muted);
+  background: transparent;
 }
 .inbox-loading {
   gap: var(--space-3);
 }
 @media (hover: hover) {
   .inbox-item:hover {
-    background: var(--semantic-surface-muted);
+    background: transparent;
   }
 }
 

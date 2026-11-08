@@ -119,7 +119,17 @@ console.log('PASS: all registration previews, no repeated OTP contact, password 
  assert(html.indexOf('id="reg-email"')<html.indexOf('id="reg-phone"'));
  assert(r.run('regErrors(regDraft(TP.S),0)').phone);
  d.phone='0812345678';r.TP.refresh=async()=>{};
+ d.errors=r.run('regErrors(regDraft(TP.S),0)');
+ assert(d.errors.phone,'unverified phone must still block the next step');
+ html=r.screens.profile.render(r.ctx);
+ assert(/id="reg-phone"[^>]*aria-invalid="false"/.test(html),'valid phone waiting for OTP is not an invalid input');
+ assert(!html.includes('ยืนยันเบอร์โทรด้วยรหัส OTP ก่อนดำเนินการต่อ'));
+
  await r.actions.regPhoneSend();assert.equal(d.phoneChallenge.target,d.phone);
+ html=r.screens.profile.render(r.ctx);
+ assert(!html.includes('ส่งรหัส OTP แล้ว'));
+ assert(/id="reg-phone-code"[^>]*required aria-required="true"/.test(html));
+ assert(/class="txtbtn reg-phone-change"/.test(html));
  const original=d.phoneChallenge;await r.actions.regPhoneSend();assert.equal(d.phoneChallenge,original,'resend cooldown');
  d.phoneCode='000000';await r.actions.regPhoneVerify();assert(!d.verifiedPhone);assert(!/อีก \d+ ครั้ง/.test(d.phoneError));
  d.phoneCode='123456';await r.actions.regPhoneVerify();assert.equal(d.verifiedPhone,d.phone);
