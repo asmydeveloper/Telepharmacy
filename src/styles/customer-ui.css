@@ -2287,9 +2287,10 @@ body:has(.consultation-card-preview) nextjs-portal {
 }
 
 .scr .rm-scroll {
-  background: var(--semantic-disabled-bg);
+  background: var(--semantic-surface);
 }
 .scr .rm-scroll .msg.ph > p {
+  border: 1px solid var(--color-border-control);
   background: var(--semantic-surface);
   color: var(--ink);
 }
@@ -2602,15 +2603,18 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .queue-wait-screen > .dock .btn { background: var(--semantic-primary); color: var(--surface); border: 0; box-shadow: none; }
 .phone .queue-wait-screen > .dock .btn:not(:disabled):is(:hover, :active) { background: var(--brand-deep); color: var(--surface); box-shadow: none; }
 .queue-wait-screen .queue-wait-page { padding: 0; background: transparent; }
-.queue-wait-content { position: relative; min-height: 100%; text-align: center; color: var(--semantic-primary); }
+.queue-wait-content { position: relative; isolation: isolate; overflow: hidden; min-height: 100%; text-align: center; color: var(--ink); }
+.queue-wait-content::before { content: ""; position: absolute; z-index: -1; inset: -40px; pointer-events: none; opacity: 0.55; background: radial-gradient(ellipse at 5% 25%, var(--color-brand-50), transparent 52%), radial-gradient(ellipse at 95% 75%, var(--color-brand-100), transparent 50%); animation: queue-ambient-drift 14s ease-in-out infinite alternate; }
+@keyframes queue-ambient-drift { from { transform: translate3d(-16px, -20px, 0) scale(1); } to { transform: translate3d(16px, 20px, 0) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { .queue-wait-content::before { animation: none; } }
 .queue-wait-summary { padding: var(--space-5); }
 .queue-wait-art { display: block; width: 220px; max-width: 100%; height: 220px; object-fit: contain; margin: 0 auto var(--space-5); }
 .queue-wait-content h2 { font-size: var(--text-title); line-height: 1.4; margin: 0 0 var(--space-3); }
 .queue-wait-dots { display: inline-block; width: 1em; text-align: left; clip-path: inset(0 66.666% 0 0); animation: queue-wait-dots 1.5s step-end infinite; }
 @keyframes queue-wait-dots { 0% { clip-path: inset(0 66.666% 0 0); } 33.333% { clip-path: inset(0 33.333% 0 0); } 66.666%, 100% { clip-path: inset(0); } }
 @media (prefers-reduced-motion: reduce) { .queue-wait-dots { animation: none; clip-path: none; } }
-.queue-wait-subtitle { margin: 0 auto var(--space-5); font-size: var(--text-small); line-height: 1.7; color: var(--text-muted); }
-.queue-ticket-position { max-width: 300px; margin: 0 auto; padding: var(--space-4); background: var(--semantic-surface-muted); border: 1px solid var(--border); border-radius: var(--radius-lg); color: var(--semantic-primary); }
+.queue-wait-subtitle { margin: 0 auto var(--space-5); font-size: var(--text-small); line-height: 1.7; color: var(--ink); }
+.queue-ticket-position { max-width: 300px; margin: 0 auto; padding: var(--space-4); background: var(--semantic-surface-muted); border: 1px solid var(--border); border-radius: var(--radius-lg); color: var(--ink); }
 .queue-ticket-position > span { display: block; font-size: var(--text-body); }
 .queue-ticket-position > b { font-size: var(--text-heading); }
 .queue-ticket-position > div { display: flex; align-items: baseline; justify-content: center; gap: var(--space-2); margin-top: var(--space-2); }
