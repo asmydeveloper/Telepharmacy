@@ -1,0 +1,21 @@
+{
+  "code": "C611",
+  "screen": "serverdown",
+  "title": "เชื่อมต่อระบบไม่ได้",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C611.1",
+      "state": "normal",
+      "label": "เชื่อมต่อเซิร์ฟเวอร์ไม่ได้",
+      "url": "/?screen=serverdown&state=normal&splash=0"
+    },
+    {
+      "code": "C611.2",
+      "state": "retrying",
+      "label": "กำลังลองเชื่อมต่อ",
+      "url": "/?screen=serverdown&state=retrying&splash=0"
+    }
+  ]
+}

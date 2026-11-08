@@ -6,16 +6,10 @@
   "kind": "screen",
   "cases": [
     {
-      "code": "C601.1",
-      "state": "ios",
-      "label": "iPhone",
-      "url": "/?screen=update&state=ios&splash=0"
-    },
-    {
-      "code": "C601.2",
-      "state": "android",
-      "label": "Android",
-      "url": "/?screen=update&state=android&splash=0"
+      "code": "C601",
+      "state": "normal",
+      "label": "บังคับอัปเดตแอป",
+      "url": "/?screen=update&state=normal&splash=0"
     }
   ]
 }

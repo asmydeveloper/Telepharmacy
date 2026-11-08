@@ -73,156 +73,132 @@
     },
     {
       "code": "C105.12",
-      "state": "error",
-      "label": "ปีเกิดไม่ถูกต้อง",
-      "url": "/?screen=profile&state=error&splash=0"
-    },
-    {
-      "code": "C105.13",
-      "state": "dob-years",
-      "label": "วันเกิด: ล้อหมุน",
-      "url": "/?screen=profile&state=dob-years&splash=0"
-    },
-    {
-      "code": "C105.14",
-      "state": "dob-leap",
-      "label": "วันเกิด: ปีอธิกสุรทิน",
-      "url": "/?screen=profile&state=dob-leap&splash=0"
-    },
-    {
-      "code": "C105.15",
       "state": "dob-future",
       "label": "วันเกิด: จำกัดถึงวันนี้",
       "url": "/?screen=profile&state=dob-future&splash=0"
     },
     {
-      "code": "C105.16",
-      "state": "dob-oldest",
-      "label": "วันเกิด: ปี 1900",
-      "url": "/?screen=profile&state=dob-oldest&splash=0"
-    },
-    {
-      "code": "C105.17",
+      "code": "C105.13",
       "state": "password-partial",
       "label": "รหัสผ่านยังไม่ครบเงื่อนไข",
       "url": "/?screen=profile&state=password-partial&splash=0"
     },
     {
-      "code": "C105.18",
+      "code": "C105.14",
       "state": "password-mismatch",
       "label": "รหัสผ่านยืนยันไม่ตรงกัน",
       "url": "/?screen=profile&state=password-mismatch&splash=0"
     },
     {
-      "code": "C105.19",
+      "code": "C105.15",
       "state": "address",
       "label": "ขั้นที่อยู่ พร้อมค้นหาอัตโนมัติ",
       "url": "/?screen=profile&state=address&splash=0"
     },
     {
-      "code": "C105.20",
+      "code": "C105.16",
       "state": "address-select",
       "label": "เลือกจังหวัด อำเภอ ตำบล",
       "url": "/?screen=profile&state=address-select&splash=0"
     },
     {
-      "code": "C105.21",
+      "code": "C105.17",
       "state": "address-no-results",
       "label": "ค้นหาที่อยู่ไม่พบ กรอกเองได้",
       "url": "/?screen=profile&state=address-no-results&splash=0"
     },
     {
-      "code": "C105.22",
+      "code": "C105.18",
       "state": "address-error",
       "label": "ตัวช่วยที่อยู่โหลดไม่สำเร็จ",
       "url": "/?screen=profile&state=address-error&splash=0"
     },
     {
-      "code": "C105.23",
+      "code": "C105.19",
       "state": "address-missing-phone",
       "label": "ที่อยู่ยังไม่กรอกเบอร์",
       "url": "/?screen=profile&state=address-missing-phone&splash=0"
     },
     {
-      "code": "C105.24",
+      "code": "C105.20",
       "state": "address-invalid-phone",
       "label": "รูปแบบเบอร์ติดต่อไม่ถูกต้อง",
       "url": "/?screen=profile&state=address-invalid-phone&splash=0"
     },
     {
-      "code": "C105.25",
+      "code": "C105.21",
       "state": "address-split",
       "label": "ที่อยู่แยกบ้านเลขที่ อาคาร ซอย ถนน",
       "url": "/?screen=profile&state=address-split&splash=0"
     },
     {
-      "code": "C105.26",
+      "code": "C105.22",
       "state": "address-legacy",
       "label": "ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ",
       "url": "/?screen=profile&state=address-legacy&splash=0"
     },
     {
-      "code": "C105.27",
+      "code": "C105.23",
       "state": "health",
       "label": "ขั้นข้อมูลสุขภาพ ยังไม่ทราบ",
       "url": "/?screen=profile&state=health&splash=0"
     },
     {
-      "code": "C105.28",
+      "code": "C105.24",
       "state": "health-empty",
       "label": "ระบุข้อมูลสุขภาพ แต่ยังไม่มีรายการ",
       "url": "/?screen=profile&state=health-empty&splash=0"
     },
     {
-      "code": "C105.29",
+      "code": "C105.25",
       "state": "health-none",
       "label": "ไม่มีประวัติสุขภาพ โดยผู้ใช้เลือกเอง",
       "url": "/?screen=profile&state=health-none&splash=0"
     },
     {
-      "code": "C105.30",
+      "code": "C105.26",
       "state": "health-text",
       "label": "ระบุสุขภาพด้วยข้อความ",
       "url": "/?screen=profile&state=health-text&splash=0"
     },
     {
-      "code": "C105.31",
+      "code": "C105.27",
       "state": "health-documents",
       "label": "แนบเอกสารแพ้ยาแล้ว",
       "url": "/?screen=profile&state=health-documents&splash=0"
     },
     {
-      "code": "C105.32",
+      "code": "C105.28",
       "state": "health-doc-error",
       "label": "ไฟล์แนบไม่ผ่านเงื่อนไข",
       "url": "/?screen=profile&state=health-doc-error&splash=0"
     },
     {
-      "code": "C105.33",
+      "code": "C105.29",
       "state": "health-doc-limit",
       "label": "แนบเอกสารครบ 5 ไฟล์",
       "url": "/?screen=profile&state=health-doc-limit&splash=0"
     },
     {
-      "code": "C105.34",
+      "code": "C105.30",
       "state": "review",
       "label": "ตรวจทานและความยินยอม ยังไม่ติ๊ก",
       "url": "/?screen=profile&state=review&splash=0"
     },
     {
-      "code": "C105.35",
+      "code": "C105.31",
       "state": "review-documents",
       "label": "ตรวจทานไฟล์แนบ รูปย่อและชื่อไฟล์",
       "url": "/?screen=profile&state=review-documents&splash=0"
     },
     {
-      "code": "C105.36",
+      "code": "C105.32",
       "state": "consent-ready",
       "label": "เลือกยินยอมแล้ว พร้อมสมัคร",
       "url": "/?screen=profile&state=consent-ready&splash=0"
     },
     {
-      "code": "C105.37",
+      "code": "C105.33",
       "state": "save-error",
       "label": "บันทึกไม่สำเร็จ ข้อมูลยังอยู่",
       "url": "/?screen=profile&state=save-error&splash=0"

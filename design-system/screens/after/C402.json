@@ -8,31 +8,19 @@
     {
       "code": "C402.1",
       "state": "normal",
-      "label": "รับที่ร้าน พร้อมเพย์",
+      "label": "ขอใบกำกับภาษี",
       "url": "/?screen=receipt&state=normal&splash=0"
     },
     {
-      "code": "C402.3",
-      "state": "notax",
-      "label": "ยังไม่มีข้อมูลใบกำกับภาษี",
-      "url": "/?screen=receipt&state=notax&splash=0"
-    },
-    {
       "code": "C402.4",
-      "state": "taxpending",
-      "label": "ส่งคำขอแล้ว · รอดำเนินการ",
-      "url": "/?screen=receipt&state=taxpending&splash=0"
-    },
-    {
-      "code": "C402.5",
-      "state": "taxdone",
-      "label": "ออกใบกำกับภาษีแล้ว",
-      "url": "/?screen=receipt&state=taxdone&splash=0"
+      "state": "taxsent",
+      "label": "ส่งใบกำกับภาษีทางอีเมลแล้ว",
+      "url": "/?screen=receipt&state=taxsent&splash=0"
     },
     {
       "code": "C402.6",
       "state": "late",
-      "label": "เลยกำหนดขอใบกำกับภาษี",
+      "label": "เกิน 7 วัน ขอใบกำกับภาษีไม่ได้",
       "url": "/?screen=receipt&state=late&splash=0"
     },
     {
@@ -40,12 +28,6 @@
       "state": "missing",
       "label": "ไม่พบใบเสร็จ",
       "url": "/?screen=receipt&state=missing&splash=0"
-    },
-    {
-      "code": "C402.8",
-      "state": "tax-selected",
-      "label": "เลือกผู้รับแล้ว ยังไม่ส่งคำขอ",
-      "url": "/?screen=receipt&state=tax-selected&splash=0"
     }
   ]
 }

@@ -25,21 +25,10 @@ for(const id of ['family','familyedit','memberdel'])assert(!source.includes("TP.
 const manifests=require('node:fs').readdirSync('design-system/screens/account');for(const code of ['C502','C503','C504'])assert(!manifests.includes(code+'.json'));
 assert(source.includes("if(TP.def(id)?.disabled)return TP.go('account',{root:true})"));
 
-// Search disclosure: clear query without closing; close resets query but keeps purchase tab.
-const search=harness(),events={};let focuses=0,blurs=0;
-const input={value:'',focus(){focuses++},blur(){blurs++},addEventListener:(event,fn)=>events[event]=fn};
-const toggle={attrs:{},setAttribute(key,value){this.attrs[key]=value},focus(){this.focused=true}};
-search.elements['#histSearch']=input;search.elements['#histSearchPanel']={hidden:true};search.elements['#histSearchToggle']=toggle;search.elements['#histSearchClear']={hidden:true};search.elements['#histCount']={textContent:''};
-search.S._histStatus='completed';search.S._histQuery='';
-search.actions.afHistSearchToggle();assert.equal(search.elements['#histSearchPanel'].hidden,false);assert.equal(toggle.attrs['aria-expanded'],'true');assert.equal(focuses,1);
-search.screens.history.mount({}, {S:search.S,state:'normal',later:()=>{}});
-input.value='ไข้';events.input({target:input});assert.equal(search.S._histQuery,'ไข้');assert.equal(search.elements['#histSearchClear'].hidden,false);
-search.actions.afHistSearchClear();assert.equal(input.value,'');assert.equal(search.S._histQuery,'');assert.equal(search.elements['#histSearchPanel'].hidden,false);assert.equal(search.S._histStatus,'completed');assert.equal(search.elements['#histSearchClear'].hidden,true);
-input.value='ไม่พบ';events.input({target:input});search.actions.afHistSearchClose();assert.equal(search.elements['#histSearchPanel'].hidden,true);assert.equal(search.S._histQuery,'');assert.equal(search.S._histStatus,'completed');assert(toggle.focused);assert.equal(toggle.attrs['aria-expanded'],'false');
-search.actions.afHistSearchToggle();let prevented=false;events.keydown({key:'Escape',preventDefault(){prevented=true}});assert(prevented);assert(search.elements['#histSearchPanel'].hidden);
-search.actions.afHistSearchToggle();events.keydown({key:'Enter',preventDefault(){}});assert.equal(blurs,1);assert(!search.elements['#histSearchPanel'].hidden);search.actions.afHistSearchToggle();assert(search.elements['#histSearchPanel'].hidden);
-search.S._histSearchOpen=false;const closedSearch=search.screens.history.render({S:search.S,state:'normal',params:{}});assert(closedSearch.includes('id="histSearchToggle"'));assert(closedSearch.includes('aria-controls="histSearchPanel"'));assert(closedSearch.includes('id="histSearchPanel" hidden'));assert(closedSearch.includes('placeholder="อาการ ร้านยา เภสัชกร หรือเลขการปรึกษา"'));assert(closedSearch.includes('aria-label="ล้างคำค้นหา"'));assert(closedSearch.includes('data-a="afHistSearchClose"'));
-console.log('PASS: header search, focus, live query, clear versus close, retained tab, Escape/Enter and toggle');
+// C403 tabs: each tab case renders its own selected tab; no search UI.
+for(const [state,key] of [['normal','all'],['tab-shipping','shipping'],['tab-completed','completed'],['tab-cancelled','cancelled']]){const t=harness();t.S.st.history=state;t.screens.history.prep(t.S);const html=t.screens.history.render({S:t.S,state,params:{}});assert(new RegExp('data-v="'+key+'"[^>]*aria-pressed="true"|aria-pressed="true"[^>]*data-v="'+key+'"').test(html),state+' selects '+key);assert(!html.includes('histSearch'),'no search');}
+{const t=harness();t.S.st.history='error';t.screens.history.prep(t.S);const html=t.screens.history.render({S:t.S,state:'error',params:{}});assert(html.includes('history-status-tabs'));assert(html.includes('/assets/empty/'));assert(html.includes('afHistRetry'));}
+console.log('PASS: four status tabs select per case, error keeps tabs with empty-state art, no search');
 
 const totals=harness();totals.context.paidRecord={id:'total-paid',who:'me',date:'01/10/2026',time:'12:00',topic:'ตัวอย่าง',pharm:'kj',branch:'tw',bought:265,order:{status:'paid',total:310.5}};
 let totalHtml=totals.run('histItem(paidRecord)');assert(!totalHtml.includes('ยอดเงินทั้งหมด'));assert(totalHtml.includes('฿310.5'));assert(!totalHtml.includes('฿265'));assert(totalHtml.includes('history-order-price'));

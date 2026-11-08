@@ -30,12 +30,6 @@
       "url": "/?screen=lock&state=payexp&splash=0"
     },
     {
-      "code": "C301.5",
-      "state": "paused",
-      "label": "เภสัชกรพัก",
-      "url": "/?screen=lock&state=paused&splash=0"
-    },
-    {
       "code": "C301.6",
       "state": "summary",
       "label": "ใบสรุป",

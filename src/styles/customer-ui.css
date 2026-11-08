@@ -2787,3 +2787,9 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .case-progress-head > .case-status-watermark { width: 112px; height: 112px; bottom: -36px; }
 .phone .case-progress-head > :not(.case-status-watermark),
 .phone .consult-status-hero > :not(.case-status-watermark) { position: relative; z-index: 1; }
+
+/* C207: out-of-radius notice sits under the queue summary, aligned to the page content */
+.queue-wait-content .rm-zone { padding: 0; margin-top: var(--space-4); width: 100%; }
+
+/* C610/C611 blocking screens: icon centred on the halo */
+.st-block-ic { position: absolute; inset: 0; display: grid; place-items: center; color: var(--semantic-primary); }

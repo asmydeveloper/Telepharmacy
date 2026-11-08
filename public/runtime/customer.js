@@ -166,6 +166,8 @@ TP.PATH = {
   star: '<path d="M11.525 2.295a.53.53 0 0 1 .95 0l2.31 4.679a2.123 2.123 0 0 0 1.595 1.16l5.166.756a.53.53 0 0 1 .294.904l-3.736 3.638a2.123 2.123 0 0 0-.611 1.878l.882 5.14a.53.53 0 0 1-.771.56l-4.618-2.428a2.122 2.122 0 0 0-1.973 0L6.396 21.01a.53.53 0 0 1-.77-.56l.881-5.139a2.122 2.122 0 0 0-.611-1.879L2.16 9.795a.53.53 0 0 1 .294-.906l5.165-.755a2.122 2.122 0 0 0 1.597-1.16z"/>',
   download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
   share: '<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" x2="12" y1="2" y2="15"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  'server-off': '<path d="M7 2h13a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-5"/><path d="M10 10 2.5 2.5C2 2 2 2.5 2 5v3a2 2 0 0 0 2 2h6z"/><path d="M22 17v-1a2 2 0 0 0-2-2h-1"/><path d="M4 14a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h16.5l1-.5.5.5-8-8H4z"/><path d="M6 18h.01"/><path d="m2 2 20 20"/>',
   'refresh-cw': '<path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/>',
   'rotate-ccw': '<path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>',
   'wifi-off': '<path d="M12 20h.01"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M19 12.859a10 10 0 0 0-2.007-1.523"/><path d="M2 8.82a15 15 0 0 1 4.177-2.643"/><path d="M22 8.82a15 15 0 0 0-11.288-3.764"/><path d="m2 2 20 20"/>',
@@ -2171,6 +2173,38 @@ TP.screen('update', {
       ui.dock(ui.btn('อัปเดตแอป', { icon: 'download', a: 'stUpd', id: 'updGo' }) + `<p class="dock-note">เปิด${and ? ' Google Play' : ' App Store'}</p>`, { clear: true });
   }
 });
+/* C610 / C611 (user 8 Nov 2026): whole-app blocking states. Shown before any screen when the service is in
+   maintenance or no API can be reached. Production reads these from a status endpoint / network layer. */
+const stBlock = (ctx, o) => ui.page(`<div class="st-vc"><div class="st-cen">
+    <div class="st-upd-art" data-in="0">${brand.halo(176, { draw: true })}<span class="st-block-ic" aria-hidden="true">${ic(o.icon, 56, 1.6)}</span></div>
+    <h2 class="st-h1 c" data-in="1">${o.title}</h2>
+    <p class="st-sub c" data-in="2">${o.body}</p></div>
+    ${ui.card(ui.kv(o.rows), { din: 3, cls: 'st-kvc' })}
+    <div class="mt16" data-in="4">${ui.note('<b>มีอาการรุนแรงหรือฉุกเฉิน</b> เช่น หายใจลำบาก แน่นหน้าอก ปากหรือหน้าบวม ไปโรงพยาบาลใกล้บ้าน หรือ <a href="tel:1669">โทร 1669</a> ไม่ต้องรอแอป', { tone: 'danger', icon: 'triangle-alert' })}</div></div>`, { nonav: true }) +
+  ui.dock(ctx.state === 'retrying'
+    ? ui.btn('กำลังลองเชื่อมต่อ…', { disabled: true, id: 'stRetryGo' })
+    : ui.btn('ลองอีกครั้ง', { icon: 'refresh-cw', a: 'stRetry', id: 'stRetryGo' }), { clear: true });
+TP.screen('maintenance', {
+  group: 'edge', title: 'ปิดปรับปรุงระบบ', code: 'C610',
+  states: [['normal', 'ปิดปรับปรุงระบบ'], ['retrying', 'กำลังลองเชื่อมต่อ']],
+  notes: ['ปิดทั้งแอปชั่วคราวเมื่อระบบปิดปรับปรุงตามแผน ไม่มีปุ่มย้อนกลับ', 'บอกว่าข้อมูลและคำสั่งซื้อเดิมอยู่ครบ และให้ไปโรงพยาบาลหรือโทร 1669 เมื่อมีอาการฉุกเฉิน', 'ช่วงเวลากลับมาให้บริการต้องมาจากระบบจริง ต้นแบบแสดงเป็นข้อความตัวอย่าง'],
+  wait: ['ประกาศเวลาปิดปรับปรุงล่วงหน้าผ่านแจ้งเตือนหรือไม่'],
+  render(ctx) {
+    return stBlock(ctx, { icon: 'wrench', title: 'ปิดปรับปรุงระบบชั่วคราว', body: 'ขออภัยในความไม่สะดวก ตอนนี้ยังปรึกษาเภสัชกรและสั่งยาผ่านแอปไม่ได้ กรุณากลับมาใหม่ภายหลัง',
+      rows: [['กลับมาให้บริการ', 'ประมาณ 04:00 น. (ตัวอย่าง)'], ['ประวัติและคำสั่งซื้อ', 'อยู่ครบ'], ['ยาที่ชำระแล้ว', 'ร้านยังดำเนินการตามปกติ']] });
+  }
+});
+TP.screen('serverdown', {
+  group: 'edge', title: 'เชื่อมต่อระบบไม่ได้', code: 'C611',
+  states: [['normal', 'เชื่อมต่อเซิร์ฟเวอร์ไม่ได้'], ['retrying', 'กำลังลองเชื่อมต่อ']],
+  notes: ['ใช้เมื่อเรียก API ใด ๆ ไม่ได้ทั้งระบบ (ต่างจาก C608 ที่สัญญาณหลุดระหว่างวิดีโอคอล และแถบไม่มีอินเทอร์เน็ตของเครื่อง)', 'ปุ่มลองอีกครั้งเรียกระบบใหม่ ระหว่างลองปุ่มกดไม่ได้ ไม่มีปุ่มย้อนกลับ', 'คงคำเตือนฉุกเฉิน 1669 เพราะผู้ใช้ติดต่อเภสัชกรผ่านแอปไม่ได้'],
+  render(ctx) {
+    return stBlock(ctx, { icon: 'server-off', title: 'เชื่อมต่อระบบไม่ได้', body: 'ระบบขัดข้องชั่วคราว เราพยายามแก้ไขอยู่ ตรวจสอบอินเทอร์เน็ตของคุณแล้วลองอีกครั้ง',
+      rows: [['ข้อมูลที่บันทึกแล้ว', 'อยู่ครบ'], ['คำสั่งซื้อที่ชำระแล้ว', 'ไม่หาย'], ['ติดต่อร้าน', TP.STORE.cs]] });
+  }
+});
+/* prototype: retrying shows the busy state, then returns to the same blocking screen */
+TP.act('stRetry', () => { const id = TP.cur()?.id; if (!['maintenance', 'serverdown'].includes(id)) return; TP.S.st[id] = 'retrying'; TP.refresh({ anim: false }); setTimeout(() => { if (TP.cur()?.id !== id) return; TP.S.st[id] = 'normal'; TP.refresh({ anim: false }); TP.notify('ยังเชื่อมต่อไม่ได้ ลองใหม่อีกครั้งภายหลัง', { icon: 'circle-alert' }); }, 1500); });
 TP.act('stUpd', async () => {
   TP.notify(TP.stateOf('update') === 'android' ? 'เปิด Google Play' : 'เปิด App Store', { icon: 'download' });
   if (!TP.S.oldApp) return;
@@ -5372,10 +5406,12 @@ TP.screen('history', {
     if(['pending-order','expired-order','cancelled-order'].includes(st)){S.case=closedCase();S.case.date=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());S.case.order.awaitingCheckout=false;S.case.order.status=st==='pending-order'?'pending':st==='expired-order'?'expired':'cancelled';S.case.order.expiresAt=Date.now()+(st==='expired-order'?-1:15*60*1000)}
   },
   render(ctx) {
-    const S=historyView(ctx.S),st=ctx.state,searchOpen=!!(S._histSearchOpen||S._histQuery),canSearch=!['loading','error'].includes(st)&&allHistory(S).length>0;
-    const nav=ui.nav({title:'ประวัติคำสั่งซื้อ',right:canSearch?`<button type="button" id="histSearchToggle" class="ibtn history-search-toggle" data-a="afHistSearchToggle" aria-label="${searchOpen?'ปิดการค้นหาประวัติ':'ค้นหาประวัติ'}" aria-expanded="${searchOpen}" aria-controls="histSearchPanel">${ic('search',22,1.9)}</button>`:''});
-    if(st==='loading')return nav+ui.page(`<div class="history-loading" aria-busy="true" aria-label="กำลังโหลดประวัติ">${ui.skel('100%',88,16)}${ui.skel('50%',20)}${ui.skel('100%',210,16)}${ui.skel('100%',210,16)}</div>`,{});
-    if(st==='error')return nav+ui.page(`<div class="history-empty history-error" role="alert">${ic('circle-alert',32,2)}<h2>โหลดประวัติไม่สำเร็จ</h2><p>ข้อมูลที่บันทึกไว้ยังอยู่ ลองโหลดอีกครั้ง</p>${ui.btn('ลองอีกครั้ง',{a:'afHistRetry'})}</div>`,{});
+    /* C403 (user 8 Nov 2026): four status tabs, no search; tabs stay visible on loading and error */
+    const S=historyView(ctx.S),st=ctx.state;
+    const nav=ui.nav({title:'ประวัติคำสั่งซื้อ'});
+    const tabs=`<div class="history-status-tabs">${ui.seg('histStatus',historyFilterOptions(S),S._histStatus||'all',{a:'afHistStatus',label:'กรองสถานะคำสั่งซื้อ'})}</div>`;
+    if(st==='loading')return nav+ui.page(`<div class="history-page">${tabs}<div class="history-loading" aria-busy="true" aria-label="กำลังโหลดประวัติ">${ui.skel('100%',210,16)}${ui.skel('100%',210,16)}</div></div>`,{});
+    if(st==='error')return nav+ui.page(`<div class="history-page">${tabs}<div class="history-empty history-error" role="alert">${ui.emptyArt('history')}<h3>โหลดประวัติคำสั่งซื้อไม่สำเร็จ</h3><p>ข้อมูลที่บันทึกไว้ยังอยู่ ลองโหลดอีกครั้ง</p>${ui.btn('ลองอีกครั้ง',{a:'afHistRetry'})}</div></div>`,{});
     const selector=historySelector(S),sel=S._histWho;
     const matches=who=>!who||who==='me';
     const all=allHistory(S);

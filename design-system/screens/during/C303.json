@@ -48,42 +48,6 @@
       "url": "/?screen=room&state=idleclosed&splash=0"
     },
     {
-      "code": "C303.14",
-      "state": "provider-joined",
-      "label": "เภสัชกรเข้าห้องแล้ว · ก่อนเริ่มพิมพ์",
-      "url": "/?screen=room&state=provider-joined&splash=0"
-    },
-    {
-      "code": "C303.15",
-      "state": "video-request",
-      "label": "เภสัชกรขอวิดีโอคอล",
-      "url": "/?screen=room&state=video-request&splash=0"
-    },
-    {
-      "code": "C303.16",
-      "state": "video-declined",
-      "label": "เลือกคุยแชทต่อ",
-      "url": "/?screen=room&state=video-declined&splash=0"
-    },
-    {
-      "code": "C303.17",
-      "state": "video-withdrawn",
-      "label": "เภสัชกรถอนคำขอวิดีโอ",
-      "url": "/?screen=room&state=video-withdrawn&splash=0"
-    },
-    {
-      "code": "C303.18",
-      "state": "closed-unpaid",
-      "label": "จบแชท รอชำระค่ายา",
-      "url": "/?screen=room&state=closed-unpaid&splash=0"
-    },
-    {
-      "code": "C303.19",
-      "state": "payment-soon",
-      "label": "จบแชท เหลือชำระ 1 นาที",
-      "url": "/?screen=room&state=payment-soon&splash=0"
-    },
-    {
       "code": "C303.21",
       "state": "offline",
       "label": "ไม่มีอินเทอร์เน็ต",

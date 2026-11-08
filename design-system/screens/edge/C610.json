@@ -1,0 +1,21 @@
+{
+  "code": "C610",
+  "screen": "maintenance",
+  "title": "ปิดปรับปรุงระบบ",
+  "group": "edge",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C610.1",
+      "state": "normal",
+      "label": "ปิดปรับปรุงระบบ",
+      "url": "/?screen=maintenance&state=normal&splash=0"
+    },
+    {
+      "code": "C610.2",
+      "state": "retrying",
+      "label": "กำลังลองเชื่อมต่อ",
+      "url": "/?screen=maintenance&state=retrying&splash=0"
+    }
+  ]
+}

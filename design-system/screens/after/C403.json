@@ -8,74 +8,44 @@
     {
       "code": "C403.1",
       "state": "normal",
-      "label": "มีรายการ",
+      "label": "ทั้งหมด",
       "url": "/?screen=history&state=normal&splash=0"
     },
     {
       "code": "C403.2",
-      "state": "empty",
-      "label": "ยังไม่มี",
-      "url": "/?screen=history&state=empty&splash=0"
+      "state": "tab-shipping",
+      "label": "รอจัดส่ง",
+      "url": "/?screen=history&state=tab-shipping&splash=0"
     },
     {
       "code": "C403.3",
+      "state": "tab-completed",
+      "label": "สำเร็จ",
+      "url": "/?screen=history&state=tab-completed&splash=0"
+    },
+    {
+      "code": "C403.4",
+      "state": "tab-cancelled",
+      "label": "ยกเลิก",
+      "url": "/?screen=history&state=tab-cancelled&splash=0"
+    },
+    {
+      "code": "C403.5",
+      "state": "empty",
+      "label": "ไม่มีข้อมูลการสั่งซื้อ",
+      "url": "/?screen=history&state=empty&splash=0"
+    },
+    {
+      "code": "C403.6",
       "state": "loading",
       "label": "กำลังโหลด",
       "url": "/?screen=history&state=loading&splash=0"
     },
     {
       "code": "C403.7",
-      "state": "search",
-      "label": "ค้นหาประวัติ",
-      "url": "/?screen=history&state=search&splash=0"
-    },
-    {
-      "code": "C403.8",
-      "state": "no-results",
-      "label": "ค้นหาไม่พบ",
-      "url": "/?screen=history&state=no-results&splash=0"
-    },
-    {
-      "code": "C403.9",
       "state": "error",
       "label": "โหลดไม่สำเร็จ",
       "url": "/?screen=history&state=error&splash=0"
-    },
-    {
-      "code": "C403.16",
-      "state": "pending-order",
-      "label": "รายการยารอชำระ",
-      "url": "/?screen=history&state=pending-order&splash=0"
-    },
-    {
-      "code": "C403.17",
-      "state": "expired-order",
-      "label": "รายการยาหมดอายุ",
-      "url": "/?screen=history&state=expired-order&splash=0"
-    },
-    {
-      "code": "C403.18",
-      "state": "cancelled-order",
-      "label": "ยกเลิกรายการยา",
-      "url": "/?screen=history&state=cancelled-order&splash=0"
-    },
-    {
-      "code": "C403.22",
-      "state": "search-open",
-      "label": "เปิดช่องค้นหาจากหัวหน้า",
-      "url": "/?screen=history&state=search-open&splash=0"
-    },
-    {
-      "code": "C403.27",
-      "state": "customer-ended",
-      "label": "คุณจบการสนทนา",
-      "url": "/?screen=history&state=customer-ended&splash=0"
-    },
-    {
-      "code": "C403.28",
-      "state": "no-response",
-      "label": "ไม่มีการตอบกลับ 5 นาที",
-      "url": "/?screen=history&state=no-response&splash=0"
     }
   ]
 }
