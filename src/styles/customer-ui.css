@@ -3111,7 +3111,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .phone .fu-order-summary .fu-order-concern p { color: var(--surface); }
 .phone .fu-order-summary .fu-plan-footer { background: transparent; }
 
-.fu-course-assessment-copy { margin: 0 0 var(--space-2); font-size: var(--text-small); line-height: var(--type-body-mobile-line); }
 
 /* C207 outzone: delivery-zone notice pinned above the waiting chat messages. */
 .rm-zone { padding: var(--space-3) var(--page-gutter, var(--space-4)) 0; }
@@ -3201,5 +3200,5 @@ body:has(.consultation-card-preview) nextjs-portal {
 @media (prefers-reduced-motion: reduce) { .fu-order-pagination .fu-order-dot { transition: none; } }
 
 /* card position on each order card, e.g. 2/6 */
-.fu-order-ident { display: inline-flex; align-items: center; gap: var(--space-2); min-width: 0; }
+.fu-order-ident { display: inline-flex; flex-direction: column; align-items: flex-start; gap: var(--space-1); min-width: 0; }
 .fu-order-index { flex: none; padding: 2px var(--space-2); border-radius: var(--radius-pill); background: rgb(255 255 255 / 0.18); font-size: var(--text-small); font-weight: var(--weight-semibold); line-height: 1.4; }

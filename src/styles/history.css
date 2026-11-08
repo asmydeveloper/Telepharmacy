@@ -559,7 +559,7 @@
 /* C403: compact order list with independent copy and detail actions. */
 .history-order-head {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: var(--space-2);
   margin-inline: var(--space-4);
@@ -579,25 +579,9 @@
 .history-order-identity { flex: 1; min-width: 0; }
 .history-order-identity > span { color: var(--ink-3); font-size: var(--text-caption); }
 .history-order-identity > div { display: flex; align-items: center; gap: var(--space-1); }
-.history-order-identity b { min-width: 0; overflow-wrap: anywhere; font-size: var(--text-small); font-weight: var(--weight-semibold); }
-.history-order-copy {
-  position: relative;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: var(--space-8);
-  height: var(--size-touch);
-  margin-block: calc(-1 * var(--space-2));
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--brand);
-  cursor: pointer;
-}
-.history-order-copy:focus-visible { outline: 2px solid var(--semantic-focus); border-radius: var(--radius-small); }
-.history-order-status { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-1); width: 100%; color: var(--brand); }
-.phone .history-card .history-order-status .tag { white-space: normal; font-size: var(--text-body); font-weight: var(--weight-bold); padding: var(--space-2) var(--space-3); }
+.history-order-identity b { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-small); font-weight: var(--weight-semibold); }
+.history-order-status { display: flex; align-items: center; justify-content: flex-end; gap: var(--space-1); flex: none; color: var(--brand); }
+.phone .history-card .history-order-status .tag { white-space: nowrap; font-size: var(--text-small); font-weight: var(--weight-bold); padding: var(--space-2) var(--space-3); }
 .history-order-status > .ic { flex: none; }
 .history-card-open { gap: var(--space-2); padding: var(--space-3) var(--space-4); }
 .history-order-date { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); color: var(--ink-3); font-size: var(--text-caption); }

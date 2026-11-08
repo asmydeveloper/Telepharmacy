@@ -354,6 +354,7 @@ TP.fresh = () => ({
     { id: 'a2', first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '99/9', building: 'ชั้น 12', alley: '', road: 'พระรามที่ 4', prov: 'กรุงเทพมหานคร', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110', main: false, pin: true }
   ],
   history: [
+    {id:'mock-history-shipping',date:'19/10/2026',time:'09:15',who:'me',topic:'เจ็บคอ',note:'ปรึกษาอาการเจ็บคอ',branch:'tw',pharm:'kj',orderNo:'MT2026101901',outcome:'completed',summary:true,order:{no:'MT2026101901',status:'paid',items:[{name:'ยาอมบรรเทาอาการเจ็บคอ',qty:'1 กล่อง',price:120}],total:120,paid:{total:120,items:120,ship:0,fee:0,recv:'pickup',method:'promptpay',date:'19/10/2026',at:'09:30',stage:'preparing'}},previewSummary:{meds:[{name:'ยาอมบรรเทาอาการเจ็บคอ',qty:'1 กล่อง',how:'ใช้ตามคำแนะนำบนฉลาก'}],advice:'ใช้ยาตามฉลากและคำแนะนำจากเภสัชกร'}} ,
     {id:'mock-history-expired',date:'18/10/2026',time:'13:10',who:'me',topic:'เจ็บคอ',note:'เจ็บคอมา 2 วัน กลืนแล้วเจ็บ',branch:'tw',pharm:'kj',orderNo:'MT2026101801',outcome:'payment-expired',summary:true,previewSummary:{meds:[],nomed:'ยังไม่ได้รับยา เนื่องจากไม่ได้ชำระเงินภายในเวลาที่กำหนด',advice:'เภสัชกรแนะนำให้พักผ่อน ดื่มน้ำ และสอบถามเภสัชกรหากอาการไม่ดีขึ้น'}} ,
     {id:'mock-history-paid',date:'17/10/2026',time:'10:20',who:'me',topic:'คัดจมูก น้ำมูก',note:'คัดจมูกและมีน้ำมูกมา 2 วัน',branch:'tw',pharm:'kj',orderNo:'MT2026101701',bought:160,order:{no:'MT2026101701',status:'paid',picked:true,items:[{name:'ยาอมบรรเทาอาการเจ็บคอ',qty:'1 กล่อง',price:120},{name:'พาราเซตามอล 500 มก.',qty:'1 แผง',price:40}],total:160,paid:{items:160,ship:0,fee:0,total:160,recv:'pickup',method:'promptpay',date:'17/10/2026',at:'10:45',got:'11:10'}},outcome:'order-complete',summary:true,previewSummary:{meds:[{name:'ยาอมบรรเทาอาการเจ็บคอ',qty:'1 กล่อง',how:'ใช้ตามคำแนะนำบนฉลาก'},{name:'พาราเซตามอล 500 มก.',qty:'1 แผง',how:'ใช้ตามคำแนะนำบนฉลาก'}],advice:'พักผ่อนให้เพียงพอ ดื่มน้ำสม่ำเสมอ และใช้ยาตามฉลาก หากอาการไม่ดีขึ้นให้ปรึกษาเภสัชกร',follow:'รับยาที่สาขาแล้ว'}} ,
     {id:'mock-history-silent',date:'16/10/2026',time:'14:35',who:'me',topic:'ปวดกล้ามเนื้อ',note:'ปวดกล้ามเนื้อหลังทำงาน',branch:'tw',pharm:'kj',outcome:'no-response',summary:true,previewSummary:{meds:[],nomed:'ไม่มีรายการยา เนื่องจากการสนทนาสิ้นสุดก่อนการสรุป',advice:'ไม่มีคำแนะนำที่บันทึกไว้ เนื่องจากการสนทนาสิ้นสุดก่อนเภสัชกรสรุป'}} ,
@@ -5725,16 +5726,16 @@ function histItem(h) {
   const active=historyInProgress(S,h);
   const cancelled=outcome.key==='customer-ended'||['expired','cancelled'].includes(o?.status||h.orderStatus)||['payment-expired','order-cancelled'].includes(h.outcome);
   const status=cancelled?{label:'ยกเลิกคำสั่งซื้อ',tone:'muted'}
-    :paid?{label:active?'กำลังจัดส่ง':'คำสั่งซื้อสำเร็จ',tone:active?'info':'ok'}
-    :payable?{label:'รอชำระค่ายา',tone:'warn'}:outcome;
+    :paid?{label:active?'กำลังจัดส่ง':'คำสั่งซื้อสำเร็จ',tone:active?'warn':'ok'}
+    :null;
   const items=o?.items || h.previewSummary?.meds;
   const itemText=Array.isArray(items)?items.length+' รายการ':'0 รายการ';
   const branchName=TP.branch(c?.branch||h.branch)?.name||'—';
   return `<article class="history-card${payable?' history-card-payable':''}" data-history-id="${esc(h.id)}">
     <header class="history-order-head">
       <span class="history-order-icon" aria-hidden="true">${ic('package',23,1.8)}</span>
-      <div class="history-order-identity"><span>เลขคำสั่งซื้อ</span><div><b class="num">${orderNumber?esc(orderNumber):'การปรึกษา'}</b>${orderNumber?`<button type="button" class="history-order-copy" data-a="historyCopyOrder" data-order-no="${esc(orderNumber)}" aria-label="คัดลอกเลขคำสั่งซื้อ ${esc(orderNumber)}">${ic('copy',16,1.8)}</button>`:''}</div></div>
-      <span class="history-order-status">${ui.tag(status.label,status.tone)}${ic('chevron-right',17,1.8)}</span>
+      <div class="history-order-identity"><span>เลขคำสั่งซื้อ</span><div><b class="num">${orderNumber?esc(orderNumber):'การปรึกษา'}</b></div></div>
+      <span class="history-order-status">${status?ui.tag(status.label,status.tone):''}${ic('chevron-right',17,1.8)}</span>
     </header>
     <button type="button" class="history-card-open" ${destination} aria-label="ดูข้อมูลคำสั่งซื้อ ${esc(orderNumber || h.id)} ${esc(person.name)} วันที่ ${esc(h.date)}">
       <span class="history-order-row"><span>ร้านยาที่สั่งซื้อ</span><b>${esc(branchName)}</b></span>
@@ -5743,15 +5744,6 @@ function histItem(h) {
       ${paidAmount!=null?`<span class="history-order-row history-order-price"><span>ราคา</span><b class="num">${esc(TP.money(paidAmount))}</b></span>`:''}
     </button>${payable?`<div class="history-payment-action"><button type="button" class="btn primary history-payment-button" ${ui.route({a:'openOrderPayment',p:{caseId:h.id}})}>${ic('credit-card',19,1.8)}<span>ข้อมูลชำระเงิน</span><span class="history-payment-countdown">${ic('clock',16,1.8)}<b data-order-countdown data-order-case="${esc(h.id)}">${TP.orderRemaining(o)}</b></span>${ic('chevron-right',17,2)}</button></div>`:''}</article>`;
 }
-TP.act('historyCopyOrder', async b => {
-  const number=b.dataset.orderNo;
-  if(!number)return;
-  try {
-    if(!navigator.clipboard?.writeText)throw new Error('Clipboard unavailable');
-    await navigator.clipboard.writeText(number);
-    TP.notify('คัดลอกเลขคำสั่งซื้อแล้ว',{icon:'check'});
-  } catch (_) { TP.notify('คัดลอกไม่ได้ กรุณาลองอีกครั้ง',{icon:'info'}); }
-});
 
 function historyInProgress(S,h) {
   const c = S.case?.id === h.id ? S.case : h._case, o = c?.order || h.order;
@@ -5767,7 +5759,7 @@ function listHtml(S,who) {
   if(!items.length) return `<div class="history-empty">${ui.emptyArt('file-search')}<h3>ไม่พบประวัติที่ตรงกัน</h3><p>${who==='all'?'ลองเปลี่ยนคำค้นหาหรือตัวกรอง':'ยังไม่มีประวัติที่ตรงกับตัวกรอง'}</p><button type="button" class="txtbtn" data-a="afHistClear">ล้างคำค้นหาและตัวกรอง</button></div>`;
   const active=items.filter(h=>historyInProgress(S,h)), finished=items.filter(h=>!historyInProgress(S,h)), groups=[];
   finished.forEach(h=>{const [,m,y]=String(h.date).split('/'),key=`${MON[+m-1] || ''} ${y || ''}`.trim();let g=groups.find(g=>g.key===key);if(!g)groups.push(g={key,items:[]});g.items.push(h)});
-  return (active.length ? `<section class="history-month"><h3>กำลังดำเนินการ</h3><div>${active.map(h=>{const c=S.case?.id===h.id?S.case:h._case;if(!c)return histItem(h);if(c.order?.status==='paid')return histItem(h);if(c.status==='closed'&&c.order?.status==='pending')return TP.paymentReminderCard?.(S,c)||histItem(h);return TP.homeActiveCaseCard?.({...S,case:c})||histItem(h)}).join('')}</div></section>` : '') + groups.map(g=>`<section class="history-month"><h3>${esc(g.key)}</h3><div>${g.items.map(histItem).join('')}</div></section>`).join('');
+  return (active.length ? `<section class="history-month"><h3>กำลังดำเนินการ</h3><div>${active.map(h=>{const c=S.case?.id===h.id?S.case:h._case;if(!c)return histItem(h);if(c.order?.status==='paid')return histItem(h);if(c.status==='closed'&&c.order?.status==='pending')return histItem(h);return TP.homeActiveCaseCard?.({...S,case:c})||histItem(h)}).join('')}</div></section>` : '') + groups.map(g=>`<section class="history-month"><h3>${esc(g.key)}</h3><div>${g.items.map(histItem).join('')}</div></section>`).join('');
 }
 /* Maximum-family cases are view-only fixtures, never written to the account. */
 function historyView(S) { return {...S,_histWho:'me',_histStatus:'all'}; }
@@ -5816,7 +5808,7 @@ TP.screen('history', {
   group:'after',title:'ประวัติ',code:'C403',ref:'C14',tab:'history',
   // Order badges: paid awaiting receipt = กำลังจัดส่ง; received = คำสั่งซื้อสำเร็จ; customer-ended/expired = ยกเลิกคำสั่งซื้อ.
   states:[["normal", "มีรายการ"], ["empty", "ยังไม่มี"], ["loading", "กำลังโหลด"], ["self", "เฉพาะตัวเอง", false], ["paid", "ปรึกษาสำเร็จ", false], ["no-medication", "สิ้นสุดก่อนสรุป", false], ["search", "ค้นหาประวัติ"], ["no-results", "ค้นหาไม่พบ"], ["error", "โหลดไม่สำเร็จ"], ["dark-filters", "แท็บประเภทสี CI เข้ม", false], ["shared-tabs", "แท็บกลาง ตัวอักษร 14px", false], ["store-recipient-card", "หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา", false], ["receipt-inside", "ดูใบเสร็จในใบสรุป", false], ["detail-rows", "รายละเอียดเรียงแถวพร้อมไอคอน", false], ["purchase-status", "ป้ายตามข้อมูลซื้อยา", false], ["pending-order", "รายการยารอชำระ"], ["expired-order", "รายการยาหมดอายุ"], ["cancelled-order", "ยกเลิกรายการยา"], ["tap-card", "แตะการ์ด ไม่มีข้อความลิงก์", false], ["search-below-tabs", "ช่องค้นหาอยู่ใต้แท็บ", false], ["tab-counts", "จำนวนรายการในแต่ละแท็บ", false], ["search-open", "เปิดช่องค้นหาจากหัวหน้า"], ["search-cleared", "ช่องค้นหาหลังล้างคำ", false], ["ten-records", "ประวัติ 10 รายการ หลายวันและเดือน", false],["completed","ปรึกษาสำเร็จ", false],["ended","สิ้นสุดก่อนสรุป", false],["customer-ended","คุณจบการสนทนา"],["no-response","ไม่มีการตอบกลับ 5 นาที"],["long-note","ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด", false]],
-  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดคำสั่งซื้อแบบย่อ: ไอคอน เลขคำสั่งซื้อพร้อมปุ่มคัดลอก สถานะ วันเวลา จำนวนรายการยาและยอดชำระจริง ไม่แสดงสาขาหรืออาการ กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
+  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดคำสั่งซื้อแบบย่อ: ไอคอน เลขคำสั่งซื้อ สถานะ วันเวลา จำนวนรายการยาและยอดชำระจริง แสดงร้านยา วันที่สั่งซื้อ จำนวนรายการและราคาที่ชำระ ไม่มีอาการบนการ์ด กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
   prep(S) {
     const st=S.st.history;S._histStatus='all';
     // Replace the original built-in examples while preserving actual consultation records.
@@ -5826,6 +5818,7 @@ TP.screen('history', {
     }
     if(st!=='empty') {
       const fixtures = new Map(TP.fresh().history.map(h => [h.id, h]));
+      if(fixtures.has('mock-history-shipping')&&!S.history.some(h=>h.id==='mock-history-shipping'))S.history.push(fixtures.get('mock-history-shipping'));
       S.history = S.history.map(h => fixtures.has(h.id) ? { ...h, ...fixtures.get(h.id), rated:h.rated, comment:h.comment, fbSent:h.fbSent } : h);
       if (S.receipts?.['mock-history-paid']?.no !== 'MT2026101701') delete S.receipts?.['mock-history-paid'];
     }
@@ -7749,7 +7742,7 @@ function followPlanCard(plan, historical = false, compact = false, pos = null) {
       <div><b>${completed ? 'จบคอร์สแล้ว' : historical ? `ระยะเวลาตามแผน ${plan.days} วัน` : `วันที่ ${plan.today} จาก ${plan.days}`}</b><span>สิ้นสุด ${esc(plan.endDate || addD(plan.date, plan.days - 1))}</span></div>
       ${historical || completed ? '' : `<progress aria-label="วันที่ของแผนการใช้ยา" value="${plan.today}" max="${plan.days}"></progress>`}
     </div>` : ''}
-    ${completed ? '<p class="fu-course-assessment-copy">หลังจบคอร์ส อาการของคุณเป็นอย่างไรบ้าง?</p>' + ui.btn('ประเมินอาการ', {kind:'secondary', sheet:'historyassessment', p:{id:plan.id, ...(plan.preview ? {followPreview:true} : {})}, icon:'clipboard-list'}) : ''}
+    ${completed ? ui.btn('ประเมินอาการ', {kind:'secondary', sheet:'historyassessment', p:{id:plan.id, ...(plan.preview ? {followPreview:true} : {})}, icon:'clipboard-list'}) : ''}
     ${compact ? '' : ui.btn('ดูใบสรุปการปรึกษา', { go: 'summary', p: { id: plan.id, ...(plan.preview ? {followPreview: true} : {}) }, kind: 'tint', sm: true, icon: 'file-text' })}
   </footer></section>`;
 }

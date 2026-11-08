@@ -16,14 +16,12 @@ console.log('PASS: compact order identity/date/status/detail route and retained 
 // Reference layout retains real item counts and an independent copy control.
 h.context.record.order={no:'MT2026101801',status:'paid',total:385,paid:{total:410},items:[{name:'ยา A'},{name:'ยา B'}]};
 const reference=h.run('histItem(record)');
-assert(reference.includes('2 รายการ'));assert(reference.includes('history-order-icon'));assert(reference.includes('data-a="historyCopyOrder"'));assert(reference.includes('data-order-no="MT2026101801"'));
+assert(reference.includes('2 รายการ'));assert(reference.includes('history-order-icon'));assert(!reference.includes('history-order-copy'));
 assert(!reference.includes('history-open-hint'));assert(!reference.includes('topic'));
-(async()=>{let copied='',notice='';h.context.navigator={clipboard:{writeText:async value=>{copied=value}}};h.TP.notify=text=>notice=text;await h.actions.historyCopyOrder({dataset:{orderNo:'MT2026101801'}});assert.equal(copied,'MT2026101801');assert.equal(notice,'คัดลอกเลขคำสั่งซื้อแล้ว');h.context.navigator={};await h.actions.historyCopyOrder({dataset:{orderNo:'MT2026101801'}});assert.equal(notice,'คัดลอกไม่ได้ กรุณาลองอีกครั้ง');console.log('PASS: real item count, independent order copy and clipboard failure feedback');})().catch(error=>{console.error(error);process.exitCode=1});
-
 // The card reflects fulfillment independently from consultation outcomes.
 h.TP.orderPayable=()=>false;
 h.context.record={id:'status-order',who:'me',outcome:'completed',date:'18/10/2026',time:'13:10',order:{status:'paid',paid:{total:385},items:[]}};
-assert(h.run('histItem(record)').includes('กำลังจัดส่ง'));
+assert(h.run('histItem(record)').includes('กำลังจัดส่ง'));assert(h.run('histItem(record)').includes('warn'));
 h.context.record.order.paid.got=true;
 assert(h.run('histItem(record)').includes('คำสั่งซื้อสำเร็จ'));
 for(const status of ['expired','cancelled']){h.context.record.order.status=status;assert(h.run('histItem(record)').includes('ยกเลิกคำสั่งซื้อ'));}

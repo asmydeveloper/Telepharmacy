@@ -95,7 +95,7 @@ assert.equal((assessed.match(/class="fu-order-dot/g)||[]).length,5);
 
 // Completed courses lead the carousel until their assessment is submitted.
 assert(overview.indexOf('MT-preview-follow-completed') < overview.indexOf('MT-real-case'));
-assert.match(overview, /หลังจบคอร์ส อาการของคุณเป็นอย่างไรบ้าง/);
+assert(!overview.includes('fu-course-assessment-copy'));
 plan.today = 6;
 const finishedCourse = render('normal');
 assert.match(finishedCourse, /fu-course-completed/);
