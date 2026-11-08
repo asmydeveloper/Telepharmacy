@@ -3540,6 +3540,7 @@ TP.fulfillmentCard = S => TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo
 TP.act('viewFulfillment',(t,ctx)=>{let p=ctx?.params||{};try{p={...p,...JSON.parse(t?.dataset?.p||'{}')};}catch{}const c=TP.orderCases(TP.S).find(c=>c.id===p.caseId)||TP.S.case;if(!TP.fulfillmentInfo(c))return;TP.S._paymentCase=c;TP.S._paidFromHome=false;return TP.go(TP.fulfillmentScreen(c),{via:'cover'});});
 TP.chatDeliveryPage = c => {
   const f = TP.fulfillmentInfo(c), o = c.order;
+  if (f.done) return TP.ui.nav({ right: `<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${TP.ic('x',22,2)}</button>` }) + TP.ui.page(TP.summaryForCase(c));
   const phase = TP.FULFILLMENT_PHASES.findIndex(([key]) => key === f.key);
   const status = TP.orderStatusCard(
     TP.FULFILLMENT_PHASES.map(([key, label], i) => [i < phase ? 'done' : i === phase ? 'cur' : '', label, '']),
@@ -5040,20 +5041,22 @@ const paidStatusCard = (steps, orderNumber, pickup, footer = '', visual = {}) =>
 TP.orderStatusCard = paidStatusCard;
 const totKv = pd => ui.kv([['ยอดค่ายา', TP.money(pd.items)], [SHIP_L(pd), pd.ship ? TP.money(pd.ship) : 'ไม่มีค่าจัดส่ง'], ...(pd.fee ? [['ค่าธรรมเนียมบัตร (3.65%)', TP.money(pd.fee)]] : []), ['ยอดชำระ', TP.money(pd.total), 'tot']]);
 
+TP.paymentHistoryCard = c => {
+  const o=c.order, pd=o.paid;
+  return paidCard('ข้อมูลการชำระเงิน', ui.kv([
+      ['เลขคำสั่งซื้อ', esc(o.no)],
+      ['วันและเวลาชำระ', esc([pd.date, pd.at].filter(Boolean).join(' · '))],
+      ['วิธีชำระเงิน', esc(methName(pd.method))],
+      ['วิธีรับยา', esc(recvName(pd))]
+    ]) + '<div class="hr"></div>' + totKv(pd));
+};
+
 /* Shared order information uses the same header/body cards as C309. */
 TP.fulfillmentDetails = c => {
   const o = c.order, pd = o.paid, a = pd.addr;
   const address = a ? `<div class="pd-branch"><b>${esc([a.first,a.last].filter(Boolean).join(' ') || TP.S.user.full)}</b><p>${esc(TP.fmtAddr(a))}</p>${a.phone ? `<p>โทร ${esc(a.phone)}</p>` : ''}</div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>';
   return paidCard('ที่อยู่จัดส่ง', address, pd.recv === 'express' ? ui.btn('ติดตามไรเดอร์', {kind:'secondary', sm:true, icon:'external-link', a:'openRiderTracking'}) : '') +
-    paidCard('ข้อมูลคำสั่งซื้อ', ui.kv([
-      ['เลขคำสั่งซื้อ', `<span class="num">${esc(o.no)}</span>`],
-      ['เวลาชำระ', esc(pd.date + ' ' + pd.at)],
-      ['วิธีชำระ', methName(pd.method)],
-      ['การรับสินค้า', esc(recvName(pd))]
-    ])) +
-    paidCard('รายการยา', TP.orderMedicineList(o) + '<div class="hr"></div>' + totKv(pd)) +
-    (c.pharmacistAdvice ? paidCard('คำแนะนำจากเภสัชกร', `<p>${esc(c.pharmacistAdvice)}</p>`) : '') +
-    `<div class="group ic-rows mt16">${ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบเสร็จรับเงินและใบกำกับภาษี',go:'receipt',p:{id:c.id}})}</div>`;
+    TP.summaryForCase(c);
 };
 
 /* ---------- paid (C12) ---------- */
@@ -5083,7 +5086,7 @@ TP.act('paymentResultStatus', () => {
 TP.screen('paid', {
   group: 'during', title: 'สถานะยา', code: 'C309', ref: 'C12', parent: 'room',
   states: [['pickup', 'รับที่ร้าน'], ['parcel', 'จัดส่งปกติ'], ['express', 'ส่งด่วน'], ['night', 'จ่ายตอนร้านปิด'], ['ready', 'ยาพร้อมรับแล้ว'], ['sent', 'ส่งพัสดุแล้ว มีเลขพัสดุ', false], ['rider', 'ไรเดอร์รับยาแล้ว'], ['cold', '', false], ['overdue', 'เลยกำหนดรับยา'], ['pickup-complete', 'รับยาที่สาขาแล้ว']],
-  notes: ['สถานะยาแสดงภาพตรงกลางตามขั้นตอน ใต้ภาพเป็นสถานะล่าสุดและเลขคำสั่งซื้อ ตามด้วยแถบไอคอนแนวนอน ไม่มีข้อความใต้ไอคอน ใช้ข้อมูลคำสั่งซื้อเดิม', 'ลำดับและคำตามหน้าหลังจ่ายบิลเภสัชกรของเว็บ pay/receipt.blade.php: ชำระเงินสำเร็จ · สถานะ (ชำระแล้ว > กำลังเตรียมยา > พร้อมรับที่สาขา > รับแล้ว / จัดส่งแล้ว > สำเร็จ ป้าย "ตอนนี้") · เลขออเดอร์ · เวลาชำระ · วิธีชำระ · รายการยา · ยอด',
+  notes: ['ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'สถานะยาแสดงภาพตรงกลางตามขั้นตอน ใต้ภาพเป็นสถานะล่าสุดและเลขคำสั่งซื้อ ตามด้วยแถบไอคอนแนวนอน ไม่มีข้อความใต้ไอคอน ใช้ข้อมูลคำสั่งซื้อเดิม', 'ลำดับและคำตามหน้าหลังจ่ายบิลเภสัชกรของเว็บ pay/receipt.blade.php: ชำระเงินสำเร็จ · สถานะ (ชำระแล้ว > กำลังเตรียมยา > พร้อมรับที่สาขา > รับแล้ว / จัดส่งแล้ว > สำเร็จ ป้าย "ตอนนี้") · เลขออเดอร์ · เวลาชำระ · วิธีชำระ · รายการยา · ยอด',
     'รับที่ร้าน: รหัสรับยาที่เคาน์เตอร์ (กติกาแอป) + การ์ดสาขา นำทาง (Google Maps) และโทร ตามเว็บ',
     '19/10 เจ้าของสั่ง: ที่อยู่ เบอร์ และหมุด Google Maps ของสาขาจริง (ตลาดเวิลด์ 082-053-9915 · อ่อนนุช 080-235-3950 เบอร์ที่เจ้าของให้ 01/10) · นำทาง เปิดหมุดจริงในแท็บใหม่',
     'เว็บบอก "ร้านจะแจ้งในแชท LINE" แอปเปลี่ยนเป็นแจ้งในแอป · 20/10 A6: ปุ่ม ติดตามการจัดส่ง ขึ้นทุกครั้งที่เลือกส่ง (C309.2 C309.3 C309.6-8) เปิดจอติดตามพัสดุ C414',
@@ -5118,10 +5121,7 @@ TP.screen('paid', {
 
       ${pd.recv==='express'?paidCard('ที่อยู่จัดส่ง',pd.addr ? `<div class="pd-branch"><b>${esc([pd.addr.first,pd.addr.last].filter(Boolean).join(' ') || TP.S.user.full)}</b>${pd.addr.phone?`<p>${esc(pd.addr.phone)}</p>`:''}<p>${esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))}</p></div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>',ui.btn('ติดตามไรเดอร์',{kind:'secondary',sm:true,icon:'external-link',a:'openRiderTracking'})):''}
       ${pick?paidCard('รับที่สาขา',`<div class="pd-branch"><b>${esc(b.name)}</b><p>${esc(b.addr)} · เปิด ${esc(b.hours)}</p></div>`,`${ui.btn('โทรหาร้าน',{kind:'secondary',icon:'phone',a:'callStore'})}${late?'':ui.btn('นำทางไปร้าน',{icon:'navigation',a:'navStore'})}`):''}
-      ${paidCard('ข้อมูลคำสั่งซื้อ',ui.kv([['เลขคำสั่งซื้อ',`<span class="num">${esc(o.no)}</span>`],['เวลาชำระ',`${pd.date} ${pd.at}`],['วิธีชำระ',methName(pd.method)],['การรับสินค้า',esc(recvName(pd))],...(pd.addr && pd.recv!=='express'?[['ส่งไปที่',esc([pd.addr.house,pd.addr.building,pd.addr.alley,pd.addr.road,pd.addr.dist,pd.addr.amp,pd.addr.prov,pd.addr.zip].filter(Boolean).join(' '))]]:[])]))}
-      ${paidCard('รายการยา',`${TP.orderMedicineList(o)}<div class="hr"></div>${totKv(pd)}`)}
-      <div class="mt16">${ui.group([ui.row({icon:'receipt',title:'ดูใบเสร็จ',sub:'ใบกำกับภาษีอย่างย่อ · ดาวน์โหลดตัวเต็มได้เอง',go:'receipt',p:{id:c.id}})],{din:5})}</div>
-      <details class="pd-consultation mt16"><summary style="cursor:pointer;font-weight:600;padding:8px 0">สรุปการปรึกษา</summary><div class="mt16">${TP.summaryForCase?.(c,{hideHero:true,hideReceipt:true}) || ''}</div></details>
+      ${pick ? TP.summaryForCase(c) : TP.fulfillmentDetails(c)}
       `);
   },
 
@@ -5189,7 +5189,7 @@ TP.screen('track', {
     {label:'ส่งด่วน',keys:['chat-preparing','chat-calling','chat-delivering','chat-delivered','transit','rider','delivered']},
     {label:'จัดส่งปกติ',keys:['parcel-preparing','parcel-transit','parcel-out','parcel-delivered']}
   ],
-  notes: ['A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
+  notes: ['ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
     'รองรับรับที่ร้าน ส่งด่วน และจัดส่งปกติ ใช้ภาพสถานะล่าสุดกับแถบไอคอนแนวนอนร่วมกัน ส่งด่วนใช้ภาพไรเดอร์ จัดส่งปกติใช้ภาพพัสดุและรถขนส่ง',
     '21/10 เจ้าของ "เอาเลขติดตามพัสดุหรือลิ้งติดตามพัสดุมาแปะ": เลข = แสดงเลขพร้อมปุ่มคัดลอก (C414.4) · ลิงก์ = ปุ่ม เปิดหน้าติดตามพัสดุ ไม่โชว์ลิงก์ยาว (C414.7 คอนโซลลิงก์มาที่นี่) · C309.8 ใช้ตัวอย่างแบบเลข',
     'ไม่มีปุ่มยืนยันรับยาหรือแผ่น C415 เมื่อร้านบันทึกส่งมอบหรือขนส่งแจ้งส่งสำเร็จ รายการย้ายไปประวัติทันที'],
@@ -5207,6 +5207,7 @@ TP.screen('track', {
   render() {
     if(C()?.order?.paid?.recv==='pickup')return TP.SCREENS.paid.render();
     if(C()?.order?.paid?.recv==='express'&&TP.fulfillmentInfo(C()))return TP.chatDeliveryPage(C());
+    if (TP.fulfillmentInfo(C())?.done) return ui.nav({right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(TP.summaryForCase(C()));
     const o = order(), pd = o.paid, cr = courierOf(pd), ex = pd.recv === 'express', cold = pd.recv === 'cold', st = trkState(pd), { steps, cur } = trkSteps(pd, st);
     const head = ui.card(`<div class="tk-h"><span class="tk-i">${ic(ex ? 'zap' : cold ? 'snowflake' : 'package', 22, 2)}</span><div class="grow"><b>${esc(ex ? 'ส่งด่วน Lalamove' : pd.courier ? cr.name : TP.DELIVERY.find(d => d.id === 'parcel').name)}</b><small>${pd.track ? `<span class="num">${esc(pd.track)}</span>` : pd.trackUrl ? 'ร้านแปะลิงก์ติดตามพัสดุแล้ว' : ex ? 'ไรเดอร์ส่งถึงบ้าน' : 'เลขพัสดุขึ้นเมื่อร้านส่งของ'}</small></div>${pd.track ? `<button type="button" class="ibtn" data-a="copyTrack" aria-label="คัดลอกรหัสพัสดุ" title="คัดลอกรหัสพัสดุ">${ic('copy', 20, 2)}</button>` : ''}</div>
       ${cold ? `<p class="tk-n">${ic('snowflake', 14, 2)}<span>ยาอยู่ในกล่องคุมความเย็น 2-8 องศา · สถานะระหว่างทาง โทรถามร้านได้</span></p>${pd.track ? `<button type="button" class="link tk-web" data-a="trackShip">ติดตามบนเว็บ ${esc(TP.COLD.short)} ${ic('external-link', 14, 2)}</button>` : pd.trackUrl ? ui.btn('เปิดหน้าติดตามพัสดุ', { kind: 'secondary', sm: true, icon: 'external-link', a: 'openTrackLink', cls: 'mt12' }) : ''}` : ''}`, { din: 1, cls: 'mt8' });
@@ -5390,7 +5391,7 @@ TP.orderReadyRow = (S, o = {}) => {
   const sub = pick ? (late ? `${b.name} · ร้านจะโทรหาเพื่อตกลงเรื่องยาและการคืนเงิน` : st ? `${b.name} · รับได้ถึง ${holdUntil(pd)}` : `${b.name} · แตะเพื่อดู QR และสถานะ`) : st && trackTxt(pd) ? `${trackTxt(pd)} · แตะเพื่อติดตาม` : 'แตะเพื่อดูสถานะคำสั่งซื้อ';
   return ui.group([ui.row({ icon: pick ? 'store' : pd.recv === 'cold' ? 'snowflake' : 'package', title, sub, go: pick ? 'paid' : 'track' })], { din: o.din });
 };
-TP.receiptSumRow = (h, followPreview = false) => h?.bought ? ui.group([ui.row({ icon: 'receipt', title: 'ใบเสร็จรับเงิน', sub: `ยอดชำระ ${TP.money(h.bought)} · ดูใบเสร็จและใบกำกับภาษี`, go: 'receipt', p: { id: h.id, ...(followPreview ? { followPreview: true } : {}) } })], { din: 3 }) : '';
+TP.receiptSumRow = (h, followPreview = false) => h?.bought ? ui.group([ui.row({ icon: 'receipt', title: 'ใบเสร็จรับเงิน', sub: `ยอดชำระ ${TP.money(h._case?.order?.paid?.total ?? h.order?.paid?.total ?? h.bought)} · ดูใบเสร็จและใบกำกับภาษี`, go: 'receipt', p: { id: h.id, ...(followPreview ? { followPreview: true } : {}) } })], { din: 3 }) : '';
 })();
 
 /* ===== 70-after.js ===== */
@@ -5554,19 +5555,20 @@ function docHtml(S, h, options = {}) {
 
     </section>
     <section class="card af-visit-section"><h3>${ic('pill',20,1.8)} ข้อมูลยา</h3>
-      ${sm.meds.length ? `<div class="af-medicine-list">${TP.orderMedicineList({items: sm.meds.map(m => ({...m, how: m.schedule?.length ? m.schedule.map(row => [row.time === 'เมื่อมีอาการ' ? '' : row.time, row.instruction].filter(Boolean).join(' · ')).join(' / ') : m.how}))}, {showPrice: false})}</div>` : `<p>${esc(sm.nomed || 'ไม่มียาที่ได้รับในการปรึกษาครั้งนี้')}</p>`}
+      ${paid && visitCase.order.items?.length ? TP.orderMedicineList(visitCase.order) : sm.meds.length ? `<div class="af-medicine-list">${TP.orderMedicineList({items: sm.meds.map(m => ({...m, how: m.schedule?.length ? m.schedule.map(row => [row.time === 'เมื่อมีอาการ' ? '' : row.time, row.instruction].filter(Boolean).join(' · ')).join(' / ') : m.how}))}, {showPrice: false})}</div>` : `<p>${esc(sm.nomed || 'ไม่มียาที่ได้รับในการปรึกษาครั้งนี้')}</p>`}
     </section>
-    <section class="card af-visit-section af-visit-advice"><h3>${ic('file-text',20,1.8)} คำแนะนำจากเภสัชกร</h3><p class="af-advice-text">${esc([Array.isArray(sm.advice) ? sm.advice.join("\n") : (sm.advice || ""), follow].filter(Boolean).join("\n\n"))}</p>
+    <section class="card af-visit-section af-visit-advice"><h3>${ic('file-text',20,1.8)} คำแนะนำจากเภสัชกร</h3><p class="af-advice-text">${esc([visitCase?.pharmacistAdvice || (Array.isArray(sm.advice) ? sm.advice.join("\n") : (sm.advice || "")), follow].filter(Boolean).join("\n\n"))}</p>
     </section>
+
+    ${paid ? TP.paymentHistoryCard(visitCase) : ''}
 
   </article>`;
 }
 TP.summaryForCase = (c, options = {}) => {
   if (!c) return '';
-  const h = allHistory(TP.S).find(item => item.id === c.id) || caseItem(c);
-  const f = TP.fulfillmentInfo(c);
-  const status = f?.done ? `<section class="card af-visit-section"><h3>${ic(f.pickup?'store':'truck',20,1.8)} สถานะการรับยา</h3><p>${f.pickup?'รับยาที่สาขาแล้ว':'จัดส่งยาสำเร็จแล้ว'}</p></section>` : '';
-  return docHtml(TP.S,h,{hideHero:options.hideHero,fulfillmentCard:status}) + (options.hideReceipt?'':TP.receiptSumRow?.(h)||'');
+  const record = allHistory(TP.S).find(item => item.id === c.id) || caseItem(c);
+  const h = {...record, _case: c};
+  return TP.historyDetailContent(TP.S, h, options);
 };
 function rateHtml(h) {
   if (summaryRated(h)) return '';
@@ -5576,10 +5578,20 @@ function rateHtml(h) {
     <div class="af-stars">${[1,2,3,4,5].map(n=>`<button type="button" class="af-star" data-a="afRate" data-v="${n}" aria-label="ให้ ${n} ดาว จาก 5">${ic('star',26,1.6)}</button>`).join('')}</div>
   </section>`;
 }
+TP.historyDetailContent = (S, h, options = {}) => {
+  const assessment = TP.completedMedicationOrder(S, h)
+    ? ui.btn('ประเมินอาการ', {kind:'secondary', sheet:'historyassessment', p:{id:h.id}, icon:'clipboard-list'}) : '';
+  return docHtml(S, h, {hideHero:options.hideHero}) +
+    (TP.followSumCard?.(h) || '') +
+    (options.hideReceipt ? '' : TP.receiptSumRow?.(h, !!options.followPreview) || '') +
+    (options.followPreview ? '' : rateHtml(h)) +
+    `<div class="af-visit-actions">${ui.btn('แจ้งอาการหลังใช้ยา', {kind:'secondary', icon:'heart-pulse', go:'adr', p:{from:h.id}})}</div>` +
+    (assessment ? `<div class="af-visit-actions">${assessment}</div>` : '');
+};
 TP.screen('summary', {
   group: 'after', title: 'ใบสรุปการปรึกษา', code: 'C401', ref: 'C13', parent: 'history',
   states: [['normal', 'มียา'], ['nomeds', 'ไม่ได้ซื้อยา'], ['closed', 'เพิ่งจบเคส'], ['rated', 'ให้คะแนนแล้ว'], ['missing', 'ไม่พบใบสรุป']],
-  notes: ['แยกข้อมูลรับบริการ ยาที่ได้รับ คำแนะนำ และการติดตาม','ได้ใบสรุปทุกครั้ง แม้ไม่ได้ซื้อยา','ให้ดาวได้ครั้งเดียวต่อเคสและซ่อนหลังส่ง','เก็บใบสรุป 1 ปีนับจากวันปิดเคส'],
+  notes: ['ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'แยกข้อมูลรับบริการ ยาที่ได้รับ คำแนะนำ และการติดตาม','ได้ใบสรุปทุกครั้ง แม้ไม่ได้ซื้อยา','ให้ดาวได้ครั้งเดียวต่อเคสและซ่อนหลังส่ง','เก็บใบสรุป 1 ปีนับจากวันปิดเคส'],
   wait: ['ข้อความในใบสรุปจริงมาจากคอนโซลเภสัชกร (ตอนนี้เป็นตัวอย่าง)'],
   prep(S) {
     const st = S.st.summary; if (!st || TP.cur()?.params?.followPreview) return;
@@ -5595,14 +5607,8 @@ TP.screen('summary', {
     const caseForSummary = h._case || (S.case?.id === h.id ? S.case : null);
     const fulfillment = TP.fulfillmentInfo(caseForSummary);
     if (fulfillment && !fulfillment.done) { S._paymentCase = caseForSummary; S._paidFromHome = false; return TP.SCREENS.paid.render(ctx); }
-    const assessment = TP.completedMedicationOrder(S, h)
-      ? ui.btn('ประเมินอาการ', { kind: 'secondary', sheet: 'historyassessment', p: { id: h.id }, icon: 'clipboard-list' })
-      : '';
-    const statusCard = fulfillment?.done ? `<section class="card af-visit-section"><h3>${ic(fulfillment.pickup?'store':'truck',20,1.8)} สถานะการรับยา</h3><p>${fulfillment.pickup?'รับยาที่สาขาแล้ว':'จัดส่งยาสำเร็จแล้ว'}</p></section>` : '';
-    return nav + ui.page(`${docHtml(S, h, {fulfillmentCard:statusCard})}${h&&(h._case||S.case?.id===h.id)?TP.paymentReminderCard?.(S,h._case||S.case)||'':''}${TP.followSumCard?.(h) || ''}${h && TP.S.case?.id === h.id ? TP.orderReadyRow?.(TP.S, { din: 3 }) || '' : ''}${TP.receiptSumRow?.(h, !!ctx.params.followPreview) || ''}${ctx.params.followPreview?'':rateHtml(h)}
-      <div class="af-visit-actions" data-in="3">${ui.btn('แจ้งอาการหลังใช้ยา', { kind: 'secondary', icon: 'heart-pulse', go: 'adr', p: { from: h.id } })}</div>
-      ${assessment ? `<div class="af-visit-actions">${assessment}</div>` : ''}
-`);
+    return nav + ui.page(TP.historyDetailContent(S,h,{followPreview:ctx.params.followPreview}) +
+      (TP.paymentReminderCard?.(S, caseForSummary) || ''));
   }
 });
 TP.act('afRate', (t, ctx) => {
