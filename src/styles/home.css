@@ -216,7 +216,10 @@
   font-size: var(--type-caption-mobile-size);
   line-height: 1.5;
   font-weight: 500;
-  white-space: nowrap;
+  /* Long labels such as ติดตามการใช้ยา wrap to two balanced lines. */
+  white-space: normal;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
 }
 .hm-mini-item:active .hm-mini-icon {
   background: var(--brand);

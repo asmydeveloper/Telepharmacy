@@ -2820,7 +2820,7 @@ TP.screen('home', {
     }
     const quick = [
       ['health', 'health', 'ข้อมูลสุขภาพ'],
-      ['medhub', 'medication', 'การใช้ยา'],
+      ['medhub', 'medication', 'ติดตามการใช้ยา'],
       ['addressbook', 'addressbook', 'สมุดที่อยู่'],
       ['account', 'more', 'อื่นๆ']
     ];
