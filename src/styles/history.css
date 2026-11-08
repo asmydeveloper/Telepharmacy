@@ -121,46 +121,6 @@
     color: HighlightText;
   }
 }
-.history-filters {
-  display: grid;
-  gap: var(--space-4);
-}
-.history-search {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-control);
-  padding: 0 var(--space-3);
-  min-height: var(--size-control);
-  background: var(--surface);
-  color: var(--ink-3);
-}
-.history-search:focus-within {
-  outline: 2px solid var(--semantic-focus);
-  outline-offset: 2px;
-}
-.history-search input {
-  min-width: 0;
-  width: 100%;
-  min-height: var(--size-control);
-  border: 0;
-  outline: none;
-  font: inherit;
-  color: var(--ink);
-  background: transparent;
-}
-.history-filters fieldset {
-  border: 0;
-  padding: 0;
-  margin: 0;
-  min-width: 0;
-}
-.history-filters legend {
-  font-size: var(--text-small);
-  font-weight: var(--weight-semibold);
-  margin-bottom: var(--space-2);
-}
 .history-result-count {
   margin: calc(-1 * var(--space-2)) 0;
   color: var(--ink-3);
@@ -460,51 +420,6 @@
 }
 
 /* C403: explicit search disclosure, separate clear and close actions. */
-.history-search-panel {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  min-width: 0;
-}
-.history-search-panel[hidden],
-.history-search-clear[hidden] {
-  display: none;
-}
-.history-search-panel .history-search {
-  flex: 1;
-  min-width: 0;
-  padding-inline-end: var(--space-1);
-}
-.history-search-panel input {
-  font-size: var(--text-small);
-}
-.history-search-panel input::-webkit-search-cancel-button {
-  -webkit-appearance: none;
-  appearance: none;
-}
-.history-search-clear {
-  display: grid;
-  place-items: center;
-  flex: none;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 0;
-  border-radius: var(--radius-pill);
-  background: transparent;
-  color: var(--semantic-text-secondary);
-}
-.history-search-close {
-  flex: none;
-  min-width: 44px;
-  min-height: 44px;
-  padding: var(--space-2);
-  font-size: var(--text-small);
-}
-.history-search-toggle[aria-expanded='true'] {
-  background: var(--semantic-surface-selected);
-  color: var(--semantic-primary);
-}
 
 .history-card-total {
   display: flex;

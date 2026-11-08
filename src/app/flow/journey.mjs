@@ -190,8 +190,8 @@ export const journey = [
       [
         'ย้อนดูผลการปรึกษา',
         [
-          ['A301', 'เปิดประวัติการปรึกษา', 'C403', 'normal'],
-          ['A302', 'คำสั่งซื้อ', 'C401'],
+          ['A301', 'เปิดประวัติคำสั่งซื้อ', 'C403', 'normal', ['tab-shipping', 'tab-completed', 'tab-cancelled', 'empty']],
+          ['A302', 'คำสั่งซื้อ', 'C401', 'shipping', ['delivered', 'rated', 'nomeds', 'nomeds-rated', 'cancelled', 'missing']],
         ],
       ],
       [

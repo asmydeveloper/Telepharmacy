@@ -1390,8 +1390,8 @@ panel.addEventListener('click', async e => {
     case 'close': toggle(false); break;
     case 'state': {
       const s = TP.sheetOpen(), owner = s?.def.hidden && s.def.owner;
-      if (owner) { TP.S.st[owner] = k; TP.prepState(TP.def(owner)); await TP.closeSheet({ instant: true }); TP.sheet(owner); }
-      else if (s) { TP.S.st[s.id] = k; TP.prepState(s.def); const p = s.ctx.params; await TP.closeSheet({ instant: true }); TP.sheet(s.id, p); }
+      if (owner) { await TP.closeSheet({ instant: true }); TP.S.st[owner] = k; TP.prepState(TP.def(owner)); TP.sheet(owner); }
+      else if (s) { const p = s.ctx.params; await TP.closeSheet({ instant: true }); TP.S.st[s.id] = k; TP.prepState(s.def); TP.sheet(s.id, p); }
       else { const id = TP.cur().id; TP.S.st[id] = k; TP.prepState(TP.SCREENS[id]); TP.refresh(); }
       break;
     }
@@ -2844,6 +2844,7 @@ TP.screen('queue', {
           </div>
           ${paused?'<p class="queue-wait-explanation">คิวของคุณยังอยู่</p>':''}
         </div>
+        ${TP.queueZoneNote(c)}
       </section>`, {cls:'queue-wait-page'}) + ui.dock(ui.btn('ยกเลิกคิว',{sheet:'cancelq'}));
   },
   mount() {}
@@ -3327,8 +3328,8 @@ TP.queueZoneNote = c => {
   const a = c?.deliveryAddress, z = a && TP.zoneOf(a, c.branch);
   if (!z || z.ok) return '';
   const b = TP.branch(c.branch), where = `${a.dist} ${a.prov}${z.km != null ? ` ห่าง ${z.km} กม.` : ''}`;
-  const buy = TP.zoneLock() ? `รับยาที่${b.name} หรือเลือกที่อยู่อื่นที่ห่างสาขาไม่เกิน 15 กม. ตอนชำระเงิน` : `รับยาที่${b.name} ส่งด่วนไม่ได้เพราะเกิน 15 กม.`;
-  return `<div class="rm-zone">${ui.note(`<b>ที่อยู่จัดส่งอยู่นอกเขตส่งยา</b> ${esc(where)} · ปรึกษาได้ตามปกติ ถ้าซื้อยา: ${esc(buy)}`, { icon: 'map-pin' })}</div>`;
+  /* user 8 Nov 2026: outside the 15 km radius the customer can consult only; no medicine is sold or dispensed */
+  return `<div class="rm-zone">${ui.note(`<b>อยู่นอกรัศมีให้บริการ 15 กม. จาก${esc(b.name)}</b><br>${esc(where)} · ปรึกษาเภสัชกรได้ตามปกติ แต่ซื้อหรือรับยาจากการปรึกษานี้ไม่ได้ หากต้องการซื้อยา เปลี่ยนที่อยู่จัดส่งให้อยู่ในรัศมีก่อนเริ่มปรึกษาครั้งถัดไป`, { tone: 'warn', icon: 'map-pin' })}</div>`;
 };
 const seed = c => {
   c.msgs ||= [];
@@ -4920,6 +4921,7 @@ const coTax = () => TP.taxSelected('co');
 const whoOf = t => (t.who === 'co' ? coTax() : taxWho());
 function taxBox(o, late) {
   const t = T(o);
+  /* user 8 Nov 2026: the invoice is e-mailed automatically right after the request; no pending state, no in-app download */
   if (t.done || t.pending) {
     const email = TP.S.user?.email;
     return `<section class="rc-tax rc-tax-status-card" aria-label="สถานะใบกำกับภาษี">
@@ -4955,7 +4957,6 @@ TP.act('rcTaxPdf', () => {
   const link = document.createElement('a'); link.href = url.href; link.download = `tax-invoice-${o.no}.pdf`; document.body.appendChild(link); link.click(); link.remove();
 });
 TP.act('rcHistory', () => TP.tab('history'));
-  /* user 8 Nov 2026: the invoice is e-mailed automatically right after the request; no pending state, no in-app download */
 /* hooks 70-after.js calls: a receipt link under a paid history row, and a receipt row in its summary */
 /* the pickup code stays findable after the case closes: home and the summary (real-user R2: "รหัสรับยาอยู่ไหน") */
 TP.orderReadyRow = (S, o = {}) => {
@@ -5085,6 +5086,8 @@ const summaryRated = h => {
   if (h.rated || h.fbSent) return true;
   try { return !flowPreview && !!sessionStorage.getItem('mitraree.summary.rating.' + h.id); } catch (_) { return false; }
 };
+/* C401 preview cases (user 8 Nov 2026) map to one fixture record each; real navigation always passes params.id. */
+const SUMMARY_PREVIEW = { shipping: 'mock-history-shipping', delivered: 'mock-history-paid', rated: 'mock-history-paid', nomeds: 'mock-history-no-meds', 'nomeds-rated': 'mock-history-no-meds', cancelled: 'mock-history-ended' };
 function summaryTarget(ctx) {
   const S = ctx.S, st = ctx.state, all = allHistory(S);
   if (st === 'missing') return null;
@@ -5116,8 +5119,6 @@ function docHtml(S, h, options = {}) {
       <h2>คำสั่งซื้อ #${esc(visitCase?.order?.no || h.orderNo || TP.orderNumber(h))}</h2>
       <small>${esc(h.date)}${h.time?' · '+esc(h.time)+' น.':''}</small>
     </header>`}
-/* C401 preview cases (user 8 Nov 2026) map to one fixture record each; real navigation always passes params.id. */
-const SUMMARY_PREVIEW = { shipping: 'mock-history-shipping', delivered: 'mock-history-paid', rated: 'mock-history-paid', nomeds: 'mock-history-no-meds', 'nomeds-rated': 'mock-history-no-meds', cancelled: 'mock-history-ended' };
     ${options.fulfillmentCard || ''}
     <section class="card af-visit-section af-visit-concern"><h3>${ic('message-circle',20,1.8)} เรื่องที่ปรึกษา</h3>
       <p class="consultation-note">${esc(TP.consultationText(h) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p>
@@ -5150,7 +5151,10 @@ function rateHtml(h) {
     <div class="af-stars">${[1,2,3,4,5].map(n=>`<button type="button" class="af-star" data-a="afRate" data-v="${n}" aria-label="ให้ ${n} ดาว จาก 5">${ic('star',26,1.6)}</button>`).join('')}</div>
   </section>`;
 }
+/* C401 (user 8 Nov 2026): every finished consultation can be rated; a paid order also links its receipt;
+   a cancelled consultation (customer ended or no reply) shows only its cancelled status. */
 TP.historyDetailContent = (S, h, options = {}) => {
+  const cancelled = ['customer-ended', 'no-response'].includes(h.outcome || h._case?.outcome);
   return docHtml(S, h, {hideHero:options.hideHero}) +
     (options.hideReceipt || cancelled ? '' : TP.receiptSumRow?.(h) || '') +
     (cancelled ? '' : rateHtml(h));
@@ -5185,8 +5189,6 @@ TP.act('afRate', (t, ctx) => {
   const c = h._case || TP.S.case;
   if (c?.id === h.id) c.rated = n;
   try { if (!flowPreview) sessionStorage.setItem('mitraree.summary.rating.' + h.id, String(n)); } catch (_) {}
-/* C401 (user 8 Nov 2026): every finished consultation can be rated; a paid order also links its receipt;
-   a cancelled consultation (customer ended or no reply) shows only its cancelled status. */
   t.closest('.af-rate')?.remove();
   TP.emit('state');
   TP.notify('ขอบคุณสำหรับคะแนน', {icon:'check'});
@@ -5234,7 +5236,7 @@ function historyOutcome(S,h) {
 function historyOrderStatus(S,h) {
   const c=S.case?.id===h.id?S.case:h._case,o=c?.order||h.order;
   if(c)TP.expireOrder?.(c);
-  const cancelled=['customer-ended','payment-expired','order-cancelled'].includes(h.outcome||c?.outcome)||['expired','cancelled'].includes(o?.status||h.orderStatus);
+  const cancelled=['customer-ended','no-response','payment-expired','order-cancelled'].includes(h.outcome||c?.outcome)||['expired','cancelled'].includes(o?.status||h.orderStatus);
   if(cancelled)return {key:'cancelled',label:'ยกเลิกคำสั่งซื้อ',tone:'danger'};
   const paid=o?o.status==='paid':h.orderStatus?h.orderStatus==='paid':Number(h.bought)>0;
   if(!paid)return null;
@@ -5245,7 +5247,10 @@ function historyItems(S, who = S._histWho || 'all', list = allHistory(S)) {
   return list.filter(h => {
     if ((h.who || 'me') !== 'me') return false;
     const {key, label, detailLabel, reason} = historyOutcome(S, h);
-    if(type!=='all'&&historyOrderStatus(S,h)?.key!==type)return false;
+    /* user 8 Nov 2026: history lists paid (shipping), completed and cancelled only; unpaid orders live on the home card */
+    const order=(S.case?.id===h.id?S.case:h._case)?.order||h.order;
+    if(order?.status==='pending')return false;
+    if(type!=='all'&&(historyOrderStatus(S,h)?.key||'completed')!==type)return false;
     return !q || [TP.caseCode(h), TP.consultationText(h), h.topic, h.date, h.id,
       TP.PHARM[h.pharm]?.name, TP.PHARM[h.pharm]?.short, TP.branch(h.branch)?.name,
       label, detailLabel, reason].join(' ').toLocaleLowerCase('th').includes(q);
@@ -5313,7 +5318,7 @@ function listHtml(S,who) {
   return (active.length ? `<section class="history-month"><h3>คำสั่งซื้อกำลังดำเนินการ</h3><div>${active.map(h=>{const c=S.case?.id===h.id?S.case:h._case;if(!c)return histItem(h);if(c.order?.status==='paid')return histItem(h);if(c.status==='closed'&&c.order?.status==='pending')return histItem(h);return TP.homeActiveCaseCard?.({...S,case:c})||histItem(h)}).join('')}</div></section>` : '') + groups.map(g=>`<section class="history-month"><h3>${esc(g.key)}</h3><div>${g.items.map(histItem).join('')}</div></section>`).join('');
 }
 /* Maximum-family cases are view-only fixtures, never written to the account. */
-function historyView(S) { return {...S,_histWho:'me',_histStatus:'all'}; }
+function historyView(S) { return {...S,_histWho:'me'}; }
 function historySelector(S) { S._histWho='me';return ''; }
 function historyChoose(who) {
   const S=TP.S;who='me';
@@ -5340,25 +5345,11 @@ function historyUpdateResults(el,S) {
   const labels=new Map(historyFilterOptions(S));
   $$('[data-segname=histStatus] button',el).forEach(button=>{button.textContent=labels.get(button.dataset.v) || button.textContent;button.setAttribute('aria-pressed',String(button.dataset.v===S._histStatus))});
   const results=$('#afHL',el); if(results){results.innerHTML=listHtml(S,S._histWho || 'all');TP.icons(results);historyClampNotes(el)}
-  const status=$('#histSearchStatus',el);if(status)status.textContent=`พบ ${historyItems(S).length} รายการ`;
-}
-function historySearchClear(el,S,focus=true) {
-  S._histQuery='';const input=$('#histSearch',el);if(input)input.value='';
-  const clear=$('#histSearchClear',el);if(clear)clear.hidden=true;
-  historyUpdateResults(el,S);if(focus)input?.focus({preventScroll:true});
-}
-function historySearchSetOpen(el,S,open) {
-  S._histSearchOpen=open;
-  const panel=$('#histSearchPanel',el),toggle=$('#histSearchToggle',el);
-  if(panel){panel.hidden=!open;panel.parentElement?.classList.contains('history-filters')&&(panel.parentElement.hidden=!open);}
-  if(toggle){toggle.setAttribute('aria-expanded',String(open));toggle.setAttribute('aria-label',open?'ปิดการค้นหาประวัติ':'ค้นหาประวัติ');}
-  if(open)$('#histSearch',el)?.focus({preventScroll:true});
-  else {historySearchClear(el,S,false);toggle?.focus({preventScroll:true});}
 }
 TP.screen('history', {
   group:'after',title:'ประวัติ',code:'C403',ref:'C14',tab:'history',
   // Order badges: paid awaiting receipt = กำลังจัดส่ง; received = คำสั่งซื้อสำเร็จ; customer-ended/expired = ยกเลิกคำสั่งซื้อ.
-  states:[["normal", "มีรายการ"], ["empty", "ยังไม่มี"], ["loading", "กำลังโหลด"], ["search", "ค้นหาประวัติ", true, 7], ["no-results", "ค้นหาไม่พบ", true, 8], ["error", "โหลดไม่สำเร็จ", true, 9], ["pending-order", "รายการยารอชำระ", true, 16], ["expired-order", "รายการยาหมดอายุ", true, 17], ["cancelled-order", "ยกเลิกรายการยา", true, 18], ["search-open", "เปิดช่องค้นหาจากหัวหน้า", true, 22], ["customer-ended","คุณจบการสนทนา", true, 27], ["no-response","ไม่มีการตอบกลับ 5 นาที", true, 28]],
+  states:[["normal", "ทั้งหมด"], ["tab-shipping", "รอจัดส่ง"], ["tab-completed", "สำเร็จ"], ["tab-cancelled", "ยกเลิก"], ["empty", "ไม่มีข้อมูลการสั่งซื้อ"], ["loading", "กำลังโหลด"], ["error", "โหลดไม่สำเร็จ"]],
   notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','แท็บบนสุดกรอง ทั้งหมด รอจัดส่ง สำเร็จ ยกเลิก ตามสถานะคำสั่งซื้อ ใช้ร่วมกับคำค้นหาได้ เรียงล่าสุดก่อน แบ่งตามเดือน','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดคำสั่งซื้อแบบย่อ: ไอคอน เลขคำสั่งซื้อ สถานะ วันเวลา จำนวนรายการยาและยอดชำระจริง แสดงร้านยา วันที่สั่งซื้อ จำนวนรายการและราคาที่ชำระ ไม่มีอาการบนการ์ด กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
   prep(S) {
     const st=S.st.history;S._histStatus='all';
@@ -5375,9 +5366,9 @@ TP.screen('history', {
     }
     if(!st)return;
     if(st==='empty'){S.history=[];if(S.case&&!caseOpen())S.case=null}else if(!S.history.length)S.history=TP.fresh().history;
-    S._histWho='me';S._histStatus='all';S._histQuery='';S._histSearchOpen=['search','no-results','search-open'].includes(st);
+    S._histWho='me';S._histStatus='all';S._histQuery='';S._histSearchOpen=false;
     if(['customer-ended','no-response'].includes(st)){S.history=TP.fresh().history.map((h,i)=>({...h,outcome:i===0?st:h.outcome}));S._histStatus='cancelled';}
-    if(st==='search')S._histQuery='ไข้';if(st==='no-results')S._histQuery='ไม่พบรายการตัวอย่าง';
+    if(st.startsWith('tab-'))S._histStatus=st.slice(4);
     if(['pending-order','expired-order','cancelled-order'].includes(st)){S.case=closedCase();S.case.date=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());S.case.order.awaitingCheckout=false;S.case.order.status=st==='pending-order'?'pending':st==='expired-order'?'expired':'cancelled';S.case.order.expiresAt=Date.now()+(st==='expired-order'?-1:15*60*1000)}
   },
   render(ctx) {
@@ -5388,15 +5379,11 @@ TP.screen('history', {
     const selector=historySelector(S),sel=S._histWho;
     const matches=who=>!who||who==='me';
     const all=allHistory(S);
-    const filters=all.length?`<div class="history-filters" ${searchOpen?'':'hidden'}><div class="history-search-panel" id="histSearchPanel" ${searchOpen?'':'hidden'}><div class="history-search" role="search" aria-label="ค้นหาประวัติการปรึกษา">${ic('search',20,1.8)}<label class="sr" for="histSearch">ค้นหาอาการ ร้านยา เภสัชกร หรือเลขการปรึกษา</label><input id="histSearch" type="search" value="${esc(S._histQuery || '')}" placeholder="อาการ ร้านยา เภสัชกร หรือเลขการปรึกษา" maxlength="100" autocomplete="off" enterkeyhint="search"><button type="button" id="histSearchClear" class="history-search-clear" data-a="afHistSearchClear" aria-label="ล้างคำค้นหา" ${S._histQuery?'':'hidden'}>${ic('x',18,2)}</button></div><button type="button" class="txtbtn history-search-close" data-a="afHistSearchClose">ปิด</button></div></div>`:'';
-    const content=all.length?`<span class="sr" id="histSearchStatus" role="status" aria-live="polite"></span><div id="afHL">${listHtml(S,sel)}</div>`:`<div class="history-empty">${ui.emptyArt('history')}<h3>ยังไม่มีประวัติการปรึกษา</h3><p>กลับมาดูใบสรุปและยาที่ได้รับหลังปรึกษาเภสัชกรได้ที่นี่</p>${ui.btn('ดูร้านยาใกล้ฉัน',{a:'afHome',iconRight:'arrow-right'})}</div>`;
-    return nav+ui.page(`<div class="history-page">${selector}<div class="history-status-tabs">${ui.seg('histStatus',historyFilterOptions(S),S._histStatus||'all',{a:'afHistStatus',label:'กรองสถานะคำสั่งซื้อ'})}</div>${filters}${caseOpen() && !all.some(h=>h.id===S.case?.id) && matches(S.case?.who) ? `<section class="history-month"><h3>คำสั่งซื้อกำลังดำเนินการ</h3>${TP.homeActiveCaseCard?.(S) || liveCard(S.case)}</section>` : ''}${content}</div>`,{});
+    const content=all.length?`<div id="afHL">${listHtml(S,sel)}</div>`:`<div class="history-empty">${ui.emptyArt('history')}<h3>ไม่มีข้อมูลการสั่งซื้อ</h3><p>ใบสรุปการปรึกษาและคำสั่งซื้อยาจะแสดงที่นี่หลังปรึกษาเภสัชกร</p>${ui.btn('ดูร้านยาใกล้ฉัน',{a:'afHome',iconRight:'arrow-right'})}</div>`;
+    return nav+ui.page(`<div class="history-page">${selector}${tabs}${content}</div>`,{});
   },
   mount(el,ctx) {
     historyClampNotes(el);ctx.onLeave?.(()=>el._historyNoteObserver?.disconnect());
-    const input=$('#histSearch',el);
-    input?.addEventListener('input',e=>{ctx.S._histQuery=e.target.value;ctx.S._histSearchOpen=true;const clear=$('#histSearchClear',el);if(clear)clear.hidden=!e.target.value;historyUpdateResults(el,ctx.S)});
-    input?.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();historySearchSetOpen(el,ctx.S,false);}else if(e.key==='Enter'){e.preventDefault();input.blur();}});
     if(ctx.state==='loading')ctx.later(()=>{ctx.S.st.history='normal';TP.refresh()},1800);
     else ctx.later(()=>{
       const strip=$('.history-profile-list',el);if(!strip)return;
@@ -5407,9 +5394,6 @@ TP.screen('history', {
     },0);
   }
 });
-TP.act('afHistSearchToggle',()=>{const el=curEl();historySearchSetOpen(el,TP.S,$('#histSearchPanel',el)?.hidden!==false)});
-TP.act('afHistSearchClose',()=>historySearchSetOpen(curEl(),TP.S,false));
-TP.act('afHistSearchClear',()=>historySearchClear(curEl(),TP.S));
 TP.act('afHistStatus',t=>{TP.S._histStatus=t.dataset.v;historyUpdateResults(curEl(),TP.S)});
 TP.act('afHistWho',t=>historyChoose(t.dataset.v));
 TP.act('afHistClear',()=>{TP.S._histQuery='';TP.S._histStatus='all';TP.refresh({anim:false})});
@@ -5570,7 +5554,7 @@ TP.act('rcTaxPickerChoose',async b=>{
   TP.taxChoose(kind,record.profileKey);Object.assign(o.tax,{who:kind,want:true});
   await TP.closeSheet();await TP.refresh({anim:false});
 });
-TP.act('rcTaxPickerAdd',()=>{const d=taxProfileDraft(TP.S);d.kind=TP.S._receiptTaxKind||'me';d.editKey=null;d.errors={};d.drafts[d.kind]=taxProfileEntry(null,{},d.kind==='co');return TP.sheet('receiptprofile');});
+TP.act('rcTaxPickerAdd',()=>{const d=taxProfileDraft(TP.S);d.kind=TP.S._receiptTaxKind||'me';d.editKey=null;d.errors={};d.drafts[d.kind]=taxProfileEntry(null,{},d.kind==='co');return TP.sheet('taxprofileedit');});
 TP.sheetDef('receipttaxpicker',{
   group:'after',title:'เลือกข้อมูลใบกำกับภาษี',code:'C421',host:'receipt',tall:true,
   states:[['person','เลือกบุคคลธรรมดา'],['company','เลือกนิติบุคคล'],['empty','ยังไม่มีข้อมูลผู้รับ']],
