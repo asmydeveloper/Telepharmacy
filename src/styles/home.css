@@ -1645,3 +1645,11 @@
 .hm-fulfillment-copy strong { font-size: var(--text-body); font-weight: var(--weight-semibold); }
 .hm-fulfillment-copy small { font-size: var(--text-small); color: var(--semantic-text-secondary); overflow-wrap: anywhere; }
 .hm-fulfillment-banner > .ic { flex: none; }
+
+/* Simultaneous orders stay visible together, with independent destinations. */
+.hm-fulfillment-heading { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-2); margin-bottom: var(--space-2); }
+.hm-fulfillment-heading h2 { margin: 0; font-size: var(--text-body); font-weight: var(--weight-semibold); }
+.hm-fulfillment-heading > span { flex: none; font-size: var(--text-small); color: var(--semantic-text-secondary); }
+.hm-fulfillment-list { overflow: hidden; border: 1px solid var(--semantic-border); border-radius: var(--radius-lg); background: var(--color-brand-50); }
+.hm-fulfillment-list .hm-fulfillment-banner { border: 0; border-radius: 0; background: transparent; }
+.hm-fulfillment-list .hm-fulfillment-banner + .hm-fulfillment-banner { border-top: 1px solid var(--semantic-border); }

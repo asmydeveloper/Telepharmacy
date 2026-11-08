@@ -1,8 +1,8 @@
 {
   "code": "C609",
   "screen": "payfail",
-  "title": "จ่ายไม่ผ่าน",
-  "group": "edge",
+  "title": "ชำระเงินไม่สำเร็จ",
+  "group": "during",
   "kind": "screen",
   "cases": [
     {

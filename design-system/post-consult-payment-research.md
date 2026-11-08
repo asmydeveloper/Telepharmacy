@@ -47,3 +47,6 @@ Production must replace the adapter with server validation tied to order/user id
 - Layout inference: full-width rows with a consistent artwork area, title, explanatory line and visible fee underneath reduce alignment noise and preserve Thai readability. All fees continue using the existing discounted totals calculation; no payment gateway or fee policy changed.
 
 Latest visual choice: user supplied a Thai QR symbol and requested compact 1:1 rounded icons. Checkout now uses 48px tiles for both methods; credit/debit uses a filled CI illustration of two cards instead of the outline icon. Existing radio semantics and fee calculation remain unchanged.
+
+## Payment results · 8 November 2026
+[GOV.UK confirmation pages](https://design-system.service.gov.uk/patterns/confirmation-pages/) explains that a completion page should reassure the user, show the reference and explain what happens next. Applied as a large outcome heading, short message, separate readable order reference and one primary next action. Failure retains corrective guidance and retry for the same order/deadline. The flat CI illustrations are a visual design choice, not evidence of patient usability testing.

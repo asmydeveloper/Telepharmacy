@@ -2974,13 +2974,23 @@ body:has(.consultation-card-preview) nextjs-portal {
 .pd-status-steps .cur .pd-step-marker { border-color: var(--brand-deep); background: var(--brand-deep); color: var(--semantic-surface); box-shadow: none; }
 
 /* Payment result pages share the customer type and spacing tokens. */
-.payment-result { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: var(--space-5) 0; }
-.payment-result-art { width: min(100%, 260px); aspect-ratio: 1; object-fit: contain; margin-bottom: var(--space-4); }
-.payment-result h1 { font-size: var(--text-h2); line-height: 1.4; margin: 0 0 var(--space-2); }
-.payment-result-message { color: var(--ink-2); font-size: var(--text-body); margin: 0 0 var(--space-4); }
-.payment-result-order { margin: 0; color: var(--ink-2); font-size: var(--text-small); }
-.payment-result-order strong { display: block; color: var(--ink); margin-top: var(--space-1); }
+.payment-result {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: var(--space-6) 0;
+}
+.payment-result-art { width: min(70%, 240px); aspect-ratio: 1; object-fit: contain; margin-bottom: var(--space-5); }
+.payment-result h1 { color: var(--brand-deep); font-size: var(--text-title); font-weight: var(--weight-bold); line-height: var(--leading-tight); margin: 0 0 var(--space-3); }
+.payment-result-message { max-width: 34ch; color: var(--ink-2); font-size: var(--text-body); line-height: var(--leading-body); margin: 0 0 var(--space-6); }
+.payment-result-order { width: 100%; margin: 0; padding: var(--space-4); border-radius: var(--radius-lg); background: var(--semantic-surface-subtle, var(--neutral-50)); color: var(--ink-2); font-size: var(--text-small); }
+.payment-result-order strong { display: block; color: var(--ink); font-size: var(--text-heading); font-weight: var(--weight-semibold); margin-top: var(--space-2); overflow-wrap: anywhere; }
+.payment-result-hint { color: var(--ink-2); font-size: var(--text-small); line-height: var(--leading-body); margin: var(--space-3) 0 0; }
 .payment-result-actions { display: grid; gap: var(--space-2); width: 100%; margin-top: var(--space-6); }
+.payment-result-failed h1 { color: var(--danger); }
 
 .pd-status-content { position: relative; isolation: isolate; }
 
