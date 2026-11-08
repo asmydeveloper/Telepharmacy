@@ -2765,3 +2765,16 @@ body:has(.consultation-card-preview) nextjs-portal {
 .g-id span { font-size: var(--text-small); color: #5f6368; overflow-wrap: anywhere; }
 .g-legal { margin: 0; font-size: var(--text-small); line-height: 1.6; color: #5f6368; }
 .g-proto { margin: 0; font-size: var(--type-caption-mobile-size); color: var(--ink-3); text-align: center; }
+
+.phone .payment-reminder-card .payment-reminder-amount {
+  font-size: var(--type-h2-mobile-size);
+  line-height: var(--type-h2-mobile-line);
+  padding-bottom: var(--space-2);
+}
+.phone .payment-reminder-card .consult-status-hero .payment-reminder-timing {
+  position: relative;
+  padding: 0 var(--space-4) var(--space-4);
+}
+.phone .payment-reminder-card .consult-status-hero .post-payment-deadline {
+  color: var(--semantic-surface);
+}
