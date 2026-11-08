@@ -263,3 +263,8 @@ node tests/preview-panel.cjs
 C403 ล่าสุด: หัวการ์ดแถวเดียว ไม่มีคัดลอก สถานะ 14px ชิดขวาพร้อมลูกศร แสดงเฉพาะสามสถานะตามผู้ใช้ รายการไม่เข้าเงื่อนไขไม่แสดงป้ายอื่น ตรวจ syntax/history/history-compact และ Browser แล้ว
 
 ยืนยัน Browser เพิ่มเติม: C403 แสดงกำลังจัดส่งสีเหลืองสำหรับชำระแล้วรอรับ โดยไม่มีป้ายอื่นนอกสามแบบ และไม่มีปุ่มคัดลอก หัวอยู่แถวเดียว; C418 เลขคำสั่งซื้ออยู่ใต้ลำดับ และไม่มีคำถามซ้ำเหนือปุ่มประเมิน ชุดทดสอบ follow-layout ผ่าน
+
+
+### C403 order status filters - 8 November 2026
+Added All, Awaiting delivery, Completed and Cancelled filters above the list. Filters and badges share order status classification; search combines with the selected filter. Selection is exposed through aria-pressed.
+Verified all four filters in the Codex browser. Paid awaiting receipt, received orders and cancellations display in the matching groups. history/history-compact, screens:check, design:check and production build passed.

@@ -5687,21 +5687,30 @@ function historyOutcome(S,h) {
   }
   return {key:Object.hasOwn(details, key) ? key : 'unknown', label:finalKey === 'customer-ended' ? 'ยกเลิก' : finalKey === 'order-cancelled' ? 'ยกเลิกแล้ว' : 'สิ้นสุด', tone:'muted', detailLabel, reason};
 }
+function historyOrderStatus(S,h) {
+  const c=S.case?.id===h.id?S.case:h._case,o=c?.order||h.order;
+  if(c)TP.expireOrder?.(c);
+  const cancelled=['customer-ended','payment-expired','order-cancelled'].includes(h.outcome||c?.outcome)||['expired','cancelled'].includes(o?.status||h.orderStatus);
+  if(cancelled)return {key:'cancelled',label:'ยกเลิกคำสั่งซื้อ',tone:'muted'};
+  const paid=o?o.status==='paid':h.orderStatus?h.orderStatus==='paid':Number(h.bought)>0;
+  if(!paid)return null;
+  return historyInProgress(S,h)?{key:'shipping',label:'กำลังจัดส่ง',tone:'warn'}:{key:'completed',label:'คำสั่งซื้อสำเร็จ',tone:'ok'};
+}
 function historyItems(S, who = S._histWho || 'all', list = allHistory(S)) {
-  const q=String(S._histQuery||'').trim().toLocaleLowerCase('th'),type=['all','completed','ended'].includes(S._histStatus)?S._histStatus:'all';
+  const q=String(S._histQuery||'').trim().toLocaleLowerCase('th'),type=['all','shipping','completed','cancelled'].includes(S._histStatus)?S._histStatus:'all';
   return list.filter(h => {
     if ((h.who || 'me') !== 'me') return false;
     const {key, label, detailLabel, reason} = historyOutcome(S, h);
-    if (type !== 'all' && (type === 'completed') !== (key === 'completed')) return false;
+    if(type!=='all'&&historyOrderStatus(S,h)?.key!==type)return false;
     return !q || [TP.caseCode(h), TP.consultationText(h), h.topic, h.date, h.id,
       TP.PHARM[h.pharm]?.name, TP.PHARM[h.pharm]?.short, TP.branch(h.branch)?.name,
       label, detailLabel, reason].join(' ').toLocaleLowerCase('th').includes(q);
   }).sort((a,b) => historyStamp(b) - historyStamp(a));
 }
-function historyFilterOptions(S) {
- const items=historyItems({...S,_histStatus:'all'}),done=items.filter(h=>historyOutcome(S,h).key==='completed').length;
- return [['all',`ทั้งหมด (${items.length})`],['completed',`สำเร็จ (${done})`],['ended',`สิ้นสุดก่อนสรุป (${items.length-done})`]];
+function historyFilterOptions() {
+ return [['all','ทั้งหมด'],['shipping','รอจัดส่ง'],['completed','สำเร็จ'],['cancelled','ยกเลิก']];
 }
+
 function liveCard(c) {
   const room = ['matched','room'].includes(c.status), p = historyIdentity(TP.S,c.who,c), pharmacist = TP.PHARM[c.pharm || 'kj'] || TP.PHARM.kj;
   const status = c.status === 'room' ? 'กำลังปรึกษา' : c.status === 'matched' ? 'เภสัชกรรับเคสแล้ว' : c.status === 'paused' ? 'เภสัชกรพักชั่วคราว' : 'อยู่ในคิว';
@@ -5723,11 +5732,7 @@ function histItem(h) {
   const paid=o?o.status==='paid':h.orderStatus?h.orderStatus==='paid':Number(h.bought)>0;
   const paidAmount=paid?(o?.paid?.total ?? o?.total ?? h.bought):null;
   const destination=ui.route({go:'summary',p:{id:h.id}});
-  const active=historyInProgress(S,h);
-  const cancelled=outcome.key==='customer-ended'||['expired','cancelled'].includes(o?.status||h.orderStatus)||['payment-expired','order-cancelled'].includes(h.outcome);
-  const status=cancelled?{label:'ยกเลิกคำสั่งซื้อ',tone:'muted'}
-    :paid?{label:active?'กำลังจัดส่ง':'คำสั่งซื้อสำเร็จ',tone:active?'warn':'ok'}
-    :null;
+  const status=historyOrderStatus(S,h);
   const items=o?.items || h.previewSummary?.meds;
   const itemText=Array.isArray(items)?items.length+' รายการ':'0 รายการ';
   const branchName=TP.branch(c?.branch||h.branch)?.name||'—';
@@ -5787,7 +5792,7 @@ function historyClampNotes(el) {
 }
 function historyUpdateResults(el,S) {
   const labels=new Map(historyFilterOptions(S));
-  $$('[data-segname=histStatus] button',el).forEach(button=>{button.textContent=labels.get(button.dataset.v) || button.textContent});
+  $$('[data-segname=histStatus] button',el).forEach(button=>{button.textContent=labels.get(button.dataset.v) || button.textContent;button.setAttribute('aria-pressed',String(button.dataset.v===S._histStatus))});
   const results=$('#afHL',el); if(results){results.innerHTML=listHtml(S,S._histWho || 'all');TP.icons(results);historyClampNotes(el)}
   const status=$('#histSearchStatus',el);if(status)status.textContent=`พบ ${historyItems(S).length} รายการ`;
 }
@@ -5808,7 +5813,7 @@ TP.screen('history', {
   group:'after',title:'ประวัติ',code:'C403',ref:'C14',tab:'history',
   // Order badges: paid awaiting receipt = กำลังจัดส่ง; received = คำสั่งซื้อสำเร็จ; customer-ended/expired = ยกเลิกคำสั่งซื้อ.
   states:[["normal", "มีรายการ"], ["empty", "ยังไม่มี"], ["loading", "กำลังโหลด"], ["self", "เฉพาะตัวเอง", false], ["paid", "ปรึกษาสำเร็จ", false], ["no-medication", "สิ้นสุดก่อนสรุป", false], ["search", "ค้นหาประวัติ"], ["no-results", "ค้นหาไม่พบ"], ["error", "โหลดไม่สำเร็จ"], ["dark-filters", "แท็บประเภทสี CI เข้ม", false], ["shared-tabs", "แท็บกลาง ตัวอักษร 14px", false], ["store-recipient-card", "หัวการ์ดร้านยา ท้ายการ์ดผู้รับการปรึกษา", false], ["receipt-inside", "ดูใบเสร็จในใบสรุป", false], ["detail-rows", "รายละเอียดเรียงแถวพร้อมไอคอน", false], ["purchase-status", "ป้ายตามข้อมูลซื้อยา", false], ["pending-order", "รายการยารอชำระ"], ["expired-order", "รายการยาหมดอายุ"], ["cancelled-order", "ยกเลิกรายการยา"], ["tap-card", "แตะการ์ด ไม่มีข้อความลิงก์", false], ["search-below-tabs", "ช่องค้นหาอยู่ใต้แท็บ", false], ["tab-counts", "จำนวนรายการในแต่ละแท็บ", false], ["search-open", "เปิดช่องค้นหาจากหัวหน้า"], ["search-cleared", "ช่องค้นหาหลังล้างคำ", false], ["ten-records", "ประวัติ 10 รายการ หลายวันและเดือน", false],["completed","ปรึกษาสำเร็จ", false],["ended","สิ้นสุดก่อนสรุป", false],["customer-ended","คุณจบการสนทนา"],["no-response","ไม่มีการตอบกลับ 5 นาที"],["long-note","ข้อความปรึกษายาว แสดงไม่เกิน 3 บรรทัด", false]],
-  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','เรียงล่าสุดก่อน แบ่งตามเดือน ค้นหาอาการ ร้าน เภสัชกร หรือเลขเรื่องได้','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดคำสั่งซื้อแบบย่อ: ไอคอน เลขคำสั่งซื้อ สถานะ วันเวลา จำนวนรายการยาและยอดชำระจริง แสดงร้านยา วันที่สั่งซื้อ จำนวนรายการและราคาที่ชำระ ไม่มีอาการบนการ์ด กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
+  notes:['แสดงประวัติของเจ้าของบัญชีเท่านั้น','แท็บบนสุดกรอง ทั้งหมด รอจัดส่ง สำเร็จ ยกเลิก ตามสถานะคำสั่งซื้อ ใช้ร่วมกับคำค้นหาได้ เรียงล่าสุดก่อน แบ่งตามเดือน','เคสที่กำลังดำเนินอยู่เปิดต่อจากแถบล่าง ส่วนประวัติแสดงการปรึกษาที่จบแล้ว','ใบสรุปและทางลัดติดตามยาใช้รหัสการปรึกษาเดิม','การ์ดคำสั่งซื้อแบบย่อ: ไอคอน เลขคำสั่งซื้อ สถานะ วันเวลา จำนวนรายการยาและยอดชำระจริง แสดงร้านยา วันที่สั่งซื้อ จำนวนรายการและราคาที่ชำระ ไม่มีอาการบนการ์ด กดการ์ดเปิดข้อมูลเต็ม; รายการรอจ่ายมีปุ่มชำระแยกต่างหาก'],
   prep(S) {
     const st=S.st.history;S._histStatus='all';
     // Replace the original built-in examples while preserving actual consultation records.
@@ -5826,8 +5831,8 @@ TP.screen('history', {
     if(['ten-records','long-note'].includes(st))S.history=TP.fresh().history;
     if(st==='empty'){S.history=[];if(S.case&&!caseOpen())S.case=null}else if(!S.history.length)S.history=TP.fresh().history;
     S._histWho='me';S._histStatus='all';S._histQuery='';S._histSearchOpen=['search','no-results','search-open','search-cleared','search-below-tabs'].includes(st);
-    if(st==='paid'||st==='completed')S._histStatus='completed';if(st==='no-medication'||st==='ended')S._histStatus='ended';
-    if(['customer-ended','no-response'].includes(st)){S.history=TP.fresh().history.map((h,i)=>({...h,outcome:i===0?st:h.outcome}));S._histStatus='ended';}
+    if(st==='paid'||st==='completed')S._histStatus='completed';if(st==='no-medication'||st==='ended')S._histStatus='cancelled';
+    if(['customer-ended','no-response'].includes(st)){S.history=TP.fresh().history.map((h,i)=>({...h,outcome:i===0?st:h.outcome}));S._histStatus='cancelled';}
     if(st==='search')S._histQuery='ไข้';if(st==='no-results')S._histQuery='ไม่พบรายการตัวอย่าง';
     if(['pending-order','expired-order','cancelled-order'].includes(st)){S.case=closedCase();S.case.date=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Bangkok',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date());S.case.order.awaitingCheckout=false;S.case.order.status=st==='pending-order'?'pending':st==='expired-order'?'expired':'cancelled';S.case.order.expiresAt=Date.now()+(st==='expired-order'?-1:15*60*1000)}
   },
@@ -5843,7 +5848,7 @@ TP.screen('history', {
     const all=allHistory(S);
     const filters=all.length?`<div class="history-filters" ${searchOpen?'':'hidden'}><div class="history-search-panel" id="histSearchPanel" ${searchOpen?'':'hidden'}><div class="history-search" role="search" aria-label="ค้นหาประวัติการปรึกษา">${ic('search',20,1.8)}<label class="sr" for="histSearch">ค้นหาอาการ ร้านยา เภสัชกร หรือเลขการปรึกษา</label><input id="histSearch" type="search" value="${esc(S._histQuery || '')}" placeholder="อาการ ร้านยา เภสัชกร หรือเลขการปรึกษา" maxlength="100" autocomplete="off" enterkeyhint="search"><button type="button" id="histSearchClear" class="history-search-clear" data-a="afHistSearchClear" aria-label="ล้างคำค้นหา" ${S._histQuery?'':'hidden'}>${ic('x',18,2)}</button></div><button type="button" class="txtbtn history-search-close" data-a="afHistSearchClose">ปิด</button></div></div>`:'';
     const content=all.length?`<span class="sr" id="histSearchStatus" role="status" aria-live="polite"></span><div id="afHL">${listHtml(S,sel)}</div>`:`<div class="history-empty">${ui.emptyArt('history')}<h3>ยังไม่มีประวัติการปรึกษา</h3><p>กลับมาดูใบสรุปและยาที่ได้รับหลังปรึกษาเภสัชกรได้ที่นี่</p>${ui.btn('ดูร้านยาใกล้ฉัน',{a:'afHome',iconRight:'arrow-right'})}</div>`;
-    return nav+ui.page(`<div class="history-page">${selector}${filters}${caseOpen() && !all.some(h=>h.id===S.case?.id) && matches(S.case?.who) ? `<section class="history-month"><h3>กำลังดำเนินการ</h3>${TP.homeActiveCaseCard?.(S) || liveCard(S.case)}</section>` : ''}${content}</div>`,{});
+    return nav+ui.page(`<div class="history-page">${selector}<div class="history-status-tabs">${ui.seg('histStatus',historyFilterOptions(S),S._histStatus||'all',{a:'afHistStatus',label:'กรองสถานะคำสั่งซื้อ'})}</div>${filters}${caseOpen() && !all.some(h=>h.id===S.case?.id) && matches(S.case?.who) ? `<section class="history-month"><h3>กำลังดำเนินการ</h3>${TP.homeActiveCaseCard?.(S) || liveCard(S.case)}</section>` : ''}${content}</div>`,{});
   },
   mount(el,ctx) {
     historyClampNotes(el);ctx.onLeave?.(()=>el._historyNoteObserver?.disconnect());
