@@ -4913,7 +4913,7 @@ TP.screen('receipt', {
     if (!S._taxProfileMockInitialized) { if (!S.taxWho) S.taxWho={id:'1234567890121',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย',addr:'88/12 ซอยตัวอย่าง แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110'}; S._taxProfileMockInitialized=true; }
     mockPaid(st === 'parcel' ? 'parcel' : 'pickup', st === 'parcel' ? 'card' : 'promptpay', st === 'late' ? '18/09/2026' : TP.NOW.date);
     S.rcNoAddr = false;
-    C().order.tax = { done: null, pending: st === 'taxsent' ? (taxWho() || meTax()) : null, form: false, who: 'me' };
+    C().order.tax = { done: null, pending: st === 'taxsent' ? (taxWho() || meTax()) : null, sentAt: st === 'taxsent' ? `${TP.NOW.date} 14:30 น.` : '', form: false, who: 'me' };
   },
   render(ctx) {
     const id = ctx.params?.id;
@@ -4962,15 +4962,25 @@ const coTax = () => TP.taxSelected('co');
 const whoOf = t => (t.who === 'co' ? coTax() : taxWho());
 function taxBox(o, late) {
   const t = T(o);
-  /* user 8 Nov 2026: the invoice is e-mailed automatically right after the request; no pending state, no in-app download */
+  /* C402.4 / C402.6 cards (9 Nov 2026) follow GOV.UK confirmation-page guidance: say it worked, where and when it went,
+     what to do if it did not arrive; a closed request says why and until when, with one way to get help. */
+  const tel = TP.STORE.cs, telHref = 'tel:' + tel.replace(/\D/g, '');
   if (t.done || t.pending) {
-    const email = TP.S.user?.email;
-    return `<section class="rc-tax rc-tax-status-card" aria-label="สถานะใบกำกับภาษี">
-      <header class="rc-tax-status-head"><span class="rc-tax-pending-icon">${ic('mail',22,1.8)}</span><div><h3 class="h3">ส่งใบกำกับภาษีทางอีเมลแล้ว</h3><span class="rc-tax-pending-status">${ic('circle-check',15,1.8)} ผู้ขอ ${esc((t.done || t.pending).name)}</span></div></header>
-      <div class="rc-tax-status-body"><p>ระบบส่งใบกำกับภาษีไปที่${email ? ` <b>${esc(email)}</b>` : 'อีเมลของบัญชี'}แล้ว กรุณาตรวจสอบกล่องจดหมายและจดหมายขยะ หากไม่ได้รับ ติดต่อฝ่ายบริการลูกค้า โทร <a href="tel:${esc(TP.STORE.cs.replace(/\D/g,''))}">${esc(TP.STORE.cs)}</a> (${esc(TP.STORE.csHours)})</p></div></section>`;
+    const who = t.done || t.pending, email = TP.S.user?.email;
+    const masked = email ? email.replace(/^(.)[^@]*(@.*)$/, (m, a, b) => a + '•••' + b) : 'อีเมลของบัญชี';
+    return `<section class="rc-tax rc-tax-result is-sent" aria-label="ใบกำกับภาษี ส่งแล้ว">
+      <div class="rc-tax-result-head"><span class="rc-tax-result-ic" aria-hidden="true">${ic('file-text',22,1.8)}</span>
+        <h3>ใบกำกับภาษี</h3>${ui.tag('ส่งแล้ว','',{dot:true})}</div>
+      <p class="rc-tax-result-text">ส่งไปที่${email ? ` <b>${esc(masked)}</b>` : 'อีเมลของบัญชี'}แล้ว${t.sentAt ? ` เมื่อ ${esc(t.sentAt)}` : ''}</p>
+      <p class="rc-tax-result-who">${ic('user',16,1.8)}<span>${esc(who.name)} · ${esc(who.business ? 'นิติบุคคล' : 'บุคคลธรรมดา')}</span></p>
+      <p class="rc-tax-result-help">ไม่ได้รับอีเมล? <a href="${telHref}">โทร ${esc(tel)}</a></p>
+    </section>`;
   }
-  if (late) return `<section class="rc-tax rc-tax-status-card" aria-label="ใบกำกับภาษี"><div class="rc-tax-status-body">${ui.note('<b>ขอใบกำกับภาษีไม่ได้แล้ว</b><br>ขอได้ภายใน 7 วันหลังชำระเงิน คำสั่งซื้อนี้เกินกำหนดแล้ว หากต้องการเอกสารเพิ่มเติม ติดต่อฝ่ายบริการลูกค้า โทร '+esc(TP.STORE.cs),{icon:'clock'})}</div></section>`;
-
+  if (late) return `<section class="rc-tax rc-tax-result is-closed" aria-label="ใบกำกับภาษี">
+      <div class="rc-tax-result-head"><span class="rc-tax-result-ic" aria-hidden="true">${ic('clock',22,2)}</span>
+        <div><h3>หมดเวลาขอใบกำกับภาษี</h3><p>ขอได้ภายใน 7 วันหลังชำระเงิน</p></div></div>
+      <p class="rc-tax-result-help">ต้องการใบกำกับภาษี โทร <a href="${telHref}">${esc(tel)}</a></p>
+    </section>`;
   const w=t.want?whoOf(t):null;
   const choice=`<header class="rc-tax-request-head rc-tax-choice-head"><button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!t.want}" data-a="rcTaxWant" data-v="${t.want?'no':'yes'}" aria-label="ต้องการใบกำกับภาษี" aria-describedby="rcTaxDeadline"><span class="rc-tax-choice-icon" aria-hidden="true">${ic('file-text',22)}</span><span class="rc-tax-choice-copy"><b>ต้องการใบกำกับภาษี</b><span id="rcTaxDeadline">ขอย้อนหลังได้ภายใน 7 วันหลังชำระเงิน</span></span><span class="rc-tax-choice-check" aria-hidden="true">${t.want?ic('check',16):''}</span></button></header>`;
   const body=w?`<div class="rc-tax-selected"><b>ชื่อและที่อยู่ใบกำกับภาษี</b><p>${esc(w.name)}</p><p>${esc(TP.taxAddress(w))}</p>${w.business?`<p>ชื่อธุรกิจ : ${esc(w.business)}</p>`:''}<p>โทรศัพท์ : ${esc(w.phone||'—')}</p><p>${w.business?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน'} : ${esc(maskTax(w.id||''))}</p></div>`:'';
@@ -4981,7 +4991,7 @@ async function issue(b, o, who) {
   if (T(o).pending || T(o).done || T(o).sending) return;
   T(o).sending = true; b.disabled = true; b.classList.add('busy');
   await TP.wait(300);
-  const t = T(o); t.sending = false; t.want = false; t.pending = {...who};
+  const t = T(o); t.sending = false; t.want = false; t.pending = {...who}; t.sentAt = `${TP.NOW.date} ${TP.NOW.time} น.`;
   redrawTax(); TP.notify('ส่งใบกำกับภาษีทางอีเมลแล้ว', { icon: 'mail' });
 }
 TP.act('rcTaxWant', b => {

@@ -1595,7 +1595,15 @@
 .rc-tax-selected p {
   margin: 4px 0;
   overflow-wrap: anywhere;
+  /* C402 type scale (9 Nov 2026): recipient details read as secondary 14px text under a 14px semibold label */
+  font-size: var(--text-small);
+  line-height: 1.6;
+  color: var(--semantic-text-secondary);
 }
+.rc-tax-selected > b { display: block; margin-bottom: var(--space-1); font-size: var(--text-small); font-weight: var(--weight-semibold); color: var(--ink); }
+.rc-tax-selected > p:first-of-type { color: var(--ink); font-weight: var(--weight-medium, 500); }
+.rc-tax-recipient-heading > b { font-size: var(--text-small); font-weight: var(--weight-semibold); }
+.rc-tax-recipient-heading .txtbtn { font-size: var(--text-small); }
 .rc-tax-pick-card {
   display: block;
   width: 100%;
@@ -1614,3 +1622,29 @@
   outline: 2px solid var(--semantic-primary);
   outline-offset: 3px;
 }
+
+/* C402.4 / C402.6 tax-invoice result cards (9 Nov 2026): same white card as the request card, one status row,
+   short facts, one help line. Success uses the success token on the icon only; the closed state stays neutral. */
+.rc-tax.rc-tax-result { gap: var(--space-3); border: 1px solid var(--semantic-border); box-shadow: none; }
+.rc-tax-result-head { display: flex; align-items: center; gap: var(--space-3); }
+.rc-tax-result-head > .tag { margin-left: auto; flex: none; }
+.rc-tax-result-head h3 { margin: 0; font-size: var(--text-body); font-weight: var(--weight-semibold); color: var(--ink); }
+.rc-tax-result-head p { margin: 2px 0 0; font-size: var(--text-small); color: var(--semantic-text-secondary); overflow-wrap: anywhere; }
+.rc-tax-result-head p b { font-weight: var(--weight-semibold); color: var(--ink); }
+.rc-tax-result-ic { display: grid; place-items: center; flex: none; width: 40px; height: 40px; border-radius: var(--radius-md); }
+.is-sent .rc-tax-result-ic { width: 44px; height: 44px; background: var(--semantic-surface-muted); color: var(--semantic-primary); }
+.phone .is-sent .rc-tax-result-head > .tag { background: var(--color-brand-50); color: var(--semantic-primary); }
+.phone .is-sent .rc-tax-result-head > .tag .dot, .phone .is-sent .rc-tax-result-head > .tag::before { background: var(--semantic-primary); }
+.is-closed .rc-tax-result-ic { background: var(--semantic-surface-muted); color: var(--semantic-text-secondary); }
+.rc-tax-result-rows { display: grid; gap: var(--space-2); margin: 0; padding-top: var(--space-3); border-top: 1px solid var(--semantic-border); }
+.rc-tax-result-rows > div { display: flex; justify-content: space-between; gap: var(--space-3); font-size: var(--text-small); }
+.rc-tax-result-rows dt { color: var(--semantic-text-secondary); }
+.rc-tax-result-rows dd { margin: 0; text-align: right; color: var(--ink); font-weight: var(--weight-medium, 500); }
+.rc-tax-result-help { margin: 0; font-size: var(--text-small); color: var(--semantic-text-secondary); }
+.rc-tax-result-help a { color: var(--semantic-primary); font-weight: var(--weight-semibold); text-decoration: underline; text-underline-offset: 2px; }
+/* C402.4 sent card body (9 Nov 2026): one sentence, recipient line, light help line */
+.rc-tax-result-text { margin: 0; font-size: var(--text-small); color: var(--semantic-text-secondary); overflow-wrap: anywhere; }
+.rc-tax-result-text b { color: var(--ink); font-weight: var(--weight-semibold); }
+.rc-tax-result-who { display: flex; align-items: center; gap: var(--space-2); margin: 0; padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); background: var(--semantic-surface-muted); font-size: var(--text-small); color: var(--ink); }
+.rc-tax-result-who > .ic { flex: none; color: var(--semantic-text-secondary); }
+.is-sent .rc-tax-result-help a { text-decoration: none; }
