@@ -7697,7 +7697,7 @@ TP.adrActiveMedicines = params => {
     sub: [med.dose,med.meal].filter(Boolean).join(' · ')
   }));
 };
-TP.followPreviewPlan = id => followPreviewPlans().find(plan => plan.id === id);
+TP.followPreviewPlan = id => id === 'preview-follow-completed' ? followCompletedPreview() : followPreviewPlans().find(plan => plan.id === id);
 TP.followSummaryRecord = id => {
   const plan = F();
   if (!plan?.src || plan.src.id !== id) return null;
@@ -7735,6 +7735,7 @@ const followCourseCompleted = plan => !!plan.completed || !!plan.savedPlan?.end 
 function followPlanCard(plan, historical = false, compact = false, pos = null) {
   const completed = followCourseCompleted(plan);
   return `<section class="card pad0 fu-multi-card fu-multi-plan${compact ? ' fu-order-summary' : ''}${completed ? ' fu-course-completed' : ''}"${pos ? ` aria-label="คำสั่งซื้อที่ ${pos.i} จาก ${pos.n}"` : ''}>
+    ${compact ? `<button type="button" class="fu-order-card-open" ${ui.route({go:'summary',p:{id:plan.id,...(plan.preview?{followPreview:true}:{})}})} aria-label="เปิดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}"></button>` : ''}
     ${compact ? `<header class="fu-order-card-head"><span class="fu-order-ident">${pos ? `<span class="fu-order-index num" aria-hidden="true">${pos.i}/${pos.n}</span>` : ''}<strong class="num">#${esc(TP.orderNumber(plan))}</strong></span><button type="button" class="txtbtn fu-order-view" ${ui.route({ go: 'summary', p: { id: plan.id, ...(plan.preview ? { followPreview: true } : {}) } })} aria-label="ดูรายละเอียดคำสั่งซื้อ ${esc(TP.orderNumber(plan))}">${ic('eye',18,2)}<span>ดูข้อมูล</span></button></header><div class="fu-order-header">
       <div class="fu-order-line fu-order-concern"><p>${esc(TP.consultationText(plan) || 'ไม่มีข้อความอาการที่บันทึกไว้')}</p></div>
     </div>` : `<header class="fu-multi-head"><span class="fu-multi-icon">${ic('file-text', 20, 2)}</span>

@@ -24,6 +24,7 @@ assert.doesNotMatch(overview,/fu-plan-body|ยาตัวแรก|ยาตั
 assert.match(overview,/MT-real-case/);
 assert.doesNotMatch(overview,/ดูใบสรุปการปรึกษา/);
 assert.equal((overview.match(/class="fu-order-card-head"/g)||[]).length,6);
+assert.equal((overview.match(/class="fu-order-card-open"/g)||[]).length,6);
 assert.equal((overview.match(/aria-label="ดูรายละเอียดคำสั่งซื้อ /g)||[]).length,6);
 assert.doesNotMatch(overview,/จบคอร์สแล้ว/);
 assert.match(overview,/ประเมินอาการหลังจบคอร์ส/);

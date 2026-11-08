@@ -272,3 +272,7 @@ Verified all four filters in the Codex browser. Paid awaiting receipt, received 
 
 ### C403 fulfillment destination - 8 November 2026
 Paid orders awaiting receipt now open the exact order's fulfillment screen: pickup C309, express/parcel C414. Completed/cancelled orders retain summary navigation. Legacy history snapshots are supported without falling back to the latest case. Browser verified pickup navigation with the same order number; unit checks cover all three methods and legacy snapshots.
+
+
+### C418 full-card order action - 8 November 2026
+Added a full-card order button as a sibling of the details and assessment controls. Browser verified the completed-course card opens order MT202610127636 and the independent assessment button opens its assessment sheet. Corrected the completed preview lookup so it resolves to the same order. follow-layout, syntax, screens:check and design:check passed.

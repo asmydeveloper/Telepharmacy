@@ -3213,3 +3213,17 @@ body:has(.consultation-card-preview) nextjs-portal {
 .fu-order-card-head .fu-order-index { grid-column: 1; grid-row: 1; justify-self: start; align-self: center; }
 .fu-order-card-head .fu-order-ident > strong { grid-column: 1 / -1; grid-row: 2; }
 .fu-order-card-head > .fu-order-view { grid-column: 2; grid-row: 1; min-height: 0; padding-block: 0; }
+
+/* Full-card order action is a sibling of the independent controls. */
+.fu-order-summary { position: relative; }
+.fu-order-card-open {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+.fu-order-card-open:focus-visible { outline: 2px solid var(--surface); outline-offset: -4px; }
+.fu-order-summary :is(.fu-order-view, .fu-plan-footer .btn) { position: relative; z-index: 2; }
