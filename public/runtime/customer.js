@@ -424,7 +424,7 @@ const INVERSE = { push: 'back', cover: 'uncover', morph: 'uncover', fade: 'fade'
 TP.go = (id, o = {}) => {
   if (!o.force && ['queue','paused'].includes(TP.S.case?.status)) {
     if (['room','video'].includes(id)) id='queue';
-    if (cur?.id==='queue' && !['queue','queueclosed','declined','expired'].includes(id)) return chain;
+    if (cur?.id==='queue' && !['queue','home','queueclosed','declined','expired'].includes(id)) return chain;
   }
   if(id==='room'&&TP.closedChatRoute?.())return TP.finishChatNavigation(TP.S.case);
   if(SCREENS[id]?.disabled){id='account';o={root:true};}
@@ -449,7 +449,7 @@ async function doGo(id, o) {
   await swap(from, entry, via, o);
 }
 TP.back = () => {
-  if (!sheet && cur?.id==='queue' && ['queue','paused'].includes(TP.S.case?.status)) return TP.sheet('cancelq');
+  if (!sheet && cur?.id==='queue' && ['queue','paused'].includes(TP.S.case?.status)) return TP.go('home',{via:'uncover',root:true});
   if(!sheet&&hist.at(-1)?.id==='room'&&TP.closedChatRoute?.()){
     if(cur?.id==='paid'&&TP.closedChatRoute().screen==='paid')return TP.go('home',{root:true,via:'uncover'});
     return TP.finishChatNavigation(TP.S.case);
@@ -3020,14 +3020,14 @@ TP.act('verifyLic', t => {
 TP.screen('queue', {
   group:'before',title:'รอคิวปรึกษาเภสัชกร',code:'C207',ref:'C08',cls:'queue-wait-screen',
   states:[['q2','รออีก 1 คิว'], ['q1','คิวถัดไป'], ['paused','เภสัชกรพัก'], ['q4','รออีก 3 คิว', true, 7], ['outzone','ที่อยู่จัดส่งนอกเขต 15 กม.', true, 13]],
-  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงเฉพาะจำนวนคิวก่อนหน้าเด่นชัด ไม่แสดงรหัสคิว ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ กล้อง ปุ่มย่อ หรือกลับหน้าแรก ออกได้เฉพาะยกเลิกคิวผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ที่อยู่จัดส่งนอกเขต 15 กม. ยังเข้าคิวปรึกษาได้ ถ้าซื้อยาต้องรับที่ร้านหรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน'],
+  notes:['C207 เป็นหน้าค้นหาและรอคิวก่อนเข้าแชท แสดงเฉพาะจำนวนคิวก่อนหน้าเด่นชัด ไม่แสดงรหัสคิว ไม่ประมาณเวลารอ','ระหว่างรอไม่มีข้อความแชท ช่องพิมพ์ หรือกล้อง กดกลับหน้าแรกได้โดยคิวยังคงอยู่ และกดการ์ดคิวเพื่อกลับมารอ ยกเลิกคิวได้ผ่าน C208','เมื่อจำนวนคิวก่อนหน้าเป็นศูนย์ แสดงคุณเป็นคิวถัดไป และยังคงรอจนเภสัชกรรับบริการ จึงเข้า C303 โดยอัตโนมัติ','เภสัชกรพักชั่วคราวแสดงว่าคิวยังอยู่ ไม่เสียลำดับ รหัสคิวไม่เปลี่ยนเมื่อคิวขยับหรือพัก','ข้อมูลอาการและรายงานหลังใช้ยาที่ส่งก่อนเข้าคิวยังคงอยู่ในเคส ส่งให้เภสัชกรในแชทหลังรับบริการ','สงวนเลข C207.4/.5/.6/.8/.9/.10/.11/.12 ที่เลิกใช้ ไม่แสดงเคสแชทระหว่างรอ','ที่อยู่จัดส่งนอกเขต 15 กม. ยังเข้าคิวปรึกษาได้ ถ้าซื้อยาต้องรับที่ร้านหรือเลือกที่อยู่อื่นในเขตตอนชำระเงิน'],
   prep(S){const st=S.st.queue||'q2',c=ensureCase(st==='paused'?'paused':'queue');c.mode='chat';c.pos=st==='q1'?1:st==='q4'?4:2;c.msgs=[];c.draft='';c.order=null;c.idle=null;c.urgent=[];S.netOff=false;c.deliveryAddress=st==='outzone'?structuredClone(TP.ZONE_ADDR):(TP.homeAddress?.()?structuredClone(TP.homeAddress()):null);if(st==='outzone')TP.setFlag('zoneLock',true);if(st==='message'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',kind:'intake'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time}];}if(st==='offline'){c.msgs=[{who:'sys',kind:'waiting',text:'ระหว่างรอเภสัชกร\nคุณสามารถแจ้งอาการหรือสอบถามข้อมูลเพิ่มเติมไว้ได้เลย'},{who:'me',text:'เจ็บคอตั้งแต่เมื่อวาน และมีไอเล็กน้อยค่ะ',time:TP.NOW.time,fail:true}];}if(st==='joined'){c.status='room';c.waitedInChat=true;}},
   render() {
     const c = C() || ensureCase('queue');
     const paused = c.status === 'paused';
     const ahead = Number.isFinite(c.pos) ? Math.max(0, c.pos - 1) : null;
     c.queueCode ||= 'Q-' + TP.caseCode(c).replace(/^MR/, '');
-    return ui.page(`
+    return `<button type="button" class="ibtn queue-wait-back" data-a="queueMin" aria-label="กลับหน้าหลัก">${ic('chevron-left',24)}</button>` + ui.page(`
       <section class="queue-wait-content" aria-labelledby="queueWaitTitle">
         <div class="queue-wait-summary">
           <img class="queue-wait-art" src="/assets/illustrations/queue-wait-pharmacist.webp" width="220" height="220" alt="">
@@ -3043,7 +3043,7 @@ TP.screen('queue', {
   mount() {}
 
 });
-TP.act('queueMin', () => ['queue','paused'].includes(C()?.status) ? undefined : TP.go('home', {via:'uncover',root:true}));
+TP.act('queueMin', () => TP.go('home', {via:'uncover',root:true}));
 
 TP.sheetDef('cancelq', {
   group: 'before', title: 'ยกเลิกคิวไหม', code: 'C208', ref: 'C08', host: 'queue',
@@ -5593,7 +5593,7 @@ function listHtml(S,who) {
   if(!items.length) return `<div class="history-empty">${ui.emptyArt('file-search')}<h3>ไม่พบประวัติที่ตรงกัน</h3><p>${who==='all'?'ลองเปลี่ยนคำค้นหาหรือตัวกรอง':'ยังไม่มีประวัติที่ตรงกับตัวกรอง'}</p><button type="button" class="txtbtn" data-a="afHistClear">ล้างคำค้นหาและตัวกรอง</button></div>`;
   const active=items.filter(h=>historyInProgress(S,h)), finished=items.filter(h=>!historyInProgress(S,h)), groups=[];
   finished.forEach(h=>{const [,m,y]=String(h.date).split('/'),key=`${MON[+m-1] || ''} ${y || ''}`.trim();let g=groups.find(g=>g.key===key);if(!g)groups.push(g={key,items:[]});g.items.push(h)});
-  return (active.length ? `<section class="history-month"><h3>กำลังดำเนินการ</h3><div>${active.map(h=>{const c=S.case?.id===h.id?S.case:h._case;if(!c)return histItem(h);if(c.order?.status==='paid')return histItem(h);if(c.status==='closed'&&c.order?.status==='pending')return histItem(h);return TP.homeActiveCaseCard?.({...S,case:c})||histItem(h)}).join('')}</div></section>` : '') + groups.map(g=>`<section class="history-month"><h3>${esc(g.key)}</h3><div>${g.items.map(histItem).join('')}</div></section>`).join('');
+  return (active.length ? `<section class="history-month"><h3>คำสั่งซื้อกำลังดำเนินการ</h3><div>${active.map(h=>{const c=S.case?.id===h.id?S.case:h._case;if(!c)return histItem(h);if(c.order?.status==='paid')return histItem(h);if(c.status==='closed'&&c.order?.status==='pending')return histItem(h);return TP.homeActiveCaseCard?.({...S,case:c})||histItem(h)}).join('')}</div></section>` : '') + groups.map(g=>`<section class="history-month"><h3>${esc(g.key)}</h3><div>${g.items.map(histItem).join('')}</div></section>`).join('');
 }
 /* Maximum-family cases are view-only fixtures, never written to the account. */
 function historyView(S) { return {...S,_histWho:'me',_histStatus:'all'}; }
@@ -5675,7 +5675,7 @@ TP.screen('history', {
     const all=allHistory(S);
     const filters=all.length?`<div class="history-filters" ${searchOpen?'':'hidden'}><div class="history-search-panel" id="histSearchPanel" ${searchOpen?'':'hidden'}><div class="history-search" role="search" aria-label="ค้นหาประวัติการปรึกษา">${ic('search',20,1.8)}<label class="sr" for="histSearch">ค้นหาอาการ ร้านยา เภสัชกร หรือเลขการปรึกษา</label><input id="histSearch" type="search" value="${esc(S._histQuery || '')}" placeholder="อาการ ร้านยา เภสัชกร หรือเลขการปรึกษา" maxlength="100" autocomplete="off" enterkeyhint="search"><button type="button" id="histSearchClear" class="history-search-clear" data-a="afHistSearchClear" aria-label="ล้างคำค้นหา" ${S._histQuery?'':'hidden'}>${ic('x',18,2)}</button></div><button type="button" class="txtbtn history-search-close" data-a="afHistSearchClose">ปิด</button></div></div>`:'';
     const content=all.length?`<span class="sr" id="histSearchStatus" role="status" aria-live="polite"></span><div id="afHL">${listHtml(S,sel)}</div>`:`<div class="history-empty">${ui.emptyArt('history')}<h3>ยังไม่มีประวัติการปรึกษา</h3><p>กลับมาดูใบสรุปและยาที่ได้รับหลังปรึกษาเภสัชกรได้ที่นี่</p>${ui.btn('ดูร้านยาใกล้ฉัน',{a:'afHome',iconRight:'arrow-right'})}</div>`;
-    return nav+ui.page(`<div class="history-page">${selector}<div class="history-status-tabs">${ui.seg('histStatus',historyFilterOptions(S),S._histStatus||'all',{a:'afHistStatus',label:'กรองสถานะคำสั่งซื้อ'})}</div>${filters}${caseOpen() && !all.some(h=>h.id===S.case?.id) && matches(S.case?.who) ? `<section class="history-month"><h3>กำลังดำเนินการ</h3>${TP.homeActiveCaseCard?.(S) || liveCard(S.case)}</section>` : ''}${content}</div>`,{});
+    return nav+ui.page(`<div class="history-page">${selector}<div class="history-status-tabs">${ui.seg('histStatus',historyFilterOptions(S),S._histStatus||'all',{a:'afHistStatus',label:'กรองสถานะคำสั่งซื้อ'})}</div>${filters}${caseOpen() && !all.some(h=>h.id===S.case?.id) && matches(S.case?.who) ? `<section class="history-month"><h3>คำสั่งซื้อกำลังดำเนินการ</h3>${TP.homeActiveCaseCard?.(S) || liveCard(S.case)}</section>` : ''}${content}</div>`,{});
   },
   mount(el,ctx) {
     historyClampNotes(el);ctx.onLeave?.(()=>el._historyNoteObserver?.disconnect());

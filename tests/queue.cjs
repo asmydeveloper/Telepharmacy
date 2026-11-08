@@ -13,6 +13,6 @@ for(const [state,pos]of [['q2',2],['q1',1],['q4',4],['paused',2],['outzone',2]])
  h.S.st.queue=state;h.screens.queue.prep(h.S);assert.equal(h.S.case.pos,pos);
  assert.equal(h.S.case.status,state==='paused'?'paused':'queue');
  const html=h.screens.queue.render({S:h.S,state});
- assert.match(html,/queue-wait-summary/);assert.doesNotMatch(html,/รหัสคิวของคุณ|queue-ticket-code/);assert.doesNotMatch(html,/textarea|rmList|queueMin/);
+ assert.match(html,/queue-wait-summary/);assert.doesNotMatch(html,/รหัสคิวของคุณ|queue-ticket-code/);assert.doesNotMatch(html,/textarea|rmList/);
 }
 console.log('PASS: dedicated queue fixtures, positions, pause and outside delivery coverage');

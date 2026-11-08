@@ -2599,6 +2599,7 @@ body:has(.consultation-card-preview) nextjs-portal {
 
 /* C207: a dedicated queue, before the consultation room opens. */
 .queue-wait-screen { background: var(--surface); }
+.queue-wait-screen > .queue-wait-back { position: absolute; top: calc(var(--st) + var(--space-2)); left: var(--page-gutter); z-index: 5; color: var(--brand); }
 .phone .queue-wait-screen > .dock { background: transparent; border: 0; box-shadow: none; backdrop-filter: none; -webkit-backdrop-filter: none; }
 .phone .queue-wait-screen > .dock .btn { background: var(--semantic-primary); color: var(--surface); border: 0; box-shadow: none; }
 .phone .queue-wait-screen > .dock .btn:not(:disabled):is(:hover, :active) { background: var(--brand-deep); color: var(--surface); box-shadow: none; }
