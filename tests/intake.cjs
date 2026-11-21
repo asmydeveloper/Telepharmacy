@@ -29,17 +29,19 @@ assert.deepEqual(Array.from(h.S.intake.symptoms), ['ไอ เจ็บคอ'])
 assert.equal(fever['aria-pressed'], 'false');
 h.S.intake.note = 'อาการเดิมจากร่าง';
 html = render();
-assert.match(html, /อาการเดิมจากร่าง/);
+assert.doesNotMatch(html, /<textarea|รายละเอียดเพิ่มเติม/);
+assert.match(html, /แนบรูปเพิ่มเติม/);
+assert.equal(h.S.intake.note, 'อาการเดิมจากร่าง');
 assert.deepEqual(Array.from(h.S.intake.symptoms), ['ไอ เจ็บคอ']);
-console.log('PASS: four numbered steps, independent symptom cards and retained text on re-render');
+console.log('PASS: four numbered steps, independent symptom cards and no free-text field, retained legacy draft and photo picker');
 
-const sections=harness(),sheets={};sections.TP.sheetDef=(id,def)=>sheets[id]=def;sections.TP.URGENT=['หายใจลำบาก','เจ็บแน่นหน้าอก'];sections.TP.SYMPTOMS=['ไข้','ไอ'];sections.TP.person=()=>sections.S.user;sections.TP.pickBranch=sections.TP.branch;sections.TP.riskHtml=()=>'<p>FULL SERVICE TERMS</p>';sections.run("const zoneNote=()=>'';");
+const sections=harness(),sheets={};sections.TP.sheetDef=(id,def)=>sheets[id]=def;sections.TP.URGENT=['หายใจลำบาก','เจ็บแน่นหน้าอก'];sections.TP.SYMPTOMS=['ไข้','ไอ'];sections.TP.person=()=>sections.S.user;sections.TP.pickBranch=sections.TP.branch;sections.TP.policyDocumentBody=()=>'<article class="policy-text"></article>';sections.run("const zoneNote=()=>'';");
 sections.run(source.slice(begin,source.indexOf('/* A1: the main address',begin)));
 Object.assign(sections.S.intake,{symptoms:['ไอ'],custom:[],urgent:[],note:'',mode:'video',photos:0,ack:false});
 let page=sections.screens.intake.render({S:sections.S,state:'filled',params:{}});
 assert.equal(sections.S.intake.mode,'video');assert(!page.includes('ik-mode-options'));assert(!page.includes('ikConsultMode'));assert(!page.includes('ต้องการปรึกษาแบบไหน'));assert(page.includes('id="intakeStep1"'));assert(page.includes('id="intakeStep4"'));assert(page.includes('ปรึกษาเภสัช'));assert(!page.includes('ik-mode-change'));assert(!page.includes('ik-br'));assert(!page.includes('dock-note'));assert(page.includes('ฉันได้อ่านและรับทราบเงื่อนไข'));assert(page.includes('data-sheet="serviceterms"'));assert(page.includes('aria-haspopup="dialog"'));assert(/id="ikGo"[^>]*disabled|disabled[^>]*id="ikGo"/.test(page));
 assert(!page.includes('ik-safety'));assert(!page.includes('ikUrgentAlert'));assert(page.includes('id="intakeStep4"'));sections.S.intake.ack=true;sections.S.intake.urgent=['หายใจลำบาก'];page=sections.screens.intake.render({S:sections.S,state:'filled',params:{}});assert.equal(sections.S.intake.urgent.length,0);assert(!/id="ikGo"[^>]*disabled|disabled[^>]*id="ikGo"/.test(page));
-const snapshot=JSON.stringify(sections.S.intake);assert(sheets.serviceterms.render().includes('FULL SERVICE TERMS'));assert.equal(JSON.stringify(sections.S.intake),snapshot);assert.equal(sheets.serviceterms.code,'C215');
+const snapshot=JSON.stringify(sections.S.intake);assert(sheets.serviceterms.render().includes('policy-text'));const docs=[];sections.TP.mountPolicyDocuments=(_,__,keys)=>docs.push(...keys);sheets.serviceterms.mount(null,{});assert.deepEqual(docs,['terms','notice']);assert.equal(JSON.stringify(sections.S.intake),snapshot);assert.equal(sheets.serviceterms.code,'C215');
 console.log('PASS: neutral urgent section, conditional emergency text, consultation preference, compact service acknowledgment, read-only terms and button gating');
 
 const blobs=[],revoked=[];sections.context.URL={createObjectURL:f=>{const url='blob:'+blobs.length;blobs.push(url);return url;},revokeObjectURL:u=>revoked.push(u)};
@@ -58,7 +60,7 @@ const ready=sections.TP.intakeReady;Object.assign(I,{symptoms:[],note:'',otherOp
 I.symptoms=['ปรึกษาเรื่องอื่น'];assert(ready(I));
 sections.S.user.allergyState='unknown';sections.S.user.allergies=[];
 assert(!ready(I));sections.actions.intakeConfirmAllergy();assert(ready(I));
-page=sections.screens.intake.render({S:sections.S,state:'other',params:{}});assert(page.includes('ปวดหูข้างซ้าย'));assert(!page.includes('data-v="__other"'));assert(!page.includes('id="ikOtherIn"'));assert(page.indexOf('ik-upload-help')<page.indexOf('</button>',page.indexOf('ik-upload-help')));
+page=sections.screens.intake.render({S:sections.S,state:'other',params:{}});assert(!page.includes('ปวดหูข้างซ้าย'));assert.equal(I.note,'ปวดหูข้างซ้าย\nเริ่มเมื่อวาน');assert(!page.includes('data-v="__other"'));assert(!page.includes('id="ikOtherIn"'));assert(page.indexOf('ik-upload-help')<page.indexOf('</button>',page.indexOf('ik-upload-help')));
 assert(page.includes('id="ikAckLabel"'));assert(page.includes('ฉันได้อ่านและรับทราบ'));assert(page.includes('ik-consent-copy'));assert(!page.includes('<details class="ik-extra"'));
 sections.S.intake.ack=false;sections.actions.ikAck({checked:true});assert(sections.S.intake.ack);sections.actions.ikAck({checked:false});assert(!sections.S.intake.ack);
 assert(page.includes('แนบรูปเพิ่มเติม'));console.log('PASS: symptoms and allergy readiness, inline acknowledgment, visible optional form and upload-area guidance');

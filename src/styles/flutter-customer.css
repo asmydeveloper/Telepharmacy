@@ -202,37 +202,49 @@
   margin: 0 0 var(--space-2);
 }
 
-.policy-text {
-  display: grid;
-  gap: var(--space-3);
-  color: var(--ink-3);
+.phone .sheet:has(> .sh-b .policy-text) .sh-h h2 {
+  font-size: var(--text-body);
 }
 
-.policy-text :is(p, h3, h4),
-.shipping-policy p {
+.policy-text {
+  display: grid;
+  gap: var(--space-4);
+  color: var(--ink);
+  font-size: var(--text-small);
+  line-height: 1.55;
+}
+
+.policy-text :is(p, h3, h4) {
   margin: 0;
   overflow-wrap: anywhere;
 }
 
+.policy-text :is(h3, h4) {
+  font-size: inherit;
+  font-weight: 600;
+}
+
 .policy-text h3 {
-  padding: var(--space-3);
-  border-radius: var(--r-md);
-  background: var(--brand-tint);
+  margin-top: var(--space-2);
   color: var(--brand-deep);
 }
 
-.policy-text h4 {
-  color: var(--ink);
+.policy-text section {
+  display: grid;
+  gap: var(--space-1);
 }
 
-.policy-text section,
-.shipping-policy {
-  display: grid;
-  gap: var(--space-3);
+.policy-text section + section {
+  border-top: 1px solid var(--hair);
+  padding-top: var(--space-3);
+}
+
+.policy-text .policy-document-title {
+  margin-top: 0;
 }
 
 .policy-list-item {
-  padding-inline-start: var(--space-3);
+  padding-inline-start: var(--space-2);
 }
 
 .phone .auth-cover-terms button,
@@ -729,10 +741,26 @@
 .pd-step-label {
   margin-top: var(--space-1);
   color: var(--ink-3);
-  font-size: var(--text-caption);
+  font-size: var(--text-small);
   overflow-wrap: anywhere;
 }
 .phone .pd-status-steps li { align-content: start; }
+.order-tracking-page .pd-status-steps li:not(:last-child)::after {
+  top: 19px;
+  left: 50%;
+  width: 100%;
+}
+.order-tracking-page .pd-step-marker {
+  width: 40px;
+  height: 40px;
+  border: 0;
+  background: var(--semantic-surface-muted);
+}
+.order-tracking-page .pd-status-steps :is(.done, .cur) .pd-step-marker {
+  background: var(--semantic-primary);
+}
+.order-tracking-page .pd-step-marker svg { width: 20px; height: 20px; }
+
 .phone .order-tracking-page .pd-status-steps .cur .pd-step-marker::before,
 .phone .order-tracking-page .pd-status-steps .cur .pd-step-marker::after {
   display: none;
@@ -777,7 +805,51 @@
   overflow-wrap: anywhere;
 }
 .phone .pd-branch { min-width: 0; overflow-wrap: anywhere; }
-.pd-pickup-details { display: flex; gap: var(--space-3); align-items: flex-start; }
+.pd-pickup-details { display: grid; gap: var(--space-3); }
+.pd-pickup-details > img { width: 100%; height: 120px; }
+.phone .order-tracking-page .pd-pickup-code { padding: var(--space-4); }
+.pd-pickup-code-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+}
+.pd-pickup-code h3 { margin: 0; font-size: var(--text-small); }
+.pd-pickup-code p { margin: 0; color: var(--semantic-text-secondary); font-size: var(--text-small); }
+.pd-pickup-code strong { color: var(--brand); font-size: var(--type-display-mobile-size); }
+.pd-pickup-qr-button {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--brand);
+  font-size: var(--text-caption);
+  cursor: pointer;
+}
+.pd-pickup-qr-button img,
+.pd-pickup-qr-dialog img { display: block; background: white; }
+.pd-pickup-qr-dialog {
+  position: fixed;
+  inset: auto;
+  width: 360px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: var(--space-4);
+  transform: translate(-50%, -50%);
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--semantic-surface);
+  color: var(--ink);
+  text-align: center;
+}
+.pd-pickup-qr-dialog::backdrop { background: rgb(0 0 0 / 45%); }
+.pd-pickup-qr-dialog header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.pd-pickup-qr-dialog h2 { margin: 0; font-size: var(--text-body); }
+.pd-pickup-qr-dialog img { width: min(280px, 100%); height: auto; margin: var(--space-2) auto; }
+
 .phone .order-tracking-page .pd-receipt-link .row { margin: 0; }
 
 .phone .receipt-document { padding: var(--space-4); background: var(--semantic-surface); }

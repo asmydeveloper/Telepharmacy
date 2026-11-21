@@ -226,14 +226,7 @@ TP.STORE = FX.STORE;
 TP.OF_REPLY = 'ภายใน 12:00 ของวันที่ร้านเปิด';
 /* A2 (FDA notice 2.1(3), "before the service" = every case): steps and risks the customer ticks before joining the queue.
    Version goes with the tick to the console (B8). Draft wording: pharmacist + legal review before launch */
-TP.RISK = {
-  ver: 'ฉบับที่ 1',
-  steps: ['แจ้งอาการ แล้วรอคิว เภสัชกรของสาขาที่เลือกรับเคส', 'คุยทางแชทหรือวิดีโอ เภสัชกรอาจถามเพิ่มหรือขอดูรูป', 'เภสัชกรแนะนำการดูแล ถ้าต้องใช้ยา ส่งรายการยาให้ชำระในแอป', 'รับยาที่ร้าน หรือให้ร้านส่ง เฉพาะในเขตส่งยา', 'ได้ใบสรุปการปรึกษาทุกครั้ง แม้ไม่ได้ซื้อยา'],
-  risks: ['เภสัชกรไม่ได้ตรวจร่างกายคุณ คำแนะนำมาจากสิ่งที่คุณเล่าและรูปที่ส่ง', 'ข้อมูลที่ไม่ครบหรือไม่ตรง อาจทำให้คำแนะนำคลาดเคลื่อน', 'บางอาการ เภสัชกรจะแนะนำให้ไปโรงพยาบาลแทนการจ่ายยา', 'สัญญาณอินเทอร์เน็ตอาจหลุดระหว่างคุย เคสและแชทไม่หาย ต่อใหม่ได้', 'การส่งยาอาจช้ากว่าที่แจ้ง ตามบริษัทขนส่ง', 'อาการฉุกเฉิน ไปโรงพยาบาลหรือโทร 1669 ทันที ไม่ต้องรอคิว'],
-  data: 'บันทึกการปรึกษาเก็บ 1 ปีนับจากวันปิดเคส · ไม่มีการบันทึกวิดีโอ'
-};
-/* step 4 names the zone, so it follows the switch too */
-TP.riskHtml = () => `<div class="risk"><p class="risk-h">ขั้นตอน</p><ol class="risk-l">${TP.RISK.steps.map((x, i) => `<li>${TP.esc(i === 3 ? 'รับยาที่ร้าน หรือให้ร้านส่ง · ' + TP.zoneLine() : x)}</li>`).join('')}</ol><p class="risk-h">ความเสี่ยงที่ควรรู้</p><ul class="risk-l">${TP.RISK.risks.map(x => `<li>${TP.esc(x)}</li>`).join('')}</ul><p class="risk-d">${TP.esc(TP.RISK.data)}</p></div>`;
+TP.RISK = { ver: 'ฉบับที่ 1' };
 TP.SYMPTOMS = ['ไข้', 'ไอ', 'เจ็บคอ', 'น้ำมูก', 'คัดจมูก', 'ปวดหัว', 'ปวดท้อง', 'ท้องเสีย', 'ผื่น', 'คัน', 'ปวดกล้ามเนื้อ', 'ตาแดง', 'แสบตา', 'ถามเรื่องยา'];
 TP.URGENT = ['หายใจลำบาก', 'เจ็บแน่นหน้าอก', 'ซึม สับสน หรือชัก', 'ปากบวม หน้าบวมหลังใช้ยา', 'อาเจียนหรือถ่ายเป็นเลือด', 'ไข้สูงในเด็กเล็กต่ำกว่า 3 เดือน'];
 TP.ORDER_ITEMS = FX.ORDER_ITEMS;
@@ -1173,12 +1166,13 @@ const policyDocs = {
   terms: ['ข้อตกลงและเงื่อนไขการใช้บริการ MITRAREE Online', 'service-terms'],
   privacy: ['นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)', 'privacy-policy'],
   notice: ['คำประกาศความเป็นส่วนตัวสำหรับลูกค้า/ผู้ใช้บริการ', 'customer-privacy-notice'],
+  shipping: ['นโยบายการจัดส่ง คืนสินค้า และคืนเงิน', 'shipping-returns'],
 };
 const support = ['https://line.me/ti/p/~@mitraree', 'LINE @mitraree'];
 TP.support = support;
 const policyKey = ctx => Object.hasOwn(policyDocs, ctx.params.key) ? ctx.params.key : Object.hasOwn(policyDocs, ctx.state) ? ctx.state : 'terms';
-TP.policyLinks = () => Object.entries(policyDocs).map(([key, [title]]) =>
-  ui.row({ icon: 'file-text', title, a: 'stDoc', p: { key } })
+TP.policyLinks = () => ['terms', 'privacy', 'notice'].map(key =>
+  ui.row({ icon: 'file-text', title: policyDocs[key][0], a: 'stDoc', p: { key } })
 ).join('');
 TP.act('stDoc', (t, ctx, event) => {
   event?.preventDefault();
@@ -1192,54 +1186,56 @@ TP.sheetDef('policyindex', {
   render: () => `<div class="group">${TP.policyLinks()}</div>`,
   foot: () => ui.btn('ปิด', { kind: 'secondary', closeSheet: true }),
 });
+TP.policyDocumentBody = () => '<article class="policy-text" aria-busy="true"></article>';
+TP.mountPolicyDocuments = (el, ctx, keys, simulateError = false) => {
+  const body = $('.policy-text', el);
+  const controller = new AbortController();
+  ctx.onLeave(() => controller.abort());
+  const lines = value => value.split('\n').filter(line => line.trim()).map(line => {
+    if (line.startsWith('# ')) return `<h3>${esc(line.slice(2))}</h3>`;
+    if (line.startsWith('## ')) return `<h4>${esc(line.slice(3))}</h4>`;
+    if (/^[-·] /.test(line)) return `<p class="policy-list-item">• ${esc(line.slice(2))}</p>`;
+    return `<p>${esc(line)}</p>`;
+  }).join('');
+  async function read(key) {
+    const [title, file] = policyDocs[key];
+    const response = await fetch(`/assets/policies/${file}.txt`, {
+      signal: controller.signal, cache: 'no-cache',
+    });
+    if (!response.ok) throw new Error('Document unavailable');
+    return { title, text: await response.text() };
+  }
+  async function load() {
+    body.setAttribute('aria-busy', 'true');
+    body.textContent = 'กำลังโหลดเอกสาร';
+    try {
+      if (simulateError) { simulateError = false; throw new Error('Preview'); }
+      const documents = await Promise.all(keys.map(read));
+      if (controller.signal.aborted) return;
+      body.innerHTML = documents.map(doc => `<section>
+        ${documents.length > 1 ? `<h3 class="policy-document-title">${esc(doc.title)}</h3>` : ''}
+        ${lines(doc.text)}
+      </section>`).join('') +
+        `<a class="btn secondary" href="${support[0]}" target="_blank" rel="noopener noreferrer">ติดต่อผ่าน ${support[1]}</a>`;
+    } catch {
+      if (controller.signal.aborted) return;
+      body.innerHTML = '<p role="alert">เปิดเอกสารไม่สำเร็จ กรุณาลองอีกครั้ง</p><button type="button" class="btn secondary">ลองอีกครั้ง</button>';
+      $('button', body).addEventListener('click', load, { once: true });
+    } finally {
+      if (!controller.signal.aborted) body.setAttribute('aria-busy', 'false');
+    }
+  }
+  return load();
+};
 TP.sheetDef('doc', {
   group: 'start', title: 'ข้อตกลงและนโยบาย',
   sheetTitle: ctx => policyDocs[policyKey(ctx)][0],
   code: 'C111', ref: 'H07', host: 'login', tall: true, cls: 'policy-document',
   states: [['', 'ปกติ', true, 0], ['terms', 'ข้อตกลงและเงื่อนไขการใช้บริการ MITRAREE Online', true, 1], ['privacy', 'นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)', true, 2], ['notice', 'คำประกาศความเป็นส่วนตัวสำหรับลูกค้า/ผู้ใช้บริการ', true, 3], ['load-error', 'เปิดเอกสารไม่สำเร็จ', true, 4]],
-  notes: ['เปิดอ่านในแอปจากหน้าเข้าสู่ระบบ สมัครสมาชิก และบัญชี มีสารบัญและแยกจากความยินยอมสุขภาพ'],
-  render: () => '<article class="policy-text" aria-busy="true"></article>',
+  notes: ['เปิดอ่านในแอปจากหน้าเข้าสู่ระบบ สมัครสมาชิก และบัญชี เลื่อนอ่านจากบนลงล่างและแยกจากความยินยอมสุขภาพ'],
+  render: () => TP.policyDocumentBody(),
   mount(el, ctx) {
-    const body = $('.policy-text', el);
-    const controller = new AbortController();
-    ctx.onLeave(() => controller.abort());
-    const key = policyKey(ctx);
-    let simulateError = ctx.state === 'load-error' && !ctx.params.key;
-    async function load() {
-      body.setAttribute('aria-busy', 'true');
-      body.textContent = 'กำลังโหลดเอกสาร';
-      try {
-        if (simulateError) { simulateError = false; throw new Error('Preview'); }
-        const response = await fetch(`/assets/policies/${policyDocs[key][1]}.txt`, { signal: controller.signal });
-        if (!response.ok) throw new Error('Document unavailable');
-        const [intro, ...sections] = (await response.text()).trim().split('\n# ');
-        const renderLines = value => value.split('\n').filter(line => line.trim()).map(line => {
-          if (line.startsWith('## ')) return `<h4>${esc(line.slice(3))}</h4>`;
-          if (/^[-·] /.test(line)) return `<p class="policy-list-item">• ${esc(line.slice(2))}</p>`;
-          return `<p>${esc(line)}</p>`;
-        }).join('');
-        const topics = sections.map(section => {
-          const end = section.indexOf('\n');
-          return [section.slice(0, end), section.slice(end + 1)];
-        });
-        body.innerHTML = `<label for="policyTopics">ไปที่หัวข้อ</label><select class="input" id="policyTopics">
-          <option value="">เลือกหัวข้อ</option>${topics.map(([title], index) => `<option value="${index}">${esc(title)}</option>`).join('')}
-          </select>${renderLines(intro)}${topics.map(([title, text], index) => `<section><h3 id="policyTopic${index}" tabindex="-1">${esc(title)}</h3>${renderLines(text)}</section>`).join('')}
-          ${key === 'notice' ? '<section><h3>ข้อมูลเฉพาะแอปฉบับทดสอบ</h3><p>การเข้าสู่ระบบ การปรึกษา การชำระเงิน และเอกสารในแอปเป็นข้อมูลจำลอง แผนที่ใช้ข้อมูลจาก OpenStreetMap แอปขอใช้ตำแหน่งเมื่อกดค้นหาจากตำแหน่งปัจจุบัน เมื่อกดติดต่อ LINE แอปจะเปิดบัญชี MITRAREE โดยไม่แนบข้อมูลจากแอป</p></section>' : ''}
-          <a class="btn secondary" href="${support[0]}" target="_blank" rel="noopener noreferrer">ติดต่อผ่าน ${support[1]}</a>`;
-        $('#policyTopics', body).addEventListener('change', event => {
-          if (event.target.value === '') return;
-          $('#policyTopic' + event.target.value, body)?.focus();
-        });
-      } catch (error) {
-        if (controller.signal.aborted) return;
-        body.innerHTML = '<p role="alert">เปิดเอกสารไม่สำเร็จ กรุณาลองอีกครั้ง</p><button type="button" class="btn secondary">ลองอีกครั้ง</button>';
-        $('button', body).addEventListener('click', load, { once: true });
-      } finally {
-        if (!controller.signal.aborted) body.setAttribute('aria-busy', 'false');
-      }
-    }
-    load();
+    return TP.mountPolicyDocuments(el, ctx, [policyKey(ctx)], ctx.state === 'load-error' && !ctx.params.key);
   },
   afterClose: ctx => ctx.params.onReturn?.(),
   foot: () => ui.btn('ปิด', { kind: 'secondary', closeSheet: true })
@@ -1597,23 +1593,17 @@ const REG_TOPICS=[['weight','น้ำหนัก'],['height','ส่วนส�
 /* Single purpose, explicit health-data consent. Company details require owner confirmation. */
 const REG_HEALTH_POLICY={version:'health-care-2026-11-01-draft-2',controller:'บริษัท มิตรอารีแคร์ จำกัด',address:null,contact:null,retention:null};
 const regConsentAccepted=d=>d.healthConsentVersion===REG_HEALTH_POLICY.version&&REG_TOPICS.every(([key])=>d.consents[key]===true);
-function regConsentDocument(){const p=REG_HEALTH_POLICY;return `<article class="reg-consent-document"><p class="reg-policy-meta">ฉบับร่าง · 1 พฤศจิกายน 2569</p>${ui.note('รอระบุที่อยู่และช่องทางติดต่อผู้ควบคุมข้อมูล รวมถึงยืนยันระยะเวลาเก็บรักษา ก่อนนำเอกสารไปใช้จริง',{tone:'warn',icon:'info'})}<p class="reg-policy-intro">เอกสารนี้อธิบายการขอความยินยอมใช้ข้อมูลสุขภาพเพื่อให้บริการเภสัชกรรมผ่าน MITRAREE โปรดอ่านก่อนตัดสินใจให้ความยินยอม</p>
-<section><h3>1. ผู้ควบคุมข้อมูลและวัตถุประสงค์</h3><p>${esc(p.controller)} ขอความยินยอมในการเก็บรวบรวม ใช้ และเปิดเผยข้อมูลสุขภาพของท่าน เฉพาะเพื่อให้เภสัชกรประเมินอาการและความเหมาะสมของยา ตรวจสอบการแพ้ยาและความเสี่ยงจากการใช้ยา ให้คำปรึกษา จ่ายยาเมื่อเหมาะสม และติดตามความปลอดภัยในการใช้ยาที่เกี่ยวเนื่องกับการปรึกษานั้น</p><p>ที่อยู่ผู้ควบคุมข้อมูล: ${esc(p.address||'[รอบริษัทระบุที่อยู่]')}<br>ช่องทางติดต่อเรื่องข้อมูลส่วนบุคคล: ${esc(p.contact||'[รอบริษัทยืนยันช่องทางติดต่อ]')}</p></section>
-<section><h3>2. ข้อมูลที่อยู่ในขอบเขตความยินยอม</h3><p>น้ำหนัก ส่วนสูง โรคประจำตัว ยาที่ใช้ประจำ ประวัติการแพ้ยา เอกสารการแพ้ยา ประวัติการแพ้อาหาร อาการที่แจ้ง และข้อมูลติดตามอาการหลังใช้ยา รวมถึงข้อความหรือรูปที่ท่านส่งเพื่อการปรึกษา บันทึกการปรึกษา ใบสรุป และบันทึกการจ่ายยา เฉพาะส่วนที่จำเป็นต่อบริการดังกล่าว</p><p>ข้อมูลทั่วไป เช่น ชื่อ ข้อมูลติดต่อ และที่อยู่ ต้องประมวลผลตามฐานกฎหมายและประกาศความเป็นส่วนตัวที่เกี่ยวข้อง ความยินยอมนี้ไม่ใช้แทนฐานกฎหมายของข้อมูลทุกประเภท</p><p>เมื่อมีการซื้อยา ข้อมูลที่จำเป็นต่อการจัดส่งและรับชำระเงิน เช่น ผู้รับ ที่อยู่จัดส่ง และรายการธุรกรรม จะดำเนินการตามฐานกฎหมายและประกาศความเป็นส่วนตัวของบริการนั้น แยกจากความยินยอมใช้ข้อมูลสุขภาพนี้</p></section>
-<section><h3>3. ผู้ที่อาจได้รับข้อมูล</h3><p>เภสัชกรและร้านยาที่ให้บริการท่าน รวมถึงผู้ปฏิบัติงานหรือผู้ประมวลผลข้อมูลที่ได้รับมอบหมาย เฉพาะที่จำเป็นต่อวัตถุประสงค์ข้างต้น โดยต้องมีหน้าที่รักษาความลับและมาตรการคุ้มครองที่เหมาะสม การเปิดเผยตามหน้าที่กฎหมายให้ดำเนินการตามเงื่อนไขของกฎหมายนั้น</p><p>หากมีการส่งข้อมูลไปต่างประเทศ บริษัทต้องแจ้งรายละเอียดที่เกี่ยวข้องและจัดให้มีฐานกฎหมายและมาตรการคุ้มครองตามที่กฎหมายกำหนด ความยินยอมนี้ไม่ใช่การอนุญาตให้โอนข้อมูลไปต่างประเทศโดยไม่มีขอบเขต</p><p>ผู้ให้บริการขนส่งและรับชำระเงินควรได้รับเฉพาะข้อมูลที่จำเป็นต่องานของตน ไม่ได้รับประวัติสุขภาพทั้งหมดเพียงเพราะท่านซื้อยา</p></section>
-<section><h3>4. การตัดสินใจของท่าน</h3><p>ท่านเลือกให้หรือไม่ให้ความยินยอมได้โดยสมัครใจ ความยินยอมนี้ไม่รวมการโฆษณา การตลาด การขายข้อมูล การวิจัย หรือการใช้ข้อมูลของบุคคลอื่น หากมีวัตถุประสงค์อื่นที่ต้องอาศัยความยินยอม บริษัทต้องขอแยกต่างหาก</p><p>หากไม่มีข้อมูลสุขภาพที่จำเป็น เภสัชกรอาจประเมินหรือให้บริการบางส่วนได้ไม่ครบถ้วน บริษัทต้องแจ้งผลกระทบและพิจารณาฐานกฎหมายที่ใช้กับบริการนั้น ไม่ใช้ความยินยอมนี้บังคับให้ท่านยอมรับการใช้ข้อมูลที่ไม่เกี่ยวข้องกับบริการ</p></section>
-<section><h3>5. ระยะเวลาเก็บและความปลอดภัย</h3><p>${esc(p.retention||'เก็บข้อมูลเท่าที่จำเป็นต่อการให้บริการเภสัชกรรมและการติดตามความปลอดภัย รวมถึงระยะเวลาที่จำเป็นตามหน้าที่กฎหมายหรือการใช้สิทธิเรียกร้อง เมื่อหมดความจำเป็นให้ลบ ทำลาย หรือทำให้ไม่สามารถระบุตัวบุคคลได้ โดยบริษัทต้องกำหนดและแจ้งระยะเวลาหรือเกณฑ์เก็บรักษาของข้อมูลแต่ละประเภทก่อนใช้จริง')}</p><p>บริษัทต้องจำกัดสิทธิการเข้าถึงและจัดให้มีมาตรการรักษาความมั่นคงปลอดภัยที่เหมาะสมกับความเสี่ยงของข้อมูลสุขภาพ</p></section>
-<section><h3>6. ถอนความยินยอมและใช้สิทธิ</h3><p>ท่านถอนความยินยอมได้ผ่านเมนูบัญชี → ความยินยอม หรือช่องทางติดต่อผู้ควบคุมข้อมูลที่ระบุในเอกสารนี้ โดยต้องทำได้ง่าย การถอนจะไม่กระทบความชอบด้วยกฎหมายของการดำเนินการที่ได้ทำไปก่อนถอน บริษัทจะแจ้งผลกระทบต่อบริการก่อนดำเนินการ และอาจเก็บหรือใช้ข้อมูลบางส่วนต่อได้เมื่อมีฐานกฎหมายอื่นรองรับ</p><p>ท่านมีสิทธิขอเข้าถึงหรือรับสำเนา แก้ไข ขอให้ลบหรือจำกัดการใช้ คัดค้าน หรือขอรับและโอนข้อมูลเมื่อเข้าเงื่อนไขกฎหมาย และมีสิทธิร้องเรียนต่อสำนักงานคณะกรรมการคุ้มครองข้อมูลส่วนบุคคล การใช้สิทธิแต่ละประเภทอาจมีเงื่อนไขหรือข้อยกเว้นตามกฎหมาย</p></section>
-<section><h3>7. ข้อมูลของผู้เยาว์หรือบุคคลอื่น</h3><p>ความยินยอมนี้ใช้กับข้อมูลของเจ้าของบัญชีตามขอบเขตที่ระบุ ไม่ถือเป็นความยินยอมแทนบุคคลอื่นโดยอัตโนมัติ หากกฎหมายกำหนดให้ต้องได้รับความยินยอมจากผู้ใช้อำนาจปกครอง ผู้อนุบาล หรือผู้พิทักษ์ บริษัทต้องตรวจสอบและดำเนินการให้ถูกต้องก่อนอาศัยความยินยอมดังกล่าว</p></section>
-<section><h3>8. การแสดงเจตนา</h3><p>เมื่อท่านเลือกช่องยินยอมที่หน้าตรวจทานและกดยืนยันสมัครสมาชิก หรือเลือกช่องยินยอมและกดบันทึกที่เมนูความยินยอม จะถือเป็นการแสดงเจตนาให้ความยินยอมตามขอบเขตเอกสารฉบับที่แสดงให้ท่านอ่าน การเปิด อ่าน หรือปิดเอกสารนี้เพียงอย่างเดียวไม่ถือเป็นการให้ความยินยอม</p></section>
-<section><h3>9. การปรึกษาและติดตามผ่านแอป</h3><p>ท่านอาจปรึกษาทางแชทหรือวิดีโอคอล ข้อความ รูปที่ท่านส่ง ใบสรุป และข้อมูลการจ่ายยาอาจเป็นส่วนหนึ่งของบันทึกบริการตามวัตถุประสงค์ข้างต้น สำหรับการบันทึกภาพหรือเสียงวิดีโอ บริษัทต้องแจ้งให้ทราบอย่างชัดเจนและมีฐานกฎหมายที่เหมาะสมก่อนดำเนินการ เอกสารนี้ไม่ถือเป็นการยินยอมให้บันทึกวิดีโอคอลโดยอัตโนมัติ</p><p>หากท่านแจ้งอาการหลังใช้ยา ข้อมูลจะถูกส่งให้ผู้เกี่ยวข้องประเมิน ไม่ใช่การยืนยันว่าแพ้ยาหรือรับประกันการตอบกลับทันที</p><p>การแจ้งเตือนผ่านระบบของอุปกรณ์อาจอาศัยผู้ให้บริการภายนอก เช่น Apple หรือ Google บริษัทต้องจำกัดข้อมูลที่ส่งและที่แสดงบนหน้าจอล็อกให้เหมาะสม พร้อมแจ้งผู้ให้บริการและการโอนข้อมูลตามการใช้งานจริง การอนุญาตแจ้งเตือนของอุปกรณ์แยกจากความยินยอมใช้ข้อมูลสุขภาพ</p></section>
-<section id="careConsentContacts" class="reg-consent-contacts"><h3>10. ติดต่อสาขาและช่องทางอื่น</h3><p>หากยังไม่พร้อมให้ความยินยอมหรือถอนความยินยอม ท่านสอบถามเรื่องบริการและทางเลือกในการปรึกษาที่ร้านได้ตามข้อมูลติดต่อด้านล่าง ช่องทางนี้ไม่ใช่ช่องทางติดต่อผู้ควบคุมข้อมูลเรื่อง PDPA แทนรายละเอียดที่บริษัทยังต้องยืนยัน</p>${TP.callRows?ui.group(TP.callRows()):'<p class="hint">ยังไม่มีข้อมูลติดต่อสาขา</p>'}</section></article>`;}
-TP.registrationConsentDocument=regConsentDocument;
-
 TP.healthConsentVersion=()=>REG_HEALTH_POLICY.version;
 TP.healthConsentNeeded=S=>!(S.consent&&S.consentVer>=4&&S.healthConsentRecord?.documentVersion===REG_HEALTH_POLICY.version);
 TP.saveHealthConsent=(S,version,method)=>{if(version!==REG_HEALTH_POLICY.version)return false;S.consent=true;S.consentVer=4;S.healthConsentRecord={documentVersion:version,controller:REG_HEALTH_POLICY.controller,purpose:'pharmaceutical-care',acceptedAt:new Date().toISOString(),method,categories:REG_TOPICS.map(([key])=>key),prototype:true};return true;};
-TP.sheetDef('registrationconsent',{group:'start',title:'ความยินยอมข้อมูลสุขภาพ',code:'C107',host:'profile',tall:true,cls:'health-consent-sheet',states:[['normal','อ่านความยินยอม ไม่มีช่องติ๊ก']],notes:['อ่านอย่างเดียว ปิดแล้วไม่เปลี่ยนความยินยอม','ผู้ควบคุมข้อมูล บริษัท มิตรอารีแคร์ จำกัด ตามเจ้าของโครงการยืนยัน','ฉบับร่าง รอที่อยู่ ช่องทางติดต่อ ระยะเวลา และตรวจฐานกฎหมายก่อนใช้จริง'],render:regConsentDocument,foot:()=>ui.btn('ปิด',{kind:'secondary',closeSheet:true})});
+TP.sheetDef('registrationconsent', {
+  group: 'start', title: 'ความยินยอมข้อมูลสุขภาพ', code: 'C107', host: 'profile', tall: true,
+  states: [['normal', 'อ่านความยินยอม ไม่มีช่องติ๊ก']],
+  notes: ['รวมคำประกาศความเป็นส่วนตัวสำหรับลูกค้าและข้อตกลงการใช้บริการในแผ่นเดียว', 'อ่านอย่างเดียว ปิดแล้วไม่เปลี่ยนความยินยอม'],
+  render: () => TP.policyDocumentBody(),
+  mount: (el, ctx) => TP.mountPolicyDocuments(el, ctx, ['notice', 'terms']),
+  foot: () => ui.btn('ปิด', { kind: 'secondary', closeSheet: true }),
+});
 const REG_STEPS=['ข้อมูลส่วนตัว','ที่อยู่ปัจจุบัน','ข้อมูลสุขภาพ','ตรวจทานและยินยอม'];
 function regDraft(S){return S._registration ||= {step:0,first:'',last:'',nationalId:'',day:'',month:'',year:'',sex:'none',weight:'',height:'',house:'',building:'',alley:'',road:'',dist:'',amp:'',prov:'',zip:'',health:{conditions:{mode:'unknown',items:[]},meds:{mode:'unknown',items:[]},allergies:{mode:'unknown',items:[]},food:{mode:'unknown',items:[]}},documents:[],queries:{},docError:'',consents:{},errors:{},busy:false};}
 /* Signup contact state; replace this demo adapter with server-bound SMS challenges. */
@@ -1964,12 +1954,12 @@ TP.screen('personaledit', {
 TP.act('pfEditCancel',()=>{if(TP.S._profileEdit?.busy)return;TP.S._profileEdit=null;return TP.back();});
 TP.act('pfEditSave',async()=>{const S=TP.S,d=pfEditDraft(S),entry=TP.cur();if(d.busy||entry?.id!=='personaledit')return;d.errors=pfEditErrors(d);if(Object.keys(d.errors).length){await TP.refresh({anim:false});$('[aria-invalid="true"]',TP.cur()?.el)?.focus();return;}d.busy=true;const first=d.first.trim(),last=d.last.trim();Object.assign(S.user,{name:first,last,full:first+' '+last,birthDate:`${d.year}-${d.month.padStart(2,'0')}-${d.day.padStart(2,'0')}`,birthYear:+d.year,born:d.year,age:regAge(d),sex:d.sex});S._profileEdit=null;TP.emit('state');await TP.back();TP.notify('บันทึกข้อมูลส่วนตัวแล้ว');});
 
-function regRender(ctx){const d=regInitContact(ctx),c=regContact(ctx),step=d.step;d.directEmail=!d.emailLocked;let body='';if(step===0){body=`<p class="reg-help">กรอกช่องที่มีเครื่องหมาย * ให้ครบ ช่องที่ระบุว่าไม่บังคับเว้นได้</p>${regContactFields(d)}${regPersonalFields(d)}${regPasswordFields(d)}`;}
+function regRender(ctx){const d=regInitContact(ctx),c=regContact(ctx),step=d.step;d.directEmail=!d.emailLocked;let body='';if(step===0){body=`<button type="button" class="reg-consent-link" data-a="stDoc" data-v="notice" aria-haspopup="dialog">คำประกาศความเป็นส่วนตัวสำหรับลูกค้า/ผู้ใช้บริการ</button><p class="reg-help">กรอกช่องที่มีเครื่องหมาย * ให้ครบ ช่องที่ระบุว่าไม่บังคับเว้นได้</p>${regContactFields(d)}${regPersonalFields(d)}${regPasswordFields(d)}`;}
 if(step===1){regAddressContact(d,c);body=`<p class="reg-help">กรอกข้อมูลติดต่อและที่อยู่ปัจจุบันในช่องที่มี * ให้ครบ</p><div class="reg-name-fields">${regField(d,'addressFirst','ชื่อ',{ac:'given-name',max:50,placeholder:'ชื่อผู้ติดต่อ'})}${regField(d,'addressLast','นามสกุล',{ac:'family-name',max:50,placeholder:'นามสกุลผู้ติดต่อ'})}</div>${regField(d,'addressPhone','เบอร์โทรศัพท์มือถือ',{numeric:true,max:10,ac:'tel-national',placeholder:'เช่น 0812345678'})}${regField(d,'house','บ้านเลขที่',{ac:'address-line1',max:200})}${regField(d,'building','หมู่บ้าน / อาคาร / ห้อง / ชั้น',{optional:true,ac:'address-line2',max:200})}${regField(d,'alley','ซอย',{optional:true,max:100})}${regField(d,'road','ถนน',{optional:true,max:100})}${/ซอย|ถนน|หมู่บ้าน|อาคาร|ชั้น|ห้อง/.test(d.house||'')?'<p class="hint">ข้อมูลเดิมยังอยู่ครบในช่องบ้านเลขที่ กรุณาตรวจและแยกลงช่องที่ตรงกัน</p>':''}${TP.addressAreaField(d,d.errors)}<div class="address-native-fields">${regAddressSelect(d,'prov','จังหวัด')}${regAddressSelect(d,'amp','อำเภอ / เขต')}${regAddressSelect(d,'dist','ตำบล / แขวง')}</div>${regField(d,'zip','รหัสไปรษณีย์',{numeric:true,max:5,readonly:true,placeholder:'ระบบจะเติมให้เมื่อเลือกตำบล'})}<p class="hint" id="regAddressLoadStatus" role="status">กำลังโหลดจังหวัดและพื้นที่</p><button type="button" class="txtbtn" id="regAddressRetry" hidden>โหลดข้อมูลที่อยู่อีกครั้ง</button>${TP.addressPinField('openRegDeliveryPin',regDeliveryAddress(d).location)}`;}
 
 
 if(step===2)body=`<p class="reg-help">ข้อมูลของคุณช่วยให้เภสัชกรตรวจสอบความเหมาะสมของยา เลือก “ยังไม่ทราบ” ได้หากไม่แน่ใจ</p>${[['conditions','โรคประจำตัว'],['meds','ยาที่ใช้ประจำ'],['allergies','ประวัติการแพ้ยา']].map(([k,t])=>regHealthBlock(d,k,t)).join('')}${regHealthBlock(d,'food','ประวัติแพ้อาหาร')}${regDocumentBlock(d)}`;
-if(step===3)body=`<p class="reg-help">ตรวจสอบข้อมูลก่อนสมัคร หากต้องการแก้ไข แตะ “แก้ไข” ในแต่ละส่วน</p>${regReview(ctx,d)}<section class="reg-consent-choices" aria-label="ความยินยอม"><div class="reg-consent-single"><input type="checkbox" id="regHealthConsent" required aria-required="true" aria-labelledby="regHealthConsentLabel" ${regConsentAccepted(d)?'checked':''}><div><label id="regHealthConsentLabel" for="regHealthConsent"><span class="reg-required" aria-hidden="true">*</span> ข้าพเจ้ายินยอมให้บริษัท มิตรอารีแคร์ จำกัด เก็บรวบรวม ใช้ และเปิดเผยข้อมูลสุขภาพของข้าพเจ้า เพื่อบริการเภสัชกรรมตามขอบเขตที่แจ้ง</label> <button type="button" class="reg-consent-link" data-a="stDoc" data-v="terms" aria-haspopup="dialog" aria-label="อ่านเพิ่มเติมเกี่ยวกับข้อตกลงการใช้บริการ MITRAREE Online">อ่านเพิ่มเติม</button></div></div></section>`;
+if(step===3)body=`<p class="reg-help">ตรวจสอบข้อมูลก่อนสมัคร หากต้องการแก้ไข แตะ “แก้ไข” ในแต่ละส่วน</p>${regReview(ctx,d)}<section class="reg-consent-choices" aria-label="ความยินยอม"><div class="reg-consent-single"><input type="checkbox" id="regHealthConsent" required aria-required="true" aria-labelledby="regHealthConsentLabel" ${regConsentAccepted(d)?'checked':''}><div><label id="regHealthConsentLabel" for="regHealthConsent"><span class="reg-required" aria-hidden="true">*</span> ข้าพเจ้ายินยอมให้บริษัท มิตรอารีแคร์ จำกัด เก็บรวบรวม ใช้ และเปิดเผยข้อมูลสุขภาพของข้าพเจ้า เพื่อบริการเภสัชกรรมตามขอบเขตที่แจ้ง</label> <button type="button" class="reg-consent-link" data-sheet="registrationconsent" aria-haspopup="dialog" aria-label="อ่านคำประกาศความเป็นส่วนตัวและข้อตกลงการใช้บริการ">อ่านเพิ่มเติม</button></div></div></section>`;
 
 const enabled=step===3?regCanSubmit(d):!d.busy;
 return ui.nav({title:'สมัครสมาชิก',left:step===0?'':'<button type="button" class="ibtn" data-a="regBack" aria-label="ย้อนกลับ">'+ic('arrow-left',22)+'</button>',right:step===0?'<button type="button" class="txtbtn" data-a="regCancel">ยกเลิก</button>':''})+regProgress(d)+ui.page(`<div class="registration-page">${d.submitError?ui.note(d.submitError,{tone:'warn',icon:'circle-alert'}):''}${body}</div>`,{cls:'registration-scroll'})+ui.dock(`<div class="reg-nav-actions${step===0?' single':step===3?' review':''}">${step>0?`<button type="button" class="btn secondary" data-a="regBack" ${d.busy?'disabled':''}>${ic('chevron-left',20,2)}ย้อนกลับ</button>`:''}<button type="button" class="btn primary" id="regNext" data-a="regNext" ${enabled?'':'disabled'}>${d.busy?'กำลังบันทึก…':step===3?'ยืนยันและสมัครสมาชิก':'ถัดไป'}${ic('arrow-right',20,2)}</button></div>`,{});}
@@ -2091,7 +2081,6 @@ TP.screen('profile', {
    Consent (C06 · A6 + C1): summary on top, full text, required + optional
    ===================================================================== */
 const CN_VER = 4;
-TP.consentDoc=()=>TP.registrationConsentDocument();
 /* =====================================================================
    No consent (C06): owner 19/10/2026 consent is required to use the app at all
    ===================================================================== */
@@ -2687,12 +2676,11 @@ const intakePhotosHtml = I => {const images=intakePhotoItems(I);return `<div cla
 
 /* C203 preview mock: preview panel only, never part of the customer UI. */
 const intakeMock = {
-  canFill: ctx => { const I = ctx?.S?.intake; return !!I && (!(I.symptoms || []).length || !String(I.note || '').trim()); },
+  canFill: ctx => { const I = ctx?.S?.intake; return !!I && (!I.symptoms?.length || !I.duration); },
   fill(ctx) {
     const I = ctx.S.intake;
     if (!I.symptoms?.length) I.symptoms = ['ไอ เจ็บคอ'];
     I.duration ||= '1–3 วัน';
-    if (!String(I.note || '').trim()) I.note = 'เป็นมา 2 วัน กลืนแล้วเจ็บ';
     TP.refresh({ anim: false });
   }
 };
@@ -2701,7 +2689,7 @@ TP.screen('intake', {
   group: 'before', title: 'แจ้งอาการ', code: 'C203', ref: 'C04', parent: 'home', cls:'intake-cover-screen', sb:'dark',
   states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา", true, 7], ["photos", "แนบรูป 3 รูป", true, 12], ["photo-error", "แนบไฟล์ไม่รองรับ", true, 13], ["multi-symptom", "หลายอาการ พร้อมระยะเวลาและให้นมบุตร", true, 14], ["allergy-unknown", "ยังไม่ทราบประวัติแพ้ยา · กดยืนยัน", true, 15]],
   notes: ['ตัวเลือกอาการสองคอลัมน์ เลือกได้หลายข้อด้วยการกดทั้งกล่อง',
-    'ไม่มีอาการในรายการ: พิมพ์ในช่องรายละเอียดเพิ่มเติมใต้รายการอาการ', 'ดึงประวัติแพ้ยาจากบัญชี แก้ไขหรือยืนยันว่าไม่ทราบได้ก่อนส่ง', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ไม่มีตัวเลือกวิธีปรึกษาในฟอร์ม ลำดับคือ 1 อาการที่ต้องการปรึกษา 2 ระยะเวลาที่มีอาการ 3 ตั้งครรภ์หรือให้นมบุตร 4 ข้อมูลก่อนปรึกษา รับวิธีปรึกษาจากทางเข้าเดิมและเปิดวิดีโอในห้องได้; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"', 'แผงทดสอบมีปุ่มมอคข้อมูล เติมอาการและรายละเอียดเฉพาะช่องที่ว่าง ไม่ติ๊กรับทราบให้',
+    'เลือกปรึกษาเรื่องอื่นเมื่อไม่มีอาการในรายการ และแนบรูปเพิ่มเติมได้', 'ดึงประวัติแพ้ยาจากบัญชี แก้ไขหรือยืนยันว่าไม่ทราบได้ก่อนส่ง', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ไม่มีตัวเลือกวิธีปรึกษาในฟอร์ม ลำดับคือ 1 อาการที่ต้องการปรึกษา 2 ระยะเวลาที่มีอาการ 3 ตั้งครรภ์หรือให้นมบุตร 4 ข้อมูลก่อนปรึกษา รับวิธีปรึกษาจากทางเข้าเดิมและเปิดวิดีโอในห้องได้; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"', 'แผงทดสอบมีปุ่มมอคข้อมูล เติมอาการและรายละเอียดเฉพาะช่องที่ว่าง ไม่ติ๊กรับทราบให้',
     'A2 (ประกาศ อย. ข้อ 2.1(3) "ก่อนการให้บริการ" = ทุกเคส): ติ๊ก รับทราบขั้นตอนและความเสี่ยง ก่อนกดเข้าคิว · ครั้งแรกเปิดข้อความเต็มให้อ่าน ครั้งต่อไปพับไว้ แตะเปิดอ่านได้ · ไม่ติ๊กแล้วกดเข้าคิว = พาไปที่ช่องติ๊ก บอกว่าต้องติ๊กก่อน · เก็บเวลาและเลขฉบับข้อความกับเคส ส่งให้คอนโซล (B8) · อ่านซ้ำได้ที่ C207 (C203.7)',
     'A1 (C203.8): ที่อยู่หลักอยู่นอกเขตส่งยา บอกก่อนเข้าคิวว่าถ้าต้องซื้อยา รับที่ร้านได้อย่างเดียว ปรึกษาได้ตามปกติ · ไม่บังคับเปลี่ยนที่อยู่'],
   wait: ['ข้อความขั้นตอนและความเสี่ยง (A2) ให้เภสัชกรและฝ่ายกฎหมายตรวจก่อนใช้จริง', 'ฝากคำถามตอนร้านปิด ต้องติ๊กรับทราบด้วยไหม (ต้นแบบยังไม่ให้ติ๊ก)', 'ปรึกษาใหม่ต่อจากเคสที่ระบบปิดเพราะเงียบ และย้ายคิวไปสาขาอื่น ใช้การรับทราบของเคสเดิมได้ไหม (ต้นแบบใช้ของเคสเดิม ไม่ถามซ้ำ)'],
@@ -2711,13 +2699,13 @@ TP.screen('intake', {
     if (st) { S.addrs = TP.fresh().addrs; if (st === 'outzone') S.addrs = [{ ...TP.ZONE_ADDR, main: true }, ...S.addrs.map(a => ({ ...a, main: false }))]; }
     if (['filled', 'outzone', 'multi-symptom', 'allergy-unknown'].includes(st)) Object.assign(S.intake, {
       who: 'me', symptoms: st === 'multi-symptom' ? ['ไข้ หวัด', 'ไอ เจ็บคอ'] : ['ไอ เจ็บคอ'],
-      note: 'เป็นมา 2 วัน กลืนแล้วเจ็บ', urgent: [],
+      note: '', urgent: [],
       duration: st === 'multi-symptom' ? '1–3 วัน' : '', pregnancy: st === 'multi-symptom' ? 'ให้นมบุตร' : ''
     });
 
     else if (st) Object.assign(S.intake, { who: 'me', symptoms: [], note: '', urgent: [], photos: 0 });
     if(st==='photos')S.intake.attachments=['/assets/stores/pharmacy-thumbnail-v1.png','/assets/photos/pharmacist-v1.png','/assets/photos/customer-v1.png'].map(url=>({url,preview:true}));
-    if(st==='photo-error'){S.intake.note='';S.intake.photoError='เลือกรูป JPG, PNG หรือ WEBP';S.intake.attachments=[];}
+    if(st==='photo-error'){S.intake.photoError='เลือกรูป JPG, PNG หรือ WEBP';S.intake.attachments=[];}
     // Retired urgent preview suffix is preserved; this form no longer collects red flags.
     if (st) { S.user.allergyState = st === 'allergy-unknown' ? 'unknown' : 'set'; S.user.allergies = st === 'allergy-unknown' ? [] : ['แอสไพริน']; }
   },
@@ -2733,7 +2721,7 @@ TP.screen('intake', {
       <section class="ik-sec ik-block">${intakeHeading(1, 'อาการที่ต้องการปรึกษา', true)}
         <p class="ik-field-hint">เลือกได้มากกว่า 1 ข้อ</p>
         ${intakeChoices(symptomOptions, I.symptoms, 'intakeSymptom', 1, true)}
-        <div class="ik-extra-fields"><div class="field"><label for="ikNote">รายละเอียดเพิ่มเติม (ไม่บังคับ)</label><textarea class="input" id="ikNote" rows="2" data-bind="intake.note" placeholder="เช่น เจ็บคอมา 2 วัน กลืนแล้วเจ็บ">${esc(I.note||'')}</textarea></div>${intakePhotosHtml(I)}</div>
+        <div class="ik-extra-fields">${intakePhotosHtml(I)}</div>
       </section>
       <section class="ik-sec ik-block">${intakeHeading(2, 'ระยะเวลาที่มีอาการ <small>(ไม่บังคับ)</small>')}
         ${intakeChoices(durationOptions, [I.duration], 'intakeDuration', 2)}
@@ -2777,14 +2765,13 @@ TP.act('intakeConfirmAllergy', () => {
 });
 /* A2: one tick per case, the full text opens by itself the first time; the tick, time and text version go with the case */
 const ACK_NEED = 'กรุณารับทราบเงื่อนไขเข้ารับบริการก่อนปรึกษา';
-/* real-user 21/10: the full text was too long to read before a consult; 3 key risks stay visible, the rest one tap away · the version stays in case.ack only */
-const KEY_RISKS = ['เภสัชกรไม่ได้ตรวจร่างกายคุณ คำแนะนำมาจากสิ่งที่คุณเล่าและรูปที่ส่ง', 'อาการฉุกเฉิน ไปโรงพยาบาลหรือโทร 1669 ทันที ไม่ต้องรอคิว'];
-const ackHtml = S => `<section class="ik-sec ik-ack" id="ikAckSec" aria-label="เงื่อนไขเข้ารับบริการ"><div class="ik-consent-box"><input type="checkbox" id="ikAck" required aria-labelledby="ikAckLabel" ${S.intake.ack?'checked':''}><div class="ik-consent-copy"><label for="ikAck" id="ikAckLabel">ฉันได้อ่านและรับทราบเงื่อนไขและข้อจำกัดของการปรึกษาออนไลน์กับเภสัชกรแล้ว <span class="reg-required" aria-hidden="true">*</span></label> <button type="button" class="reg-consent-link" data-sheet="serviceterms" aria-haspopup="dialog">อ่านเพิ่มเติม</button></div></div></section>`;
+const ackHtml = S => `<section class="ik-sec ik-ack" id="ikAckSec" aria-label="เงื่อนไขเข้ารับบริการ"><div class="ik-consent-box"><input type="checkbox" id="ikAck" required aria-labelledby="ikAckLabel" ${S.intake.ack?'checked':''}><div class="ik-consent-copy"><label for="ikAck" id="ikAckLabel">ฉันได้อ่านและรับทราบเงื่อนไขการใช้บริการปรึกษาออนไลน์กับเภสัชกรแล้ว <span class="reg-required" aria-hidden="true">*</span></label> <button type="button" class="reg-consent-link" data-sheet="serviceterms" aria-haspopup="dialog">อ่านเงื่อนไขเข้ารับบริการ</button></div></div></section>`;
 TP.sheetDef('serviceterms', {
   group:'before',title:'เงื่อนไขเข้ารับบริการ',code:'C215',host:'intake',hideClose:true,cls:'ik-terms-sheet',
   states:[['normal','อ่านเงื่อนไขบริการ']],
-  notes:['อ่านขั้นตอน ความเสี่ยง และขอบเขตบริการจากข้อความฉบับเดียวกับการรับทราบก่อนปรึกษา','อ่านอย่างเดียว การเปิดหรือปิดแผ่นไม่เปลี่ยนสถานะรับทราบ'],
-  render(){return TP.riskHtml();},
+  notes:['รวมข้อตกลงการใช้บริการและคำประกาศความเป็นส่วนตัวสำหรับลูกค้าในแผ่นเดียว','อ่านอย่างเดียว การเปิดหรือปิดแผ่นไม่เปลี่ยนสถานะรับทราบ'],
+  render: () => TP.policyDocumentBody(),
+  mount: (el, ctx) => TP.mountPolicyDocuments(el, ctx, ['terms', 'notice']),
   foot(){return ui.btn('ปิด',{kind:'secondary',closeSheet:true});}
 });
 const dockNote = el => { $('.dock .dock-note',el)?.remove(); };
@@ -3298,7 +3285,7 @@ TP.fulfillmentPreview = (c,key) => {
 TP.fulfillmentCard = (S, options = {}) => {
  const orders=TP.orderCases(S).filter(c=>{const f=TP.fulfillmentInfo(c);return f && !f.done;});
  const cardsHtml=orders.map(c=>{
- const f=TP.fulfillmentInfo(c),b=TP.branch(c.branch),title=f.pickup?(c.order.paid?.stage==='ready'?'ยาพร้อมรับที่สาขาแล้ว':'กำลังเตรียมยาสำหรับรับที่สาขา'):f.title;
+ const f=TP.fulfillmentInfo(c),b=TP.branch(c.branch),title=c.order.statusLabel || (f.pickup?(c.order.paid?.stage==='ready'?'ยาพร้อมรับที่สาขาแล้ว':'กำลังเตรียมยา'):f.title);
  if(options.compact){
   const icon=f.pickup?(c.order.paid?.stage==='ready'?'store':'pill'):f.key==='calling'?'search':f.key==='delivering'?'motorcycle':['out','transit','packed'].includes(f.key)?'truck':'package';
   return `<button type="button" class="hm-fulfillment-banner" ${TP.ui.route({a:'viewFulfillment',p:{caseId:c.id}})} aria-label="${TP.esc(title)} คำสั่งซื้อ ${TP.esc(c.order.no)}"><span class="hm-fulfillment-icon" aria-hidden="true">${TP.ic(icon,24,1.8)}</span><span class="hm-fulfillment-copy"><strong>${TP.esc(title)}</strong><small>คำสั่งซื้อ #${TP.esc(c.order.no)}</small>${orders.length>1?`<small>${TP.esc(b.name)} · ${f.pickup?'รับที่ร้าน':c.order.paid?.recv==='parcel'?'จัดส่งปกติ':'ส่งด่วน'}</small>`:''}</span>${TP.ic('chevron-right',18,1.8)}</button>`;
@@ -3334,7 +3321,7 @@ TP.chatDeliveryPage = c => {
   const status = TP.orderStatusCard(
     TP.FULFILLMENT_PHASES.map(([key, label], i) => [i < phase ? 'done' : i === phase ? 'cur' : '', label, '']),
     o.no, false, '', {
-      artwork: f.key === 'preparing' ? 'preparing' : f.key === 'calling' ? 'calling' : f.key === 'delivered' ? 'delivered' : 'delivery',
+      artwork: f.key === 'delivering' ? 'delivery' : 'calling',
       icons: ['receipt', 'motorcycle', 'map-pin', 'check'],
       title: o.statusLabel, carrier: 'Lalamove', carrierLogo: '/assets/couriers/lalamove.png',
       captions: ['ชำระแล้ว', 'หาไรเดอร์', 'นำส่งยา', 'ส่งสำเร็จ']
@@ -4309,34 +4296,12 @@ async function reopenCheckout(ctx) {
   if (body) body.scrollTop = ctx.params.scroll || 0;
 }
 
-const shippingSections = [
-  [
-    "การจัดส่งสินค้า",
-    "ตรวจชื่อ เบอร์โทร และที่อยู่ของผู้รับก่อนยืนยัน ร้านค้าออนไลน์ระบุเวลาส่งทั่วไปประมาณ 2–4 วันทำการหลังยืนยันรายการและการชำระเงิน บริการส่งด่วนในพื้นที่ที่รองรับอาจใช้เวลาประมาณ 1–2 ชั่วโมง ขึ้นอยู่กับสินค้า พื้นที่ และผู้ขนส่ง สำหรับรายการในแอป ให้ดูวิธีรับยาและเวลาที่แสดงในหน้าสรุป หากพัสดุล่าช้า สูญหาย หรือติดตามไม่ได้ ติดต่อฝ่ายบริการลูกค้า MITRAREE ทาง LINE @mitraree เพื่อช่วยประสานงาน"
-  ],
-  [
-    "การขอยกเลิกคำสั่งซื้อ",
-    "แจ้งขอยกเลิกโดยเร็วที่สุดก่อนร้านเริ่มเตรียม แพ็ก หรือส่งมอบสินค้าให้ผู้ขนส่ง หากเริ่มดำเนินการแล้ว บริษัทจะพิจารณาเป็นรายกรณี บริษัทอาจยกเลิกเมื่อสินค้าไม่พร้อม ข้อมูลคำสั่งซื้อผิด หรือพบความผิดปกติในการชำระเงิน รายการที่ชำระแล้วและได้รับอนุมัติให้ยกเลิกจะเข้าสู่ขั้นตอนคืนเงิน"
-  ],
-  [
-    "แจ้งปัญหา ขอเปลี่ยน หรือคืนสินค้า",
-    "ร้านค้าออนไลน์ให้แจ้งภายใน 3 วันหลังได้รับสินค้า หากได้ของผิด ไม่ครบ เสียหายจากการขนส่ง หรือเกิดข้อผิดพลาดจากร้าน เก็บเลขคำสั่งซื้อ ภาพสินค้า กล่อง และฉลากไว้ประกอบการตรวจสอบ โดยทั่วไปสินค้าที่ขอคืนต้องอยู่ในสภาพเดิม พร้อมบรรจุภัณฑ์และส่วนประกอบครบ เว้นแต่เกิดความเสียหายจากการขนส่งหรือร้านค้า นโยบายมีข้อจำกัดสำหรับการเปลี่ยนใจ สินค้าที่เปิดใช้หรือแกะซีล และสินค้าบางประเภท เช่น ยา สินค้าอนามัย และสินค้าควบคุมอุณหภูมิ การพิจารณาขึ้นอยู่กับสภาพสินค้า สาเหตุ และข้อกำหนดที่ใช้กับรายการ"
-  ],
-  [
-    "การคืนเงิน",
-    "บริษัทคืนเงินเมื่ออนุมัติคำขอ หากเป็นการคืนสินค้า บริษัทจะตรวจสินค้าที่ได้รับคืนก่อน เงินจะคืนผ่านช่องทางเดิมหรือช่องทางที่บริษัทกำหนด โดยทั่วไปใช้เวลา 7–14 วันทำการหลังอนุมัติ ขึ้นอยู่กับผู้ให้บริการชำระเงิน นโยบายเปิดให้พิจารณาหักค่าจัดส่งหรือค่าใช้จ่ายจริงหากปัญหาไม่ได้เกิดจากร้าน และโดยทั่วไปจะไม่คืนเป็นเงินสด"
-  ],
-  [
-    "เวลาชำระเงิน",
-    "เมื่อกดชำระเงินครั้งแรก ระบบจะเริ่มนับเวลา 15 นาที ระหว่างนี้คุณเปลี่ยนวิธีชำระเงินหรือชำระอีกครั้งได้ภายในเวลาเดิม เมื่อครบกำหนดและยังไม่ได้ชำระ ระบบจะยกเลิกคำสั่งซื้ออัตโนมัติ"
-  ],
-];
 TP.sheetDef('shippingpolicy', {
   group: 'during', title: 'นโยบายการจัดส่ง คืนสินค้า และคืนเงิน', code: 'C314', host: 'home', owner: 'pay', tall: true,
   states: [['normal', 'เปิดนโยบายใต้ปุ่มชำระเงิน']],
-  render: () => `<div class="policy-text shipping-policy">${shippingSections.map(([title, body], index) =>
-    `<section><h3>${index + 1}. ${esc(title)}</h3><p>${esc(body)}</p></section>`
-  ).join('')}<a class="btn secondary" href="${TP.support[0]}" target="_blank" rel="noopener noreferrer">ติดต่อผ่าน ${TP.support[1]}</a></div>`,
+  notes: ['แสดงฉบับ 04/09/2026 จากไฟล์ที่ให้มา และปิดกลับหน้าสรุปคำสั่งซื้อ'],
+  render: () => TP.policyDocumentBody(),
+  mount: (el, ctx) => TP.mountPolicyDocuments(el, ctx, ['shipping']),
   foot: () => ui.btn('ปิด', { kind: 'secondary', closeSheet: true }),
   afterClose: reopenCheckout,
 });
@@ -5258,7 +5223,7 @@ function rcOf(id) {
 /* a receipt opened from the inbox after the case moved on still needs something to show */
 const order = () => { const o = C()?.order; if (o?.paid) return o; const had = TP.caseOpen(); mockPaid('pickup'); if (!had) { C().status = 'closed'; TP.emit('state'); } return C().order; };
 const methName = (m, label) => label || (m === 'card' ? 'บัตรเครดิต/เดบิต' : m === 'bank' ? 'ชำระผ่านแอปธนาคาร' : 'พร้อมเพย์');
-const recvName = TP.deliveryMethodName = pd => pd.deliveryLabel || (pd.recv === 'pickup' ? 'รับที่หน้าร้านสาขา' : pd.recv === 'express' ? 'จัดส่งด่วน (Lalamove)' : pd.recv === 'cold' ? `ส่งแบบควบคุมความเย็น · ${TP.COLD.name}` : [TP.DELIVERY.find(d => d.id === 'parcel').name, TP.COURIERS.find(c => c.id === pd.courier)?.name].filter(Boolean).join(' · '));
+const recvName = TP.deliveryMethodName = pd => pd.deliveryLabel || (pd.recv === 'pickup' ? 'รับที่ร้าน' : pd.recv === 'express' ? 'จัดส่งด่วน (Lalamove)' : pd.recv === 'cold' ? `ส่งแบบควบคุมความเย็น · ${TP.COLD.name}` : [TP.DELIVERY.find(d => d.id === 'parcel').name, TP.COURIERS.find(c => c.id === pd.courier)?.name].filter(Boolean).join(' · '));
 const qty = q => parseInt(q, 10) || 1;
 /* items 84 / 90 (owner 20/10): packed at the store = the next step happens at once and the customer is told in the app */
 /* A7: Inter Express has no link to the store, so the store pastes what it got: a tracking number or a tracking link (owner 21/10) */
@@ -5325,12 +5290,43 @@ TP.paymentHistoryCard = (orderNumber, paid, receipt) => {
   </section>`;
 };
 
+const pickupCodeCard = (order, reminder = '') => {
+  const code = String(order.no || '').slice(-4);
+  if (!code) return '';
+  const image = `<img src="/api/pickup-qr?code=${encodeURIComponent(code)}" alt="QR รหัสรับยา ${esc(code)}" width="92" height="92">`;
+  return `<section class="card pad0 pd-section pd-pickup-code">
+    <div class="pd-pickup-code-row">
+      <div><h3>รหัสรับยา</h3><strong class="num">${esc(code)}</strong><p>แสดงรหัสหรือ QR ที่เคาน์เตอร์เมื่อยาพร้อมรับ</p></div>
+      <button class="pd-pickup-qr-button" type="button" data-a="showPickupQr" aria-haspopup="dialog" aria-label="ขยาย QR รหัสรับยา">${image}<span>ขยาย QR</span></button>
+    </div>${reminder}
+    <dialog class="pd-pickup-qr-dialog" aria-labelledby="pickupQrTitle">
+      <header><h2 id="pickupQrTitle">QR รหัสรับยา</h2><form method="dialog"><button type="submit" class="ibtn" aria-label="ปิด QR รหัสรับยา" autofocus>${ic('x',22,2)}</button></form></header>
+      ${image}<strong class="num">${esc(code)}</strong>
+    </dialog>
+  </section>`;
+};
+TP.act('showPickupQr', button => {
+  const dialog = $('dialog', button.closest('.pd-pickup-code'));
+  if (!dialog || dialog.open) return;
+  const rect = TP.phone.getBoundingClientRect();
+  dialog.style.left = `${rect.left + rect.width / 2}px`;
+  dialog.style.top = `${rect.top + rect.height / 2}px`;
+  dialog.style.maxWidth = `${rect.width - 32}px`;
+  dialog.style.maxHeight = `${rect.height - 32}px`;
+  dialog.showModal();
+});
+
 /* Shared order information uses the same header/body cards as C309. */
 TP.fulfillmentDetails = c => {
   const o = c.order, pd = o.paid, a = pd.addr, branch = TP.branch(c.branch) || TP.branch();
   const address = a ? `<div class="pd-branch"><b>${esc([a.first,a.last].filter(Boolean).join(' ') || TP.S.user.full)}</b><p>${esc(TP.fmtAddr(a))}</p>${a.phone ? `<p>โทร ${esc(a.phone)}</p>` : ''}</div>` : '<p>ไม่มีข้อมูลที่อยู่จัดส่ง</p>';
   const pickup = pd.recv === 'pickup';
-  const branchDetails = pickup ? `<div class="pd-branch pd-pickup-details">${branch.photo ? `<img src="${esc(branch.photo)}" alt="" width="56" height="56">` : ''}<div><b>${esc(branch.name)}</b><p>${esc(branch.previewAddr || branch.addr || '')}</p><p>เปิด ${esc(branch.hours)}</p></div></div>` : '';
+  const branchDetails = pickup ? `<div class="pd-branch pd-pickup-details">
+    ${branch.photo ? `<img src="${esc(branch.photo)}" alt="" width="360" height="120">` : ''}
+    <div><b>${esc(branch.name)}</b><p>${esc(branch.previewAddr || branch.addr || '')}</p>
+    ${branch.phone ? `<p>โทร ${esc(branch.phone)}</p>` : ''}${branch.hours ? `<p>เปิด ${esc(branch.hours)}</p>` : ''}</div>
+    ${branch.map ? ui.btn('นำทางด้วย Google Maps', {kind:'secondary', icon:'map-pin', a:'navStore'}) : ''}
+  </div>` : '';
   const live = !TP.fulfillmentInfo(c)?.done;
   const track = live && pd.recv === 'express' ? ui.btn('ติดตามไรเดอร์', {kind:'secondary', sm:true, icon:'external-link', a:'openRiderTracking'}) : '';
   return paidCard(pickup ? 'สาขารับยา' : 'ที่อยู่จัดส่ง', pickup ? branchDetails : address, track) +
@@ -5384,20 +5380,19 @@ const PAID_PAGE = ({
     if (st === 'overdue') { const pd = C().order.paid; pd.date = pd.packDate = LATE_PACK; S.inbox = [...pickNotes(pd, C().branch).map(n => ({ ...n, caseId:C().id, read: true })), ...TP.fresh().inbox]; }
   },
   render() {
-    const c = C(), o = order(), pd = o.paid, b = TP.branch(c.branch), pick = pd.recv === 'pickup', st = pd.stage && pd.stage !== 'preparing', cr = courierOf(pd), late = pick && pickLate(pd);
-    const now = ui.tag('ตอนนี้', 'ok', { dot: true });
+    const c = C(), o = order(), pd = o.paid, pick = pd.recv === 'pickup', st = pd.stage && pd.stage !== 'preparing', cr = courierOf(pd), late = pick && pickLate(pd);
     const fulfillment = TP.fulfillmentInfo(c);
     if (fulfillment?.done) return TP.SCREENS.summary.render({ S: TP.S, state: '', params: { id: c.id } });
     const packed = ['done', 'เตรียมยาแล้ว', `จัดยาครบ ${pd.packAt || ''}`];
     const steps = !pick && ['calling','delivering'].includes(fulfillment?.key) ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', fulfillment.title, ''], ['', 'จัดส่งสำเร็จ', '']] : late ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['done', 'เตรียมยาแล้ว', `จัดยาครบ ${pd.packDate} ${pd.packAt}`], ['cur', 'เลยกำหนดรับ', `ร้านเก็บยาไว้ให้ถึง ${holdUntil(pd)} · ร้านจะโทรหาคุณ`], ['', 'รับแล้ว', '']]
-      : st && pick ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', 'พร้อมรับที่สาขา', `ร้านแจ้งเมื่อ ${pd.packAt} · แสดงรหัสรับยาที่เคาน์เตอร์`], ['', 'รับแล้ว', '']]
+      : st && pick ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', 'ยาพร้อมรับที่สาขาแล้ว', ''], ['', 'รับแล้ว', '']]
       : st ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], packed, ['cur', 'จัดส่งแล้ว', pd.recv === 'express' ? `ไรเดอร์ Lalamove รับยาแล้ว ${pd.packAt} · ถึงประมาณ ${addMin(pd.packAt, 45)} ติดตามตำแหน่งได้จากปุ่มด้านล่าง` : `${cr.name}${trackTxt(pd) ? ' · ' + trackTxt(pd) : ''} · ถึงใน ${cr.time}`], ['', 'สำเร็จ', 'เมื่อคุณได้รับยา']]
       : pick
       ? [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', 'โดยปกติพร้อมรับใน 15-30 นาที เมื่อพร้อมร้านจะแจ้งในแอป'], ['', 'พร้อมรับที่สาขา', ''], ['', 'รับแล้ว', '']]
       : [['done', 'ชำระแล้ว', `${pd.date} ${pd.at}`], ['cur', 'กำลังเตรียมยา', 'วันนี้'], ['', 'จัดส่งแล้ว', pd.recv === 'express' ? 'ไรเดอร์ Lalamove ถึงใน 1-4 ชม. หลังร้านเตรียมยาเสร็จ' : pd.recv === 'cold' ? `ร้านโทรจองรถ ${TP.COLD.short} ให้ เลขพัสดุขึ้นในแอปเมื่อร้านส่งของ` : 'เลขพัสดุจะขึ้นในแอปเมื่อส่งของแล้ว'], ['', 'สำเร็จ', '']];
     return ui.nav({title:pick?'สถานะรับยา':'สถานะการจัดส่งยา',right:`<button type="button" class="ibtn" data-a="paidClose" aria-label="ปิด">${ic('x',22,2)}</button>`}) + ui.page(`
       ${paidStatusCard(steps,o.no,pick,!pick && pd.recv!=='express'?`${ui.btn('ติดตามการจัดส่ง',{kind:'secondary',sm:true,icon:'map-pin',go:'track'})}${pd.track?ui.btn('คัดลอกเลขพัสดุ',{kind:'ghost',sm:true,icon:'copy',a:'copyTrack'}):pd.trackUrl?ui.btn('เปิดหน้าติดตามพัสดุ',{kind:'ghost',sm:true,icon:'external-link',a:'openTrackLink'}):''}`:'',{title:o.statusLabel,icons:!pick&&pd.recv!=='express'?['receipt','pill','truck','check']:undefined,artwork:fulfillment?.key==='calling'?'calling':pd.recv==='parcel'&&pd.stage?(pd.deliv?'delivered':'parcel'):undefined,carrier:recvName(pd),captions:pick?['ชำระแล้ว','เตรียมยา','พร้อมรับ','รับยาแล้ว']:undefined})}
-      ${late ? paidCard('การรับยา',`<p class="pd-late" id="pdLate">${ic('clock',18,2)}<span><b>ร้านเก็บยาไว้ให้ถึงวันที่ <span class="num">${holdUntil(pd)}</span></b>ร้านจะโทรหาคุณเพื่อตกลงเรื่องยาและการคืนเงิน</span></p>`) : pick ? paidCard('รหัสรับยา',`<div class="pd-code"><div><b class="num">${esc(o.no.slice(-4))}</b><span>แสดงรหัสนี้ที่เคาน์เตอร์${esc(b.name)} พร้อมบอกชื่อผู้สั่งซื้อ (${esc(TP.S.user.full)})</span></div></div>${st ? `<p class="pd-hold" id="pdHold">${ic('clock',16,2)}<span>ร้านเก็บยาไว้ให้ ${HOLD_DAYS} วัน มารับได้ถึงวันที่ <b class="num">${holdUntil(pd)}</b> · ถ้าเลยกำหนด ร้านจะโทรหา</span></p>` : ''}`) : ''}
+      ${pick ? pickupCodeCard(o, late ? `<p class="pd-hold" id="pdLate">${ic('clock',16,2)}<span>ร้านเก็บยาไว้ให้ถึงวันที่ <b class="num">${holdUntil(pd)}</b> · ร้านจะโทรหาคุณ</span></p>` : st ? `<p class="pd-hold" id="pdHold">${ic('clock',16,2)}<span>มารับได้ถึงวันที่ <b class="num">${holdUntil(pd)}</b></span></p>` : '') : ''}
 
       ${TP.fulfillmentDetails(c)}
       `, {cls:'order-tracking-page'});
@@ -5481,6 +5476,7 @@ TP.screen('track', {
   ],
   notes: ['จัดส่งปกติ: ชำระแล้ว → ร้านจัดยาและแพ็ก (C414.13) → แพ็กแล้ว ส่งให้บริษัทขนส่ง พร้อมเลขพัสดุ (C414.22) → กำลังขนส่ง (C414.14) → กำลังนำส่ง (C414.15) เวลาแสดงเฉพาะขั้นที่ถึงแล้ว', 'ไม่มีหน้าสถานะสำเร็จ: รับยาที่สาขาแล้ว ส่งด่วนเสร็จ หรือจัดส่งปกติส่งถึง จะเปิดใบคำสั่งซื้อ C401 ทันที (ลบ C414.11 .16 .19 สงวนรหัส .23)', 'ผู้ใช้ 8 พ.ย. 2569: C414 แสดงการ์ดสถานะและชื่อขั้น สาขาหรือที่อยู่จัดส่ง ข้อมูลคำสั่งซื้อ รายการยา และลิงก์ดูใบเสร็จ เมื่อรับยาหรือจัดส่งสำเร็จเปิด C401 ของคำสั่งซื้อเดิม', 'ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
     'แสดงแถบความคืบหน้า 4 ขั้นตามวิธีรับยา แสดงโลโก้ DHL, Flash Express หรือ Lalamove ใต้ชื่อสถานะ',
+    'รับยาที่ร้าน แสดงรหัสและ QR จากเลขท้ายคำสั่งซื้อ กดขยาย QR ได้ พร้อมรูปสาขาและปุ่มนำทาง',
     'จัดส่งปกติ: เลขพัสดุแสดงพร้อมปุ่มคัดลอกตั้งแต่แพ็กแล้ว ส่งให้บริษัทขนส่ง (C414.22) ก่อนหน้านั้นแสดงว่าเลขพัสดุขึ้นเมื่อร้านส่งของ',
     'ไม่มีปุ่มยืนยันรับยาหรือแผ่น C415 เมื่อร้านบันทึกส่งมอบหรือขนส่งแจ้งส่งสำเร็จ รายการย้ายไปประวัติทันที'],
   wait: [],
@@ -6678,7 +6674,7 @@ const FAQ = [
 TP.screen('help', {
   group: 'account', title: 'ช่วยเหลือ', code: 'C509', parent: 'account',
   states: [['open', 'ในเวลาทำการ'], ['closed', 'นอกเวลาทำการ']],
-  notes: ['ฝ่ายบริการลูกค้า 10:00-18:00 ติดป้ายแยกจากเวลาร้าน 09:00-21:00', 'คำถามที่พบบ่อย 5 ข้อ แตะเพื่อเปิด', 'เรื่องข้อมูลส่วนบุคคล dpo@mitraree.com'],
+  notes: ['ฝ่ายบริการลูกค้า 10:00-18:00 ติดป้ายแยกจากเวลาร้าน 09:00-21:00', 'คำถามที่พบบ่อย 5 ข้อ แตะเพื่อเปิด', 'เปิดคำประกาศความเป็นส่วนตัวสำหรับลูกค้าในแอป'],
   render(ctx) {
     const closed = ctx.state === 'closed';
     return ui.nav({ back: backL('account'), title: 'ช่วยเหลือ' }) + ui.page(`
@@ -6690,7 +6686,7 @@ TP.screen('help', {
       <div class="card af-hours" data-in="2">${ui.kv([['ฝ่ายบริการลูกค้า', 'ทุกวัน 10:00-18:00'], ['ร้านและเภสัชกรในแอป', 'ทุกวัน 09:00-21:00']])}<p class="small mt8">เวลาเภสัชกรเป็นไปตามเวลาเปิดของแต่ละสาขา</p></div>
       <h3 class="group-h">คำถามที่พบบ่อย</h3>
       <div class="group af-faq" data-in="3">${FAQ.map(([q, a], i) => `<div class="af-faq-i"><h4><button type="button" class="af-faq-q" id="afFaqQ${i}" aria-expanded="false" aria-controls="afFaq${i}" data-a="afFaq"><span>${esc(q)}</span>${ic('chevron-down', 18, 2.2)}</button></h4>${rvHtml('afFaq' + i, false, `<p class="af-faq-a">${esc(a)}</p>`)}</div>`).join('')}</div>
-      <div class="card af-dpo" data-in="4"><span class="af-cs-i">${ic('shield-check', 20, 1.9)}</span><div class="grow"><b>เรื่องข้อมูลส่วนบุคคล</b><span>เจ้าหน้าที่คุ้มครองข้อมูลส่วนบุคคล</span>${dpoLink()}</div></div>
+      <div class="card af-dpo" data-in="4"><span class="af-cs-i">${ic('shield-check', 20, 1.9)}</span><div class="grow"><b>เรื่องข้อมูลส่วนบุคคล</b><span>เจ้าหน้าที่คุ้มครองข้อมูลส่วนบุคคล</span><button type="button" class="txtbtn" data-a="stDoc" data-v="notice" aria-haspopup="dialog">คำประกาศความเป็นส่วนตัวสำหรับลูกค้า/ผู้ใช้บริการ</button></div></div>
       `, { lt: 'ช่วยเหลือ' });
   }
 });

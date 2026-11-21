@@ -13,7 +13,21 @@ const ctx=vm.createContext({TP,esc:String,ic:()=>'',historyIdentity:()=>({name:'
 function load(from,to){vm.runInContext(source.slice(source.indexOf(from),source.indexOf(to,source.indexOf(from))),ctx);}
 load('const methName =','const recvName =');
 load('const SHIP_L =',"TP.act('paidClose'");
-load('const orderChargeRows =','/* Shared order information');
+load('const orderChargeRows =','const pickupCodeCard =');
+const actions = {};
+TP.act = (name, action) => { actions[name] = action; };
+load('const pickupCodeCard =','/* Shared order information');
+const pickupCard = vm.runInContext("pickupCodeCard({no:'MT202610180001'})",ctx);
+assert.match(pickupCard, /<strong class="num">0001<\/strong>/);
+assert.equal((pickupCard.match(/\/api\/pickup-qr\?code=0001/g) || []).length, 2);
+assert.match(pickupCard, /aria-haspopup="dialog"/);
+const dialog = {style:{}, showModal() { this.open = true; }};
+ctx.$ = () => dialog;
+TP.phone = {getBoundingClientRect: () => ({left:30, top:20, width:400, height:700})};
+actions.showPickupQr({closest:()=>({})});
+assert(dialog.open);
+assert.equal(dialog.style.left,'230px');
+assert.equal(dialog.style.top,'370px');
 load('TP.receiptSumRow =','})();');
 load('function docHtml(S, h, options = {})','function rateHtml(h)');
 load('function historyOrderStatus(S,h) {','function historyItems(');
