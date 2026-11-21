@@ -14,7 +14,7 @@
     {
       "code": "C402.4",
       "state": "taxsent",
-      "label": "ส่งใบกำกับภาษีทางอีเมลแล้ว",
+      "label": "ขอใบกำกับภาษีแล้ว",
       "url": "/?screen=receipt&state=taxsent&splash=0"
     },
     {

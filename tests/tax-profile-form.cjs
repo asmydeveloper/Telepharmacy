@@ -1,7 +1,7 @@
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 const source=fs.readFileSync('public/runtime/customer.js','utf8');
 const slice=(from,to)=>source.slice(source.indexOf(from),source.indexOf(to,source.indexOf(from)));
-const TP={thaiAddressData:{rows:[{province:'กรุงเทพมหานคร',amphoe:'คลองเตย',district:'คลองเตย',zipcode:10110}]}};
+const TP={addressAreaField:(_draft,_errors,action)=>`<button data-a="${action}">เลือกพื้นที่</button>`,thaiAddressData:{rows:[{province:'กรุงเทพมหานคร',amphoe:'คลองเตย',district:'คลองเตย',zipcode:10110}]}};
 let redraws=0;const S={user:{},_taxProfile:null};
 const context=vm.createContext({TP,taxProfileRedraw:async()=>{redraws++;},$:()=>null,esc:v=>String(v??''),ic:()=>'',ui:{btn:()=>''}});
 vm.runInContext([source.match(/const taxProfileIdOk = [^\n]+/)[0],slice('const taxProfileEntry = ','function taxProfileForm(').replace(/\/\/ Select from[\s\S]*$/,''),slice('function taxProfileErrors(','function taxProfileFieldCheck('),slice('const TAX_LONG_FIELDS=','function taxProfileCard(')].join('\n'),context);
@@ -20,6 +20,8 @@ d=draft('me');d.addressState='loading';assert(run('taxProfileErrors')(d).prov.in
 for(const [kind,mode] of [['me','select'],['co','select'],['me','manual'],['co','manual']]){
  const form=draft(kind);form.drafts[kind].mode=mode;const html=run('taxProfileForm')({_taxProfile:form},true,true),inputs=html.match(/<input [^>]*>/g);
  assert(inputs.length>=9);for(const input of inputs){assert(/placeholder="[^"]+"/.test(input),kind+' '+mode+' needs a placeholder: '+input.slice(0,60));assert(!/placeholder="[^"]*เช่น/.test(input),'placeholders give an instruction, not an example');}
+ assert.equal(html.includes('openTaxAddressArea'),mode==='select');
+ assert(html.includes('taxProfilePrivacy'));
 }
 console.log('PASS: C519 validates required fields, formats and address selection');
 

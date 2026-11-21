@@ -70,6 +70,9 @@ assert.equal(tickCount, 3);
   try {
     const files = [
       'public/runtime/consultation-data.js', 'public/runtime/customer.js',
+      'public/runtime/customer-fixtures.js',
+      'public/runtime/order-clock.js', 'public/runtime/preview-event-policy.js',
+      'public/runtime/customer-preview.js',
       'public/runtime/address-map.js', 'public/runtime/address-map-engine.js',
       'public/assets/data/thailand/delivery-map-style.json',
     ];
@@ -81,7 +84,7 @@ assert.equal(tickCount, 3);
     const { runtimeVersion } = await import(pathToFileURL(path.resolve('src/lib/runtime-version.mjs')));
     const first = runtimeVersion(temp);
     assert.equal(runtimeVersion(temp), first);
-    fs.writeFileSync(path.join(temp, files[1]), 'updated runtime');
+    fs.writeFileSync(path.join(temp, 'public/runtime/order-clock.js'), 'updated clock');
     assert.notEqual(runtimeVersion(temp), first, 'Source edits invalidate the shared version');
     assert.equal(runtimeVersion().length, 12);
   } finally {

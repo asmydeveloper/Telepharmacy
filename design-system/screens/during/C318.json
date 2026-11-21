@@ -1,0 +1,27 @@
+{
+  "code": "C318",
+  "screen": "checkoutcoupon",
+  "title": "โค้ดส่วนลด",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C318.1",
+      "state": "normal",
+      "label": "กรอกโค้ดส่วนลด",
+      "url": "/?screen=checkoutcoupon&state=normal&splash=0"
+    },
+    {
+      "code": "C318.2",
+      "state": "valid",
+      "label": "ใช้โค้ดสำเร็จ · ลบโค้ดได้",
+      "url": "/?screen=checkoutcoupon&state=valid&splash=0"
+    },
+    {
+      "code": "C318.3",
+      "state": "invalid",
+      "label": "โค้ดไม่ถูกต้อง",
+      "url": "/?screen=checkoutcoupon&state=invalid&splash=0"
+    }
+  ]
+}

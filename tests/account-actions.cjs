@@ -1,6 +1,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs'),{harness,source}=require('./health-harness.cjs');
 function setup(){
  const h=harness();h.sheets={};h.TP.sheetDef=(id,d)=>h.sheets[id]=d;h.TP.sheet=(...a)=>h.calls.push(['sheet',...a]);h.TP.sheetOpen=()=>null;h.TP.closeSheet=async()=>{};h.TP.ACTS=h.actions;
+ h.run(source.slice(source.indexOf('const policyDocs ='), source.indexOf("TP.act('stCall',")));
  h.run("const maskPhone=s=>String(s||''); const algText=p=>(p.allergies||[]).join(', ');");
  h.run(source.slice(source.indexOf("TP.screen('account',"),source.indexOf('/* Household members (C502-C504)')));
  h.run(source.slice(source.indexOf('TP.deleteAccountBlocked='),source.indexOf("TP.screen('deleted',")));

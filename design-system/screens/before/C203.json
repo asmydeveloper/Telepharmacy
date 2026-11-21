@@ -34,6 +34,18 @@
       "state": "photo-error",
       "label": "แนบไฟล์ไม่รองรับ",
       "url": "/?screen=intake&state=photo-error&splash=0"
+    },
+    {
+      "code": "C203.14",
+      "state": "multi-symptom",
+      "label": "หลายอาการ พร้อมระยะเวลาและให้นมบุตร",
+      "url": "/?screen=intake&state=multi-symptom&splash=0"
+    },
+    {
+      "code": "C203.15",
+      "state": "allergy-unknown",
+      "label": "ยังไม่ทราบประวัติแพ้ยา · กดยืนยัน",
+      "url": "/?screen=intake&state=allergy-unknown&splash=0"
     }
   ]
 }

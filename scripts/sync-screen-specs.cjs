@@ -4,9 +4,9 @@ const fs=require('node:fs'),path=require('node:path'),vm=require('node:vm');
 const root=path.resolve(__dirname,'..'),out=path.join(root,'docs/screen-specs.md');
 const runtime=fs.readFileSync(path.join(root,'public/runtime/customer.js'),'utf8');
 const context={TP:{}};vm.createContext(context);
-vm.runInContext(runtime.slice(runtime.indexOf('TP.previewEventPolicy='),runtime.indexOf('/* ===== End preview event metadata ===== */')),context);
+const policy=require('../public/runtime/preview-event-policy.js');
 vm.runInContext(runtime.match(/TP\.GROUPS = \[[^\n]+\];/)[0],context);
-const {previewEventPolicy:policy,GROUPS:groups}=context.TP;
+const groups=context.TP.GROUPS;
 
 module.exports=function syncScreenSpecs(screens){
   const eventCount=s=>(s.cases||[]).length;

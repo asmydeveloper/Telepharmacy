@@ -10,7 +10,9 @@
 
 ## แผนที่โค้ดปัจจุบัน
 - `public/runtime/customer-fixtures.js` (8 พ.ย. 2569): ข้อมูลจำลองหลัก (เวลา mock เภสัชกร สาขา รายการยาตัวอย่าง บัญชีที่กลับมาใช้ ที่อยู่ ประวัติ แจ้งเตือนตัวอย่าง ภาพบุคคลตัวอย่าง) โหลดก่อน customer.js และอ่านผ่าน `TP.NOW/PHARM/BRANCHES/STORE/ORDER_ITEMS/COLD_ITEM/demoProfiles/previewInbox/fresh` ใน 00-core เท่านั้น ไม่นำไฟล์นี้ไปใช้จริง แทนด้วย service adapter
-- `public/runtime/customer.js`: ยังรวมหน้าจอ โฟลว์ แผงพรีวิว (40-panel) และ boot ไว้ด้วยกัน รวมถึง fixture ราย state ใน `prep()` ของแต่ละหน้า, `TP.casePreview`, `TP.SUMMARY` และ `TP.simAction` ที่กระจายอยู่ทุกโมดูล ต้องแยกต่อก่อนนำไปใช้จริง ไม่คัดลอกทั้งไฟล์
+- `public/runtime/customer.js`: ยังรวมหน้าจอ โฟลว์ และ boot ไว้ด้วยกัน รวมถึง fixture ราย state ใน `prep()` ของแต่ละหน้า, `TP.casePreview`, `TP.SUMMARY` และ `TP.simAction` ที่กระจายอยู่ทุกโมดูล ต้องแยกต่อก่อนนำไปใช้จริง ไม่คัดลอกทั้งไฟล์
+- `public/runtime/customer-preview.js` และ `preview-event-policy.js`: เครื่องมือแผงทดสอบและทะเบียนเหตุการณ์ที่สคริปต์เอกสารใช้ร่วมกัน
+- `public/runtime/order-clock.js`: นับเวลาและเปลี่ยนสถานะหมดอายุของคำสั่งซื้อจำลอง โดยฝั่งระบบจริงต้องบังคับเส้นตายที่เซิร์ฟเวอร์
 - `src/app/Shell.jsx` และ `src/app/styles.css`: มีทั้งโครงพรีวิวและส่วนแอป ต้องคัดเฉพาะ DOM/styles ที่ตัวแอปต้องใช้
 - `src/styles/tokens.css`, `customer-ui.css`, `layout.css`, `home.css`: ใช้เป็นฐาน UI ได้ แต่ต้องตัดการพึ่งกรอบจำลอง เช่น container `.phone` และ safe area จำลองออกหรือเปลี่ยนเป็น app root จริง
 - `public/assets/`: เลือกเฉพาะภาพและไอคอนที่ใช้ ตรวจภาพตัวอย่างก่อนส่งมอบ

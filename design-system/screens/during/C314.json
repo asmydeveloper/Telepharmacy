@@ -1,0 +1,15 @@
+{
+  "code": "C314",
+  "screen": "shippingpolicy",
+  "title": "นโยบายการจัดส่ง คืนสินค้า และคืนเงิน",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C314",
+      "state": "normal",
+      "label": "เปิดนโยบายใต้ปุ่มชำระเงิน",
+      "url": "/?screen=shippingpolicy&state=normal&splash=0"
+    }
+  ]
+}

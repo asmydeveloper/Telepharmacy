@@ -9,10 +9,11 @@ const acts = {};
 const person = { name: 'สมใจ ใจดี', id: '1101700203450', phone: '0812345678', addr: 'กรุงเทพมหานคร' };
 const TP = {
   S: { user: { full: 'สมใจ ใจดี', phone: '0812345678', email: 'somjai@example.com' } },
-  STORE: { cs: '098-035-8000', csHours: '10:00-18:00' },
+  support: ['https://line.me/ti/p/~@mitraree', 'LINE @mitraree'],
   NOW: { date: '08/11/2026', time: '14:30' },
   act: (id, fn) => { acts[id] = fn; },
   taxSelected: () => person,
+  taxRecords: kind => kind==='me'?[person]:[],
   taxAddress: w => w.addr,
   wait: () => Promise.resolve(),
   notify: () => {},
@@ -25,8 +26,8 @@ const ctx = vm.createContext({
 });
 vm.runInContext(slice('const taxWho = () =>', 'const T = o =>'), ctx);
 vm.runInContext(slice('const T = o =>', '\n', ) + ';', ctx);
-vm.runInContext(slice('const maskTax = v =>', '\n') + ';', ctx);
-vm.runInContext(slice('const coTax = () =>', "TP.act('rcTaxPdf'"), ctx);
+vm.runInContext(slice('const invoiceKinds =', 'function payTaxHtml'), ctx);
+vm.runInContext(slice('const whoOf = t =>', "TP.act('rcTaxPdf'"), ctx);
 
 const button = () => ({ disabled: false, classList: { add() {} } });
 
@@ -38,7 +39,8 @@ assert.match(ctx.taxBox(order, false), /data-a="rcTaxSend"/);
   await Promise.all([acts.rcTaxSend(button()), acts.rcTaxSend(button())]);
   assert.equal(JSON.stringify(order.tax.pending), JSON.stringify(person));
   const status = ctx.taxBox(order, false);
-  assert.match(status, /ส่งแล้ว/);assert.match(status, /s•••@example\.com/);
+  assert.match(status, /ขอใบกำกับภาษีแล้ว/);assert.match(status, /โหมดทดสอบไม่มีการส่งอีเมล/);
+  assert.match(status, /xxxxxxxxx3450/);
   assert.doesNotMatch(status, /rcTaxSend|rcTaxWant/, 'a requested order cannot be requested again');
 
   // Requested at checkout: the receipt opens in status-only mode.
@@ -52,7 +54,7 @@ assert.match(ctx.taxBox(order, false), /data-a="rcTaxSend"/);
   order = { paid: { date: '08/11/2026' }, tax: { who: 'me', done: { ...person } } };
   const issued = ctx.taxBox(order, false);
   assert.doesNotMatch(issued, /rcTaxPdf|rcTaxSend|rcTaxWant|rcTaxRe/, 'no in-app download; the invoice is e-mailed');
-  assert.match(ctx.taxBox({ paid: { date: '01/10/2026' } }, true), /หมดเวลาขอใบกำกับภาษี/);
+  assert.match(ctx.taxBox({ paid: { date: '01/10/2026' } }, true), /เลยรอบขอใบกำกับภาษีในแอป/);
   assert(!source.includes("TP.act('rcTaxRe'"), 're-issue handler is removed');
   console.log('PASS: one tax-invoice request per order from checkout or receipt, duplicate sends ignored, e-mailed invoice status only, late orders cannot request');
 })().catch(e => { console.error(e); process.exitCode = 1; });

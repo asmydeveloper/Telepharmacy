@@ -1013,9 +1013,6 @@ select {
   font-variant-numeric: tabular-nums;
 }
 
-.scr[data-screen='history'] > .app-page {
-  padding-top: calc(var(--st) + var(--nav-height) + var(--space-2));
-}
 .payw .checkout-order-section {
   border: 0;
   padding: 0;
@@ -1700,31 +1697,37 @@ select {
 /* Consultation summary */
 .af-visit {
   display: grid;
-  gap: var(--space-4);
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-2);
 }
 .af-visit-hero {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-1) var(--space-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
   padding: var(--space-4);
-  border: 1px solid var(--color-brand-100);
-  border-radius: var(--radius-card);
-  background: var(--color-brand-50);
-  color: var(--brand-deep);
+  border-radius: var(--radius-sm);
+  background: var(--semantic-surface);
 }
-.af-visit-hero h2 {
-  grid-column: 1/-1;
-  margin: 0;
-  font-size: var(--type-h3-mobile-size);
-  line-height: var(--type-h3-mobile-line);
+.af-visit-hero > div {
+  min-width: 0;
   overflow-wrap: anywhere;
 }
-.af-visit-hero > span {
-  font-size: var(--text-small);
+.af-visit-hero > img {
+  flex: none;
+  width: min(104px, 30%);
+  height: auto;
 }
-.af-visit-hero > small {
-  grid-column: 1/-1;
-  margin-top: var(--space-1);
+.af-visit-hero h2 {
+  margin: var(--space-1) 0;
+  color: var(--brand-deep);
+  font-size: var(--type-h3-mobile-size);
+  line-height: var(--type-h3-mobile-line);
+}
+.af-visit-hero-cancelled h2 {
+  color: var(--ink);
+}
+.af-visit-hero :is(span, small) {
   font-size: var(--text-small);
   color: var(--ink-3);
 }
@@ -1765,22 +1768,16 @@ select {
   line-height: var(--type-body-mobile-line);
 }
 .af-visit-facts {
+  display: grid;
+  gap: var(--space-2);
   margin: 0;
 }
 .af-visit-facts > div {
   display: grid;
-  grid-template-columns: 2fr 3fr;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
   gap: var(--space-3);
-  padding-block: var(--space-3);
-  border-bottom: 1px solid var(--hair);
   font-size: var(--text-small);
-}
-.af-visit-facts > div:first-child {
-  padding-top: 0;
-}
-.af-visit-facts > div:last-child {
-  padding-bottom: 0;
-  border: 0;
+  overflow-wrap: anywhere;
 }
 .af-visit-facts dt,
 .af-visit-expiry {
@@ -1789,7 +1786,6 @@ select {
 .af-visit-facts dd {
   margin: 0;
   text-align: end;
-  overflow-wrap: anywhere;
 }
 .af-visit-expiry {
   display: flex;
@@ -1883,29 +1879,6 @@ select {
   border-bottom: 1px solid var(--line-soft);
 }
 
-.af-visit-hero {
-  position: relative;
-  min-height: 104px;
-  align-content: center;
-  background-color: var(--brand-deep);
-  overflow: hidden;
-}
-.af-visit-hero::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: url('/assets/illustrations/order-summary-banner-v3.webp') center right / cover no-repeat;
-  opacity: .35;
-  pointer-events: none;
-}
-.af-visit-hero > span,
-.af-visit-hero > h2,
-.af-visit-hero > small {
-  max-width: 100%;
-  grid-column: 1/-1;
-  position: relative;
-}
-
 .af-visit-section.af-visit-concern > h3 {
   color: var(--ink);
 }
@@ -1913,11 +1886,6 @@ select {
   color: inherit;
 }
 
-.af-visit-hero > span,
-.af-visit-hero > h2,
-.af-visit-hero > small {
-  color: var(--surface);
-}
 .af-visit-section h3,
 .af-visit-section h3 .ic,
 .af-visit-follow h3,
@@ -1932,13 +1900,6 @@ select {
   font-size: var(--text-small);
   line-height: var(--type-body-mobile-line);
 }
-.af-visit + .group.ic-rows {
-  margin-top: var(--space-4);
-  border: 1px solid var(--hair);
-  border-radius: var(--radius-card);
-  overflow: hidden;
-}
-
 .af-med-schedule {
   margin-top: var(--space-3);
   font-size: var(--text-small);
@@ -2648,9 +2609,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .tk-h > .ibtn[data-a="copyTrack"] { margin-inline-start: auto; flex-shrink: 0; }
 
 /* Summary medicine rows reuse the medicine list shown in consultation chat. */
-.af-visit-section .af-medicine-list { padding: 0 var(--space-4); }
-.af-visit-section .af-medicine-list .mo-l { margin: 0; padding: 0; }
-.af-visit-section .af-medicine-list .medicine-copy { min-width: 0; flex: 1; }
 
 /* The dot sits on the tile's top-right corner and overhangs it slightly; the tile must not clip it. */
 .hm-medication-badge { position: absolute; top: -3px; right: -3px; width: 10px; height: 10px; border-radius: var(--radius-pill); background: var(--semantic-error-text); outline: 2px solid var(--semantic-surface); }
@@ -2724,27 +2682,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .pay-picker-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4); border-bottom: 1px solid var(--semantic-border); }
 .pay-picker-head h2 { margin: 0; font-size: var(--type-body-mobile-size); font-weight: var(--weight-semibold); }
 .pay-picker-body { overflow-y: auto; padding: var(--space-4) var(--space-4) calc(var(--sb, 0px) + var(--space-4)); }
-
-/* A canceled order stays recognizable without adding a status row to service facts. */
-.af-visit-hero.af-visit-hero-cancelled {
-  background-color: var(--color-neutral-700);
-  border-color: var(--color-neutral-700);
-}
-.af-visit-hero-cancelled::before {
-  background-image: url('/assets/illustrations/order-cancelled-white-v2.png');
-  background-size: auto 100%;
-  background-position: right calc(-1 * var(--space-4)) center;
-  opacity: .08;
-}
-.af-visit-hero-cancelled > span,
-.af-visit-hero-cancelled > h2,
-.af-visit-hero-cancelled > small {
-  color: var(--semantic-on-primary);
-}
-
-/* C309: order details moved to C401 behind one button */
-.pd-order-link { margin-top: var(--space-2); }
-.pd-order-link .btn { width: 100%; }
 
 /* C114: Google account chooser look (prototype mock). */
 .g-chooser { display: flex; flex-direction: column; gap: var(--space-4); }

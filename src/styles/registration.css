@@ -852,8 +852,13 @@
 
 .tax-profile-page {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding-bottom: var(--space-4);
+}
+.phone .tax-profile-page .seg,
+.phone .tax-profile-page .seg button {
+  border-radius: var(--radius-pill);
 }
 .tax-profile-page .tax-summary {
   overflow: hidden;
@@ -1606,23 +1611,100 @@
 .rc-tax-selected > p:first-of-type { color: var(--ink); font-weight: var(--weight-medium, 500); }
 .rc-tax-recipient-heading > b { font-size: var(--text-small); font-weight: var(--weight-semibold); }
 .rc-tax-recipient-heading .txtbtn { font-size: var(--text-small); }
+.rc-tax-picker {
+  display: grid;
+  gap: var(--space-2);
+}
 .rc-tax-pick-card {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
   width: 100%;
-  padding: 0;
-  text-align: left;
+  min-height: var(--size-touch);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-sm);
+  background: var(--semantic-surface);
+  text-align: start;
   font: inherit;
   color: inherit;
   cursor: pointer;
+  overflow-wrap: anywhere;
 }
-.rc-tax-pick-card .tax-summary-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.rc-tax-pick-card[aria-pressed='true'] { background: var(--brand-tint); }
+.rc-tax-pick-card small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--semantic-text-secondary);
+  font-size: var(--text-small);
+}
+.invoice-choice-mark {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-pill);
+}
+.rc-tax-pick-card[aria-pressed='true'] .invoice-choice-mark {
+  border-color: var(--brand);
+  color: var(--brand-white);
+  background: var(--brand);
 }
 .rc-tax-pick-card:focus-visible {
   outline: 2px solid var(--semantic-primary);
   outline-offset: 3px;
+}
+
+.phone .invoice-options {
+  border: 0;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+.phone .invoice-options :is(h3, p) { margin: 0; }
+.phone .invoice-options .rc-tax-check {
+  min-height: var(--size-touch);
+  padding: 0;
+}
+.invoice-kind-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.phone .invoice-kind-options .chip {
+  min-height: var(--size-touch);
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-sm);
+}
+.phone .invoice-kind-options .chip[aria-pressed='true'] {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand);
+}
+.invoice-recipient-details {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-50);
+  overflow-wrap: anywhere;
+}
+.invoice-recipient-details p,
+.invoice-recipient-empty,
+.tax-profile-intro { color: var(--semantic-text-secondary); font-size: var(--text-small); }
+.phone .invoice-options > .btn { width: 100%; }
+.invoice-requested {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.invoice-requested .ic { color: var(--brand); flex: none; }
+.tax-profile-intro p { margin: 0 0 var(--space-1); }
+.tax-profile-intro .txtbtn {
+  margin: 0;
+  padding-inline: 0;
+  text-align: start;
 }
 
 /* C402.4 / C402.6 tax-invoice result cards (9 Nov 2026): same white card as the request card, one status row,

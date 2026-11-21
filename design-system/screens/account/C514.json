@@ -1,7 +1,7 @@
 {
   "code": "C514",
   "screen": "addressbook",
-  "title": "สมุดที่อยู่",
+  "title": "ที่อยู่ที่บันทึกไว้",
   "group": "account",
   "kind": "screen",
   "cases": [
@@ -10,6 +10,12 @@
       "state": "normal",
       "label": "มีที่อยู่หลัก",
       "url": "/?screen=addressbook&state=normal&splash=0"
+    },
+    {
+      "code": "C514.7",
+      "state": "empty",
+      "label": "ไม่มีที่อยู่ที่บันทึกไว้",
+      "url": "/?screen=addressbook&state=empty&splash=0"
     },
     {
       "code": "C514.5",

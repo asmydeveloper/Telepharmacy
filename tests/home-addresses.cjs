@@ -12,7 +12,7 @@ const TP = {
   act:(id,fn)=>actions[id]=fn, branch(id){return this.BRANCHES.find(b=>b.id===(id||this.S.branch))},
   fmtAddr:a=>a.house+' '+a.dist, refresh:()=>{}, notify:()=>{}, closeSheet:()=>Promise.resolve(), go:()=>{}, sheet:()=>{},
 };
-const context = vm.createContext({TP,flowPreview:false,ui:{},esc:String,ic:()=>'',location:{search:''},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},URLSearchParams,structuredClone,document:{},console});
+const context = vm.createContext({TP,flowPreview:false,ui:{row:o=>`<button data-a="${o.a}">${o.title}${o.html || ''}</button>`},esc:String,ic:()=>'',location:{search:''},localStorage:{getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)},URLSearchParams,structuredClone,document:{},console});
 const emptyArtMethod=source.match(/  emptyArt\(icon = 'inbox'\) \{[^\n]+/)[0].trim().replace(/,$/,'');
 vm.runInContext('Object.assign(ui, {'+emptyArtMethod+'})',context);
 const zoneStart=source.indexOf('const ROAD_KM =');
@@ -22,6 +22,7 @@ const start=source.indexOf('/* C210 / C514 / C515:');
 const end=source.indexOf('/* C201: selected nearby pharmacy',start);
 const feature=source.slice(start,end);
 vm.runInContext(feature,context);
+vm.runInContext(source.slice(source.indexOf('const addressAreaKeys'), source.indexOf('function mountDesignSelects')),context);
 const pickStart=source.indexOf('TP.pickBranch = () => {');
 vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),context);
 (async()=>{
@@ -60,7 +61,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
   assert.equal(TP.addressName,undefined);
   assert.equal(JSON.parse(storage.get('mitraree.home.preferences.v1')).addrs.find(a=>a.main).house,'15/2');
   const savedParts=TP.homeAddress();assert(savedParts);for(const k of ['house','building','alley','road'])assert.equal(savedParts[k],inputs['home-address-'+k].value,'persist '+k);
-  context.ui.nav=()=>'';context.ui.page=s=>s;context.ui.btn=s=>s;
+  context.ui.nav=()=>'';context.ui.page=s=>s;context.ui.btn=s=>s;context.ui.dock=s=>s;
   TP.S._homeEditAddress=savedParts.id;const editHtml=registrations.addressedit.render({S:TP.S});for(const k of ['house','building','alley','road'])assert(editHtml.includes('id="home-address-'+k+'"'));assert(editHtml.includes('value="อาคารบี ห้อง 12"'));assert(editHtml.includes('value="สุขุมวิท 1"'));
   savedParts.house='15/2 อาคารเก่า ซอยสุขุมวิท 1';savedParts.building='';savedParts.alley='';savedParts.road='';const oldHtml=registrations.addressedit.render({S:TP.S});assert(oldHtml.includes('value="15/2 อาคารเก่า ซอยสุขุมวิท 1"'));assert(oldHtml.includes('ข้อมูลเดิมยังอยู่ครบ'));
   Object.assign(savedParts,{house:'15/2',building:'อาคารบี ห้อง 12',alley:'สุขุมวิท 1',road:'สุขุมวิท'});
@@ -143,7 +144,7 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
 const bannerStart=source.indexOf('function homeConsultBanner(S)'),bannerEnd=source.indexOf("TP.screen('home'",bannerStart);
 vm.runInContext(source.slice(bannerStart,bannerEnd),context);
 context.ui.btn=(label,o)=>`<button data-a="${o.a}">${label}</button>`;
-TP.caseOpen=()=>false;let banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('ปรึกษาเภสัช'));assert(banner.includes('data-a="quickConsult"'));assert(banner.includes('/assets/banners/pharmacy-female-counter-v1.png'));assert(fs.existsSync('public/assets/banners/pharmacy-female-counter-v1.png'));
+TP.caseOpen=()=>false;let banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('ปรึกษาเภสัช'));assert(banner.includes('data-a="quickConsult"'));assert(banner.includes('/assets/banners/pharmacy-female-counter-v1.webp'));assert(fs.existsSync('public/assets/banners/pharmacy-female-counter-v1.webp'));
 TP.caseOpen=()=>true;banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('คุยกับเภสัชต่อ'));
 assert(source.includes("paymentCard || activeCase || (updates && !deliveryCard) ? '' : homeConsultBanner(S)"));
 assert(source.includes('consultBanner+heroHtml(S,st)'));

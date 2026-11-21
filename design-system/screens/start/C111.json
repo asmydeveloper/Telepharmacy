@@ -1,7 +1,7 @@
 {
   "code": "C111",
   "screen": "doc",
-  "title": "ข้อกำหนดการใช้งาน",
+  "title": "ข้อตกลงและนโยบาย",
   "group": "start",
   "kind": "sheet",
   "cases": [
@@ -10,6 +10,30 @@
       "state": "",
       "label": "ปกติ",
       "url": "/?screen=doc&splash=0"
+    },
+    {
+      "code": "C111.1",
+      "state": "terms",
+      "label": "ข้อตกลงและเงื่อนไขการใช้บริการ MITRAREE Online",
+      "url": "/?screen=doc&state=terms&splash=0"
+    },
+    {
+      "code": "C111.2",
+      "state": "privacy",
+      "label": "นโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)",
+      "url": "/?screen=doc&state=privacy&splash=0"
+    },
+    {
+      "code": "C111.3",
+      "state": "notice",
+      "label": "คำประกาศความเป็นส่วนตัวสำหรับลูกค้า/ผู้ใช้บริการ",
+      "url": "/?screen=doc&state=notice&splash=0"
+    },
+    {
+      "code": "C111.4",
+      "state": "load-error",
+      "label": "เปิดเอกสารไม่สำเร็จ",
+      "url": "/?screen=doc&state=load-error&splash=0"
     }
   ]
 }

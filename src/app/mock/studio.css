@@ -1,0 +1,62 @@
+.mock-studio {
+  max-inline-size: 52rem;
+  margin-inline: auto;
+  padding: 1rem;
+  color: var(--semantic-text);
+  font-family: 'Noto Sans Thai', sans-serif;
+}
+.mock-studio nav,
+.mock-actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.mock-studio a {
+  color: var(--semantic-primary);
+}
+.mock-studio section {
+  background: var(--semantic-surface);
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+  margin-block: 1rem;
+}
+.mock-studio section h2 {
+  margin-block-start: 0;
+}
+.mock-studio ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.mock-studio li button {
+  width: 100%;
+  text-align: start;
+}
+.mock-studio label {
+  display: grid;
+  gap: 0.25rem;
+  margin-block: 0.75rem;
+}
+.mock-studio button,
+.mock-studio select,
+.mock-studio input {
+  min-block-size: 44px;
+  font: inherit;
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-sm);
+  padding-inline: 0.75rem;
+  background: var(--semantic-surface);
+  color: inherit;
+}
+.mock-studio button:not(:disabled) {
+  color: var(--semantic-primary);
+  cursor: pointer;
+}
+.mock-studio details {
+  margin-block: 1rem;
+}
+.mock-studio pre {
+  overflow: auto;
+  max-block-size: 24rem;
+}

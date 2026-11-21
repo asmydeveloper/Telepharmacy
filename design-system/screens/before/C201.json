@@ -42,6 +42,12 @@
       "url": "/?screen=home&state=case-next&splash=0"
     },
     {
+      "code": "C201.80",
+      "state": "case-matched",
+      "label": "เภสัชรับคิวแล้ว · เปิดแชทจากหน้าแรก",
+      "url": "/?screen=home&state=case-matched&splash=0"
+    },
+    {
       "code": "C201.54",
       "state": "case-chat",
       "label": "จำลอง กำลังปรึกษา",

@@ -1,0 +1,33 @@
+{
+  "code": "C316",
+  "screen": "checkoutdelivery",
+  "title": "วิธีการจัดส่ง",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C316.1",
+      "state": "pickup",
+      "label": "รับยาที่ร้าน พร้อมข้อมูลสาขา",
+      "url": "/?screen=checkoutdelivery&state=pickup&splash=0"
+    },
+    {
+      "code": "C316.2",
+      "state": "dhl",
+      "label": "จัดส่ง DHL",
+      "url": "/?screen=checkoutdelivery&state=dhl&splash=0"
+    },
+    {
+      "code": "C316.3",
+      "state": "flash",
+      "label": "จัดส่ง Flash Express",
+      "url": "/?screen=checkoutdelivery&state=flash&splash=0"
+    },
+    {
+      "code": "C316.4",
+      "state": "express",
+      "label": "ส่งด่วน Lalamove",
+      "url": "/?screen=checkoutdelivery&state=express&splash=0"
+    }
+  ]
+}
