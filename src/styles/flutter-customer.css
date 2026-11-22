@@ -931,7 +931,7 @@
   width: 360px;
   box-sizing: border-box;
   margin: 0;
-  padding: var(--space-4);
+  padding: 0;
   transform: translate(-50%, -50%);
   border: 0;
   border-radius: var(--radius-lg);
@@ -940,10 +940,38 @@
   text-align: center;
 }
 .pd-pickup-qr-dialog::backdrop { background: rgb(0 0 0 / 45%); }
-.pd-pickup-qr-dialog header { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); }
+.pd-pickup-qr-dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+  background: var(--brand-tint);
+  text-align: start;
+}
 .pd-pickup-qr-dialog h2 { margin: 0; font-size: var(--text-body); }
-.pd-pickup-qr-dialog img { width: min(280px, 100%); height: auto; margin: var(--space-2) auto; }
-.pd-pickup-qr-dialog > strong { overflow-wrap: anywhere; }
+.pd-pickup-qr-body {
+  display: grid;
+  gap: var(--space-2);
+  width: min(280px, calc(100% - 2 * var(--space-4)));
+  margin: var(--space-4) auto;
+}
+.pd-pickup-qr-dialog img { width: 100%; height: auto; }
+.pd-pickup-qr-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-inline-start: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-50);
+  text-align: start;
+}
+.pd-pickup-qr-number span { display: block; color: var(--ink-3); font-size: var(--text-caption); }
+.pd-pickup-qr-number strong { color: var(--ink); font-size: var(--text-small); }
+.pd-pickup-qr-number .ibtn { color: var(--brand); }
+.pd-pickup-copy-status { color: var(--ink-3); font-size: var(--text-caption); }
+.pd-pickup-copy-status:empty { margin-top: calc(-1 * var(--space-2)); }
 
 .phone .order-tracking-page .pd-receipt-link .row { margin: 0; }
 

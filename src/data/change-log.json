@@ -1,6 +1,13 @@
 [
   {
     "date": "2026-11-22",
+    "page": "รับยาที่สาขา · ขยาย QR",
+    "path": "/?screen=track&state=pickup-ready&splash=0",
+    "codes": ["C414"],
+    "changes": ["แยกหัวป๊อปอัปกับเนื้อหา และใส่เลขคำสั่งซื้อในแถบกว้างเท่า QR พร้อมปุ่มคัดลอก"]
+  },
+  {
+    "date": "2026-11-22",
     "page": "สมุดที่อยู่",
     "path": "/?screen=addressbook&state=normal&splash=0",
     "codes": ["C514"],

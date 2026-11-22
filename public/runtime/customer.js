@@ -5337,7 +5337,14 @@ const pickupCodeCard = (order, reminder = '') => {
     </div>${reminder}
     <dialog class="pd-pickup-qr-dialog" aria-labelledby="pickupQrTitle">
       <header><h2 id="pickupQrTitle">QR รหัสรับยา</h2><form method="dialog"><button type="submit" class="ibtn" aria-label="ปิด QR รหัสรับยา" autofocus>${ic('x',22,2)}</button></form></header>
-      ${image}<strong class="num">เลขคำสั่งซื้อ ${esc(orderNumber)}</strong>
+      <div class="pd-pickup-qr-body">
+        ${image}
+        <div class="pd-pickup-qr-number">
+          <div><span>เลขคำสั่งซื้อ</span><strong class="num">${esc(orderNumber)}</strong></div>
+          <button type="button" class="ibtn" data-a="copyPickupOrder" data-v="${esc(orderNumber)}" aria-label="คัดลอกเลขคำสั่งซื้อ" title="คัดลอกเลขคำสั่งซื้อ">${ic('copy',20)}</button>
+        </div>
+        <div class="pd-pickup-copy-status" role="status"></div>
+      </div>
     </dialog>
   </section>`;
 };
@@ -5350,6 +5357,15 @@ TP.act('showPickupQr', button => {
   dialog.style.maxWidth = `${rect.width - 32}px`;
   dialog.style.maxHeight = `${rect.height - 32}px`;
   dialog.showModal();
+});
+TP.act('copyPickupOrder', async button => {
+  const status = $('.pd-pickup-copy-status', button.closest('dialog'));
+  try {
+    await navigator.clipboard.writeText(button.dataset.v);
+    status.textContent = 'คัดลอกเลขคำสั่งซื้อแล้ว';
+  } catch {
+    status.textContent = 'คัดลอกไม่ได้ กรุณาลองอีกครั้ง';
+  }
 });
 
 /* Shared order information uses the same header/body cards as C309. */
