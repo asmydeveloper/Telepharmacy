@@ -94,12 +94,6 @@
       "state": "tax-picker",
       "label": "เลือกข้อมูลใบกำกับภาษี",
       "url": "/?screen=pay&state=tax-picker&splash=0"
-    },
-    {
-      "code": "C308.31",
-      "state": "bankapp",
-      "label": "Mobile Banking · กำลังเปิดแอปธนาคาร",
-      "url": "/?screen=pay&state=bankapp&splash=0"
     }
   ]
 }

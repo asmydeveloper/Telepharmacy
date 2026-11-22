@@ -21,7 +21,9 @@ for(const [kind,mode] of [['me','select'],['co','select'],['me','manual'],['co',
  const form=draft(kind);form.drafts[kind].mode=mode;const html=run('taxProfileForm')({_taxProfile:form},true,true),inputs=html.match(/<input [^>]*>/g);
  assert(inputs.length>=9);for(const input of inputs){assert(/placeholder="[^"]+"/.test(input),kind+' '+mode+' needs a placeholder: '+input.slice(0,60));assert(!/placeholder="[^"]*เช่น/.test(input),'placeholders give an instruction, not an example');}
  assert.equal(html.includes('openTaxAddressArea'),mode==='select');
- assert(html.includes('taxProfilePrivacy'));
+ assert(!html.includes('tax-profile-intro'));
+ form.editKey='saved';
+ assert(run('taxProfileForm')({_taxProfile:form},true,true).includes('taxProfilePrivacy'));
 }
 console.log('PASS: C519 validates required fields, formats and address selection');
 

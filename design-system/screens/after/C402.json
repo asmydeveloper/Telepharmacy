@@ -20,7 +20,7 @@
     {
       "code": "C402.6",
       "state": "late",
-      "label": "เกิน 7 วัน ขอใบกำกับภาษีไม่ได้",
+      "label": "เลยรอบขอใบกำกับภาษี",
       "url": "/?screen=receipt&state=late&splash=0"
     },
     {

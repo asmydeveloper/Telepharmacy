@@ -2495,11 +2495,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .rm-basket-empty .h3 { color: var(--ink); }
 .rm-basket-strip[hidden] { display: none; }
 
-/* Checkout advice and delivery address reuse the summary card pattern. */
-.payw .checkout-advice { margin-top: var(--space-3); }
-.payw .checkout-address { margin: 0; }
-.payw .checkout-address .pay-address-readonly { padding: 0; border: 0; background: transparent; }
-
 /* C308: consistent section rhythm, type scale and QR bill hierarchy. */
 .payw { gap: var(--space-4); }
 .payw > .pay-store { margin: 0; font-size: var(--text-body); }
@@ -2510,8 +2505,6 @@ body:has(.consultation-card-preview) nextjs-portal {
 .payw .checkout-order-card .medicine-copy b { font-size: var(--text-body); }
 .payw .checkout-order-card .medicine-copy small { font-size: var(--text-small); }
 .payw .pay-sum { margin-top: 0; }
-.payw .checkout-advice .af-advice-text { font-size: var(--text-body); }
-.payw #payAddrSec { margin-top: var(--space-3); }
 .qr-box.card { display: block; padding: 0; overflow: hidden; border: 1px solid var(--hair); text-align: left; }
 .qr-bill-head { display: flex; align-items: center; gap: var(--space-2); padding: var(--space-4); background: var(--brand-tint); border-bottom: 1px solid var(--hair); }
 .qr-bill-head > div { flex: 1; min-width: 0; }
@@ -2681,7 +2674,8 @@ body:has(.consultation-card-preview) nextjs-portal {
 .pay-picker-panel { position: relative; display: flex; flex-direction: column; max-height: 88%; border-radius: var(--radius-lg) var(--radius-lg) 0 0; background: var(--semantic-surface); box-shadow: 0 -8px 24px rgb(var(--color-ink-rgb) / 0.12); }
 .pay-picker-head { display: flex; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-3) var(--space-2) var(--space-2) var(--space-4); border-bottom: 1px solid var(--semantic-border); }
 .pay-picker-head h2 { margin: 0; font-size: var(--type-body-mobile-size); font-weight: var(--weight-semibold); }
-.pay-picker-body { overflow-y: auto; padding: var(--space-4) var(--space-4) calc(var(--sb, 0px) + var(--space-4)); }
+.pay-picker-body { overflow-y: auto; padding: var(--space-4); }
+.pay-picker-foot { flex: none; display: grid; border-top: 1px solid var(--semantic-border); padding: var(--space-3) var(--space-4) calc(var(--sb, 0px) + var(--space-3)); }
 
 /* C114: Google account chooser look (prototype mock). */
 .g-chooser { display: flex; flex-direction: column; gap: var(--space-4); }

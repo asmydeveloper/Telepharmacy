@@ -13,9 +13,9 @@
     },
     {
       "code": "C317.2",
-      "state": "bank",
-      "label": "Mobile Banking · เลือกแอปธนาคาร",
-      "url": "/?screen=checkoutmethod&state=bank&splash=0"
+      "state": "card",
+      "label": "บัตรเครดิต · ผ่าน Omise",
+      "url": "/?screen=checkoutmethod&state=card&splash=0"
     }
   ]
 }

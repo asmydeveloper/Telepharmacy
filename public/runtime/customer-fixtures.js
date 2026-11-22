@@ -149,8 +149,19 @@ const previewInbox = (history) => {
  ];
  return samples.map(([days,at,kind,title,body,go],index)=>{const date=new Date(Date.UTC(y,m-1,d-days)),dateText=[String(date.getUTCDate()).padStart(2,'0'),String(date.getUTCMonth()+1).padStart(2,'0'),date.getUTCFullYear()].join('/');return {id:'preview-note-'+index,kind,title,body,time:dateText+' '+at,read:true,go:records.length?'summary':'history',...(records.length?{caseId:go==='summary'&&summaryId?summaryId:records[index%records.length].id,p:{id:go==='summary'&&summaryId?summaryId:records[index%records.length].id}}:{})};});
 };
+const demoTaxRecipients = [
+  { profileKey: 'saved-me', detail: '88/12 ซอยทวีวัฒนา 25', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170' },
+  { profileKey: 'saved-me-office', detail: '99/9 ชั้น 12', road: 'ถนนพระรามที่ 4', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110' },
+  { profileKey: 'saved-me-on-nut', detail: '59/3', alley: 'ซอยอ่อนนุช 17', amp: 'สวนหลวง', dist: 'สวนหลวง', zip: '10250' },
+].map(address => ({
+  id: '1101700203450', name: 'สมใจ ใจดี', first: 'สมใจ', last: 'ใจดี', phone: '0812345678',
+  prov: 'กรุงเทพมหานคร', country: 'ไทย', ...address,
+  addr: [address.detail, address.alley, address.road, 'แขวง' + address.dist, 'เขต' + address.amp, 'กรุงเทพมหานคร', address.zip].filter(Boolean).join(' '),
+}));
+const demoInvoiceEmail = 'somjai@example.com';
 const account = () => {
  const addedOrders = historySamples();
+ const personalTaxProfiles = demoTaxRecipients.map(record => ({...record}));
  return {
   firstTime: false,          // true = new user: sign-up, then C108 and onboarding C112
   loggedIn: true,
@@ -163,8 +174,8 @@ const account = () => {
   branch: 'tw',
   branchState: { tw: 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' },  // open | pause | closed
   queueLen: { tw: 2, on: 1, 'demo-1':0, 'demo-2':0, 'demo-3':0, 'demo-4':1, 'demo-5':0 },
-  user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
-  taxWho: {id:'1101700203450',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยทวีวัฒนา 25',prov:'กรุงเทพมหานคร',amp:'ทวีวัฒนา',dist:'ทวีวัฒนา',zip:'10170',country:'ไทย',addr:'88/12 ซอยทวีวัฒนา 25 แขวงทวีวัฒนา เขตทวีวัฒนา กรุงเทพมหานคร 10170'},
+  user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', email: demoInvoiceEmail, nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
+  taxWho: personalTaxProfiles[0], taxProfiles: { me: personalTaxProfiles },
   taxCo: null, _taxProfileMockInitialized: true,
   family: [], // Household feature paused; this app serves the account owner only.
   intake: { who: 'me', symptoms: [], custom: [], otherOpen: false, urgent: [], note: '', photos: 0, attachments: [], mode: 'chat' },
@@ -191,5 +202,10 @@ const account = () => {
  };
 };
 
-return { demoProfiles, NOW, PHARM, BRANCHES, STORE, ORDER_ITEMS, COLD_ITEM, previewInbox, orderInbox, isAddedOrder, isLegacyOrder, account };
+const checkoutOutsideAddress = {
+  id: 'outside-demo', first: 'สมใจ', last: 'ใจดี', phone: '0812345678',
+  house: '88/12', prov: 'เชียงใหม่', amp: 'เมืองเชียงใหม่', dist: 'ศรีภูมิ', zip: '50200',
+};
+
+return { demoProfiles, NOW, PHARM, BRANCHES, STORE, ORDER_ITEMS, COLD_ITEM, previewInbox, orderInbox, isAddedOrder, isLegacyOrder, account, checkoutOutsideAddress, demoTaxRecipients, demoInvoiceEmail };
 })();

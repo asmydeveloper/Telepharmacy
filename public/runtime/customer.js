@@ -275,7 +275,6 @@ TP.zoneLock = () => TP.flag('zoneLock') !== false;
 TP.zoneLine = () => TP.zoneLock() ? 'ส่งยาได้เฉพาะที่อยู่ไม่เกิน 15 กม. จากสาขา นอกนั้นรับยาที่ร้าน' : 'ส่งด่วนส่งได้ไม่เกิน 15 กม. จากสาขา ส่งพัสดุและส่งเย็นได้ทุกที่';
 /* No phone location (user 8 Nov 2026): the service area follows the address the customer selects. */
 TP.expOk = (a, br) => { const z = TP.zoneOf(a, br); return !!z && z.ok && z.km != null && z.km <= TP.EXP_KM; };
-TP.BANKS = [['KBANK', 'K PLUS', 'ธนาคารกสิกรไทย'], ['SCB', 'SCB EASY', 'ธนาคารไทยพาณิชย์'], ['BAY', 'KMA', 'ธนาคารกรุงศรีอยุธยา'], ['BBL', 'BBL', 'ธนาคารกรุงเทพ'], ['KTB', 'Krungthai NEXT', 'ธนาคารกรุงไทย']];
 TP.CARD_FEE = 0.0365;   /* card only, on drugs + delivery (paylink card_option) */
 TP.PAY_MIN = 20;        /* Omise minimum for every method (CSM:2542) */
 
@@ -323,7 +322,8 @@ TP.act = (name, fn) => { ACTS[name] = fn; };
 TP.def = id => SCREENS[id] || SHEETS[id];
 
 const phone = $('#phone'), stackEl = $('#stack'), tabbar = $('#tabbar'), mini = $('#minibar');
-const scrim = $('#scrim'), sheetEl = $('#sheet'), island = $('#island'), banner = $('#banner'), ptoast = $('#ptoast'), liveEl = $('#live');
+const scrim = $('#scrim'), island = $('#island'), banner = $('#banner'), ptoast = $('#ptoast'), liveEl = $('#live');
+let sheetEl = $('#sheet');
 TP.phone = phone;
 let cur = null, sheet = null, chain = Promise.resolve(), running = [], pending = null;
 const hist = [];
@@ -653,19 +653,34 @@ TP.mini = (animate = true) => {
   }
 };
 
-/* ---------- sheets: a single overlay above a dimmed, stationary page ---------- */
+/* ---------- sheets above the current page ---------- */
 TP.sheet = async (id, params = {}) => {
   if(SHEETS[id]?.disabled)return;
   const def = SHEETS[id]; if (!def) return console.warn('unknown sheet', id);
   await chain;
-  if (sheet) await TP.closeSheet({ instant: true });
+  if (sheet?.closing) await sheet.closing;
+  if (sheet?.id === id && sheet.underlay) return;
+  const underlay = sheet && sheet.id === def.over ? sheet : null;
+  if (sheet && !underlay) await TP.closeSheet({ instant: true });
+  const prevFocus = document.activeElement;
+  if (underlay) {
+    const overlay = sheetEl.cloneNode(false);
+    sheetEl.id = 'sheet-underlay';
+    sheetEl.classList.add('sheet-underlay');
+    sheetEl.inert = true;
+    $('#sheetTitle', sheetEl).id = 'sheetUnderlayTitle';
+    sheetEl.setAttribute('aria-labelledby', 'sheetUnderlayTitle');
+    sheetEl.after(overlay);
+    sheetEl = overlay;
+    bindSheetDrag(sheetEl);
+  }
   const entry = mkEntry(id, params, 'sheet');
   const ctx = entry.ctx = mkCtx(id, params, entry);
   const title = typeof def.title === 'function' ? def.title(ctx) : def.title;
   sheetEl.className = 'sheet' + (def.tall ? ' tall' : '') + (def.fullPage ? ' full-page' : '') + (def.cls ? ' ' + def.cls : '');
-  sheetEl.innerHTML = `${def.fullPage?'':'<div class="grab" aria-hidden="true"></div>'}<header class="sh-h">${def.fullPage?`<button type="button" class="ibtn sh-back" data-close-sheet aria-label="ย้อนกลับ">${TP.ic('chevron-left',24,2)}</button>`:''}<h2 id="sheetTitle" tabindex="-1">${TP.esc(def.sheetTitle ? def.sheetTitle(ctx) : title)}</h2>${def.hideClose||def.fullPage ? '' : `<button type="button" class="sh-x" data-close-sheet aria-label="ปิด">${TP.ic('x', 18, 2.2)}</button>`}</header><div class="sh-b">${def.render(ctx)}</div>${def.foot ? `<div class="sh-f">${def.foot(ctx)}</div>` : ''}`;
+  sheetEl.innerHTML = `${def.fullPage?'':'<div class="grab" aria-hidden="true"></div>'}<header class="sh-h">${def.fullPage?`<button type="button" class="ibtn sh-back" data-close-sheet aria-label="ย้อนกลับ">${TP.ic(def.backIcon || 'chevron-left',24,2)}</button>`:''}<h2 id="sheetTitle" tabindex="-1">${TP.esc(def.sheetTitle ? def.sheetTitle(ctx) : title)}</h2>${def.hideClose||def.fullPage ? '' : `<button type="button" class="sh-x" data-close-sheet aria-label="ปิด">${TP.ic('x', 18, 2.2)}</button>`}</header><div class="sh-b">${def.render(ctx)}</div>${def.foot ? `<div class="sh-f">${def.foot(ctx)}</div>` : ''}`;
   TP.icons(sheetEl);
-  sheet = { id, def, ctx, entry, el:sheetEl, prevFocus: document.activeElement };
+  sheet = { id, def, ctx, entry, el:sheetEl, prevFocus, underlay };
   sheetEl.hidden = false; scrim.hidden = !!def.fullPage;
   def.mount?.(sheetEl, ctx);
   sheetEl._addressMapCtx=ctx;
@@ -679,16 +694,29 @@ TP.sheet = async (id, params = {}) => {
     mini.hidden || A(mini, [{ opacity: 1 }, { opacity: 0 }], { d: 200, fill: 'forwards' });
   }
   if (!TP.RED()) cascade(sheetEl, 120);
-  setTimeout(() => ($('.sh-b [autofocus]', sheetEl) || $('#sheetTitle', sheetEl))?.focus({ preventScroll: true }), 60);
+  const active = sheet;
+  setTimeout(() => {
+    if (sheet === active && !active.closing) ($('.sh-b [autofocus]', active.el) || $('#sheetTitle', active.el))?.focus({ preventScroll: true });
+  }, 60);
   TP.emit('sheet', sheet);
   await fin(a);
 };
 TP.closeSheet = async ({ instant = false, restore = !instant } = {}) => {
-  if (!sheet) return;
-  const s = sheet; sheet = null;
+  const s = sheet;
+  if (!s) return;
+  if (s.closing) {
+    if (!restore) s.restore = false;
+    return s.closing;
+  }
+  s.restore = restore;
+  s.closing = hideSheet(s, instant);
+  await s.closing;
+  if (s.restore) await s.def.afterClose?.(s.ctx);
+};
+async function hideSheet(s, instant) {
   s.entry.alive = false; s.entry.timers.forEach(t => { clearTimeout(t); clearInterval(t); }); s.entry.cleanups.forEach(fn => fn());
   s.def.close?.(s.ctx);
-  if (cur) {
+  if (cur && !s.underlay) {
     const def = SCREENS[cur.id];
     phone.dataset.sb = typeof def.sb === 'function' ? def.sb(cur.ctx) : (def.sb || 'dark');
   }
@@ -700,20 +728,33 @@ TP.closeSheet = async ({ instant = false, restore = !instant } = {}) => {
     await Promise.all([fin(A(sheetEl, [{ transform: getComputedStyle(sheetEl).transform === 'none' ? 'none' : getComputedStyle(sheetEl).transform }, { transform: s.def.fullPage?'translateX(105%)':'translateY(105%)' }], { d: 380, e: E.ios, fill: 'forwards' })),
       fin(A(scrim, [{ opacity: 1 }, { opacity: 0 }], { d: 320, e: E.apple, fill: 'forwards' })), ...back.map(fin)]);
   }
-  cur && kill(cur.el);
   kill(sheetEl); kill(scrim);
-  sheetEl.hidden = true; scrim.hidden = true; sheetEl.innerHTML = '';
+  scrim.hidden = true;
+  sheet = s.underlay;
+  if (s.underlay) {
+    sheetEl.remove();
+    sheetEl = sheet.el;
+    sheetEl.id = 'sheet';
+    sheetEl.classList.remove('sheet-underlay');
+    sheetEl.inert = false;
+    $('#sheetUnderlayTitle', sheetEl).id = 'sheetTitle';
+    sheetEl.setAttribute('aria-labelledby', 'sheetTitle');
+    if (!s.restore) return TP.closeSheet({ instant: true, restore: false });
+  } else {
+    cur && kill(cur.el);
+    sheetEl.hidden = true;
+    sheetEl.innerHTML = '';
+  }
   if (s.prevFocus && document.contains(s.prevFocus)) s.prevFocus.focus({ preventScroll: true });
-  TP.emit('sheet', null);
-  if (restore) await s.def.afterClose?.(s.ctx);
-};
+  TP.emit('sheet', sheet);
+}
 TP.sheetOpen = () => sheet;
 scrim.addEventListener('click', () => { if (sheet && !sheet.def.locked) TP.closeSheet(); });
 /* drag the grab handle / header down to dismiss */
-(() => {
+function bindSheetDrag(sheetEl) {
   let y0 = 0, t0 = 0, dy = 0, drag = false;
   sheetEl.addEventListener('pointerdown', e => {
-    if (!sheet || sheet.def.locked || sheet.def.fullPage || !e.target.closest('.grab,.sh-h') || e.target.closest('button')) return;
+    if (sheet?.el !== sheetEl || sheet.def.locked || sheet.def.fullPage || !e.target.closest('.grab,.sh-h') || e.target.closest('button')) return;
     drag = true; y0 = e.clientY; t0 = performance.now(); dy = 0; sheetEl.setPointerCapture(e.pointerId); kill(sheetEl);
   });
   sheetEl.addEventListener('pointermove', e => {
@@ -730,7 +771,8 @@ scrim.addEventListener('click', () => { if (sheet && !sheet.def.locked) TP.close
     else A(sheetEl, [{ transform: `translateY(${dy}px)` }, { transform: 'none' }], { d: SP.spring.d, e: SP.spring.e });
   };
   sheetEl.addEventListener('pointerup', end); sheetEl.addEventListener('pointercancel', end);
-})();
+}
+bindSheetDrag(sheetEl);
 /* focus trap + Escape */
 document.addEventListener('keydown', e => {
   if (!sheet) return;
@@ -1247,6 +1289,7 @@ const isNewNumber = S => S.newAccount ?? S.firstTime;
 /* a brand-new number must never inherit the mock account (family, allergies, meds, history) */
 const freshAccount = S => {
   Object.assign(S, { family: [], history: [], inbox: [], case: null, addrs: [], _clog: [] });
+  Object.assign(S, { taxWho: null, taxCo: null, taxProfiles: {}, _taxProfile: null, _taxProfileMockInitialized: true });
   Object.assign(S.user, { allergies: [], allergyState: 'unknown', allergySrc: '', meds: [], weight: '', conditions: [], condNone: false });
 };
 
@@ -2649,7 +2692,7 @@ TP.act('hmStart', t => {
 const symptomOptions = ['ไข้ หวัด', 'ไอ เจ็บคอ', 'ปวดหัว', 'ปวดเมื่อย ปวดหลัง', 'ปวดท้อง ท้องเสีย', 'ผื่น คัน แผล', 'สุขภาพผู้หญิง', 'ปรึกษาเรื่องอื่น'];
 const durationOptions = ['วันนี้', '1–3 วัน', '4–7 วัน', 'เกิน 1 สัปดาห์'];
 const pregnancyOptions = ['ไม่ใช่', 'ตั้งครรภ์', 'ให้นมบุตร'];
-const intakeHeading = (step, title, required = false) => `<div class="ik-section-heading"><span aria-hidden="true">${step}</span><h2 class="ik-h" id="intakeStep${step}">${title}${required ? ' <span class="reg-required">*</span>' : ''}</h2></div>`;
+const intakeHeading = (step, title, required = false, hint = '') => `<div class="ik-section-heading"><span aria-hidden="true">${step}</span><h2 class="ik-h" id="intakeStep${step}">${title}${required ? ' <span class="reg-required">*</span>' : ''}${hint ? ` <small class="ik-field-hint">${esc(hint)}</small>` : ''}</h2></div>`;
 const intakeChoices = (options, selected, action, step, multi = false) => `<div class="${multi ? 'ik-symptom-grid' : 'ik-extra-choices'}" role="group" aria-labelledby="intakeStep${step}">
   ${options.map(value => `<button type="button" class="btn secondary" data-a="${action}" data-v="${esc(value)}" aria-pressed="${selected.includes(value)}">${esc(value)}</button>`).join('')}
 </div>`;
@@ -2672,7 +2715,7 @@ TP.intakePhotoBatch = (I,files) => {
   try {for(const file of files)added.push({file,url:URL.createObjectURL(file)});}catch(_){for(const f of added)URL.revokeObjectURL(f.url);return 'เปิดรูปไม่สำเร็จ กรุณาเลือกใหม่';}
   I.attachments=[...current,...added];I.photos=I.attachments.length;I.photoError='';return '';
 };
-const intakePhotosHtml = I => {const images=intakePhotoItems(I);return `<div class="ik-photo-upload" role="group" aria-labelledby="ikPhotosLabel"><label class="f-l" id="ikPhotosLabel" for="ikPhotos">แนบรูปเพิ่มเติม</label><input id="ikPhotos" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>${images.length<3?`<button type="button" class="ik-photo" data-a="addPhoto"><span class="ik-upload-icon">${ic('upload',24,1.8)}</span><span class="ik-upload-title">แตะเพื่อแนบรูปอาการหรือฉลากยา</span><span class="ik-upload-help">สูงสุด 3 รูป · JPG, PNG, WEBP<br>ไม่เกิน 5 MB ต่อรูป</span></button>`:''}${images.length?`<div class="ik-photo-grid" aria-label="รูปที่แนบ">${images.map((f,i)=>`<figure><img src="${esc(f.url)}" alt="รูปที่แนบ ${i+1}"><button type="button" class="ik-photo-remove" data-a="ikPhotoRemove" data-v="${i}" aria-label="ลบรูปที่ ${i+1}">${ic('x',16,2)}</button></figure>`).join('')}</div>`:''}<p id="ikPhotoError" class="err-t" role="alert" ${I.photoError?'':'hidden'}>${esc(I.photoError||'')}</p></div>`;};
+const intakePhotosHtml = I => {const images=intakePhotoItems(I);return `<div class="ik-photo-upload" role="group" aria-labelledby="intakeStep4"><input id="ikPhotos" type="file" accept="image/jpeg,image/png,image/webp" multiple hidden>${images.length<3?`<button type="button" class="ik-photo" data-a="addPhoto"><span class="ik-upload-icon">${ic('upload',24,1.8)}</span><span class="ik-upload-title">แตะเพื่อแนบรูปอาการหรือฉลากยา</span><span class="ik-upload-help">สูงสุด 3 รูป · JPG, PNG, WEBP<br>ไม่เกิน 5 MB ต่อรูป</span></button>`:''}${images.length?`<div class="ik-photo-grid" aria-label="รูปที่แนบ">${images.map((f,i)=>`<figure><img src="${esc(f.url)}" alt="รูปที่แนบ ${i+1}"><button type="button" class="ik-photo-remove" data-a="ikPhotoRemove" data-v="${i}" aria-label="ลบรูปที่ ${i+1}">${ic('x',16,2)}</button></figure>`).join('')}</div>`:''}<p id="ikPhotoError" class="err-t" role="alert" ${I.photoError?'':'hidden'}>${esc(I.photoError||'')}</p></div>`;};
 
 /* C203 preview mock: preview panel only, never part of the customer UI. */
 const intakeMock = {
@@ -2688,8 +2731,8 @@ TP.screen('intake', {
   previewMock: intakeMock,
   group: 'before', title: 'แจ้งอาการ', code: 'C203', ref: 'C04', parent: 'home', cls:'intake-cover-screen', sb:'dark',
   states: [["normal", "ว่าง"], ["filled", "กรอกแล้ว"], ["outzone", "ที่อยู่หลักนอกเขตส่งยา", true, 7], ["photos", "แนบรูป 3 รูป", true, 12], ["photo-error", "แนบไฟล์ไม่รองรับ", true, 13], ["multi-symptom", "หลายอาการ พร้อมระยะเวลาและให้นมบุตร", true, 14], ["allergy-unknown", "ยังไม่ทราบประวัติแพ้ยา · กดยืนยัน", true, 15]],
-  notes: ['ตัวเลือกอาการสองคอลัมน์ เลือกได้หลายข้อด้วยการกดทั้งกล่อง',
-    'เลือกปรึกษาเรื่องอื่นเมื่อไม่มีอาการในรายการ และแนบรูปเพิ่มเติมได้', 'ดึงประวัติแพ้ยาจากบัญชี แก้ไขหรือยืนยันว่าไม่ทราบได้ก่อนส่ง', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ไม่มีตัวเลือกวิธีปรึกษาในฟอร์ม ลำดับคือ 1 อาการที่ต้องการปรึกษา 2 ระยะเวลาที่มีอาการ 3 ตั้งครรภ์หรือให้นมบุตร 4 ข้อมูลก่อนปรึกษา รับวิธีปรึกษาจากทางเข้าเดิมและเปิดวิดีโอในห้องได้; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"', 'แผงทดสอบมีปุ่มมอคข้อมูล เติมอาการและรายละเอียดเฉพาะช่องที่ว่าง ไม่ติ๊กรับทราบให้',
+  notes: ['ตัวเลือกอาการ ระยะเวลา และตั้งครรภ์หรือให้นมบุตรใช้บล็อกสองคอลัมน์ อาการเลือกได้หลายข้อด้วยการกดทั้งกล่อง',
+    'เลือกปรึกษาเรื่องอื่นเมื่อไม่มีอาการในรายการ และแนบรูปเพิ่มเติมได้', 'ดึงประวัติแพ้ยาจากบัญชี แก้ไขหรือยืนยันว่าไม่ทราบได้ก่อนส่ง', 'C203 ไม่มีหมวดตรวจอาการอันตรายแล้ว ไม่มีตัวเลือกวิธีปรึกษาในฟอร์ม ลำดับคือ 1 อาการที่ต้องการปรึกษา 2 ระยะเวลาที่มีอาการ 3 ตั้งครรภ์หรือให้นมบุตร 4 แนบรูปเพิ่มเติม 5 ข้อมูลก่อนปรึกษา รับวิธีปรึกษาจากทางเข้าเดิมและเปิดวิดีโอในห้องได้; คงคำแนะนำฉุกเฉินในบริบทอื่นตามเดิม', 'ข้อมูลยังอยู่ในเครื่องจนกด "เข้าคิวปรึกษา"', 'แผงทดสอบมีปุ่มมอคข้อมูล เติมอาการและรายละเอียดเฉพาะช่องที่ว่าง ไม่ติ๊กรับทราบให้',
     'A2 (ประกาศ อย. ข้อ 2.1(3) "ก่อนการให้บริการ" = ทุกเคส): ติ๊ก รับทราบขั้นตอนและความเสี่ยง ก่อนกดเข้าคิว · ครั้งแรกเปิดข้อความเต็มให้อ่าน ครั้งต่อไปพับไว้ แตะเปิดอ่านได้ · ไม่ติ๊กแล้วกดเข้าคิว = พาไปที่ช่องติ๊ก บอกว่าต้องติ๊กก่อน · เก็บเวลาและเลขฉบับข้อความกับเคส ส่งให้คอนโซล (B8) · อ่านซ้ำได้ที่ C207 (C203.7)',
     'A1 (C203.8): ที่อยู่หลักอยู่นอกเขตส่งยา บอกก่อนเข้าคิวว่าถ้าต้องซื้อยา รับที่ร้านได้อย่างเดียว ปรึกษาได้ตามปกติ · ไม่บังคับเปลี่ยนที่อยู่'],
   wait: ['ข้อความขั้นตอนและความเสี่ยง (A2) ให้เภสัชกรและฝ่ายกฎหมายตรวจก่อนใช้จริง', 'ฝากคำถามตอนร้านปิด ต้องติ๊กรับทราบด้วยไหม (ต้นแบบยังไม่ให้ติ๊ก)', 'ปรึกษาใหม่ต่อจากเคสที่ระบบปิดเพราะเงียบ และย้ายคิวไปสาขาอื่น ใช้การรับทราบของเคสเดิมได้ไหม (ต้นแบบใช้ของเคสเดิม ไม่ถามซ้ำ)'],
@@ -2718,10 +2761,8 @@ TP.screen('intake', {
     const ready = TP.intakeReady(I), shut = S.storeOpen === false;
     return `<div class="auth-form-scene ik-scene"><img class="auth-form-cover ik-cover" src="/assets/banners/intake-consultation-cover-v1.webp" alt="" width="1536" height="1024"><button type="button" class="auth-form-back" data-back aria-label="ย้อนกลับ">${ic('arrow-left',22,2)}<span>กลับ</span></button><section class="auth-form-panel ik-form-panel" aria-labelledby="ikPageTitle">` + ui.page(`<header class="ik-intro"><h1 id="ikPageTitle">อยากปรึกษาเภสัชเรื่องอะไร</h1><p>เลือกอาการที่ต้องการคุยกับเภสัชกร</p></header>
       ${shut ? ui.note('<b>ร้านปิดรับปรึกษาอยู่</b><br>คุณยังฝากคำถามให้เภสัชกรตอบเมื่อร้านเปิดได้', {tone:'warn',icon:'moon'}) : ''}
-      <section class="ik-sec ik-block">${intakeHeading(1, 'อาการที่ต้องการปรึกษา', true)}
-        <p class="ik-field-hint">เลือกได้มากกว่า 1 ข้อ</p>
+      <section class="ik-sec ik-block">${intakeHeading(1, 'อาการที่ต้องการปรึกษา', true, 'เลือกได้มากกว่า 1 ข้อ')}
         ${intakeChoices(symptomOptions, I.symptoms, 'intakeSymptom', 1, true)}
-        <div class="ik-extra-fields">${intakePhotosHtml(I)}</div>
       </section>
       <section class="ik-sec ik-block">${intakeHeading(2, 'ระยะเวลาที่มีอาการ <small>(ไม่บังคับ)</small>')}
         ${intakeChoices(durationOptions, [I.duration], 'intakeDuration', 2)}
@@ -2729,7 +2770,10 @@ TP.screen('intake', {
       <section class="ik-sec ik-block">${intakeHeading(3, 'ตั้งครรภ์หรือให้นมบุตร <small>(ไม่บังคับ)</small>')}
         ${intakeChoices(pregnancyOptions, [I.pregnancy], 'intakePregnancy', 3)}
       </section>
-      <section class="ik-sec ik-block">${intakeHeading(4, 'ข้อมูลก่อนปรึกษา')}
+      <section class="ik-sec ik-block">${intakeHeading(4, 'แนบรูปเพิ่มเติม')}
+        ${intakePhotosHtml(I)}
+      </section>
+      <section class="ik-sec ik-block">${intakeHeading(5, 'ข้อมูลก่อนปรึกษา')}
         ${record.allergies.mode === 'unknown' && !I.allergyReviewed ? ui.btn('ยืนยันว่าฉันยังไม่ทราบประวัติแพ้ยา', { a: 'intakeConfirmAllergy', kind: 'secondary' }) : ''}
         <div class="ik-health-summary">${healthRows.map(([key,title,icon,none])=>healthRow(key,title,icon,record[key].mode==='set'?record[key].text:record[key].mode==='none'?none:'ยังไม่ทราบ')).join('')}</div>
 
@@ -3377,10 +3421,10 @@ TP.orderExpiryTick = () => {
     const pendingId = sheet?.id === 'pendingcancel' ? sheet.ctx.params.caseId : sheet?.ctx?.params.pendingCaseId;
     if (pendingId && cases.some(c=>c.id===pendingId&&c.order?.status==='expired')) {
       TP.closeSheet({instant:true}).then(() => TP.refresh({anim:false}));
-    } else if (TP.sheetOpen()?.id === 'pay' && paymentCase?.order?.status === 'expired') {
+    } else if ((sheet?.id === 'pay' || sheet?.underlay?.id === 'pay') && paymentCase?.order?.status === 'expired') {
       const submitted = !!paymentCase.order.payment;
       TP.closeSheet({ instant: true }).then(() => submitted ? TP.go('home', {root:true}) : TP.sheet('pay', {caseId:paymentCase.id}));
-    } else if (TP.sheetOpen()?.id !== 'pay') {
+    } else if (sheet?.id !== 'pay' && sheet?.underlay?.id !== 'pay') {
       TP.refresh({ anim: false });
     }
   }
@@ -4116,26 +4160,23 @@ function whyHtml() {
  if(hasCold(o))return `<p class="pay-why">${ic('snowflake',16,2)}<span>รายการนี้มียาเก็บเย็น กรุณารับที่ร้านเพื่อให้เภสัชกรแนะนำการเก็บรักษา</span></p>`;
  return o?.recvOff?.express&&o?.recvOff?.parcel?`<p class="pay-why">${ic('info',16,2)}<span>รายการนี้รับที่ร้านเท่านั้น${o.recvWhy?' · '+esc(o.recvWhy):''}</span></p>`:'';
 }
-/* PL pickup: the branch card with directions and a call button */
 const courierId = () => { const p = P(); if (!TP.COURIERS.some(c => c.id === p.courier)) p.courier = TP.COURIERS[0].id; return p.courier; };
-function pickupBranchCard(b, target) {
-  const tag = target ? 'button' : 'div';
-  const action = target ? ' type="button" data-a="openCheckoutChild" data-v="checkoutdelivery"' : '';
-  return `<${tag} class="checkout-pickup-preview"${action}>
+function pickupBranchCard(b, interactive = false) {
+  const tag = interactive ? 'button' : 'div';
+  return `<${tag} class="checkout-pickup-preview"${interactive ? ' type="button" data-a="openCheckoutChild" data-v="checkoutdelivery"' : ''}>
     ${b.photo ? `<img src="${esc(b.photo)}" alt="" width="56" height="56">` : ic('store',24)}
     <span><b>${esc(b.name)}</b><small>${esc(b.previewAddr || b.addr || 'ยังไม่มีข้อมูลที่อยู่สาขา')}</small>
     ${b.phone ? `<small>โทร ${esc(fmtPhone(b.phone))}</small>` : ''}
-    ${b.hours ? `<small>เวลาทำการ ${esc(b.hours)}</small>` : ''}</span>${target ? ic('chevron-right',16) : ''}
+    ${b.hours ? `<small>เวลาทำการ ${esc(b.hours)}</small>` : ''}</span>
+    ${interactive ? ic('chevron-right',16) : ''}
   </${tag}>`;
-}
-function recvExtra() {
-  if (P().recv !== 'pickup') return '';
-  return `<section class="checkout-block checkout-pickup" aria-label="สาขารับยา">${sec(1, 'สาขารับยา')}${pickupBranchCard(TP.branch(C().branch), true)}</section>`;
 }
 /* PL saved-address rows inside one card; the pin tag only matters for express so it shows only there */
 function cardsHtml() {
- const x=addr();if(!x)return `<p class="pay-none">${ui.emptyArt('map-pin')}<span>ยังไม่มีที่อยู่ที่เลือกจากหน้าแรก กรุณาเลือกรับที่ร้าน</span></p>`;
- return `<article class="pay-address-readonly"><p><b>${esc([x.first,x.last].filter(Boolean).join(' '))}</b></p><p>${esc(fmtAddr(x))}</p><p>โทร ${esc(fmtPhone(x.phone))}</p><small>ที่อยู่ที่เลือกจากหน้าแรก</small></article>`;
+  const address = addr();
+  const picker = 'type="button" data-a="openCheckoutChild" data-v="checkoutaddress"';
+  if (!address) return `<button ${picker} class="link checkout-address-empty">เลือกที่อยู่จากสมุดที่อยู่</button>`;
+  return `<button ${picker} class="pay-address-readonly"><b>${esc([address.first,address.last].filter(Boolean).join(' '))}</b><small>${esc(fmtAddr(address))}</small><small>${esc(fmtPhone(address.phone))}</small></button>`;
 }
 
 const fld = (id, label, val, o = {}) => `<div class="field"><label for="${id}">${esc(label)}${o.req ? '<span class="req" aria-hidden="true">*</span>' : ''}</label><input id="${id}" class="input" type="${o.type || 'text'}" value="${esc(val || '')}"${o.ph ? ` placeholder="${esc(o.ph)}"` : ''}${o.im ? ` inputmode="${o.im}"` : ''}${o.ac ? ` autocomplete="${o.ac}"` : ''}${o.max ? ` maxlength="${o.max}"` : ''}${o.ro ? ' readonly tabindex="-1"' : ''}${o.req ? ' aria-required="true"' : ''}></div>`;
@@ -4176,13 +4217,16 @@ TP.checkoutMap={read:()=>addr(),save(location){const a=addr();a.location=locatio
 const shipLabel = () => P().recv === 'express' ? 'ค่าจัดส่ง (Lalamove)' : P().recv === 'cold' ? 'ค่าส่งแบบเย็น (กล่องเก็บความเย็น)' : 'ค่าจัดส่ง';
 /* PL summary card between section 2 and 3; the shipping row is hidden for pickup like the website */
 function sumHtml(t) {
-  const p = P(), a = addr(), oz = zoneStop(a), far = p.recv === 'express' && isFar(a), rows = [['ยอดค่ายา', TP.money(t.items)]];
-  if(t.discount)rows.push(['ส่วนลด ('+t.coupon+')','−'+TP.money(t.discount)]);
-  if (p.recv !== 'pickup') rows.push([shipLabel(), t.ship === null ? `<span class="pay-pend">${oz ? 'นอกเขตส่งยา' : far ? 'ส่งด่วนไม่ได้' : 'คำนวณตามที่อยู่'}</span>` : TP.money(t.ship)]);
-  if (t.fee) rows.push(['ค่าธรรมเนียมบัตร (3.65%)', TP.money(t.fee)]);
+  const p = P(), a = addr(), oz = zoneStop(a), far = p.recv === 'express' && isFar(a);
+  const shipping = t.ship === null ? `<span class="pay-pend">${oz ? 'นอกเขตส่งยา' : far ? 'ส่งด่วนไม่ได้' : 'คำนวณตามที่อยู่'}</span>` : TP.money(t.ship);
+  const rows = [
+    ['ยอดค่ายา', TP.money(t.items)],
+    [shipLabel(), shipping],
+    t.fee ? ['ค่าธรรมเนียมบัตร (3.65%)', TP.money(t.fee)] : ['ค่าบริการชำระเงิน', 'ฟรี'],
+  ];
+  if (t.discount) rows.push(['ส่วนลด', '−' + TP.money(t.discount)]);
   rows.push([t.ship === null ? 'ยอดรวม (ยังไม่รวมค่าส่ง)' : 'ยอดรวมสุทธิ', '<span id="payTot"></span>', 'tot']);
-  const hint = '';
-  return ui.kv(rows, { cls: 'pay-kv' }) + hint;
+  return ui.kv(rows, { cls: 'pay-kv' });
 }
 /* real-user R4 P1: pickup is chosen by default (owner #48), so the pay bar always says how the medicine arrives */
 const VIA_IC = { pickup: 'store', express: 'zap', parcel: 'package', cold: 'snowflake' };
@@ -4218,19 +4262,35 @@ TP.invoiceOptions = (kind,key,prefix) => {
   const choices = `<div class="invoice-kind-options" role="group" aria-label="ประเภทผู้รับใบกำกับภาษี">
     ${invoiceKinds.map(([value,label])=>`<button type="button" class="chip" data-a="${prefix}TaxKind" data-v="${value}" aria-pressed="${kind===value}">${label}</button>`).join('')}
   </div>`;
-  if (record) return choices + TP.invoiceRecipientDetails(record,kind) +
-    (TP.taxRecords(kind).length>1 ? ui.btn('เปลี่ยนผู้รับใบกำกับภาษี',{kind:'ghost',a:prefix+'TaxPickOpen'}) : '');
-  return choices + (kind ? `<p class="small invoice-recipient-empty">ยังไม่มีข้อมูลผู้รับประเภทนี้</p>${ui.btn('เพิ่มข้อมูลผู้รับ',{kind:'secondary',a:prefix+'TaxPickerAdd'})}` : '');
+  if (record) {
+    const details = choices + TP.invoiceRecipientDetails(record,kind);
+    if (TP.taxRecords(kind).length > 1) {
+      return details + ui.btn(prefix==='pay'?'เปลี่ยนที่อยู่ใบกำกับภาษี':'เปลี่ยนผู้รับใบกำกับภาษี',{kind:'ghost',a:prefix+'TaxPickOpen'});
+    }
+    if (prefix==='pay') {
+      return details + `<div class="invoice-address-actions">
+        ${ui.btn('แก้ไขที่อยู่',{kind:'ghost',a:'payTaxPickerEdit'})}
+        ${ui.btn('เพิ่มที่อยู่',{kind:'ghost',a:'payTaxPickerAdd'})}
+      </div>`;
+    }
+    return details;
+  }
+  if (!kind) return choices;
+  if (prefix==='pay') {
+    return choices + ui.btn(kind==='co'?'เพิ่มข้อมูลนิติบุคคล':'เพิ่มข้อมูลบุคคลธรรมดา',{kind:'secondary',a:'payTaxPickerAdd'});
+  }
+  return choices + `<p class="small invoice-recipient-empty">ยังไม่มีข้อมูลผู้รับประเภทนี้</p>${ui.btn('เพิ่มข้อมูลผู้รับ',{kind:'secondary',a:prefix+'TaxPickerAdd'})}`;
 };
-TP.invoiceCheckbox = (action,checked,hint='') => `<button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!checked}" data-a="${action}">
+TP.invoiceCheckbox = (action, checked, hint = '', icon = '') => `<button type="button" class="rc-tax-check" role="checkbox" aria-checked="${!!checked}" data-a="${action}">
+  ${icon ? ic(icon,20) : ''}
   <span class="rc-tax-choice-copy"><b>ต้องการใบกำกับภาษี</b>${hint ? `<span>${esc(hint)}</span>` : ''}</span>
   <span class="rc-tax-choice-check" aria-hidden="true">${checked ? ic('check',16) : ''}</span>
 </button>`;
 function payTaxHtml() {
   const p=P();
   return `<section class="rc-tax rc-tax-request-card invoice-options">
-    ${TP.invoiceCheckbox('payTaxWant',p.taxWant)}
-    ${p.taxWant ? TP.invoiceOptions(p.taxWho,p.taxKey,'pay') + ui.note('โหมดทดสอบไม่มีการส่งอีเมล ในบริการจริง ระบบจะส่งใบกำกับภาษีไปยังอีเมลของคุณเมื่อออกเอกสารแล้ว',{icon:'mail'}) : ''}
+    ${TP.invoiceCheckbox('payTaxWant',p.taxWant,'','receipt')}
+    ${p.taxWant ? TP.invoiceOptions(p.taxWho,p.taxKey,'pay') : ''}
   </section>`;
 }
 function redrawPayTax(){const el=$('#payTax');if(el){el.innerHTML=payTaxHtml();TP.icons(el)}}
@@ -4238,16 +4298,13 @@ TP.redrawPayTax = redrawPayTax;
 TP.act('payTaxWant',()=>{const p=P();p.taxWant=!p.taxWant;if(p.taxWant&&p.taxWho===undefined)p.taxWho=TP.firstInvoiceKind();redrawPayTax();$('#payTax [data-a="payTaxWant"]')?.focus({preventScroll:true});});
 TP.act('payTaxKind',b=>{const p=P();if(p.taxWho===b.dataset.v)return;p.taxWho=b.dataset.v;p.taxKey=null;redrawPayTax();$('#payTax [aria-pressed="true"]')?.focus({preventScroll:true});});
 
-const bankLogos = { KBANK:'k-plus.png', SCB:'scb-easy.png', BAY:'kma.png', BBL:'bbl.png', KTB:'krungthai-next.jpg' };
-const checkoutImage = src => `<img src="${esc(src)}" alt="" width="48" height="28">`;
-const checkoutBankLogo = (key, size) => {
-  const src = bankLogos[key];
-  if (!src) return ic('smartphone', size || 24);
-  return size ? `<img src="/assets/payments/${src}" alt="" width="${size}" height="${size}">` : checkoutImage('/assets/payments/' + src);
+const checkoutImage = (src, width = 48, height = 28) => `<img src="${esc(src)}" alt="" width="${width}" height="${height}">`;
+const checkoutChoice = (label, value, target, icon = '', action = 'openCheckoutChild') => {
+  const tag = target ? 'button' : 'h2';
+  return `<${tag} class="checkout-choice"${target ? ` type="button" data-a="${action}" data-v="${target}"` : ''}>
+    ${icon ? ic(icon,20) : ''}<span>${label}</span>${value ? `<b>${esc(value)}</b>` : ''}${target ? ic('chevron-right',16) : ''}
+  </${tag}>`;
 };
-const checkoutChoice = (label, value, target, icon = '', action = 'openCheckoutChild') => `<button type="button" class="checkout-choice" data-a="${action}" data-v="${target}">
-  ${icon ? ic(icon,20) : ''}<span>${label}</span>${value ? `<b>${esc(value)}</b>` : ''}${ic('chevron-right',16)}
-</button>`;
 const checkoutSelection = (title, detail, target, logo, action = 'openCheckoutChild') => {
   const tag = target ? 'button' : 'div';
   return `<${tag} class="checkout-selection"${target ? ` type="button" data-a="${action}" data-v="${target}"` : ''}>
@@ -4267,22 +4324,23 @@ function checkoutDeliverySelection(recv, courier, fee, target) {
 }
 function checkoutDeliverySummary() {
   const { recv } = P();
-  const pickup = recv === 'pickup';
+  const choice = checkoutChoice('ประเภทจัดส่ง', '', 'checkoutdelivery', 'truck');
+  if (recv === 'pickup') return choice + pickupBranchCard(TP.branch(C().branch), true);
   const courier = recv === 'parcel' ? courierId() : null;
   const fee = courier ? TP.COURIERS.find(option => option.id === courier).fee : EXP_FEE();
-  return checkoutChoice(pickup ? 'วิธีรับยา' : 'ช่องทางจัดส่ง', '', 'checkoutdelivery') +
-    checkoutDeliverySelection(recv,courier,fee,'checkoutdelivery');
+  return choice +
+    checkoutDeliverySelection(recv,courier,fee,'checkoutdelivery') +
+    '<p class="small checkout-shipping-hint">ค่าจัดส่งขึ้นอยู่กับช่องทางที่เลือก</p>';
 }
 function checkoutPaymentSummary(payment = P(), action = 'openCheckoutChild') {
-  const { method, bank: key } = payment;
-  const bank = method === 'bank' ? TP.BANKS.find(option => option[0] === key) || TP.BANKS[0] : null;
+  const { method } = payment;
+  const qr = method === 'promptpay';
   const card = method === 'card';
   const target = action ? 'checkoutmethod' : null;
-  const label = action === 'pendingChangeMethod' ? 'เปลี่ยนวิธีชำระเงิน' : 'วิธีชำระเงิน';
-  return (target ? checkoutChoice(label, bank ? 'Mobile Banking' : card ? 'บัตรเครดิต/เดบิต' : 'พร้อมเพย์', target, 'credit-card', action) : '') +
-    checkoutSelection(bank ? bank[2] : card ? 'บัตรเครดิต/เดบิต' : 'QR PromptPay',
-      bank ? bank[1] : card ? 'ชำระผ่านบัตร' : 'สแกน QR ผ่านแอปธนาคาร',
-      target, bank ? checkoutBankLogo(bank[0]) : card ? ic('credit-card',24) : checkoutImage('/assets/payments/promptpay.png'), action);
+  return (target ? checkoutChoice('วิธีชำระเงิน', qr ? 'พร้อมเพย์' : card ? 'บัตรเครดิต' : '', target, 'credit-card', action) : '') +
+    checkoutSelection(qr ? 'QR PromptPay' : card ? 'บัตรเครดิต' : 'เลือกวิธีชำระเงินใหม่',
+      qr ? 'สแกน QR ผ่านแอปธนาคาร' : card ? 'ผ่าน Omise' : 'วิธีเดิมไม่พร้อมใช้งาน',
+      target, qr ? checkoutImage('/assets/payments/promptpay.png') : ic('credit-card',24), action);
 }
 TP.act('openCheckoutChild', button => {
   const target = button.dataset.v || JSON.parse(button.dataset.p || '{}').target;
@@ -4291,6 +4349,7 @@ TP.act('openCheckoutChild', button => {
 });
 async function reopenCheckout(ctx) {
   if (!ctx.params.fromPay || !TP.orderPayable(C()?.order)) return;
+  if (TP.sheetOpen()?.id === 'pay') return sync();
   await TP.sheet('pay');
   const body = $('.sh-b', $('#sheet'));
   if (body) body.scrollTop = ctx.params.scroll || 0;
@@ -4358,36 +4417,34 @@ TP.act('confirmCheckoutDelivery', async () => {
 });
 
 TP.sheetDef('checkoutmethod', {
-  group: 'during', title: 'วิธีชำระเงิน', code: 'C317', host: 'home', owner: 'pay', cls: 'checkout-method-sheet',
-  states: [['promptpay', 'QR PromptPay'], ['bank', 'Mobile Banking · เลือกแอปธนาคาร']],
+  group: 'during', title: 'วิธีชำระเงิน', code: 'C317', host: 'home', owner: 'pay', over: 'pay', cls: 'checkout-method-sheet',
+  states: [['promptpay', 'QR PromptPay'], ['card', 'บัตรเครดิต · ผ่าน Omise']],
   prep() { ensureOrder(); },
   render(ctx) {
     const c = ctx.params.pendingCaseId ? submittedCase(ctx.params.pendingCaseId) : null;
     if (!ctx.params.pendingCaseId) ensureOrder();
     const p = c?.order.payment || (ctx.params.pendingCaseId ? null : P());
     if (!p) return '';
-    const isBank = c || ctx.params.fromPay ? p.method === 'bank' : ctx.state === 'bank';
+    const method = (c || ctx.params.fromPay) ? p.method : ctx.state === 'card' ? 'card' : 'promptpay';
     const option = (key, label, detail, photo, checked) =>
-      `<button type="button" class="row" data-a="confirmCheckoutMethod" data-v="${esc(key)}" aria-label="${esc(label)}" aria-pressed="${checked}">${photo}<span class="r-t"><b>${esc(label)}</b><small>${esc(detail)}</small></span>${checked ? ic('check', 18) : ''}</button>`;
-    const qr = option('promptpay', 'QR PromptPay', 'สแกน QR ผ่านแอปธนาคาร', checkoutImage('/assets/payments/promptpay.png'), !isBank && (!c || p.method==='promptpay'));
-    const card = c ? option('card', 'บัตรเครดิต/เดบิต', '', ic('credit-card',24), p.method==='card') : '';
-    return `<div class="group">${qr}${card}</div><details class="checkout-banks group" ${isBank ? 'open' : ''}>
-      <summary>${ic('smartphone',22)}<span>Mobile Banking<small>เลือกแอปธนาคาร</small></span>${ic('chevron-down',16)}</summary>
-      ${TP.BANKS.map(([key, app, name]) => option(key, name, app, checkoutBankLogo(key), isBank && p.bank === key)).join('')}</details>`;
+      `<button type="button" class="checkout-method-option" data-a="confirmCheckoutMethod" data-v="${esc(key)}" aria-pressed="${checked}">
+        <span class="checkout-method-logo">${photo}</span><span class="checkout-method-copy">${esc(label)}${detail ? `<small>${esc(detail)}</small>` : ''}</span><span class="checkout-method-mark" aria-hidden="true"></span>
+      </button>`;
+    const qr = option('promptpay', 'QR PromptPay', 'สแกน QR ผ่านแอปธนาคาร', checkoutImage('/assets/payments/promptpay.png',56,32), method === 'promptpay');
+    const card = option('card', 'บัตรเครดิต', 'ผ่าน Omise', ic('credit-card',24), method === 'card');
+    return `<div class="group">${qr}</div><div class="group checkout-card-option">${card}</div>`;
   },
   afterClose: reopenCheckout,
 });
 TP.act('confirmCheckoutMethod', async button => {
   const sheet = TP.sheetOpen(), value = button.dataset.v;
+  if (sheet?.id !== 'checkoutmethod' || !['promptpay', 'card'].includes(value)) return;
   const id = sheet.ctx.params.pendingCaseId;
   if (id) {
     const c = submittedCase(id);
     if (!TP.orderPayable(c?.order)) return TP.orderExpiryTick();
     const payment = c.order.payment;
-    const bank = TP.BANKS.find(([bank])=>bank===value);
-    if (!['promptpay','card'].includes(value) && !bank) return;
-    payment.method = bank ? 'bank' : value;
-    if (bank) payment.bank = value;
+    payment.method = value;
     const totals = payment.totals, subtotal = totals.items - totals.discount + (totals.ship || 0);
     totals.fee = payment.method === 'card' ? r2(subtotal * TP.CARD_FEE) : 0;
     totals.total = r2(subtotal + totals.fee);
@@ -4395,10 +4452,7 @@ TP.act('confirmCheckoutMethod', async button => {
     await TP.closeSheet();
     return TP.refresh({anim:false});
   }
-  if (value !== 'promptpay' && !TP.BANKS.some(([bank]) => bank === value)) return;
-  const p = P();
-  p.method = value === 'promptpay' ? 'promptpay' : 'bank';
-  if (p.method === 'bank') p.bank = value;
+  P().method = value;
   sheet.ctx.params.fromPay = true;
   await TP.closeSheet();
 });
@@ -4409,18 +4463,22 @@ TP.sheetDef('checkoutaddress', {
   states: [['normal', 'เลือกจากที่อยู่ที่บันทึกไว้'], ['outside', 'ที่อยู่นอกพื้นที่จัดส่ง'], ['empty', 'ยังไม่มีที่อยู่จัดส่ง']],
   prep() { ensureOrder(); P().recv = 'express'; },
   render(ctx) {
-    const addresses = ctx.params.fromPay ? addrs() : ctx.state === 'empty' ? [] :
-      ctx.state === 'outside' ? [...addrs(), ZONE_ADDR] : addrs();
+    const previewState = ctx.params.fromPay ? '' : ctx.state;
+    const addresses = previewState === 'empty' ? [] : [...addrs()];
+    if (previewState === 'outside' && !addresses.some(address => address.id === ZONE_ADDR.id)) addresses.push(ZONE_ADDR);
     if (!addresses.length) return ui.empty({ icon: 'map-pin', title: 'ยังไม่มีที่อยู่จัดส่ง', body: 'เพิ่มที่อยู่เพื่อจัดส่งคำสั่งซื้อนี้' });
+    const demoAddress = FX.checkoutOutsideAddress;
+    addresses.push(demoAddress);
     return `<p class="small">เลือกที่อยู่สำหรับคำสั่งซื้อนี้</p><div class="checkout-address-choices">
       ${addresses.map(address => {
-        const blocked = checkoutAddressBlocked(address);
+        const blocked = address === demoAddress || checkoutAddressBlocked(address);
         const selected = !blocked && addr()?.id === address.id;
         return `<button type="button" class="checkout-address-option" data-a="confirmCheckoutAddress" data-v="${esc(address.id)}"
           aria-pressed="${selected}"${blocked ? ' disabled' : ''}>
           ${ic('map-pin',22)}<span><b>${esc([address.first,address.last].filter(Boolean).join(' '))}</b>
-          <small>${esc(fmtPhone(address.phone))}</small><small>${esc(fmtAddr(address))}</small></span>
-          ${blocked ? ui.tag('อยู่นอกพื้นที่จัดส่ง','danger') : selected ? ic('check',18) : ''}
+          <small>${esc(fmtPhone(address.phone))}</small><small>${esc(fmtAddr(address))}</small>
+          ${blocked ? ui.tag('อยู่นอกพื้นที่จัดส่ง','danger') : ''}</span>
+          ${selected ? ic('check',18) : ''}
         </button>`;
       }).join('')}</div>`;
   },
@@ -4453,7 +4511,7 @@ TP.act('confirmCheckoutAddress', async button => {
 });
 
 TP.sheetDef('checkoutcoupon', {
-  group: 'during', title: 'โค้ดส่วนลด', code: 'C318', host: 'home', owner: 'pay',
+  group: 'during', title: 'โค้ดส่วนลด', code: 'C318', host: 'home', owner: 'pay', over: 'pay',
   states: [['normal', 'กรอกโค้ดส่วนลด'], ['valid', 'ใช้โค้ดสำเร็จ · ลบโค้ดได้'], ['invalid', 'โค้ดไม่ถูกต้อง']],
   prep(S) {
     ensureOrder();
@@ -4481,10 +4539,10 @@ TP.sheetDef('checkoutcoupon', {
 
 /* ---------- pay sheet ---------- */
 TP.sheetDef('pay', {
-  group: 'during', title: 'สรุปคำสั่งซื้อ', code: 'C308', ref: 'C11', host: 'home', tall: true, fullPage:true, cls: 'checkout-page',
+  group: 'during', title: 'สรุปคำสั่งซื้อ', code: 'C308', ref: 'C11', host: 'home', tall: true, fullPage:true, backIcon: 'arrow-left', cls: 'checkout-page',
   /* C308.1-13 keep the numbers the owner already reviewed; states added 19/10 night go after them (14-17), 20/10 night 18-20 */
-  states: [['normal', 'รับที่ร้าน (ค่าเริ่มต้น)'], ['parcel', 'จัดส่งพัสดุ · เลือก Flash หรือ DHL'], ['express', 'ส่งด่วน'], ['closed', 'ร้านปิด', true, 6], ['card', 'จ่ายด้วยบัตร', true, 7], ['otp', 'บัตร: หน้ายืนยันของธนาคาร', true, 8], ['qr', 'หน้า QR พร้อมเพย์', true, 9], ['qrexp', 'QR หมดอายุ', true, 10], ['checking', 'กำลังตรวจสอบการชำระ', true, 13], ['outzone', 'ที่อยู่นอกเขตส่งยา', true, 18], ['recvoff', 'เภสัชกรปิดบางทาง', true, 19], ['unlock', 'ส่งด่วนเกินระยะ รับที่ร้านแทน', true, 21], ['coupon-valid','โค้ดส่วนลดใช้ได้', true, 26], ['coupon-invalid','โค้ดส่วนลดไม่ถูกต้อง', true, 27], ['tax-picker','เลือกข้อมูลใบกำกับภาษี', true, 30], ['bankapp','Mobile Banking · กำลังเปิดแอปธนาคาร', true, 31]],
-  notes:['แยกการ์ดรายการยา สาขาหรือที่อยู่จัดส่ง วิธีรับยา การชำระเงิน ใบกำกับภาษี เลขคำสั่งซื้อ และยอดชำระ เลือกที่อยู่เฉพาะคำสั่งซื้อนี้ได้ใน C319','ใบกำกับภาษีใช้การ์ดเลือกผู้รับรูปแบบเดียวกับใบเสร็จ เปิดรายชื่อที่บันทึกไว้ก่อนเลือก ไม่มีแท็บซ้อนในหน้าชำระ อ่านนโยบายจัดส่ง คืนสินค้า และคืนเงิน C314 ใต้ปุ่มชำระ','เปิดวิธีรับยา C316 และวิธีชำระเงิน C317 จากสรุปคำสั่งซื้อ เลือก DHL, Flash Express, Lalamove หรือรับที่ร้านตามที่รายการรองรับ','ลำดับ: ตรวจรายการยา เลือกวิธีรับยาและที่อยู่ เลือกวิธีชำระ ตรวจยอดรวมก่อนยืนยัน','การจัดส่งต้องมีที่อยู่ในเขตบริการและทราบค่าส่งก่อนชำระ ส่งด่วนต้องอยู่ในระยะส่งด่วน ยาเก็บเย็นรับที่ร้านเท่านั้น','เริ่มเวลาชำระ 15 นาทีเมื่อกดชำระครั้งแรก ใช้เวลาเดิมเมื่อชำระซ้ำหรือเปลี่ยนวิธีจ่าย','Mobile Banking เปิดหน้าจำลองเต็มหน้าพร้อมโลโก้และชื่อธนาคาร ย้อนกลับหน้าแรกและชำระต่อจากคำสั่งซื้อเดิมได้','ต้นแบบจำลองราคาและการจ่ายเงินจริงยังไม่เชื่อม gateway'],
+  states: [['normal', 'รับที่ร้าน (ค่าเริ่มต้น)'], ['parcel', 'จัดส่งพัสดุ · เลือก Flash หรือ DHL'], ['express', 'ส่งด่วน'], ['closed', 'ร้านปิด', true, 6], ['card', 'จ่ายด้วยบัตร', true, 7], ['otp', 'บัตร: หน้ายืนยันของธนาคาร', true, 8], ['qr', 'หน้า QR พร้อมเพย์', true, 9], ['qrexp', 'QR หมดอายุ', true, 10], ['checking', 'กำลังตรวจสอบการชำระ', true, 13], ['outzone', 'ที่อยู่นอกเขตส่งยา', true, 18], ['recvoff', 'เภสัชกรปิดบางทาง', true, 19], ['unlock', 'ส่งด่วนเกินระยะ รับที่ร้านแทน', true, 21], ['coupon-valid','โค้ดส่วนลดใช้ได้', true, 26], ['coupon-invalid','โค้ดส่วนลดไม่ถูกต้อง', true, 27], ['tax-picker','เลือกข้อมูลใบกำกับภาษี', true, 30]],
+  notes:['แสดงสาขารับยาใต้ตัวเลือกการรับยาเมื่อรับที่ร้าน และแสดงกล่องเลือกที่อยู่เฉพาะเมื่อจัดส่ง เลือกที่อยู่เฉพาะคำสั่งซื้อนี้ได้ใน C319','ใบกำกับภาษีใช้การ์ดเลือกผู้รับรูปแบบเดียวกับใบเสร็จ เปิดรายชื่อที่บันทึกไว้ก่อนเลือก ไม่มีแท็บซ้อนในหน้าชำระ อ่านนโยบายจัดส่ง คืนสินค้า และคืนเงิน C314 ใต้ปุ่มชำระ','เปิดวิธีรับยา C316 และวิธีชำระเงิน C317 จากสรุปคำสั่งซื้อ เลือก DHL, Flash Express, Lalamove หรือรับที่ร้านตามที่รายการรองรับ','ลำดับ: ตรวจรายการยา เลือกวิธีรับยาและที่อยู่ เลือกวิธีชำระ ตรวจยอดรวมก่อนยืนยัน','การจัดส่งต้องมีที่อยู่ในเขตบริการและทราบค่าส่งก่อนชำระ ส่งด่วนต้องอยู่ในระยะส่งด่วน ยาเก็บเย็นรับที่ร้านเท่านั้น','เริ่มเวลาชำระ 15 นาทีเมื่อกดชำระครั้งแรก ใช้เวลาเดิมเมื่อชำระซ้ำหรือเปลี่ยนวิธีจ่าย','บัตรเครดิตเปิดแบบฟอร์มจำลอง Omise แล้วจำลอง 3-D Secure และตรวจผล สามารถกลับหน้าแรกและชำระต่อจากคำสั่งซื้อเดิมได้','ต้นแบบจำลองราคาและการจ่ายเงินจริงยังไม่เชื่อม gateway'],
   prep(S) {
     if (C()?.order?.payment) S._paymentCase = mockCheckoutCase();
     ensureOrder(); const st = S.st.pay || 'normal';
@@ -4504,36 +4562,32 @@ TP.sheetDef('pay', {
     if(st.startsWith('coupon-')){o.items=TP.ORDER_ITEMS.map(i=>({...i}));o.total=o.items.reduce((n,i)=>n+i.price,0);couponState();p.couponDraft=st==='coupon-valid'?'TEST50':'WRONGCODE';if(st==='coupon-valid')o.discount=TP.checkoutCouponAdapter.validate(p.couponDraft,o);else p.couponError=TP.checkoutCouponAdapter.validate(p.couponDraft,o).error;}
     p.recv = { parcel: 'parcel', express: 'express', outzone: 'express', unlock: 'express' }[st] || 'pickup';
     if (st === 'outzone' || st === 'unlock') p.addr = 'a3';
-    p.method = st === 'bankapp' ? 'bank' : ['card', 'otp'].includes(st) ? 'card' : 'promptpay';
-    if (st === 'bankapp') p.bank = 'BAY';
-    if (['qr', 'qrexp', 'otp', 'checking', 'bankapp'].includes(st)) p.auto = st;
+    p.method = ['card', 'otp', 'checking'].includes(st) ? 'card' : 'promptpay';
+    if (['card', 'qr', 'qrexp', 'otp', 'checking'].includes(st)) p.auto = st === 'card' ? 'cardform' : st;
     if (st === 'tax-picker') {p.taxWant=true;p.taxWho='me';p.auto='tax-picker';}
   },
   render(ctx) {
     if (C()?.order?.payment) return '';
     ensureOrder();
     const o = C().order, p = P(), b = TP.branch(C().branch);
-    const summary = TP.consultationSummary?.({ id: C().id, _case: C() });
-    const advice = C().pharmacistAdvice || summary?.advice;
-    const adviceText = Array.isArray(advice) ? advice.join("\n") : (advice || "");
     requote();
     return `<div class="payw">
       <section class="checkout-block checkout-order-section">${sec(1, 'รายการยาจากเภสัชกร')}<p class="small checkout-store-name">${esc(b.name)}</p>
-      <div class="checkout-medicine-list">${TP.orderMedicineList(o)}</div>
-      ${adviceText ? `<section class="card af-visit-section checkout-advice"><h3>${ic('file-text',20,1.8)} คำแนะนำจากเภสัชกร</h3><p class="af-advice-text">${esc(adviceText)}</p></section>` : ''}
+      <div class="checkout-medicine-list">${o.items.length ? TP.orderMedicineList(o) : '<p class="checkout-empty-medicines">ยังไม่มีรายการยาจากเภสัชกร</p>'}</div>
       </section>
-      <div id="payRecvX"${p.recv === 'pickup' ? '' : ' hidden'}>${recvExtra()}</div>
       <section class="checkout-block checkout-address" id="payAddrSec"${p.recv === 'pickup' ? ' hidden' : ''}>
         ${checkoutChoice('ที่อยู่จัดส่ง', '', 'checkoutaddress', 'map-pin')}<div id="payCards">${cardsHtml()}</div>
         <div id="payForm"></div>
         <div id="payGeo">${geoHtml()}</div>
       </section>
-      <section class="checkout-block checkout-delivery">${sec(2, p.recv === 'pickup' ? 'การรับยา' : 'การจัดส่ง')}
+      <section class="checkout-block checkout-delivery">
         <div id="payRecv">${checkoutDeliverySummary()}</div><div id="payWhy">${whyHtml()}</div>
       </section>
-      <section class="checkout-block checkout-payment">${sec(4, 'การชำระเงิน')}
+      <section class="checkout-block checkout-payment">
         <div id="payMeth">${checkoutPaymentSummary()}</div>
-        <div id="payCouponBox">${checkoutChoice('โค้ดส่วนลด', couponDiscount() ? o.discount.code : 'ใช้โค้ดส่วนลด', 'checkoutcoupon', 'ticket')}</div>
+      </section>
+      <section class="checkout-block checkout-coupon">
+        ${checkoutChoice('โค้ดส่วนลด', couponDiscount() ? o.discount.code : 'ใช้โค้ดส่วนลด', 'checkoutcoupon', 'ticket')}
       </section>
       <section class="checkout-block checkout-tax"><div id="payTax">${payTaxHtml()}</div></section>
       <section class="checkout-block checkout-reference">${ui.kv([['เลขคำสั่งซื้อ', esc(o.no || TP.orderNumber(C()))]])}</section>
@@ -4544,7 +4598,6 @@ TP.sheetDef('pay', {
   foot: () => C()?.order?.payment?'':!TP.orderPayable(C()?.order)?ui.btn('ปิด',{kind:'secondary',closeSheet:true}):`<button type="button" class="btn primary pay-go" data-a="payGo" id="payGo"><span id="payLbl"></span></button><p class="checkout-policy-line">เมื่อกดชำระเงิน ฉันได้อ่านและยอมรับ <button type="button" class="link checkout-policy-link" data-a="openCheckoutChild" data-v="shippingpolicy">นโยบายการจัดส่ง คืนสินค้า และคืนเงิน</button></p>`,
   close(ctx) {
     clearInterval(TP.S._qrI);
-    clearTimeout(TP.S._otpT);
     if (ctx.params.paymentAttempt) TP.S.payFailNext = false;
   },
   afterClose(ctx) {
@@ -4602,9 +4655,6 @@ function sync(from) {
   const p = P(), sec = $('#payAddrSec', sh), was = sec.hidden, f = document.activeElement, fk = f?.dataset?.radio && [f.dataset.radio, f.dataset.v], fid = f?.id;
   $('#payRecv', sh).innerHTML = checkoutDeliverySummary();
   $('#payWhy', sh).innerHTML = whyHtml();
-  $('#payRecvX', sh).innerHTML = recvExtra();
-  $('#payRecvX', sh).hidden = p.recv !== 'pickup';
-  $('.checkout-delivery .pay-sec', sh).textContent = p.recv === 'pickup' ? 'การรับยา' : 'การจัดส่ง';
   sec.hidden = p.recv === 'pickup';
   const ads = $('.pay-ads', sh);
   if (ads && addrs().length) patchOpts(ads, cardsHtml().replace(/^<div[^>]*>|<\/div>$/g, '')); else $('#payCards', sh).innerHTML = cardsHtml();
@@ -4613,6 +4663,8 @@ function sync(from) {
   $('#payGeo', sh).innerHTML = geoHtml();
   globalThis.TPAddressMap?.mount(sh,sh._addressMapCtx);
   $('#payMeth', sh).innerHTML = checkoutPaymentSummary();
+  const couponValue = $('.checkout-coupon .checkout-choice > b', sh);
+  if (couponValue) couponValue.textContent = couponDiscount() ? C().order.discount.code : 'ใช้โค้ดส่วนลด';
   $('#paySum', sh).innerHTML = sumHtml(totals());
   TP.icons(sh);
   if (was && !sec.hidden) A(sec, [{ opacity: 0, transform: 'translateY(-6px)' }, { opacity: 1, transform: 'none' }], { d: 320, e: E.out });
@@ -4835,28 +4887,21 @@ async function launchPayment(consultation) {
   if (!isCurrentPayment(sheet, consultation)) return;
   sheet.ctx.params.paymentAttempt = consultation;
   const {method} = consultation.order.payment;
-  if (method === 'card') {
-    const result = await omise();
-    if (!isCurrentPayment(sheet, consultation)) return;
-    return result === 'ok' ? showStep('otp') : TP.closeSheet();
-  }
-  return method === 'promptpay' ? showQR(false) : showStep('bankapp');
+  return method === 'card' ? showStep('cardform') : showQR(false);
 }
-/* card number goes into Omise's own window (OmiseCard popup, frameLabel MITRAREE, submitLabel ชำระเงิน); the shop never sees it */
-const omise = () => dlg(`<p class="om-h"><b>MITRAREE</b><small>หน้าต่างกรอกบัตรของ Omise</small></p>
-  <div class="gap12">${fld('omNo', 'หมายเลขบัตร', '4242 4242 4242 4242', { im: 'numeric', ac: 'cc-number' })}${fld('omName', 'ชื่อบนบัตร', 'SOMJAI JAIDEE', { ac: 'cc-name' })}<div class="btn-row">${fld('omExp', 'วันหมดอายุ', '12/28', { im: 'numeric', ac: 'cc-exp' })}${fld('omCvc', 'รหัสหลังบัตร', '123', { im: 'numeric', type: 'password', ac: 'cc-csc' })}</div></div>
-  <button type="button" class="btn primary mt16" data-dlg="ok"><span>ชำระเงิน ${curTot()}</span></button><button type="button" class="btn ghost" data-dlg="cancel"><span>ยกเลิก</span></button>
-  <p class="small">${ic('lock', 13, 2)} ข้อมูลบัตรส่งตรงถึง Omise ร้านไม่เห็นเลขบัตร</p>`, 'หน้าต่างกรอกบัตร');
 
 /* ---------- PromptPay QR (full page with the order's deadline) ---------- */
 function qrStep() {
   const t = totals(), branch = TP.branch(C().branch);
-  return `<div class="note qr-instructions">${ic('qr-code',20)}<span>เปิดเมนูสแกนในแอปธนาคาร หรือดาวน์โหลดภาพเพื่อเลือก QR จากเครื่อง</span></div>
-    <section class="card qr-box qr-promptpay" aria-label="ชำระเงินด้วยพร้อมเพย์">
-      <header class="qr-brand-band"><b>Thai QR Payment</b>${checkoutImage('/assets/payments/promptpay.png')}</header>
-      <div class="qr-code" id="qrCode"><div class="qr-live"><p>สำหรับทดสอบเท่านั้น</p>
-        <img src="/assets/payments/promptpay-demo-qr.png" alt="QR ตัวอย่าง" width="198" height="198">
-        <div><b>${esc(branch.name)}</b><p class="qr-amt num">${TP.money(t.total)}</p></div></div>
+  const amount = Number(t.total).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  return `<section class="card qr-box qr-promptpay" aria-label="ชำระเงินด้วยพร้อมเพย์">
+      <header class="qr-brand-band"><img src="/assets/payments/thai-qr-symbol.png" alt="" width="44" height="44"><b>THAI QR<br>PAYMENT</b></header>
+      <div class="qr-code" id="qrCode"><div class="qr-live">
+        <img class="qr-pay-logo" src="/assets/payments/promptpay.png" alt="PromptPay" width="96" height="44">
+        <img class="qr-graphic" src="/assets/payments/promptpay-demo-qr.png" alt="QR ตัวอย่าง" width="264" height="264">
+        <div class="qr-order-total"><b>${esc(branch.name)}</b><div><p class="qr-amt num">฿${amount}</p><small>บาท (BAHT)</small></div></div>
+        <footer class="qr-brand-footer"><span>MITRAREE Online</span><span>สำหรับทดสอบเท่านั้น</span></footer>
+      </div>
         <p class="qr-dead" role="status">QR หมดอายุแล้ว กรุณาขอ QR ใหม่</p>
       </div>
     </section>
@@ -4909,44 +4954,41 @@ function backToPay() {
 
 /* ---------- Omise hand-offs (card 3-D Secure, bank app) + "checking": the app counts a payment as done only after
    our server has asked Omise (webhook CartController.php:3620-3703), never because the customer came back ---------- */
-const bankOf = () => TP.BANKS.find(x => x[0] === (C()?.order?.payment?.bank || P().bank)) || TP.BANKS[0];
 function stepHtml(kind) {
   const t = totals();
-  if (kind === 'otp') return `<div class="hand"><p class="hand-from">${ic('shield-check', 16, 2)}<span>หน้านี้เป็นของธนาคารผู้ออกบัตร (3-D Secure) ร้านไม่เห็นข้อมูลในหน้านี้</span></p>
-    <div class="hand-card"><p class="hand-bank"><span class="bank-l">VISA</span><b>ยืนยันตัวตนผู้ถือบัตร</b></p>
-      ${ui.kv([['ร้านค้า', 'MITRAREE'], ['ยอดชำระ', TP.money(t.total)], ['บัตร', 'ลงท้าย 4242']])}
-      <div class="field mt12"><label for="otpIn">รหัส OTP 6 หลัก</label><input id="otpIn" class="input num" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="ส่งทาง SMS ไปที่ 08x-xxx-5678"></div>
-      <p class="pay-err" id="otpErr" role="alert" hidden></p><p class="small mt8">รหัสอ้างอิง QX7P · หมดอายุใน 5 นาที</p></div></div>`;
-  if (kind === 'bankapp') {
-    const [key, app, name] = bankOf();
-    return `<section class="bank-payment-preview" aria-labelledby="bankHandoffHeading">
-      ${checkoutBankLogo(key,64)}
-      <h2 id="bankHandoffHeading" role="status">กำลังเปิดแอป ${esc(app)}…</h2>
-      <p>${esc(name)}</p>
-      <p class="bank-payment-total">ยอดที่ต้องชำระ ${TP.money(t.total)}</p>
-      <i class="spin" aria-hidden="true"></i>
-      <p class="small">โหมดจำลองการชำระเงิน</p>
-    </section>`;
-  }
+  if (kind === 'cardform') return `<div class="hand"><div class="hand-card om-card-form">
+    <p class="om-h"><b>Omise · แบบฟอร์มบัตรตัวอย่าง</b><small>MITRAREE Online · ยอดชำระ ${TP.money(t.total)}</small></p>
+    <p class="om-card-networks">Visa · Mastercard · JCB</p>
+    <div class="gap12">${fld('omName', 'ชื่อบนบัตร', 'SOMJAI JAIDEE', { ro:true })}${fld('omNo', 'หมายเลขบัตร', '4242 4242 4242 4242', { ro:true })}<div class="om-card-dates">${fld('omExp', 'วันหมดอายุ', '12/28', { ro:true })}${fld('omCvc', 'รหัสหลังบัตร', '•••', { ro:true })}</div></div>
+    <p class="small mt12">โหมดทดสอบ · ใช้ข้อมูลจำลองและไม่มีการเรียกเก็บเงิน</p>
+  </div></div>`;
+  if (kind === 'otp') return `<div class="hand"><div class="hand-card">
+    <p class="hand-bank">${ic('shield-check',20)}<b>ยืนยันตัวตนผู้ถือบัตร (3‑D Secure)</b></p>
+    ${ui.kv([['ร้านค้า', 'MITRAREE Online'], ['ยอดชำระ', TP.money(t.total)], ['บัตร', 'ลงท้าย 4242']])}
+    <p>ธนาคารขอยืนยันบัตรลงท้าย 4242 · รหัสจำลอง 482913</p>
+    <p class="small mt12">โหมดทดสอบ · ใช้ข้อมูลจำลองและไม่มีการเรียกเก็บเงิน</p>
+  </div></div>`;
   return `<div class="hand-chk" role="status"><i class="spin" aria-hidden="true"></i><b>กำลังตรวจสอบการชำระเงิน</b><p class="small">รอธนาคารยืนยันกับร้าน ปกติไม่เกิน 10 วินาที ไม่ต้องกดซ้ำ</p>
     <p class="small hand-chk-n">ถ้าปิดแอปไปก่อน ร้านจะส่งแจ้งเตือนเมื่อยืนยันแล้ว ไม่มีการตัดเงินซ้ำ</p></div>`;
 }
-const STEP_T = { otp: 'ยืนยันกับธนาคาร', bankapp: 'Mobile Banking', checking: 'กำลังตรวจสอบ' };
-const stepFoot = k => k === 'otp'
-  ? ui.btn('ยืนยัน OTP', { a: 'otpGo', id: 'otpGo' }) + ui.btn('ยกเลิก', { kind: 'ghost', a: 'handCancel' }) : '';
+const STEP_T = { cardform: 'ชำระด้วยบัตรเครดิต', otp: 'ยืนยันกับธนาคาร', checking: 'ตรวจสอบการชำระเงิน' };
+const stepFoot = kind => {
+  if (kind === 'cardform') return ui.btn('ชำระเงิน ' + curTot(), {a:'cardContinue'});
+  if (kind === 'otp') return ui.btn('ยืนยัน 3‑D Secure', {a:'otpGo'});
+  return '';
+};
 function showStep(kind) {
   const sh = $('#sheet'); if (!sh || !$('.sh-b', sh)) return;
-  clearInterval(TP.S._qrI); clearTimeout(TP.S._otpT);
+  clearInterval(TP.S._qrI);
   const body = $('.sh-b', sh); body.innerHTML = stepHtml(kind); body.scrollTop = 0; body.inert = false;
   const title = $('#sheetTitle');
   title.textContent = STEP_T[kind];
   $('.sh-f', sh).innerHTML = stepFoot(kind);
   TP.icons(sh);
-  if (kind === 'bankapp') title.focus({preventScroll:true});
+  title.focus({preventScroll:true});
   TP.emit('state');
   A(body.firstElementChild, [{ opacity: 0, transform: 'translateY(10px)' }, { opacity: 1, transform: 'none' }], { d: 360, e: SP.soft.e });
-  /* the phone offers the SMS code by itself, like iOS / Android one-time-code autofill */
-  if (kind === 'otp') TP.S._otpT = setTimeout(() => { const i = $('#otpIn'); if (i?.isConnected && !i.value) i.value = '482913'; }, 1400);
+
 }
 async function check(why) {
   const active = TP.sheetOpen(), c = C();
@@ -4968,23 +5010,16 @@ async function failedPayment(why, consultation = C()) {
   await TP.closeSheet();
   return TP.go('payfail',{via:'cover',params:{why}});
 }
-TP.act('otpGo', () => {
-  const i = $('#otpIn'), e = $('#otpErr');
-  if (!/^\d{6}$/.test(i.value.trim())) { e.textContent = 'ใส่รหัส OTP 6 หลักจาก SMS'; e.hidden = false; i.closest('.field').classList.add('err'); i.focus(); return; }
-  check('card');
+TP.act('cardContinue', () => {
+  if (isCurrentPayment(TP.sheetOpen(), C())) showStep('otp');
 });
-TP.act('handCancel', () => {
-  if (C()?.order?.payment) return backToPay();
-  backToPay(); TP.notify('ยกเลิกการยืนยันกับธนาคารแล้ว ยังไม่มีการตัดเงิน', { icon: 'info' });
-});
-const inBankHandoff = () => TP.sheetOpen()?.id === 'pay' && !!$('.bank-payment-preview');
-const inBankResult = () => inBankHandoff() || (TP.sheetOpen()?.id === 'pay' && !!$('.hand-chk'));
-TP.simAction({ id: 'bankreturn', label: 'จำลองกลับจากแอปธนาคาร', when: inBankHandoff, run: () => check('bank') });
-TP.simAction({ id: 'handok', label: 'จำลองว่าธนาคารยืนยันแล้ว', when: inBankResult, run: () => paid() });
-TP.simAction({ id: 'handno', label: 'จำลองว่าธนาคารปฏิเสธ', when: inBankResult, run: () => failedPayment((C()?.order?.payment || P()).method) });
+TP.act('otpGo', () => check('card'));
+const inCardResult = () => TP.sheetOpen()?.id === 'pay' && !!$('.hand-chk');
+TP.simAction({ id: 'handok', label: 'จำลองว่าธนาคารยืนยันแล้ว', when: inCardResult, run: () => paid() });
+TP.simAction({ id: 'handno', label: 'จำลองว่าธนาคารปฏิเสธ', when: inCardResult, run: () => failedPayment('card') });
 async function paid(c = C()) {
   if(!TP.orderPayable(c?.order)){TP.orderExpiryTick();return;}
-  clearInterval(TP.S._qrI); clearTimeout(TP.S._otpT);
+  clearInterval(TP.S._qrI);
   const locked = c.order.payment, p = locked || P(), a = locked ? locked.addr : addr();
   c.order.status = 'paid';
   (TP.S.history||[]).filter(h=>h.id===c.id).forEach(h=>{h.orderStatus='paid';h.bought=c.order.total;h._case=c;});
@@ -5002,8 +5037,8 @@ async function paid(c = C()) {
 }
 TP.payPaid = paid;
 TP.simAction({ id: 'qrpaid', label: 'จำลองว่าจ่าย QR แล้ว', when: () => TP.sheetOpen()?.id === 'pay' && !!$('.qr-box') && !$('.qr-code.dead'), run: () => paid() });
-TP.simAction({ id: 'payfailnext', label: 'จำลองให้ครั้งนี้จ่ายไม่ผ่าน (บัตร / แอปธนาคาร)', when: () => TP.sheetOpen()?.id === 'pay' && !$('.qr-box') && !TP.S.payFailNext,
-  run: () => { TP.S.payFailNext = true; TP.notify('ครั้งนี้จะจ่ายไม่ผ่าน เลือกบัตรหรือแอปธนาคาร แล้วกดชำระ', { icon: 'info' }); } });
+TP.simAction({ id: 'payfailnext', label: 'จำลองให้บัตรเครดิตชำระไม่สำเร็จ', when: () => TP.sheetOpen()?.id === 'pay' && !$('.qr-box') && !TP.S.payFailNext,
+  run: () => { TP.S.payFailNext = true; TP.notify('การชำระด้วยบัตรเครดิตครั้งนี้จะไม่สำเร็จ', { icon: 'info' }); } });
 TP.simAction({ id: 'qrdead', label: 'จำลองว่า QR หมดเวลา', when: () => TP.sheetOpen()?.id === 'pay' && !!$('.qr-box') && !$('.qr-code.dead'), run: () => qrDead() });
 
 function pendingSample() {
@@ -5035,8 +5070,8 @@ TP.openPendingSample = () => {
 const pendingContextCase = ctx => submittedCase(ctx.params.caseId || ctx.S._pendingPreviewId);
 TP.screen('pendingpayment', {
   group:'during', title:'รอชำระเงิน', code:'C320', parent:'home',
-  states:[['normal','รอชำระ · QR PromptPay'],['bank','รอชำระ · Mobile Banking'],['failed','ชำระไม่สำเร็จ'],['expired','หมดเวลาชำระเงิน'],['pickup','รอชำระ · รับยาที่ร้าน']],
-  notes:['เริ่มนับ 15 นาทีเมื่อกดชำระครั้งแรก เปลี่ยนวิธีจ่ายหรือชำระอีกครั้งโดยใช้เวลาที่เหลือของคำสั่งซื้อเดิม','กลับจาก QR หรือ Mobile Banking ไปหน้าแรก เปิดคำสั่งซื้อเดิมจากการ์ดหรือประวัติ ตัวอย่างจ่ายผ่านและไม่ผ่านใช้แผงทดสอบ','แสดงเวลาที่เหลือและวิธีจ่ายด้านบน แยกที่อยู่และช่องทางจัดส่งพร้อมโลโก้เหนือรายการยา ยอดชำระอยู่ท้ายหน้า'],
+  states:[['normal','รอชำระ · QR PromptPay'],['card','รอชำระ · บัตรเครดิตผ่าน Omise'],['failed','ชำระไม่สำเร็จ'],['expired','หมดเวลาชำระเงิน'],['pickup','รอชำระ · รับยาที่ร้าน']],
+  notes:['เริ่มนับ 15 นาทีเมื่อกดชำระครั้งแรก เปลี่ยนวิธีจ่ายหรือชำระอีกครั้งโดยใช้เวลาที่เหลือของคำสั่งซื้อเดิม','กลับจาก QR หรือ Omise ไปหน้าแรก เปิดคำสั่งซื้อเดิมจากการ์ดหรือประวัติ ตัวอย่างจ่ายผ่านและไม่ผ่านใช้แผงทดสอบ','แสดงเวลาที่เหลือและวิธีจ่ายด้านบน แยกที่อยู่และช่องทางจัดส่งพร้อมโลโก้เหนือรายการยา ยอดชำระอยู่ท้ายหน้า'],
   prep(S) {
     const c = pendingSample();
     c.id = 'mock-pending-preview';
@@ -5052,9 +5087,12 @@ TP.screen('pendingpayment', {
       payment.totals.ship = 0;
       payment.totals.total = payment.totals.items;
     }
-    if (['bank','failed'].includes(S.st.pendingpayment)) {
-      c.order.payment.method='bank';
-      c.order.payment.bank='SCB';
+    if (['card','failed'].includes(S.st.pendingpayment)) {
+      c.order.payment.method='card';
+      const totals = c.order.payment.totals;
+      const subtotal = totals.items - totals.discount + (totals.ship || 0);
+      totals.fee = r2(subtotal * TP.CARD_FEE);
+      totals.total = r2(subtotal + totals.fee);
       c.order.payment.failed=S.st.pendingpayment==='failed';
     }
     S.history.unshift(TP.orderHistoryRecord(c));
@@ -5079,18 +5117,19 @@ TP.screen('pendingpayment', {
         </div>` : `<h2 class="pay-sec">${o.status==='expired' ? 'หมดเวลาชำระเงิน' : o.status==='cancelled' ? 'คุณยกเลิกคำสั่งซื้อนี้แล้ว' : title}</h2>`}
         <p class="small pending-payment-reference">เลขคำสั่งซื้อ ${esc(o.no)}</p>
       </section>
-      <section class="checkout-block">
-        <h2 class="pay-sec">การชำระเงิน</h2>
+      <section class="checkout-block checkout-payment">
         ${checkoutPaymentSummary(p, payable ? 'pendingChangeMethod' : null)}
         ${payable && p.failed ? '<p class="danger-t pending-payment-failed">ชำระเงินไม่สำเร็จ</p>' : ''}
       </section>
-      <section class="checkout-block ${pickup ? 'checkout-pickup' : 'checkout-address'}"><h2 class="pay-sec">${pickup ? 'สาขารับยา' : 'ที่อยู่จัดส่ง'}</h2>
-        ${pickup ? pickupBranchCard(b, false) : a ? `<div class="pay-address-readonly">
+      <section class="checkout-block ${pickup ? 'checkout-pickup' : 'checkout-address'}">
+        ${checkoutChoice(pickup ? 'สาขารับยา' : 'ที่อยู่จัดส่ง', '', null, pickup ? 'store' : 'map-pin')}
+        ${pickup ? pickupBranchCard(b) : a ? `<div class="pay-address-readonly">
           <p><b>${esc([a.first,a.last].filter(Boolean).join(' '))}</b></p>
           <p>${esc(fmtAddr(a))}</p>${a.phone ? `<p>${esc(fmtPhone(a.phone))}</p>` : ''}
         </div>` : ''}
       </section>
-      <section class="checkout-block"><h2 class="pay-sec">${pickup ? 'การรับยา' : 'การจัดส่ง'}</h2>
+      <section class="checkout-block">
+        ${checkoutChoice('ประเภทจัดส่ง', '', null, 'truck')}
         ${checkoutDeliverySelection(p.recv,p.courier,t.ship)}
       </section>
       <section class="checkout-block"><h2 class="pay-sec">รายการยา</h2>
@@ -5109,6 +5148,7 @@ TP.act('pendingChangeMethod',(_,ctx) => {
 TP.act('pendingRetry',(_,ctx) => {
   const c = pendingContextCase(ctx);
   if (!TP.orderPayable(c?.order)) return TP.orderExpiryTick();
+  if (!['promptpay','card'].includes(c.order.payment.method)) return TP.sheet('checkoutmethod',{pendingCaseId:c.id});
   TP.S._paymentCase = c;
   return TP.sheet('pay',{caseId:c.id,retry:true});
 });
@@ -5142,7 +5182,7 @@ TP.simAction({id:'pendingexpire',label:'จำลองหมดเวลาช�
 /* ---------- pay failed (cart/payment_failed.blade.php, wording made to say what to do next) ---------- */
 TP.screen('payfail', {
   group: 'during', title: 'ชำระเงินไม่สำเร็จ', code: 'C609', ref: 'C11', parent: 'home',
-  states: [['card', 'บัตรไม่ผ่าน'], ['bank', 'ยกเลิกในแอปธนาคาร']],
+  states: [['card', 'บัตรไม่ผ่าน']],
   notes: ['หัวเรื่อง ป้าย และรายละเอียดคำสั่งซื้อตามหน้าเว็บ payment_failed.blade.php:85-145',
     'เว็บไม่บอกสาเหตุ ทั้งที่ระบบมีข้อความ "ชำระเงินไม่สำเร็จ กรุณาตรวจสอบข้อมูลบัตรหรือติดต่อธนาคารผู้ออกบัตร" (CartController:3365) แอปแสดงข้อความนี้',
     'QR หมดเวลาไม่มาหน้านี้แล้ว อยู่ในหน้า QR เอง มีปุ่ม ขอ QR ใหม่ ตามหน้าจ่ายบิลเภสัชกร',
@@ -5291,17 +5331,17 @@ TP.paymentHistoryCard = (orderNumber, paid, receipt) => {
 };
 
 const pickupCodeCard = (order, reminder = '') => {
-  const code = String(order.no || '').slice(-4);
-  if (!code) return '';
-  const image = `<img src="/api/pickup-qr?code=${encodeURIComponent(code)}" alt="QR รหัสรับยา ${esc(code)}" width="92" height="92">`;
+  const orderNumber = String(order.no || '');
+  if (!orderNumber) return '';
+  const image = `<img src="/api/pickup-qr?code=${encodeURIComponent(orderNumber)}" alt="QR รหัสรับยา เลขคำสั่งซื้อ ${esc(orderNumber)}" width="92" height="92">`;
   return `<section class="card pad0 pd-section pd-pickup-code">
     <div class="pd-pickup-code-row">
-      <div><h3>รหัสรับยา</h3><strong class="num">${esc(code)}</strong><p>แสดงรหัสหรือ QR ที่เคาน์เตอร์เมื่อยาพร้อมรับ</p></div>
+      <div><h3>เลขคำสั่งซื้อ</h3><strong class="num">${esc(orderNumber)}</strong><p>แสดงเลขคำสั่งซื้อหรือ QR ที่เคาน์เตอร์เมื่อยาพร้อมรับ</p></div>
       <button class="pd-pickup-qr-button" type="button" data-a="showPickupQr" aria-haspopup="dialog" aria-label="ขยาย QR รหัสรับยา">${image}<span>ขยาย QR</span></button>
     </div>${reminder}
     <dialog class="pd-pickup-qr-dialog" aria-labelledby="pickupQrTitle">
       <header><h2 id="pickupQrTitle">QR รหัสรับยา</h2><form method="dialog"><button type="submit" class="ibtn" aria-label="ปิด QR รหัสรับยา" autofocus>${ic('x',22,2)}</button></form></header>
-      ${image}<strong class="num">${esc(code)}</strong>
+      ${image}<strong class="num">เลขคำสั่งซื้อ ${esc(orderNumber)}</strong>
     </dialog>
   </section>`;
 };
@@ -5476,7 +5516,7 @@ TP.screen('track', {
   ],
   notes: ['จัดส่งปกติ: ชำระแล้ว → ร้านจัดยาและแพ็ก (C414.13) → แพ็กแล้ว ส่งให้บริษัทขนส่ง พร้อมเลขพัสดุ (C414.22) → กำลังขนส่ง (C414.14) → กำลังนำส่ง (C414.15) เวลาแสดงเฉพาะขั้นที่ถึงแล้ว', 'ไม่มีหน้าสถานะสำเร็จ: รับยาที่สาขาแล้ว ส่งด่วนเสร็จ หรือจัดส่งปกติส่งถึง จะเปิดใบคำสั่งซื้อ C401 ทันที (ลบ C414.11 .16 .19 สงวนรหัส .23)', 'ผู้ใช้ 8 พ.ย. 2569: C414 แสดงการ์ดสถานะและชื่อขั้น สาขาหรือที่อยู่จัดส่ง ข้อมูลคำสั่งซื้อ รายการยา และลิงก์ดูใบเสร็จ เมื่อรับยาหรือจัดส่งสำเร็จเปิด C401 ของคำสั่งซื้อเดิม', 'ใช้ข้อมูลรายละเอียดประวัติชุดเดียวกัน: เรื่องที่ปรึกษา ข้อมูลบริการ ยาและวิธีใช้ คำแนะนำ ยอดชำระและใบเสร็จ ระหว่างรับยา/จัดส่งแสดงสถานะกับข้อมูลเฉพาะวิธีรับยาไว้บนสุด เมื่อสาขาหรือขนส่งแจ้งสำเร็จจะตัดส่วนติดตามออก เหลือประวัติเดิม ไม่มีการยืนยันรับยาโดยผู้ใช้', 'A6 ตามประกาศ อย. ข้อ 2.2(4) สืบย้อนได้ตลอดการขนส่ง: เลขพัสดุ บริษัทขนส่ง สถานะจนถึงจัดส่งสำเร็จตามข้อมูลขนส่ง ไม่ให้ลูกค้ายืนยันรับยา · เปิดจากปุ่ม ติดตามการจัดส่ง ใน C309 แถวบนหน้าแรก ประวัติ C403 และแจ้งเตือนส่งยาแล้ว',
     'แสดงแถบความคืบหน้า 4 ขั้นตามวิธีรับยา แสดงโลโก้ DHL, Flash Express หรือ Lalamove ใต้ชื่อสถานะ',
-    'รับยาที่ร้าน แสดงรหัสและ QR จากเลขท้ายคำสั่งซื้อ กดขยาย QR ได้ พร้อมรูปสาขาและปุ่มนำทาง',
+    'รับยาที่ร้าน แสดงเลขคำสั่งซื้อเต็มทั้งบนการ์ดและใน QR กดขยาย QR ได้ พร้อมรูปสาขาและปุ่มนำทาง',
     'จัดส่งปกติ: เลขพัสดุแสดงพร้อมปุ่มคัดลอกตั้งแต่แพ็กแล้ว ส่งให้บริษัทขนส่ง (C414.22) ก่อนหน้านั้นแสดงว่าเลขพัสดุขึ้นเมื่อร้านส่งของ',
     'ไม่มีปุ่มยืนยันรับยาหรือแผ่น C415 เมื่อร้านบันทึกส่งมอบหรือขนส่งแจ้งส่งสำเร็จ รายการย้ายไปประวัติทันที'],
   wait: [],
@@ -5519,11 +5559,9 @@ const taxWho = () => TP.taxSelected('me');
 const T = o => o.tax || (o.tax = { done: null, form: false, who: TP.firstInvoiceKind() || 'me' });
 /* deadline = end of the purchase month (AccountController:524-577) */
 const ymd = d => { const [dd, mm, yy] = String(d).split('/').map(Number); return yy * 10000 + mm * 100 + dd; };
-const monthEnd = d => { const [, mm, yy] = String(d).split('/').map(Number), last = new Date(yy, mm, 0).getDate(); return `${last}/${String(mm).padStart(2, '0')}/${yy}`; };
 const isLate = d => {
-  const parse = value => { const [day, month, year] = String(value).split('/').map(Number); return Date.UTC(year, month - 1, day); };
-  const paid = parse(d), now = parse(TP.NOW.date);
-  return Number.isFinite(paid) && Number.isFinite(now) && now - paid > 7 * 86400000;
+  const paid = ymd(d), today = ymd(TP.NOW.date);
+  return paid > today || Math.floor(paid / 100) !== Math.floor(today / 100);
 };
 const rcCur = () => TP.cur()?.ctx?.rc;
 const taxNo = o => 'TX' + o.no;
@@ -5531,14 +5569,14 @@ const taxNo = o => 'TX' + o.no;
 const r2v = x => Math.round(x * 100) / 100;
 TP.screen('receipt', {
   group: 'after', title: 'ใบเสร็จรับเงิน', code: 'C402', parent: 'paid',
-  states: [['normal', 'ขอใบกำกับภาษี'], ['taxsent', 'ขอใบกำกับภาษีแล้ว', true, 4], ['late', 'เกิน 7 วัน ขอใบกำกับภาษีไม่ได้', true, 6], ['missing', 'ไม่พบใบเสร็จ', true, 7]],
+  states: [['normal', 'ขอใบกำกับภาษี'], ['taxsent', 'ขอใบกำกับภาษีแล้ว', true, 4], ['late', 'เลยรอบขอใบกำกับภาษี', true, 6], ['missing', 'ไม่พบใบเสร็จ', true, 7]],
   notes: ['ใบเสร็จของคำสั่งซื้อที่ชำระแล้ว แสดงรายการยา รูปยา ค่าส่ง ค่าธรรมเนียม และยอดรวมตรงกับคำสั่งซื้อ',
-    'ถ้าขอใบกำกับใน C308 แล้ว C402 แสดงข้อมูลผู้รับที่บันทึกกับคำสั่งซื้อ ไม่เปิดให้ขอซ้ำ',
-    'เมื่อส่งคำขอแสดงสถานะขอใบกำกับภาษีแล้วและสำเนาข้อมูลผู้รับ โหมดทดสอบไม่มีการส่งอีเมล',
+    'ถ้าขอใบกำกับใน C308 แล้ว C402 แสดงสถานะคำขอเดิมและป้องกันการขอซ้ำ',
+    'เมื่อส่งคำขอแสดงสถานะและอีเมลปลายทางแบบปิดบางส่วน โหมดทดสอบไม่มีการส่งอีเมล',
     'ติ๊กต้องการใบกำกับเพื่อเลือกประเภทผู้รับในใบเสร็จ หากมีหลายรายให้เลือกใน C421 หากไม่มีให้เพิ่มผ่านฟอร์มเดียวกับบัญชี',
-    'ขอได้ภายใน 7 วันหลังชำระเงิน เกินกำหนดแสดงช่องทางติดต่อ LINE (C402.6) คำขอเดิมยังเปิดดูข้อมูลผู้รับได้',
-    'ข้อมูลผู้รับเลขผู้เสียภาษีแสดงปิดบางส่วน; รายการเก่าเปิดจากประวัติหรือใบสรุปต้องใช้คำสั่งซื้อเดิม ไม่สร้างการปรึกษาใหม่'],
-  wait: ['ฝ่ายบัญชียืนยันข้อกำหนดเอกสารและนโยบายขอย้อนหลัง 7 วันก่อนนำระบบจริงไปใช้'],
+    'ขอได้หนึ่งครั้งภายในเดือนที่ชำระเงิน เกินกำหนดแสดงช่องทางติดต่อ LINE (C402.6) คำขอเดิมยังเปิดดูสถานะได้',
+    'ปิดบางส่วนของเลขผู้เสียภาษีขณะเลือกผู้รับ รายการเก่าที่เปิดจากประวัติหรือใบสรุปใช้คำสั่งซื้อเดิม'],
+  wait: ['ฝ่ายบัญชียืนยันข้อกำหนดเอกสารและระยะเวลาขอใบกำกับภาษีก่อนนำระบบจริงไปใช้'],
   prep(S) {
     const st = S.st.receipt || 'normal'; if (st === 'missing') return;
     if (!S._taxProfileMockInitialized) { if (!S.taxWho) S.taxWho={id:'1234567890121',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยตัวอย่าง',prov:'กรุงเทพมหานคร',amp:'คลองเตย',dist:'คลองเตย',zip:'10110',country:'ไทย',addr:'88/12 ซอยตัวอย่าง แขวงคลองเตย เขตคลองเตย กรุงเทพมหานคร 10110'}; S._taxProfileMockInitialized=true; }
@@ -5594,11 +5632,14 @@ function taxBox(o, late) {
   const t = T(o);
   const [supportUrl, supportLabel] = TP.support;
   if (t.done || t.pending) {
-    const who = t.done || t.pending;
+    const accountEmail = /^([^@\s]+)@([^@\s]+)$/u.exec((TP.S.user.email || '').trim());
+    const [name, domain] = accountEmail ? accountEmail.slice(1) : FX.demoInvoiceEmail.split('@');
+    const local = [...name];
+    const masked = `${local.slice(0, Math.min(2, local.length - 1)).join('')}***@${domain}`;
+    const deliveryLabel = accountEmail ? (t.done?'ส่งใบกำกับภาษีไปที่':'จะส่งใบกำกับภาษีไปที่') : 'อีเมลปลายทางตัวอย่าง';
     return `<section class="rc-tax invoice-options">
-      <h3 class="invoice-requested" role="status">${ic('circle-check',20)} ขอใบกำกับภาษีแล้ว</h3>
-      ${TP.invoiceRecipientDetails(who,t.who)}
-      <p class="small">โหมดทดสอบไม่มีการส่งอีเมล</p>
+      <h3 class="invoice-requested" role="status"><span class="rc-tax-sent-ic">${ic('check',14)}</span>${t.done?'ส่งใบกำกับภาษีทางอีเมลแล้ว':'ขอใบกำกับภาษีแล้ว'}</h3>
+      <p class="invoice-delivery-email">${ic('mail',18)}<span>${deliveryLabel} ${esc(masked)}</span></p>
     </section>`;
   }
   if (late) return `<section class="rc-tax invoice-options" aria-label="ใบกำกับภาษี">
@@ -5607,7 +5648,7 @@ function taxBox(o, late) {
       <a class="btn secondary" href="${supportUrl}" target="_blank" rel="noopener noreferrer">ติดต่อผ่าน ${esc(supportLabel)}</a>
     </section>`;
   return `<section class="rc-tax rc-tax-request-card invoice-options">
-    ${TP.invoiceCheckbox('rcTaxWant',t.want,'ขอได้หนึ่งครั้งภายใน 7 วันหลังชำระเงิน')}
+    ${TP.invoiceCheckbox('rcTaxWant',t.want,'ขอได้หนึ่งครั้งภายในเดือนที่ชำระเงิน')}
     ${t.want ? TP.invoiceOptions(t.who || 'me',t.taxKey,'rc') + ui.btn('ส่งคำขอใบกำกับภาษี',{a:'rcTaxSend',id:'rcTaxSend',disabled:!whoOf(t)}) : ''}
   </section>`;
 }
@@ -6252,6 +6293,7 @@ function receiptTaxPicker(S,source='rc') {
 // Checkout uses the same saved-recipient cards and visual pattern as the receipt.
 /* C308 keeps showing behind the picker: it is a bottom panel inside the payment sheet, not a separate sheet. */
 const payPickerBody = () => receiptTaxPicker(TP.S,'pay');
+const payPickerManage = () => ui.btn('จัดการข้อมูลภาษี',{kind:'secondary',a:'payTaxManage'});
 const payPickerClose = () => { const o = $('#payTaxPicker', $('#sheet')); if (!o) return; const prev = o._prev; o.remove(); if (prev?.isConnected) prev.focus({ preventScroll: true }); };
 TP.act('payTaxPickOpen',()=>{
   TP.S._receiptTaxKind=TP.S.pay?.taxWho||'me';
@@ -6260,29 +6302,61 @@ TP.act('payTaxPickOpen',()=>{
   if(TP.sheetOpen()?.id!=='pay'||!sh)return TP.sheet('checkouttaxpicker');
   payPickerClose();
   const o=document.createElement('div');o.id='payTaxPicker';o.className='pay-picker';o._prev=document.activeElement;
-  o.innerHTML=`<div class="pay-picker-scrim" data-a="payTaxPickerClose"></div><section class="pay-picker-panel" role="dialog" aria-modal="true" aria-labelledby="payTaxPickerTitle"><header class="pay-picker-head"><h2 id="payTaxPickerTitle">เลือกผู้รับใบกำกับภาษี</h2><button type="button" class="ibtn" data-a="payTaxPickerClose" aria-label="ปิด">${ic('x',22,2)}</button></header><div class="pay-picker-body" id="payTaxPickerBody">${payPickerBody()}</div></section>`;
+  o.innerHTML=`<div class="pay-picker-scrim" data-a="payTaxPickerClose"></div><section class="pay-picker-panel" role="dialog" aria-modal="true" aria-labelledby="payTaxPickerTitle"><header class="pay-picker-head"><h2 id="payTaxPickerTitle">เลือกผู้รับใบกำกับภาษี</h2><button type="button" class="ibtn" data-a="payTaxPickerClose" aria-label="ปิด">${ic('x',22,2)}</button></header><div class="pay-picker-body" id="payTaxPickerBody">${payPickerBody()}</div><footer class="pay-picker-foot">${payPickerManage()}</footer></section>`;
   o.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();e.preventDefault();payPickerClose();}});
   sh.appendChild(o);TP.icons(o);
   if(!TP.RED())A($('.pay-picker-panel',o),[{transform:'translateY(100%)'},{transform:'none'}],{d:SP.soft.d,e:SP.soft.e});
   setTimeout(()=>$('.pay-picker-head .ibtn',o)?.focus({preventScroll:true}),60);
 });
 TP.act('payTaxPickerClose',()=>payPickerClose());
+TP.act('payTaxManage',()=>{
+  const S=TP.S, active=TP.sheetOpen();
+  if(!['pay','checkouttaxpicker'].includes(active?.id)) return;
+  const consultation=S._paymentCase||S.case, payment=S.pay;
+  if(!consultation?.order || !payment) return;
+  const scroll=active.id==='pay' ? $('.sh-b',active.el)?.scrollTop : S._checkoutTaxScroll;
+  taxProfileDraft(S).kind=payment.taxWho||'me';
+  payPickerClose();
+  return TP.go('taxprofile',{params:{async onCheckoutReturn(){
+    await TP.back();
+    if(TP.S!==S || (S._paymentCase||S.case)!==consultation || S.pay!==payment) return;
+    TP.expireOrder(consultation);
+    if(!TP.orderPayable(consultation.order)) {
+      TP.notify('รายการนี้หมดเวลาชำระแล้ว',{icon:'clock'});
+      return;
+    }
+    await TP.sheet('pay');
+    const body=$('.sh-b',TP.sheetOpen()?.el);
+    if(body) body.scrollTop=scroll||0;
+  }}});
+});
+TP.act('returnToCheckoutTax',()=>TP.cur()?.ctx.params.onCheckoutReturn?.());
 TP.act('payTaxPickerChoose',async b=>{
   const record=TP.taxRecords(b.dataset.v).find(row=>row.profileKey===b.dataset.key);if(!record)return;
   Object.assign(TP.S.pay,{taxWho:b.dataset.v,taxWant:true,taxKey:record.profileKey});
   if($('#payTaxPicker',$('#sheet'))){payPickerClose();TP.redrawPayTax?.();return;}
   await TP.closeSheet();
 });
-TP.act('payTaxPickerAdd',b=>{
-  const d=taxProfileDraft(TP.S);d.kind=b?.dataset?.v||TP.S.pay?.taxWho||'me';d.editKey=null;d.errors={};d.drafts[d.kind]=taxProfileEntry(null,{},d.kind==='co');
-  TP.S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen()?.el)?.scrollTop||0;
+function openCheckoutTaxEditor(kind, record) {
+  const d=taxProfileDraft(TP.S);
+  d.kind=kind;
+  d.editKey=record?.profileKey||null;
+  d.errors={};
+  d.drafts[kind]=taxProfileEntry(record,{},kind==='co');
+  if(TP.sheetOpen()?.id==='pay') TP.S._checkoutTaxScroll=$('.sh-b',TP.sheetOpen().el)?.scrollTop||0;
   payPickerClose();
-  if(TP.sheetOpen()?.id==='checkouttaxpicker')TP.sheetOpen().ctx.params.editing=true;
   return TP.sheet('checkouttaxedit');
+}
+TP.act('payTaxPickerAdd',b=>openCheckoutTaxEditor(b?.dataset?.v||TP.S.pay?.taxWho||'me'));
+TP.act('payTaxPickerEdit',()=>{
+  const {taxWho,taxKey}=TP.S.pay;
+  const record=TP.taxRecipient(taxWho,taxKey);
+  if(record) return openCheckoutTaxEditor(taxWho,record);
 });
 TP.sheetDef('checkouttaxpicker',{
   group:'during',title:'เลือกผู้รับใบกำกับภาษี',hidden:true,host:'home',owner:'pay',
   render:ctx=>receiptTaxPicker(ctx.S,'pay'),
+  foot:payPickerManage,
   async afterClose(ctx){await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;}
 });
 TP.act('rcTaxPickOpen',()=>{TP.S._receiptTaxKind=TP.cur()?.ctx?.rc?.tax?.who||'me';return TP.sheet('receipttaxpicker');});
@@ -6297,7 +6371,15 @@ TP.sheetDef('receipttaxpicker',{
   group:'after',title:'เลือกผู้รับใบกำกับภาษี',code:'C421',host:'receipt',
   states:[['person','เลือกบุคคลธรรมดา'],['company','เลือกนิติบุคคล'],['empty','ยังไม่มีข้อมูลผู้รับ']],
   notes:['เลือกประเภทในหน้าใบเสร็จหรือหน้าชำระเงินก่อนเปิดรายการผู้รับประเภทนั้น','แผ่นเลือกแสดงชื่อ ที่อยู่ และเครื่องหมายผู้รับที่เลือก กดเลือกแล้วกลับมาโดยยังไม่ส่งคำขอ','ประเภทที่ไม่มีผู้รับสามารถเพิ่มข้อมูลในฟอร์มเดียวกับหน้าบัญชี'],
-  prep(S){const kind=S.st.receipttaxpicker==='company'?'co':'me';S._receiptTaxKind=kind;const d=taxProfileDraft(S);d.previewLists={[kind]:S.st.receipttaxpicker==='empty'?[]:[{...taxProfilePreview(kind),profileKey:'picker-1'},{...taxProfilePreview(kind),profileKey:'picker-2',detail:'12 ถนนสุขใจ',addr:'12 ถนนสุขใจ คลองเตย กรุงเทพมหานคร 10110'}]};},
+  prep(S) {
+    const state = S.st.receipttaxpicker, kind = state === 'company' ? 'co' : 'me';
+    S._receiptTaxKind = kind;
+    const records = state === 'empty' ? [] : kind === 'me' ? FX.demoTaxRecipients.map(record => ({...record})) : [
+      {...taxProfilePreview(kind), profileKey:'picker-1'},
+      {...taxProfilePreview(kind), profileKey:'picker-2', detail:'12 ถนนสุขใจ', addr:'12 ถนนสุขใจ คลองเตย กรุงเทพมหานคร 10110'},
+    ];
+    taxProfileDraft(S).previewLists = {[kind]: records};
+  },
   render:ctx=>receiptTaxPicker(ctx.S)
 });
 const taxProfileRecord = (S,d) => TP.taxRecords(d.kind,S).find(r=>r.profileKey===d.editKey) || TP.taxSelected(d.kind,S);
@@ -6315,10 +6397,10 @@ function taxProfileForm(S, sheet=false, allowDelete=false) {
       <button type="button" class="txtbtn" id="taxAddressManual" data-a="taxProfileAddressMode" data-v="manual" hidden>กรอกข้อมูลที่อยู่เอง</button>`
       :`${field('prov','จังหวัด')}${field('amp','อำเภอ / เขต')}${field('dist','ตำบล / แขวง')}${field('zip','รหัสไปรษณีย์')}`;
     return `<div class="registration-page tax-profile">
-      <div class="tax-profile-intro"><p>ออกใบกำกับภาษีในนาม ${co?'นิติบุคคล':'บุคคลธรรมดา'}</p>
+      ${d.editKey ? `<div class="tax-profile-intro"><p>ออกใบกำกับภาษีในนาม ${co?'นิติบุคคล':'บุคคลธรรมดา'}</p>
         <p>ใช้ข้อมูลนี้เพื่อเตรียมข้อมูลผู้รับใบกำกับภาษี</p>
         <button type="button" class="txtbtn" data-a="taxProfilePrivacy">คำประกาศความเป็นส่วนตัวสำหรับลูกค้า/ผู้ใช้บริการ</button>
-      </div>
+      </div>` : ''}
       ${co?`${field('name','ชื่อนิติบุคคล')}${field('business','ชื่อธุรกิจ')}`:`${field('first','ชื่อ')}${field('last','นามสกุล')}`}
       ${field('id',co?'เลขประจำตัวผู้เสียภาษี':'เลขประจำตัวประชาชน')}${field('phone','เบอร์โทรศัพท์')}
       ${field('detail','ที่อยู่ (เลขที่)')}${field('village','หมู่บ้าน / อาคาร',{optional:true})}
@@ -6417,13 +6499,17 @@ TP.screen('taxprofile', {
     if(state==='company'||state==='saved-company'||state==='multiple-company')d.kind='co';
     if(state==='empty'){d.previewLists={me:[],co:[]};d.drafts.me=taxProfileEntry(null,{},false);}
     if(state==='saved-person'||state==='saved-company'){d.preview={[d.kind]:taxProfilePreview(d.kind)};d.drafts[d.kind]=taxProfileEntry(d.preview[d.kind],S.user,d.kind==='co');}
-    if(state==='multiple-person'||state==='multiple-company'){const kind=d.kind,base=taxProfilePreview(kind);d.previewLists={[kind]:[{...base,profileKey:'example-1'},{...base,profileKey:'example-2',name:kind==='co'?'บริษัท มิตรสุข จำกัด':'สมใจ ใจดี',detail:'12',alley:'',road:'ถนนสุขใจ',addr:'12 ถนนสุขใจ แขวงคลองตัน เขตคลองเตย กรุงเทพมหานคร 10110'}]};}
+    if(state==='multiple-person') d.previewLists={me: FX.demoTaxRecipients.map(record => ({...record}))};
+    if(state==='multiple-company'){const base=taxProfilePreview('co');d.previewLists={co:[{...base,profileKey:'example-1'},{...base,profileKey:'example-2',name:'บริษัท มิตรสุข จำกัด',detail:'12',alley:'',road:'ถนนสุขใจ',addr:'12 ถนนสุขใจ แขวงคลองตัน เขตคลองเตย กรุงเทพมหานคร 10110'}]};}
   },
   render(ctx) {
     const d=taxProfileDraft(ctx.S), records=TP.taxRecords(d.kind,ctx.S);
-    return ui.nav({back:true,title:'ข้อมูลออกใบกำกับภาษี'})+ui.page(`<div class="tax-profile-page">${ui.seg('taxProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],d.kind,{a:'taxProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${records.length})</span></h3></div><div class="tax-profile-list">${records.length?records.map(rec=>taxProfileCard(rec,d.kind==='co')).join(''):`<div class="rc-tax-empty tax-profile-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${d.kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`) + ui.dock(ui.btn('เพิ่มข้อมูล', { a: 'taxProfileAdd', icon: 'plus' }));
+    const fromCheckout=!!ctx.params.onCheckoutReturn;
+    const back=fromCheckout?'<button type="button" class="ibtn" data-a="returnToCheckoutTax" aria-label="ย้อนกลับ">'+ic('arrow-left',22)+'</button>':undefined;
+    const footer=(fromCheckout?ui.btn('กลับไปชำระเงิน',{kind:'secondary',a:'returnToCheckoutTax'}):'')+ui.btn('เพิ่มข้อมูล',{a:'taxProfileAdd',icon:'plus'});
+    return ui.nav({back:true,left:back,title:'ข้อมูลออกใบกำกับภาษี'})+ui.page(`<div class="tax-profile-page">${ui.seg('taxProfileKind',[['me','บุคคลธรรมดา'],['co','นิติบุคคล']],d.kind,{a:'taxProfileKind',label:'ประเภทผู้รับใบกำกับภาษี'})}<div class="tax-profile-list-head"><h3 class="h3">ข้อมูลที่บันทึกไว้ <span class="small">(${records.length})</span></h3></div><div class="tax-profile-list">${records.length?records.map(rec=>taxProfileCard(rec,d.kind==='co')).join(''):`<div class="rc-tax-empty tax-profile-empty">${ui.emptyArt('file-text')}<b>ยังไม่มีข้อมูล${d.kind==='co'?'นิติบุคคล':'บุคคลธรรมดา'}</b><p class="small">กดเพิ่มข้อมูลเพื่อบันทึกผู้รับใบกำกับภาษี</p></div>`}</div></div>`) + ui.dock(footer);
   },
-  mount(el,ctx){taxProfileMount(el,ctx);if(ctx.state==='address-error'){const d=taxProfileDraft(ctx.S);d.editKey=null;d.drafts[d.kind]=taxProfileEntry(null,ctx.S.user,d.kind==='co');TP.sheet('taxprofileedit',{addressError:true});}}
+  mount(el,ctx){taxProfileMount(el,ctx);if(!ctx.params.onCheckoutReturn&&ctx.state==='address-error'){const d=taxProfileDraft(ctx.S);d.editKey=null;d.drafts[d.kind]=taxProfileEntry(null,ctx.S.user,d.kind==='co');TP.sheet('taxprofileedit',{addressError:true});}}
 });
 TP.sheetDef('taxprofileedit',{
   group:'account',title:'แก้ไขข้อมูลออกใบกำกับภาษี',sheetTitle:ctx=>(taxProfileDraft(ctx.S).editKey?'แก้ไข':'เพิ่ม')+'ข้อมูลออกใบกำกับภาษี',code:'C519',host:'taxprofile',tall:true,
@@ -6436,6 +6522,7 @@ TP.sheetDef('taxprofileedit',{
 });
 TP.sheetDef('checkouttaxedit',{
   group:'during',title:'เพิ่มข้อมูลออกใบกำกับภาษี',hidden:true,host:'home',owner:'pay',tall:true,
+  sheetTitle:ctx=>`${taxProfileDraft(ctx.S).editKey?'แก้ไข':'เพิ่ม'}ข้อมูลออกใบกำกับภาษี`,
   render:ctx=>taxProfileForm(ctx.S,true),mount:taxProfileMount,
   async afterClose(ctx){await TP.sheet('pay');const body=$('.sh-b',TP.sheetOpen()?.el);if(body)body.scrollTop=ctx.S._checkoutTaxScroll||0;}
 });

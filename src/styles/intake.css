@@ -542,9 +542,6 @@
   color: var(--semantic-text-secondary);
 }
 
-.ik-extra-fields {
-  margin-top: var(--space-4);
-}
 .scr[data-screen='intake'] #ikUrgentAlert {
   background: color-mix(in srgb, var(--semantic-error-background) 30%, var(--semantic-surface));
   color: var(--semantic-error-text);
@@ -1036,8 +1033,8 @@
   min-width: 0;
 }
 .ik-health-copy > b {
-  font-size: var(--type-body-mobile-size);
-  line-height: var(--type-body-mobile-line);
+  font-size: var(--text-small);
+  line-height: var(--type-body-sm-mobile-line);
   font-weight: var(--weight-semibold);
 }
 .ik-health-value {

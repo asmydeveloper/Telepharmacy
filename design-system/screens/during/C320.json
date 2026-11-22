@@ -13,9 +13,9 @@
     },
     {
       "code": "C320.2",
-      "state": "bank",
-      "label": "รอชำระ · Mobile Banking",
-      "url": "/?screen=pendingpayment&state=bank&splash=0"
+      "state": "card",
+      "label": "รอชำระ · บัตรเครดิตผ่าน Omise",
+      "url": "/?screen=pendingpayment&state=card&splash=0"
     },
     {
       "code": "C320.3",
