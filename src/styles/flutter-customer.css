@@ -988,21 +988,19 @@
   border-radius: var(--radius-sm);
 }
 .phone .address-editor-page { padding: calc(var(--st) + var(--nav-height) + var(--space-6)) var(--space-6) var(--dock-h); }
-.phone :is(.saved-address-page, .home-address-sheet) .hm-address-card {
+.phone .home-address-sheet .hm-address-card {
   margin: 0;
   border: 1px solid var(--semantic-border);
   border-radius: var(--radius-md);
   background: var(--semantic-surface);
   box-shadow: none;
 }
-.saved-address-card > div, .saved-address-choice { display: flex; align-items: flex-start; gap: var(--space-2); }
+.saved-address-choice { display: flex; align-items: flex-start; gap: var(--space-2); }
 .saved-address-choice { width: 100%; text-align: start; }
 .saved-address-copy { display: grid; flex: 1; min-width: 0; gap: var(--space-2); }
 .saved-address-copy small { color: var(--ink-3); font-size: var(--text-small); overflow-wrap: anywhere; }
 .phone .home-address-sheet .saved-address-choice.selected { background: var(--brand-tint); }
 .saved-address-choice > .ic { color: var(--brand); flex: none; }
-.saved-address-card .ibtn { border-radius: var(--radius-sm); background: var(--color-neutral-50); }
-.saved-address-card > .txtbtn { margin-top: var(--space-2); }
 .phone .registration-page { gap: var(--space-4); }
 .phone .reg-step-meta { justify-content: flex-start; gap: var(--space-2); }
 .phone .reg-step-meta h2 { font-size: var(--type-body-lg-mobile-size); }

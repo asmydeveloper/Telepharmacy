@@ -20,12 +20,6 @@ const BRANCHES = [
   { id: 'on', photo: '/assets/stores/on-v1.png', name: 'สาขาอ่อนนุช', short: 'อ่อนนุช', lic: 'ข.ย.5 กท 52/2567', km: 4.8, hours: '09:00-21:00', phone: '080-235-3950', pharm: 'tp', area: 'ซอยสุขุมวิท 77',
     addr: '16 ซอยสุขุมวิท 77 แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110', map: 'https://maps.app.goo.gl/An74SFhk1YE56BNB7' }
 ];
-/* Design preview stores: fictional records; no real licence or contact details. */
-BRANCHES.push(...[
-  ['demo-1','ร้านยาสุขใจ',3.1,'08:00-21:00'], ['demo-2','ร้านยาใกล้บ้าน',4.6,'09:00-22:00'],
-  ['demo-3','ร้านยาอารีเฮลท์',6.2,'08:30-20:30'], ['demo-4','ร้านยาอบอุ่น',8.4,'09:00-20:00'],
-  ['demo-5','ร้านยาพร้อมดูแล',10.2,'08:00-22:00'], ['demo-6','ร้านยาร่มเย็น',22.8,'09:00-21:00']
-].map(([id,name,km,hours])=>({id,name,photo:`/assets/stores/${id==='demo-6'?'demo-5':id}-v1.png`,short:name,km,hours,demo:true,pharm:'kj',area:'ข้อมูลร้านตัวอย่าง',addr:'ที่อยู่ร้านตัวอย่าง',...(id==='demo-1'&&{previewAddr:'ซอยทวีวัฒนา 25 แขวงทวีวัฒนา เขตทวีวัฒนา กรุงเทพมหานคร 10170'}),lic:'ข้อมูลตัวอย่าง',phone:'',map:''})));
 /* store-level facts every error screen and the pharmacist pass can show (licence from the old LIFF mask, owner to confirm) */
 const STORE = { lic: 'ข.ย.5 กท 29/2566', cs: '098-035-8000', csHours: '10:00-18:00' };
 
@@ -78,7 +72,7 @@ function historySamples() {
       const selected = stage % 2 === 0 ? [index, index + 1] : [index];
       const items = cancelled ? [] : selected.map(item => ({ ...ORDER_ITEMS[item % ORDER_ITEMS.length] }));
       const total = items.reduce((sum, item) => sum + item.price, 0);
-      const branch = index % 2 === 0 ? 'tw' : 'demo-1';
+      const branch = index % 2 === 0 ? 'tw' : 'on';
       const id = `mock-history-flutter-${courier || recv}-${i}`;
       const paidAt = instant + 4 * 60_000;
       const noticeDelay = cancelled ? 15 : [0, 10, recv === 'parcel' ? 1440 : 35, recv === 'parcel' ? 2880 : 120][stage];
@@ -95,7 +89,7 @@ function historySamples() {
         ...(complete && (recv === 'pickup' ? { got: orderTime.format(noticeAt) } : { deliv: orderTime.format(noticeAt) })),
       };
       return {
-        id, date, time, who: 'me', branch, pharm: 'kj', orderNo, recv, courier, summary: true,
+        id, date, time, who: 'me', branch, pharm: branch === 'tw' ? 'kj' : 'tp', orderNo, recv, courier, summary: true,
         topic: concern, note: concern, noticeAt,
         outcome: cancelled ? 'order-cancelled' : complete ? 'order-complete' : 'completed',
         bought: paid?.total || 0,
@@ -172,8 +166,8 @@ const account = () => {
   notifAsked: true,
   notif: true,               // returning user allowed app notifications
   branch: 'tw',
-  branchState: { tw: 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' },  // open | pause | closed
-  queueLen: { tw: 2, on: 1, 'demo-1':0, 'demo-2':0, 'demo-3':0, 'demo-4':1, 'demo-5':0 },
+  branchState: { tw: 'open', on: 'open' },
+  queueLen: { tw: 2, on: 1 },
   user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', email: demoInvoiceEmail, nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
   taxWho: personalTaxProfiles[0], taxProfiles: { me: personalTaxProfiles },
   taxCo: null, _taxProfileMockInitialized: true,

@@ -60,7 +60,7 @@ const legacyHistory = screens.history.render({S,state:'legacy',params:{}});
 assert.equal((legacyHistory.match(/data-history-id=/g) || []).length, 8);
 assert(legacyHistory.includes('MT2026101901'));
 assert(!legacyHistory.includes('mock-history-flutter-'));
-const fixtureBranches = {pickup: 'tw', dhl: 'demo-1', flash: 'tw', express: 'demo-1'};
+const fixtureBranches = {pickup: 'tw', dhl: 'on', flash: 'tw', express: 'on'};
 const completeTotals = {pickup: 120, dhl: 80, flash: 250, express: 180};
 for (const [method, branch] of Object.entries(fixtureBranches)) {
   const methodRows = orders.filter(record => record.id.startsWith(`mock-history-flutter-${method}-`));

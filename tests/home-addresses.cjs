@@ -134,6 +134,11 @@ vm.runInContext(source.slice(pickStart,source.indexOf('\n};',pickStart)+3),conte
     TP.S.st.addressbook='main-changed';book.prep(TP.S);assert.equal(TP.S.addrs.find(x=>x.main).id,'a2');
     book.mount(null,{S:TP.S});book.mount(null,{S:TP.S});assert.deepEqual(toasts,['ตั้งเป็นที่อยู่หลักแล้ว'],'the alert shows once');
     TP.S.st.addressbook='normal';book.prep(TP.S);assert.equal(TP.S.addrs.find(x=>x.main).id,'a1','normal restores the primary address');
+    const cards=vm.runInContext('homeAddressCards(TP.S, false)',context);
+    assert.match(cards,/tax-summary-head[\s\S]*ที่อยู่หลัก[\s\S]*data-a="hmEditAddress"[\s\S]*tax-summary-content[\s\S]*88\/12/);
+    assert.match(cards,/data-a="hmMainAddress" data-v="a2"/);
+    const picker=vm.runInContext('homeAddressCards(TP.S, true)',context);
+    assert.doesNotMatch(picker,/tax-summary-head|hmEditAddress/);
     TP.S.st.addressbook='address-saved';book.prep(TP.S);book.mount(null,{S:TP.S});assert.equal(toasts.at(-1),'บันทึกที่อยู่แล้ว');
     TP.S.st.addressbook=undefined;TP.notify=savedNotify;
   }
@@ -147,5 +152,5 @@ context.ui.btn=(label,o)=>`<button data-a="${o.a}">${label}</button>`;
 TP.caseOpen=()=>false;let banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('ปรึกษาเภสัช'));assert(banner.includes('data-a="quickConsult"'));assert(banner.includes('/assets/banners/pharmacy-female-counter-v1.webp'));assert(fs.existsSync('public/assets/banners/pharmacy-female-counter-v1.webp'));
 TP.caseOpen=()=>true;banner=vm.runInContext('homeConsultBanner(TP.S)',context);assert(banner.includes('คุยกับเภสัชต่อ'));
 assert(source.includes("paymentCard || activeCase || (updates && !deliveryCard) ? '' : homeConsultBanner(S)"));
-assert(source.includes('consultBanner+heroHtml(S,st)'));
-assert(source.includes('heroHtml(S,st)+nearbyStoresHtml(S)'));
+assert(source.includes('consultBanner+heroHtml(S)'));
+assert(source.includes('heroHtml(S)+nearbyStoresHtml(S)'));

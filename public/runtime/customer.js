@@ -265,7 +265,7 @@ TP.EXP_RULE = 'ส่งด่วนส่งได้ไม่เกิน 15 �
 TP.ZONE_RULE = 'ส่งยาได้เฉพาะที่อยู่ที่ห่างสาขาไม่เกิน 15 กม. วัดตามระยะทางถนน รวมในกรุงเทพ';
 const ROAD_KM = { 'ทวีวัฒนา': { tw: 2.4, on: 41 }, 'อ่อนนุช': { tw: 38, on: 2.5 }, 'สวนหลวง': { tw: 36, on: 4.2 }, 'พัฒนาการ': { tw: 34, on: 6.1 }, 'คลองเตย': { tw: 28, on: 7.4 }, 'คลองตัน': { tw: 30, on: 5.3 }, 'พระโขนง': { tw: 31, on: 3.1 }, 'บางจาก': { tw: 33, on: 3.6 }, 'พระโขนงใต้': { tw: 32, on: 4.4 }, 'ศาลาธรรมสพน์': { tw: 6.5, on: 44 }, 'ประเวศ': { tw: 42, on: 9.2 }, 'หนองบอน': { tw: 40, on: 8.3 }, 'ดอกไม้': { tw: 44, on: 11 }, 'กระทุ่มราย': { tw: 62, on: 32 }, 'หนองจอก': { tw: 66, on: 36 },
   'บางสีทอง': { tw: 12, on: 36 }, 'วัดชลอ': { tw: 17, on: 39 }, 'เสาธงหิน': { tw: 13, on: 41 }, 'สำโรงเหนือ': { tw: 41, on: 9.4 }, 'เทพารักษ์': { tw: 44, on: 12 }, 'บางพลีใหญ่': { tw: 52, on: 19 }, 'บางแก้ว': { tw: 47, on: 14 }, 'ศรีภูมิ': { tw: 690, on: 700 }, 'ช้างเผือก': { tw: 692, on: 702 } };
-TP.zoneOf = (a, br) => { if (!a) return null; const branch = br || TP.S.branch, known = ROAD_KM[a.dist]; const km = branch?.startsWith('demo-') && known && Math.min(...Object.values(known)) <= TP.ZONE_KM ? TP.BRANCHES.find(b=>b.id===branch)?.km ?? null : known?.[branch] ?? null; return { ok: km != null && km <= TP.ZONE_KM, bkk: a.prov === 'กรุงเทพมหานคร', km }; };
+TP.zoneOf = (a, br) => { if (!a) return null; const km = ROAD_KM[a.dist]?.[br || TP.S.branch] ?? null; return { ok: km != null && km <= TP.ZONE_KM, bkk: a.prov === 'กรุงเทพมหานคร', km }; };
 /* zone lock (owner 20/10 "ทำสวิตช์ไว้แต่บอก อย. ตรงๆ"): an admin switch in the console, ON by default and in the FDA filing.
    ON = the address at billing holds the drug zone (the C209 location check at consult start was removed 8 Nov 2026).
    OFF (only after the FDA allows it; owner 21/10 "lalamove บังคับ 15 km ส่วนที่เหลือไม่บังคับ") = only express keeps 15 km: consulting is open
@@ -2216,7 +2216,7 @@ TP.newCase = () => {
       const allergy = TP.healthRecord(S.user).allergies;
       return allergy.mode === 'set' ? allergy.text : allergy.mode === 'none' ? 'ไม่มีประวัติแพ้ยา' : 'ยังไม่ทราบ';
     })(),
-    deliveryAddress:TP.homeAddress?.()?structuredClone(TP.homeAddress()):null, branch: b.id, pharm: b.pharm, status: S.branchState[b.id] === 'pause' ? 'paused' : 'queue',
+    deliveryAddress:TP.homeAddress?.()?structuredClone(TP.homeAddress()):null, branch: b.id, pharm: b.pharm, status: 'queue',
     pos: Math.max(1, (S.queueLen[b.id] || 0) + 1), joinedAt: TP.NOW.time, order: null, rated: 0, msgs: []
   };
   TP.emit('state');
@@ -2252,8 +2252,7 @@ TP.casePreview = {
   }
 };
 TP.caseOpen = () => { const c = TP.S.case; return !!(c && (!c.who || c.who==='me') && !['closed', 'cancelled', 'declined', 'expired', 'branchclosed'].includes(c.status)); };
-const stateTag = st => st === 'open' ? ui.tag('เปิดรับบริการ', 'ok', { dot: true, live: true }) : st === 'pause' ? ui.tag('ปิดรับชั่วคราว', 'warn', { dot: true }) : ui.tag('ปิดรับบริการ', 'muted', { dot: true });
-/* C03: nearest open branch picked for the customer; paused/closed nearest -> next one, with the reason */
+/* C03: prefer the nearest open branch. */
 TP.pickBranch = () => {
   const S = TP.S, candidates = TP.homeStores ? TP.homeStores() : [...TP.BRANCHES].sort((a,b) => a.km - b.km);
   if (!S.branchPicked || !candidates.some(b => b.id === S.branch)) {
@@ -2299,18 +2298,17 @@ TP.act('splashSkip', () => {
 TP.homeAddress = () => (TP.S.addrs || []).find(a => a.id === TP.S.deliveryAddressId) || (TP.S.addrs || []).find(a => a.main) || (TP.S.addrs || [])[0] || null;
 TP.homeDistance = b => { const a = TP.homeAddress(); return a ? TP.zoneOf(a, b.id)?.km ?? null : null; };
 TP.homeStores = () => TP.homeAddress() ? TP.BRANCHES.filter(b => TP.homeDistance(b) != null && TP.homeDistance(b) <= TP.ZONE_KM).sort((a,b) => TP.homeDistance(a) - TP.homeDistance(b)) : [];
-const homeBranchClosed = (S, b) => S.sysOff || S.storeOpen === false || (S.branchState[b.id] || (b.demo ? 'open' : 'closed')) === 'closed';
+const homeBranchClosed = (S, b) => S.sysOff || S.storeOpen === false || S.branchState[b.id] !== 'open';
 const homeBranchOutside = b => !!TP.homeAddress() && (TP.homeDistance(b) ?? Infinity) > TP.ZONE_KM;
 const homeBranchStatus = (S, b) => homeBranchOutside(b) ? [TP.homeDistance(b) == null ? 'ตรวจสอบพื้นที่ไม่ได้' : 'นอกพื้นที่ให้บริการ', 'muted']
-  : homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted']
-  : S.branchState[b.id] === 'pause' ? ['ปิดรับชั่วคราว', 'warn'] : ['เปิดรับบริการ', 'ok'];
+  : homeBranchClosed(S, b) ? ['ปิดรับบริการ', 'muted'] : ['เปิดรับบริการ', 'ok'];
 /* Selection uses the selected delivery address. A busy branch never blocks: the customer joins the shortest known queue among open branches, nearest first. */
 TP.quickConsultBranch = () => {
   if (!TP.homeAddress()) return {reason:'address'};
   const stores=TP.homeStores();
   if (!stores.length) return {reason:TP.BRANCHES.some(b=>TP.homeDistance(b)!=null)?'area':'unknownarea'};
   if (TP.S.sysOff || TP.S.storeOpen===false) return {reason:'unavailable'};
-  const open=stores.filter(b=>!homeBranchClosed(TP.S,b)&&(TP.S.branchState[b.id]||(b.demo?'open':'closed'))==='open');
+  const open=stores.filter(b=>!homeBranchClosed(TP.S,b));
   if (!open.length) return {reason:'unavailable'};
   const queue=b=>Number.isFinite(TP.S.queueLen?.[b.id])?TP.S.queueLen[b.id]:Infinity;
   return {branch:open.reduce((best,b)=>queue(b)<queue(best)?b:best)};
@@ -2366,13 +2364,15 @@ TP.homeScenario = (S, st) => {
 };
 const homeAddressCards = (S, picker) => (S.addrs || []).map(a => {
   const selected = a.id === TP.homeAddress()?.id;
-  const details = `<span class="saved-address-copy"><span><b>${esc(a.first)} ${esc(a.last)}</b>${a.main ? ' <small>(ค่าเริ่มต้น)</small>' : ''}</span>
-    <small>${esc(TP.fmtAddr(a))}</small><small>${esc(a.phone)}</small></span>`;
+  const name = esc([a.first,a.last].filter(Boolean).join(' ')), address = esc(TP.fmtAddr(a));
+  const details = `<span class="saved-address-copy"><span><b>${name}</b>${a.main ? ' <small>(ค่าเริ่มต้น)</small>' : ''}</span>
+    <small>${address}</small><small>${esc(a.phone)}</small></span>`;
   if (picker) return `<button type="button" class="hm-address-card saved-address-choice${selected?' selected':''}" data-a="hmSelectAddress"
     data-v="${esc(a.id)}" aria-pressed="${selected}">${details}${selected ? ic('check',20) : ''}</button>`;
-  return `<article class="hm-address-card saved-address-card"><div>${details}
-    <button type="button" class="ibtn" data-a="hmEditAddress" data-v="${esc(a.id)}" aria-label="แก้ไขที่อยู่ ${esc(a.first)} ${esc(a.last)}">${ic('pencil',16)}</button>
-    </div>${a.main ? '' : `<button type="button" class="txtbtn" data-a="hmMainAddress" data-v="${esc(a.id)}">ตั้งเป็นที่อยู่หลัก</button>`}</article>`;
+  return `<article class="card tax-summary tax-summary-compact"><header class="tax-summary-head"><div><strong>${name}</strong>${a.main ? '<span class="small">ที่อยู่หลัก</span>' : ''}</div>
+    <button type="button" class="txtbtn tax-summary-edit" data-a="hmEditAddress" data-v="${esc(a.id)}" aria-label="แก้ไขที่อยู่ ${name}">${ic('pencil',16,1.8)} แก้ไข</button>
+    </header><div class="tax-summary-content"><p class="tax-summary-address">${address}</p>${a.phone ? `<p class="small">โทรศัพท์ : ${esc(a.phone)}</p>` : ''}
+    ${a.main ? '' : `<button type="button" class="txtbtn" data-a="hmMainAddress" data-v="${esc(a.id)}">ตั้งเป็นที่อยู่หลัก</button>`}</div></article>`;
 }).join('');
 const addressEmpty = () => `<div class="hm-empty">${ui.emptyArt('map-pin')}<h3>ยังไม่มีที่อยู่จัดส่ง</h3><p>เพิ่มที่อยู่เพื่อค้นหาร้านยาในบริเวณนั้น</p>${ui.btn('เพิ่มที่อยู่', { a: 'hmNewAddress', icon: 'plus' })}</div>`;
 TP.sheetDef('homeaddress', {
@@ -2533,43 +2533,43 @@ TP.act('hmSelectAllBranch', async t => {
 
 TP.sheetDef('storeinfo', {
   group: 'before', title: 'ข้อมูลร้านและเภสัชกร', code: 'C212', host: 'home', tall: true,
-  notes: ['สถานะร้านมี 3 แบบ: เปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง) ใช้ร่วมกับหน้าแรก; ห่างเกิน 15 กม. แสดงแท็กนอกพื้นที่ให้บริการแทนสถานะเปิด/ปิด; ในระยะ 15 กม. แสดงเปิดรับบริการ/ปิดรับบริการ/ปิดรับชั่วคราว ดูข้อมูลร้านได้ทุกสถานะ; ปิดรับชั่วคราวไม่มีปุ่มเริ่มปรึกษาและไม่รับคิวใหม่'],
-  states: [['normal', 'เปิดรับบริการ'], ['paused', 'ปิดรับชั่วคราว'], ['closed', 'ปิดรับบริการ'], ['outside', 'ยังตรวจสอบระยะทางไม่ได้'], ['license', 'ตรวจใบอนุญาตร้านยา', true, 7], ['outside-known','สาขาอยู่ไกลเกิน 15 กม.', true, 9]],
+  notes: ['แสดงเปิดรับบริการหรือปิดรับบริการเหมือนหน้าแรก สาขานอกเขต 15 กม. แสดงนอกพื้นที่ให้บริการ ดูรายละเอียดร้านได้ทุกกรณี'],
+  states: [['normal', 'เปิดรับบริการ'], ['closed', 'ปิดรับบริการ', true, 3], ['outside', 'ยังตรวจสอบระยะทางไม่ได้', true, 4], ['license', 'ตรวจใบอนุญาตร้านยา', true, 7], ['outside-known','สาขาอยู่ไกลเกิน 15 กม.', true, 9]],
   prep(S) {
     const st = S.st.storeinfo;
     if (!st) return;
     TP.homeScenario(S, st === 'outside' ? 'unknownarea' : st === 'outside-known' ? 'outarea' : 'normal');
     S.storeOpen = st !== 'closed';
-    S.branchState[S.branch] = st === 'paused' ? 'pause' : 'open';
+    S.branchState[S.branch] = st === 'closed' ? 'closed' : 'open';
     S.sysOff = TP.flag('sysOff');
   },
   render(ctx) {
     const b = TP.branch(ctx.params?.branch) || TP.branch(), ph = TP.PHARM[b.pharm], S = ctx.S;
-    const closed = homeBranchClosed(S,b), paused = S.branchState[b.id] === 'pause';
+    const closed = homeBranchClosed(S,b);
     const outside = homeBranchOutside(b), km = TP.homeDistance(b);
     const [status, tone] = homeBranchStatus(S,b);
     return `<div class="bc-detail bc-organized">
       <section class="bc-overview" aria-label="ภาพรวมร้านยา">
         <img class="bc-detail-photo" src="${esc(b.photo || '/assets/stores/pharmacy-thumbnail-v1.png')}" alt="ภาพประกอบร้านยาจำลอง" width="1536" height="1024">
         <div class="bc-identity-head"><div class="bc-identity"><h3>${esc(b.name)}</h3><p>${esc(b.area)}</p></div></div>
-        <div class="bc-availability">${ui.tag(status,tone,{dot:true})}<span>${outside ? (km == null ? 'ยังตรวจสอบระยะจากที่อยู่ที่เลือกไม่ได้' : 'สาขานี้อยู่ห่างเกิน 15 กม. จึงเริ่มปรึกษาไม่ได้') : closed ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้' : paused ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้ โปรดเลือกสาขาที่เปิดรับบริการ' : ''}</span></div>
+        <div class="bc-availability">${ui.tag(status,tone,{dot:true})}<span>${outside ? (km == null ? 'ยังตรวจสอบระยะจากที่อยู่ที่เลือกไม่ได้' : 'สาขานี้อยู่ห่างเกิน 15 กม. จึงเริ่มปรึกษาไม่ได้') : closed ? 'ขณะนี้ยังเริ่มปรึกษาไม่ได้' : ''}</span></div>
         <dl class="bc-facts"><div><dt>${ic('clock',16,2)}เวลาทำการ</dt><dd>${esc(b.hours)} น.</dd></div><div><dt>${ic('map-pin',16,2)}ระยะจากที่อยู่จัดส่ง</dt><dd>${km == null ? 'ไม่ทราบระยะทาง' : esc(km)+' กม.'}</dd></div></dl>
       </section>
       <section class="bc-section" aria-labelledby="bcLocationTitle"><h4 id="bcLocationTitle">ที่ตั้งและติดต่อร้าน</h4><p class="bc-address">${esc(b.addr)}</p>${b.demo ? '<p class="bc-muted">ข้อมูลจำลองสำหรับแสดงหน้าจอ</p>' : `<div class="hm-store-links"><a href="${esc(b.map)}" target="_blank" rel="noopener noreferrer">${ic('map-pin',18,2)} ดูแผนที่</a><a href="tel:${esc(b.phone)}">${ic('phone',18,2)} โทรหาร้าน</a></div>`}</section>
-      <section class="bc-section" aria-labelledby="bcPharmacistTitle"><h4 id="bcPharmacistTitle">เภสัชกรผู้ดูแล</h4><div class="bc-pharmacist-card">${ui.av('',{ini:ph.ini})}<div><b>${esc(ph.short)}</b><span>${closed ? 'ข้อมูลเภสัชกรประจำสาขา' : paused ? 'พักรับปรึกษาชั่วคราว' : 'ให้คำปรึกษาประจำสาขานี้'}</span><small>ใบประกอบวิชาชีพ ${esc(ph.lic)}</small></div></div></section>
+      <section class="bc-section" aria-labelledby="bcPharmacistTitle"><h4 id="bcPharmacistTitle">เภสัชกรผู้ดูแล</h4><div class="bc-pharmacist-card">${ui.av('',{ini:ph.ini})}<div><b>${esc(ph.short)}</b><span>${closed ? 'ข้อมูลเภสัชกรประจำสาขา' : 'ให้คำปรึกษาประจำสาขานี้'}</span><small>ใบประกอบวิชาชีพ ${esc(ph.lic)}</small></div></div></section>
       <details class="bc-license" ${S.st.storeinfo === 'license' ? 'open' : ''}><summary>${ic('shield-check',18,2)} ข้อมูลใบอนุญาตร้านยา ${ic('chevron-down',16,2)}</summary><dl><div><dt>เลขใบอนุญาตร้านยา</dt><dd>${esc(b.lic)}</dd></div></dl></details>
     </div>`;
   },
   foot(ctx) {
     const b = TP.branch(ctx.params?.branch) || TP.branch();
     if (TP.caseOpen()) return ui.btn('กลับไปการปรึกษาที่ค้าง', { a: 'hmReturnCase', icon: 'message-circle' });
-    if (homeBranchClosed(ctx.S,b) || ctx.S.branchState[b.id] === 'pause' || !TP.homeStores().some(x => x.id === b.id)) return '';
+    if (homeBranchClosed(ctx.S,b) || !TP.homeStores().some(x => x.id === b.id)) return '';
     return `<div class="hm-consult-options"><div class="bc-action-heading"><p>ปรึกษาเภสัช</p><small>ไม่มีค่าปรึกษา · จ่ายเฉพาะเมื่อซื้อยา</small></div><div><button type="button" class="btn" data-a="hmConsultMode" data-v="chat" data-branch="${b.id}">${ic('message-circle',20,2)}<span>ปรึกษาเภสัช</span></button></div></div>`;
   }
 });
 TP.act('hmConsultMode', async t => {
   const mode = t.dataset.v, b = TP.homeStores().find(b => b.id === t.dataset.branch);
-  if (!['chat','video'].includes(mode) || !b || homeBranchClosed(TP.S,b) || TP.S.branchState[b.id] === 'pause') return;
+  if (!['chat','video'].includes(mode) || !b || homeBranchClosed(TP.S,b)) return;
   if (TP.caseOpen()) return;
   TP.S.branch = b.id; TP.S.branchPicked = true;
   await TP.closeSheet({ instant: true }); TP.ACTS.hmStart({ dataset: { mode } });
@@ -2604,13 +2604,9 @@ function homeActiveCaseCard(S) {
 }
 
 TP.homeActiveCaseCard = homeActiveCaseCard;
-function heroHtml(S, st) {
+function heroHtml(S) {
   if (TP.caseOpen()) return homeActiveCaseCard(S);
-  const b = TP.pickBranch(), bs = S.branchState[b.id], q = S.queueLen[b.id] || 0;
-  const gl = brand.guilloche({ w: 360, h: 236, cx: 330, cy: 40, n: 18, r0: 30, r1: 210, k: 16, a: 8 });
-  const halo = brand.halo(150, { cls: 'w', style: 'right:-38px;bottom:-40px;opacity:.5' });
-  const plus = TP.MOTIF === 'plus', art = plus ? gl + halo : brand.heroArt(TP.MOTIF), hcls = plus ? 'hero pf hm-hero' : `hero hm-hero hx-${TP.MOTIF}`;
-  const head = `<button type="button" class="hr-branch" data-sheet="allbranches">${ic('map-pin', 16, 2)}<span>${esc(b.name)} · ${b.km}&nbsp;กม.</span>${ic('chevron-down', 16, 2.2)}</button>`;
+  TP.pickBranch();
   return nearbyStoresHtml(S);
 }
 
@@ -2621,8 +2617,8 @@ function homeConsultBanner(S) {
 
 TP.screen('home', {
   group: 'before', title: 'หน้าแรก', code: 'C201', ref: 'C01', tab: 'home', sb: 'light',
-  states: [['normal', 'ปกติ · ร้านยาหลายสถานะ'], ['loading', 'กำลังโหลด'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา', true, 8], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้', true, 9], ["case-queue3", "จำลอง รออีก 3 คิว", true, 48], ["case-next", "จำลอง คิวถัดไป", true, 51], ["case-matched", "เภสัชรับคิวแล้ว · เปิดแชทจากหน้าแรก", true, 80], ["case-chat", "จำลอง กำลังปรึกษา", true, 54], ["case-closed-unpaid","จบแชท รอชำระค่ายา", true, 60], ["case-delivery-preparing","ชำระแล้ว · เตรียมยา", true, 65], ["case-delivery-calling","กำลังเรียกไรเดอร์", true, 66], ["case-delivery-delivering","ไรเดอร์กำลังส่งยา", true, 67], ["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา", true, 69], ["case-pickup-ready","รับที่ร้าน · พร้อมรับยา", true, 70], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน', true, 79]],
-  notes: ['C201.8 ไม่มีร้านในรัศมี 15 กม. ยังคงแสดงร้านพร้อมสถานะอยู่นอกพื้นที่ให้บริการ กดเมนูหรือแบนเนอร์ปรึกษาเปิด Bottom Sheet C216 พร้อมภาพ หัวข้อ คำอธิบาย และปุ่มปิด คงหน้าเดิม ไม่เข้าฟอร์มหรือคิว; ระยะเท่ากับ 15 กม. ยังอยู่ในเขต', 'คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'สาขาในระยะไม่เกิน 15 กม. มีเปิดรับบริการ (เขียว), ปิดรับบริการ (เทา), ปิดรับชั่วคราว (เหลือง); เกิน 15 กม. แสดงนอกพื้นที่ให้บริการแทนสถานะร้าน กดดูรายละเอียดได้ทุกสถานะ ข้อมูลจำลองเริ่มต้นมีครบทั้ง 4 แบบ', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
+  states: [['normal', 'ปกติ · 2 สาขา'], ['loading', 'กำลังโหลด'], ['outarea', 'นอกพื้นที่ให้บริการทุกสาขา', true, 8], ['unknownarea', 'ตรวจสอบพื้นที่ไม่ได้', true, 9], ["case-queue3", "จำลอง รออีก 3 คิว", true, 48], ["case-next", "จำลอง คิวถัดไป", true, 51], ["case-matched", "เภสัชรับคิวแล้ว · เปิดแชทจากหน้าแรก", true, 80], ["case-chat", "จำลอง กำลังปรึกษา", true, 54], ["case-closed-unpaid","จบแชท รอชำระค่ายา", true, 60], ["case-delivery-preparing","ชำระแล้ว · เตรียมยา", true, 65], ["case-delivery-calling","กำลังเรียกไรเดอร์", true, 66], ["case-delivery-delivering","ไรเดอร์กำลังส่งยา", true, 67], ["case-pickup-preparing","รับที่ร้าน · ร้านกำลังเตรียมยา", true, 69], ["case-pickup-ready","รับที่ร้าน · พร้อมรับยา", true, 70], ['multiple-fulfillments', '2 คำสั่งซื้อ · ส่งด่วนและรับที่ร้าน', true, 79]],
+  notes: ['C201.8 ไม่มีร้านในรัศมี 15 กม. ยังคงแสดงร้านพร้อมสถานะอยู่นอกพื้นที่ให้บริการ กดเมนูหรือแบนเนอร์ปรึกษาเปิด Bottom Sheet C216 พร้อมภาพ หัวข้อ คำอธิบาย และปุ่มปิด คงหน้าเดิม ไม่เข้าฟอร์มหรือคิว; ระยะเท่ากับ 15 กม. ยังอยู่ในเขต', 'คำสั่งซื้อที่ชำระแล้วหลายรายการ (C201.79) แสดงเป็น carousel การ์ดละ 1 คำสั่งซื้อ ปัดซ้ายขวา การ์ดถัดไปโผล่ให้เห็น จุดบอกตำแหน่งตามการเลื่อน แตะการ์ดเปิดสถานะคำสั่งซื้อนั้น', 'ระหว่างเตรียมยา เรียกไรเดอร์ กำลังส่งยา และรอรับยาที่ร้าน แสดงแบนเนอร์ปรึกษาใต้แถบสถานะยาเพื่อเริ่มปรึกษาครั้งใหม่ได้ ซ่อนเมื่อมีคิวหรือเคสปรึกษาที่ยังไม่จบ หรือรายการรอชำระเงิน', 'มีสาขาตลาดเวิลด์และสาขาอ่อนนุช ในเขต 15 กม. แสดงเปิดรับบริการหรือปิดรับบริการ นอกเขตแสดงนอกพื้นที่ให้บริการและยังเปิดดูรายละเอียดได้', 'C201: การ์ดร้านใกล้ฉันแสดงระยะทาง เวลาเปิด คิว และข้อมูลร้าน กดเปลี่ยนสาขาหรือเลือกจากสาขาอื่นได้', 'บอกว่าไม่มีค่าปรึกษา จ่ายเฉพาะเมื่อซื้อยา (ตัวเล็ก ไม่ชูคำว่าฟรี)', 'A8: ไม่มีเบอร์ 1669 บนหน้าแรก ข้อความน้อยที่สุด', 'มีเคสค้าง: แสดงสถานะเคสก่อนข้อมูลร้าน กลับเข้าการปรึกษาได้ทันที'],
   prep(S) {
     const st = S.st.home; delete S._homeFulfillmentPreviewCases; TP.homeScenario(S, st || 'normal'); if (!st) return;
     if(st==='multiple-fulfillments'){
@@ -2633,7 +2629,7 @@ TP.screen('home', {
     }
     if(st.startsWith('case-')){if(st.startsWith('case-parcel-') && flowPreview && new URLSearchParams(location.search).get('cardPreview')==='1')TP.fulfillmentPreview(TP.newCase(),st.slice(5));else TP.casePreview.seed(st.slice(5));S._homeEventPreview=true;return;}
     S.case=null;S._paymentCase=null;S.pay=null;S.call=null;S._homeEventPreview=true;
-    S.branchState = { ...TP.fresh().branchState, tw: 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' };
+    S.branchState = TP.fresh().branchState;
     S.storeOpen = TP.flag('storeOpen'); S.branchPicked = false;
     S.queueLen={...TP.fresh().queueLen};S.sysOff=TP.flag('sysOff');
     TP.emit('state');
@@ -2664,7 +2660,7 @@ TP.screen('home', {
     return ui.page(`<div class="hm-content">${head}
       ${delivery}
       ${paymentCard}${deliveryCard}
-      ${activeCase ? heroHtml(S,st)+nearbyStoresHtml(S) : consultBanner+heroHtml(S,st)}
+      ${activeCase ? heroHtml(S)+nearbyStoresHtml(S) : consultBanner+heroHtml(S)}
       ${updates ? `<section class="hm-updates" aria-label="การดูแลของคุณ"><h2 class="hm-section-title">การดูแลของคุณ</h2>${updates}</section>` : ''}
 
       </div>`, { nonav: true });
@@ -2978,7 +2974,7 @@ TP.screen('consultationready', {
   notes: ['เมื่อเภสัชกรรับคิวใน C207 แสดงภาพตัวอย่าง ข้อมูลเภสัชกร และร้านที่รับเคสแยกกัน', 'แถบเวลาลดต่อเนื่องและเข้าห้อง C303 เมื่อครบ 10 วินาที หรือกดเข้าห้องทันที', 'ย้อนกลับไปหน้าแรกโดยไม่ยกเลิกคิว การ์ดเภสัชรับคิวแล้วเปิดแชทโดยตรง'],
   prep(S) {
     TP.casePreview.seed('matched');
-    const branch = TP.branch('demo-1');
+    const branch = TP.branch('tw');
     Object.assign(S.case, { branch: branch.id, pharm: branch.pharm, pos: 0 });
   },
   render(ctx) {

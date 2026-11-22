@@ -860,7 +860,7 @@
 .phone .tax-profile-page .seg button {
   border-radius: var(--radius-pill);
 }
-.tax-profile-page .tax-summary {
+:is(.tax-profile-page, .saved-address-page) .tax-summary {
   overflow: hidden;
   padding: 0;
 }
