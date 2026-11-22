@@ -160,7 +160,7 @@ const tick=()=>new Promise(resolve=>setImmediate(resolve));
  const multiple=TP.fulfillmentCard(S,{compact:true});
  assert(multiple.includes('hm-fulfillment-group'));assert(multiple.includes('2 รายการ'));assert(multiple.includes('hm-fulfillment-carousel'),'multiple orders render as a carousel');assert.equal((multiple.match(/class="hm-fulfillment-slide"/g)||[]).length,2);assert.equal((multiple.match(/class="hm-fulfillment-dot[ "]/g)||[]).length,2);assert(multiple.includes('aria-current="true"'));
  assert.equal((multiple.match(/class="hm-fulfillment-banner"/g)||[]).length,2);
- assert(multiple.includes('ยาพร้อมรับที่สาขาแล้ว'));assert(multiple.includes('รับที่ร้าน'));assert(multiple.includes('ส่งด่วน'));
+ assert(multiple.includes('ยาพร้อมรับที่สาขาแล้ว'));assert(multiple.includes('สาขา : '),'pickup card names the branch');assert(multiple.includes('คำสั่งซื้อ : '));assert(multiple.includes('ส่งด่วน'));
  await actions.viewFulfillment({dataset:{p:JSON.stringify({caseId:pickup.id})}});
  assert.equal(S._paymentCase.id,pickup.id);assert.equal(routes.at(-1),'track');
  pickup.order.picked=true;
