@@ -114,7 +114,37 @@ function installAddressSelects(scope,ctx){
  for(const [k,s]of Object.entries(controls))s.addEventListener('change',()=>{values[k]=s.value;if(k==='prov')values.amp=values.dist='';if(k==='amp')values.dist='';populate();});populate();controls.dist.dispatchEvent(new Event('change',{bubbles:true}));
  }).catch(()=>{const error=scope.querySelector('#home-address-error');if(error)error.textContent='โหลดข้อมูลพื้นที่ไม่ได้ กรุณากลับมาเปิดหน้านี้อีกครั้ง';});
 }
-// Address maps are paused by user request; keep select loading and form validation active.
-function mount(scope,ctx){if(scope.querySelector('.hm-address-form')){installAddressSelects(scope,ctx);mountValidation(scope,ctx);}}
-root.TPAddressMap={key,complete,errors,contains,interior,valid,mount,bind};if(typeof module!=='undefined')module.exports=root.TPAddressMap;
+/* C515 preview map (user 24 Nov 2026): read-only mini map of the saved pin, or of the subdistrict before a pin.
+   Tapping the surrounding button opens C521 to move the pin. Shows nothing until the address is complete. */
+function preview(host,{read,ctx}){
+ if(host._addressPreview)return;let map,current='',timer,controller,disposed=false;const scope=host.closest('.scr,#sheet');
+ const canvas=host.querySelector('.address-pin-canvas'),note=host.querySelector('.address-pin-note');
+ const state=(name,text)=>{host.dataset.state=name;if(note)note.textContent=text;};
+ const clear=()=>{controller?.abort();map?.remove();map=null;};
+ const cleanup=()=>{disposed=true;clearTimeout(timer);clear();host._addressPreview=null;scope?.removeEventListener('input',schedule);scope?.removeEventListener('change',schedule);};
+ host._addressPreview={cleanup,refresh(){current='';schedule();}};ctx?.onLeave?.(cleanup);
+ async function show(){
+  const a=read();if(!complete(a)){clear();current='';state('empty','กรอกที่อยู่ให้ครบ แล้วแตะเพื่อปักหมุดบนแผนที่');return;}
+  const k=key(a)+'|'+(valid(a)?a.location.lat+','+a.location.lng:'');if(current===k)return;clear();current=k;
+  state('loading','กำลังโหลดแผนที่…');controller=new AbortController();const signal=controller.signal;
+  try{
+   if(ctx?.state==='map-error')throw Error('boundary');
+   const TP=root.TP,dataRows=await TP.thaiAddressData.load(),rows=Array.isArray(dataRows)?dataRows:TP.thaiAddressData.rows;
+   const row=rows.find(r=>r.province===a.prov&&r.amphoe===a.amp&&r.district===a.dist&&String(r.zipcode)===String(a.zip));if(!row)throw Error('address');
+   const L=await leaflet();if(disposed||signal.aborted)return;
+   const f=await boundaryFor(row,signal);if(disposed||signal.aborted)return;
+   const saved=valid(a)&&a.location.code===String(f.properties.TAM_CODE)&&contains(f.geometry,[a.location.lng,a.location.lat]);
+   const c=saved?[a.location.lng,a.location.lat]:interior(f.geometry,[Number(f.properties.Centroid_x),Number(f.properties.Centroid_y)]);
+   map=L.map(canvas,{interactive:false});map.setView([c[1],c[0]],saved?17:14);L.geoJSON(f).addTo(map);
+   const marker=L.marker([c[1],c[0]],{title:'ตำแหน่งส่งยา',icon:L.divIcon({className:'address-marker'+(saved?'':' is-draft'),html:'<span></span>',iconSize:[32,42],iconAnchor:[16,42]})}).addTo(map);marker.setDraggable?.(false);
+   state(saved?'saved':'unpinned',saved?'ปักหมุดแล้ว · แตะเพื่อแก้ไขตำแหน่ง':'ยังไม่ได้ปักหมุด · แตะเพื่อปักหมุดให้ตรงบ้าน');
+   setTimeout(()=>map?.invalidateSize(),100);
+  }catch(e){if(signal.aborted||disposed)return;clear();state('error',e.message==='address'?'จังหวัด อำเภอ ตำบล และรหัสไปรษณีย์ไม่สัมพันธ์กัน':'โหลดแผนที่ไม่สำเร็จ · แตะเพื่อลองปักหมุดอีกครั้ง');}
+ }
+ function schedule(){clearTimeout(timer);timer=setTimeout(show,250);}
+ scope?.addEventListener('input',schedule);scope?.addEventListener('change',schedule);schedule();
+}
+// Address maps in forms stay paused (2 Nov 2026) except the C515 preview map the user asked for on 24 Nov 2026.
+function mount(scope,ctx){if(scope.querySelector('.hm-address-form')){installAddressSelects(scope,ctx);mountValidation(scope,ctx);const host=scope.querySelector('.address-pin-map');if(host)preview(host,{ctx,read:()=>{const pin=root.TP.addressEditPin?.()||{};return{...addressValues(scope),pin:pin.pin,location:pin.location};}});}}
+root.TPAddressMap={key,complete,errors,contains,interior,valid,mount,bind,preview};if(typeof module!=='undefined')module.exports=root.TPAddressMap;
 })(typeof window!=='undefined'?window:globalThis);

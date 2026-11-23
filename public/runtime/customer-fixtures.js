@@ -201,5 +201,11 @@ const checkoutOutsideAddress = {
   house: '88/12', prov: 'เชียงใหม่', amp: 'เมืองเชียงใหม่', dist: 'ศรีภูมิ', zip: '50200',
 };
 
-return { demoProfiles, NOW, PHARM, BRANCHES, STORE, ORDER_ITEMS, COLD_ITEM, previewInbox, orderInbox, isAddedOrder, isLegacyOrder, account, checkoutOutsideAddress, demoTaxRecipients, demoInvoiceEmail };
+/* C515 preview mock button: sample values for blank fields. The area matches a local boundary file so C521 pinning works offline. */
+const addressFormSample = {
+  first: 'สมใจ', last: 'ใจดี', phone: '0812345678',
+  house: '88/12', building: 'หมู่บ้านมิตรอารี', alley: 'ซอยทวีวัฒนา 25', road: 'ถนนเลียบคลองทวีวัฒนา',
+  prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170',
+};
+return { addressFormSample, demoProfiles, NOW, PHARM, BRANCHES, STORE, ORDER_ITEMS, COLD_ITEM, previewInbox, orderInbox, isAddedOrder, isLegacyOrder, account, checkoutOutsideAddress, demoTaxRecipients, demoInvoiceEmail };
 })();

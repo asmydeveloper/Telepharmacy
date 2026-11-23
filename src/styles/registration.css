@@ -816,6 +816,11 @@
   gap: var(--space-4);
   min-width: 0;
 }
+/* Access to every policy document (C116) under the registration checkboxes. */
+.reg-policy-index-link {
+  justify-self: start;
+  text-align: start;
+}
 /* Required indicators and address entry share the registration form rhythm. */
 .reg-required {
   color: var(--danger);

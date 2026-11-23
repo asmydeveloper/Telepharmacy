@@ -1537,3 +1537,14 @@
 .hm-fulfillment-dot::after { content: ''; position: absolute; inset: -18px -10px; }
 .hm-fulfillment-dot.is-active { width: 20px; background: var(--semantic-primary); }
 @media (prefers-reduced-motion: reduce) { .hm-fulfillment-dot { transition: none; } }
+
+/* C201 paid order cards (user 24 Nov 2026, Mobbin research): the left tile shows the way's icon, a plain eyebrow names it,
+   the title is the legacy step (progress bar removed 24 Nov 2026). No pill: the earlier outlined tag looked like a button. */
+.hm-fulfillment-method {
+  color: var(--brand-deep);
+  font-size: var(--text-small);
+  font-weight: var(--weight-semibold);
+  line-height: 1.4;
+}
+.hm-fulfillment-copy > strong { line-height: 1.4; }
+.case-progress-body > .hm-fulfillment-method { display: block; margin-bottom: var(--space-1); }
