@@ -1,0 +1,27 @@
+{
+  "code": "C521",
+  "screen": "deliverypin",
+  "title": "ปักหมุดตำแหน่งจัดส่ง",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C521.1",
+      "state": "normal",
+      "label": "เลื่อนแผนที่หรือค้นหาจากตำแหน่งปัจจุบัน",
+      "url": "/?screen=deliverypin&state=normal&splash=0"
+    },
+    {
+      "code": "C521.2",
+      "state": "unavailable",
+      "label": "ขอบเขตพื้นที่โหลดไม่สำเร็จ",
+      "url": "/?screen=deliverypin&state=unavailable&splash=0"
+    },
+    {
+      "code": "C521.3",
+      "state": "outside",
+      "label": "หมุดอยู่นอกตำบลที่เลือก",
+      "url": "/?screen=deliverypin&state=outside&splash=0"
+    }
+  ]
+}

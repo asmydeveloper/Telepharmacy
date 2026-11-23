@@ -12,12 +12,6 @@
       "url": "/?screen=storeinfo&state=normal&splash=0"
     },
     {
-      "code": "C212.2",
-      "state": "paused",
-      "label": "ปิดรับชั่วคราว",
-      "url": "/?screen=storeinfo&state=paused&splash=0"
-    },
-    {
       "code": "C212.3",
       "state": "closed",
       "label": "ปิดรับบริการ",

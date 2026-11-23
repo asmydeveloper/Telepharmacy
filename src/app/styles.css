@@ -6514,6 +6514,17 @@ ul.risk-l {
   font-size: var(--type-caption-mobile-size);
   color: var(--ink-3);
 }
+.om-card-networks {
+  margin: var(--space-2) 0;
+  color: var(--brand);
+  font-size: var(--type-caption-mobile-size);
+}
+.om-card-dates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+.om-card-form .input { background: var(--semantic-surface-muted); }
 /* PromptPay QR (pay link checking page) */
 .qr-box {
   display: flex;

@@ -34,6 +34,12 @@
       "state": "error",
       "label": "โหลดแจ้งเตือนไม่สำเร็จ",
       "url": "/?screen=inbox&state=error&splash=0"
+    },
+    {
+      "code": "C404.8",
+      "state": "order-status",
+      "label": "แจ้งเตือนตรงกับสถานะคำสั่งซื้อ",
+      "url": "/?screen=inbox&state=order-status&splash=0"
     }
   ]
 }

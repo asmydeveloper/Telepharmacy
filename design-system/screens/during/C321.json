@@ -1,0 +1,15 @@
+{
+  "code": "C321",
+  "screen": "pendingcancel",
+  "title": "ยกเลิกคำสั่งซื้อนี้หรือไม่",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C321",
+      "state": "",
+      "label": "ปกติ",
+      "url": "/?screen=pendingcancel&splash=0"
+    }
+  ]
+}

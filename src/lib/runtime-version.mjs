@@ -2,11 +2,18 @@ import { createHash } from 'node:crypto';
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 
+export const customerRuntimePrelude = [
+  '/runtime/consultation-data.js',
+  '/runtime/address-map.js',
+  '/runtime/customer-fixtures.js',
+  '/runtime/order-clock.js',
+  '/runtime/preview-event-policy.js',
+  '/runtime/customer-preview.js',
+];
+
 const runtimeFiles = [
-  'public/runtime/consultation-data.js',
-  'public/runtime/customer-fixtures.js',
+  ...customerRuntimePrelude.map((src) => 'public' + src),
   'public/runtime/customer.js',
-  'public/runtime/address-map.js',
   'public/runtime/address-map-engine.js',
   'public/assets/data/thailand/delivery-map-style.json',
 ];

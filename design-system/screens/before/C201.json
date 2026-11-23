@@ -8,7 +8,7 @@
     {
       "code": "C201.1",
       "state": "normal",
-      "label": "ปกติ · ร้านยาหลายสถานะ",
+      "label": "ปกติ · 2 สาขา",
       "url": "/?screen=home&state=normal&splash=0"
     },
     {
@@ -42,6 +42,12 @@
       "url": "/?screen=home&state=case-next&splash=0"
     },
     {
+      "code": "C201.80",
+      "state": "case-matched",
+      "label": "เภสัชรับคิวแล้ว · เปิดแชทจากหน้าแรก",
+      "url": "/?screen=home&state=case-matched&splash=0"
+    },
+    {
       "code": "C201.54",
       "state": "case-chat",
       "label": "จำลอง กำลังปรึกษา",
@@ -56,31 +62,25 @@
     {
       "code": "C201.65",
       "state": "case-delivery-preparing",
-      "label": "ชำระแล้ว · เตรียมยา",
+      "label": "ส่งด่วน · เตรียมการจัดส่ง",
       "url": "/?screen=home&state=case-delivery-preparing&splash=0"
-    },
-    {
-      "code": "C201.66",
-      "state": "case-delivery-calling",
-      "label": "กำลังเรียกไรเดอร์",
-      "url": "/?screen=home&state=case-delivery-calling&splash=0"
     },
     {
       "code": "C201.67",
       "state": "case-delivery-delivering",
-      "label": "ไรเดอร์กำลังส่งยา",
+      "label": "ส่งด่วน · อยู่ระหว่างการจัดส่ง",
       "url": "/?screen=home&state=case-delivery-delivering&splash=0"
     },
     {
       "code": "C201.69",
       "state": "case-pickup-preparing",
-      "label": "รับที่ร้าน · ร้านกำลังเตรียมยา",
+      "label": "รับที่ร้าน · เตรียมการจัดส่ง",
       "url": "/?screen=home&state=case-pickup-preparing&splash=0"
     },
     {
       "code": "C201.70",
       "state": "case-pickup-ready",
-      "label": "รับที่ร้าน · พร้อมรับยา",
+      "label": "รับที่ร้าน · เตรียมสินค้าเรียบร้อยแล้ว",
       "url": "/?screen=home&state=case-pickup-ready&splash=0"
     },
     {

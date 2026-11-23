@@ -1,0 +1,21 @@
+{
+  "code": "C317",
+  "screen": "checkoutmethod",
+  "title": "วิธีชำระเงิน",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C317.1",
+      "state": "promptpay",
+      "label": "QR PromptPay",
+      "url": "/?screen=checkoutmethod&state=promptpay&splash=0"
+    },
+    {
+      "code": "C317.2",
+      "state": "card",
+      "label": "บัตรเครดิต · ผ่าน Omise",
+      "url": "/?screen=checkoutmethod&state=card&splash=0"
+    }
+  ]
+}

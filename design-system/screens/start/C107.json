@@ -8,7 +8,7 @@
     {
       "code": "C107",
       "state": "normal",
-      "label": "อ่านความยินยอม ไม่มีช่องติ๊ก",
+      "label": "อ่านความยินยอมข้อมูลสุขภาพ ไม่มีช่องติ๊ก",
       "url": "/?screen=registrationconsent&state=normal&splash=0"
     }
   ]

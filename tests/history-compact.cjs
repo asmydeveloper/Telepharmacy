@@ -24,8 +24,8 @@ h.context.record={id:'status-order',who:'me',outcome:'completed',date:'18/10/202
 assert(h.run('histItem(record)').includes('กำลังจัดส่ง'));assert(h.run('histItem(record)').includes('warn'));
 h.context.record.order.paid.got=true;
 assert(h.run('histItem(record)').includes('คำสั่งซื้อสำเร็จ'));
-for(const status of ['expired','cancelled']){h.context.record.order.status=status;assert(h.run('histItem(record)').includes('ยกเลิกคำสั่งซื้อ'));}
-h.context.record.order.status='pending';h.context.record.outcome='customer-ended';assert(h.run('histItem(record)').includes('ยกเลิกคำสั่งซื้อ'));
+for(const status of ['expired','cancelled']){h.context.record.order.status=status;assert(h.run('histItem(record)').includes('คำสั่งซื้อถูกยกเลิก'));}
+h.context.record.order.status='pending';h.context.record.outcome='customer-ended';assert(h.run('histItem(record)').includes('คำสั่งซื้อถูกยกเลิก'));
 console.log('PASS: paid awaiting receipt, fulfilled, expired and customer-cancelled order statuses');
 
 // Shipping cards use the selected order's existing fulfillment action for all methods.

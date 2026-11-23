@@ -1,4 +1,4 @@
-import { runtimeVersion } from '@/lib/runtime-version.mjs';
+import { customerRuntimePrelude, runtimeVersion } from '@/lib/runtime-version.mjs';
 import Shell from './Shell';
 import './styles.css';
 import '@/styles/figma-tokens.css';
@@ -12,6 +12,7 @@ import '@/styles/history.css';
 import '@/styles/registration.css';
 import '@/styles/preview-device.css';
 import '@/styles/address-map.css';
+import '@/styles/flutter-customer.css';
 import Runtime from '@/components/Runtime';
 export const metadata = { title: 'MITRAREE ปรึกษาเภสัชกร' };
 export default function Page() {
@@ -20,7 +21,7 @@ export default function Page() {
     <>
       <Shell />
       <Runtime
-        prelude={[`/runtime/address-map.js?v=${version}`, `/runtime/customer-fixtures.js?v=${version}`]}
+        prelude={customerRuntimePrelude.map((src) => `${src}?v=${version}`)}
         src={`/runtime/customer.js?v=${version}`}
       />
     </>

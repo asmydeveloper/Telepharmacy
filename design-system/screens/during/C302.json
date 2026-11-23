@@ -1,0 +1,21 @@
+{
+  "code": "C302",
+  "screen": "consultationready",
+  "title": "ถึงคิวปรึกษาแล้ว",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C302.1",
+      "state": "countdown",
+      "label": "นับถอยหลัง 10 วินาทีแล้วเข้าแชท",
+      "url": "/?screen=consultationready&state=countdown&splash=0"
+    },
+    {
+      "code": "C302.2",
+      "state": "manual",
+      "label": "หยุดเวลาไว้สำหรับทดสอบปุ่มเข้าแชทหรือย้อนกลับ",
+      "url": "/?screen=consultationready&state=manual&splash=0"
+    }
+  ]
+}

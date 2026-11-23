@@ -49,3 +49,11 @@ npm start
 - `npm run format:check`: check the shared formatting rules.
 - `npm run test:performance`: check preview activity, timer cleanup and runtime-version invalidation.
 - Scope, evidence and remaining work: [docs/code-maintenance.md](docs/code-maintenance.md).
+
+### Mock Studio
+
+Open `/mock` or follow **Mock Studio** from `/screens`. The page uses the same
+fixtures and run state as the Flutter Mock API. Start `dart tool/mock_api.dart`
+from the Flutter project and open Next.js on localhost. Set
+`NEXT_PUBLIC_MOCK_API_URL` before starting Next.js to use another mock server.
+The studio runs scenarios step by step, with its own form and API response view.

@@ -1,7 +1,7 @@
 {
   "code": "C421",
   "screen": "receipttaxpicker",
-  "title": "เลือกข้อมูลใบกำกับภาษี",
+  "title": "เลือกผู้รับใบกำกับภาษี",
   "group": "after",
   "kind": "sheet",
   "cases": [

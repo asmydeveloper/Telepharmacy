@@ -38,3 +38,42 @@ info={done:true};actions.afOpenNote({dataset:{v:S.inbox[0].id}});assert.equal(ca
 S.inbox.push({id:'missing',go:'summary',p:{id:'deleted'}});actions.afOpenNote({dataset:{v:'missing'}});assert(calls.at(-1).refresh);
 S.inbox.push({id:'unbound',go:'summary'});actions.afOpenNote({dataset:{v:'unbound'}});assert.equal(calls.at(-1).id,'history');
 console.log('PASS: exact multi-order notification destinations, live tracking, completed summary and missing-record fallback');
+
+
+// New order notices are additive. The legacy inbox cases still use their original data.
+TP.fresh=FX.account;
+const legacy = S.history[0];
+S.st.inbox='order-status';
+screens.inbox.prep(S);
+assert.equal(S.history[0],legacy);
+assert.equal(S.inbox.length,20);
+assert.equal(new Set(S.inbox.map(note=>note.id)).size,20);
+screens.inbox.prep(S);
+assert.equal(S.history.length,22);
+const noticeTime = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Bangkok', day: '2-digit', month: '2-digit', year: 'numeric',
+  hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+});
+for (const note of S.inbox) {
+  const record=S.history.find(item=>item.id===note.caseId);
+  assert(record?.order);
+  assert.equal(note.p.id,record.id);
+  assert.equal(note.title, record.order.statusLabel);
+  assert.equal(note.time, noticeTime.format(record.noticeAt).replace(',', ''));
+}
+const orderNotes=S.inbox;
+TP.orderCases=()=>[];
+TP.fulfillmentInfo=record=>record.order.status==='paid'?{done:record.order.picked}:null;
+const prepare=orderNotes.find(note=>note.caseId==='mock-history-flutter-pickup-0');
+actions.afOpenNote({dataset:{v:prepare.id}});
+assert.equal(calls.at(-1).id,'track');
+assert.equal(S._paymentCase.id,prepare.caseId);
+const complete=orderNotes.find(note=>note.caseId==='mock-history-flutter-pickup-3');
+actions.afOpenNote({dataset:{v:complete.id}});
+assert.equal(calls.at(-1).id,'summary');
+assert.equal(calls.at(-1).params.id,complete.caseId);
+S.st.inbox='normal';
+screens.inbox.prep(S);
+assert.equal(S.inbox.length,10);
+assert.equal(S.inbox[0].id,'preview-note-0');
+console.log('PASS: additive order notices with stable order IDs and original inbox states unchanged');

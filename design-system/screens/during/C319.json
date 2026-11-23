@@ -1,0 +1,27 @@
+{
+  "code": "C319",
+  "screen": "checkoutaddress",
+  "title": "เลือกที่อยู่จัดส่ง",
+  "group": "during",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C319.1",
+      "state": "normal",
+      "label": "เลือกจากที่อยู่ที่บันทึกไว้",
+      "url": "/?screen=checkoutaddress&state=normal&splash=0"
+    },
+    {
+      "code": "C319.2",
+      "state": "outside",
+      "label": "ที่อยู่นอกพื้นที่จัดส่ง",
+      "url": "/?screen=checkoutaddress&state=outside&splash=0"
+    },
+    {
+      "code": "C319.3",
+      "state": "empty",
+      "label": "ยังไม่มีที่อยู่จัดส่ง",
+      "url": "/?screen=checkoutaddress&state=empty&splash=0"
+    }
+  ]
+}

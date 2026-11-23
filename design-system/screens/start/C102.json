@@ -40,6 +40,18 @@
       "state": "google-denied",
       "label": "ถูกปฏิเสธการเข้าสู่ระบบด้วย Google",
       "url": "/?screen=login&state=google-denied&splash=0"
+    },
+    {
+      "code": "C102.16",
+      "state": "phone",
+      "label": "เข้าสู่ระบบด้วยเบอร์โทรศัพท์",
+      "url": "/?screen=login&state=phone&splash=0"
+    },
+    {
+      "code": "C102.17",
+      "state": "required",
+      "label": "ข้อผิดพลาดเมื่อเว้นช่องบังคับ",
+      "url": "/?screen=login&state=required&splash=0"
     }
   ]
 }

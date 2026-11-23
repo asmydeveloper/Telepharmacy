@@ -1,0 +1,39 @@
+{
+  "code": "C320",
+  "screen": "pendingpayment",
+  "title": "รอชำระเงิน",
+  "group": "during",
+  "kind": "screen",
+  "cases": [
+    {
+      "code": "C320.1",
+      "state": "normal",
+      "label": "รอชำระ · QR PromptPay",
+      "url": "/?screen=pendingpayment&state=normal&splash=0"
+    },
+    {
+      "code": "C320.2",
+      "state": "card",
+      "label": "รอชำระ · บัตรเครดิตผ่าน Omise",
+      "url": "/?screen=pendingpayment&state=card&splash=0"
+    },
+    {
+      "code": "C320.3",
+      "state": "failed",
+      "label": "ชำระไม่สำเร็จ",
+      "url": "/?screen=pendingpayment&state=failed&splash=0"
+    },
+    {
+      "code": "C320.4",
+      "state": "expired",
+      "label": "หมดเวลาชำระเงิน",
+      "url": "/?screen=pendingpayment&state=expired&splash=0"
+    },
+    {
+      "code": "C320.5",
+      "state": "pickup",
+      "label": "รอชำระ · รับยาที่ร้าน",
+      "url": "/?screen=pendingpayment&state=pickup&splash=0"
+    }
+  ]
+}

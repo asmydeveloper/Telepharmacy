@@ -194,7 +194,7 @@
     {
       "code": "C105.32",
       "state": "consent-ready",
-      "label": "เลือกยินยอมแล้ว พร้อมสมัคร",
+      "label": "ติ๊กครบ 2 ช่อง พร้อมสมัคร",
       "url": "/?screen=profile&state=consent-ready&splash=0"
     },
     {
@@ -202,6 +202,18 @@
       "state": "save-error",
       "label": "บันทึกไม่สำเร็จ ข้อมูลยังอยู่",
       "url": "/?screen=profile&state=save-error&splash=0"
+    },
+    {
+      "code": "C105.34",
+      "state": "consent-notice-only",
+      "label": "รับทราบประกาศแล้ว ยังไม่ยินยอมสุขภาพ",
+      "url": "/?screen=profile&state=consent-notice-only&splash=0"
+    },
+    {
+      "code": "C105.35",
+      "state": "consent-health-only",
+      "label": "ยินยอมสุขภาพแล้ว ยังไม่รับทราบประกาศ",
+      "url": "/?screen=profile&state=consent-health-only&splash=0"
     }
   ]
 }

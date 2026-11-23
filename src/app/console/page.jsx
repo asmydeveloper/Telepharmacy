@@ -6,7 +6,7 @@ export default function Page() {
   return (
     <>
       <Shell />
-      <Runtime src="/runtime/console.js" />
+      <Runtime prelude={['/runtime/consultation-data.js']} src="/runtime/console.js" />
     </>
   );
 }

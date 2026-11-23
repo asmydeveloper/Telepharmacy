@@ -1,33 +1,34 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { preload } from 'react-dom';
 import Script from 'next/script';
 
 // Runtime engines own DOM/listeners: restart the document when their source changes.
-export default function Runtime({ src, prelude }) {
-  const scripts = [
-    '/runtime/consultation-data.js',
-    ...(Array.isArray(prelude) ? prelude : prelude ? [prelude] : []),
-  ];
+export default function Runtime({ src, prelude = [] }) {
   const [loaded, setLoaded] = useState(0);
-  const ready = loaded >= scripts.length;
+  const next = prelude[loaded];
   const loadedSource = useRef(src);
   const changed = loadedSource.current !== src;
   useEffect(() => {
     if (loadedSource.current !== src) window.location.reload();
   }, [src]);
   if (changed) return null;
+  // Fetch scripts together. The loader still evaluates them in dependency order.
+  for (const script of prelude) preload(script, { as: 'script' });
+  preload(src, { as: 'script' });
   return (
     <>
-      {!ready && (
+      {next ? (
         <Script
-          key={scripts[loaded]}
-          src={scripts[loaded]}
+          key={next}
+          src={next}
           strategy="afterInteractive"
-          onReady={() => setLoaded((index) => index + 1)}
+          onReady={() => setLoaded((index) => (index === loaded ? index + 1 : index))}
         />
+      ) : (
+        <Script src={src} strategy="afterInteractive" />
       )}
-      {ready && <Script src={src} strategy="afterInteractive" />}
     </>
   );
 }

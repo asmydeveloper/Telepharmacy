@@ -14,7 +14,7 @@ assert.equal(data.description({topic:'Do not substitute a summary',note:'Line on
 assert.equal(data.description({topic:'No stored textarea'}),'');
 assert.equal(data.description({_case:{note:'Original note'}}),'Original note');
 const source=fs.readFileSync('public/runtime/customer.js','utf8');
-const TP={caseCode:first.codeFor,S:{intake:{symptoms:['ไอ'],urgent:[],note:'ข้อความที่พิมพ์จริง\nบรรทัดที่สอง',otherOpen:false,mode:'chat'},branchState:{tw:'open'},queueLen:{tw:1}},branch:()=>({id:'tw',pharm:'kj'}),NOW:{time:'14:12'},emit(){}};
+const TP={healthRecord:()=>({allergies:{mode:'unknown'}}),caseCode:first.codeFor,S:{intake:{symptoms:['ไอ'],urgent:[],note:'ข้อความที่พิมพ์จริง\nบรรทัดที่สอง',otherOpen:false,mode:'chat'},branchState:{tw:'open'},queueLen:{tw:1}},branch:()=>({id:'tw',pharm:'kj'}),NOW:{time:'14:12'},emit(){}};
 const ctx=vm.createContext({TP,structuredClone,Date});
 const start=source.indexOf('TP.newCase ='),end=source.indexOf('/* Preview-only fixture',start);
 vm.runInContext(source.slice(start,end),ctx);

@@ -6,16 +6,10 @@
   "kind": "screen",
   "cases": [
     {
-      "code": "C609.1",
+      "code": "C609",
       "state": "card",
       "label": "บัตรไม่ผ่าน",
       "url": "/?screen=payfail&state=card&splash=0"
-    },
-    {
-      "code": "C609.2",
-      "state": "bank",
-      "label": "ยกเลิกในแอปธนาคาร",
-      "url": "/?screen=payfail&state=bank&splash=0"
     }
   ]
 }
