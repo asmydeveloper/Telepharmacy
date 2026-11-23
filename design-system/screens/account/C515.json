@@ -40,6 +40,24 @@
       "state": "form-legacy",
       "label": "ที่อยู่เดิมยังอยู่ครบ ไม่แยกอัตโนมัติ",
       "url": "/?screen=addressedit&state=form-legacy&splash=0"
+    },
+    {
+      "code": "C515.15",
+      "state": "map-unpinned",
+      "label": "แผนที่ · ที่อยู่ครบ ยังไม่ปักหมุด",
+      "url": "/?screen=addressedit&state=map-unpinned&splash=0"
+    },
+    {
+      "code": "C515.16",
+      "state": "map-saved",
+      "label": "แผนที่ · ปักหมุดแล้ว",
+      "url": "/?screen=addressedit&state=map-saved&splash=0"
+    },
+    {
+      "code": "C515.17",
+      "state": "map-error",
+      "label": "แผนที่ · โหลดไม่สำเร็จ",
+      "url": "/?screen=addressedit&state=map-error&splash=0"
     }
   ]
 }

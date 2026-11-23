@@ -6,8 +6,10 @@ const actions={},S={history:[],inbox:[],case:{id:'one',status:'room',msgs:[],sym
 const TP={S,sim:{},NOW:{date:'2026-11-01',time:'14:12'},casePlan:()=>({items:[{price:180}]}),emit(){},act:(k,f)=>actions[k]=f,branch:()=>({name:'Branch'}),cur:()=>({id:'history'}),refresh(){},banner(){},sheet:()=> 'checkout',notify(){},sheetOpen:()=>null,ensureCase(){created++;throw Error('Must not create a consultation during payment');},closeSheet:async()=>{},go(){},saveReceipt(){saved++;},paidMsg:()=> 'Paid'};
 require('./consultation-harness.cjs')(TP);
 const context=vm.createContext({TP,C:()=>S.case,Date:Clock,Intl,setInterval(){},document:{querySelectorAll:()=>[]},ui:{},ic:()=>'',esc:String,now:()=> '14:12',console});
+vm.runInContext(fs.readFileSync('public/runtime/order-clock.js','utf8'),context);
+Object.assign(TP,context.MitrareeOrderClock);
 const run=(a,b)=>{assert(a>=0&&b>a);vm.runInContext(source.slice(a,b),context);};
-run(source.indexOf('TP.ORDER_PAYMENT_MS='),source.indexOf('/* ---------- message html ---------- */',source.indexOf('TP.ORDER_PAYMENT_MS=')));
+run(source.indexOf('TP.expireOrder ='),source.indexOf('/* ---------- message html ---------- */',source.indexOf('TP.expireOrder =')));
 run(source.indexOf('TP.sim.closeCase ='),source.indexOf('TP.sim.idleWarn ='));
 for(const by of ['ph','me','auto']){
  S.case={id:by,status:'room',msgs:[],symptoms:[],joinedAt:'14:12'};
@@ -27,7 +29,7 @@ assert(vm.runInContext('ensureOrder()',context));assert.equal(created,0);assert.
 // Successful payment updates the archived order once without reopening either consultation.
 vm.runInContext("const P=()=>({recv:'pickup',method:'qr'}),addr=()=>({}),totals=()=>({total:180});",context);
 context.clearTimeout=()=>{};context.clearInterval=()=>{};
-a=source.indexOf('async function paid()');b=source.indexOf('TP.payPaid = paid;',a);run(a,b);
+a=source.indexOf('async function paid(');b=source.indexOf('TP.payPaid = paid;',a);run(a,b);
 (async()=>{
  await vm.runInContext('paid()',context);assert.equal(archived.order.status,'paid');assert.equal(archived.status,'closed');assert.equal(S.case.status,'room');assert.equal(saved,1);
  await vm.runInContext('paid()',context);assert.equal(saved,1);

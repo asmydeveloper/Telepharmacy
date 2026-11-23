@@ -542,12 +542,6 @@
   color: var(--semantic-text-secondary);
 }
 
-.ik-extra-fields {
-  display: grid;
-  gap: var(--space-3);
-  padding-top: 0;
-  min-width: 0;
-}
 .scr[data-screen='intake'] #ikUrgentAlert {
   background: color-mix(in srgb, var(--semantic-error-background) 30%, var(--semantic-surface));
   color: var(--semantic-error-text);
@@ -1012,9 +1006,6 @@
 }
 
 /* Intake uses the same self-reported health categories as the health book. */
-.ik-form-panel #ikNote {
-  background: var(--semantic-surface);
-}
 .ik-health-summary {
   display: grid;
   min-width: 0;
@@ -1042,8 +1033,8 @@
   min-width: 0;
 }
 .ik-health-copy > b {
-  font-size: var(--type-body-mobile-size);
-  line-height: var(--type-body-mobile-line);
+  font-size: var(--text-small);
+  line-height: var(--type-body-sm-mobile-line);
   font-weight: var(--weight-semibold);
 }
 .ik-health-value {

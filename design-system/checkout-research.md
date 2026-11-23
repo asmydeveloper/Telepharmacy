@@ -15,6 +15,14 @@ These are UX recommendations, not a medical or legal determination. The user's t
 - Pickup shows the dispensing branch. Express reveals address and map pin, enforces delivery range and requires a shipping quote before payment.
 - Parcel/cold legacy selection values normalize to pickup; unavailable methods cannot be selected by the action handler.
 - Reduced nested cards; separated sections and a smaller footer to leave more space for the form.
+- Apply the existing [GOV.UK Check answers guidance](https://design-system.service.gov.uk/patterns/check-answers/) to invoice recipients by returning from saved-profile management to the same order review with its existing selections.
 - History pending payments use the regular card layout with a case-bound countdown and direct checkout action. The filter strip is temporarily removed per user request. Mock pending records are dated today to sort before older fixtures.
 
 Validation: checkout-options, history and post-consult-payment tests; token checks and production build. Only simulated payments/quotes are available. No visual browser QA is claimed when the Codex browser host is unavailable.
+
+## แบบจำลองบัตรเครดิตผ่าน Omise
+
+- [Omise.js](https://docs.omise.co/omise-js) จัดการข้อมูลในแบบฟอร์มบัตรและส่งโทเคนแบบใช้ครั้งเดียวให้แอป เซิร์ฟเวอร์ร้านใช้โทเคนนี้สร้างรายการชำระ
+- [3-D Secure](https://docs.omise.co/3d-secure) บางรายการผ่านโดยอัตโนมัติ รายการที่ต้องยืนยันจะให้ลูกค้ายืนยันกับธนาคารผ่านขั้นตอนที่ Omise ส่งกลับมา
+- [Charges API](https://docs.omise.co/charges-api) ให้เซิร์ฟเวอร์ตรวจสถานะรายการชำระก่อนเปลี่ยนสถานะคำสั่งซื้อ
+- ต้นแบบแสดงแบบฟอร์มบัตรแบบอ่านอย่างเดียว ยืนยันด้วยข้อมูลจำลอง และตรวจผลจำลองโดยใช้เวลาของคำสั่งซื้อเดิม

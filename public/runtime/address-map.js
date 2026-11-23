@@ -24,7 +24,9 @@ function mountValidation(scope,ctx){
  function validate(all=false){const a=addressValues(scope),e=errors(a,root.TP.thaiAddressData.rows);if(!root.TP.thaiAddressData.rows)e.prov='กำลังโหลดข้อมูลพื้นที่ กรุณาลองอีกครั้ง';
   for(const k of Object.keys(a)){if(all)touched.add(k);const input=scope.querySelector('#home-address-'+k),msg=scope.querySelector('#home-address-'+k+'-error');if(!input||!msg)continue;const text=(all||touched.has(k))?e[k]||'':'';input.setAttribute('aria-invalid',String(!!text));input.closest('[data-address-field]')?.classList.toggle('err',!!text);msg.textContent=text;msg.hidden=!text;}
   const summary=scope.querySelector('#home-address-error');if(summary)summary.textContent='';
-  if(all&&Object.keys(e).length){const k=Object.keys(e)[0];(scope.querySelector('#home-address-'+k+'-trigger')||scope.querySelector('#home-address-'+k))?.focus();}
+  const keys=['prov','amp','dist'],area=scope.querySelector('.address-area-open'),areaError=scope.querySelector('#addressAreaError');
+  if(area&&areaError){const text=keys.find(k=>(all||touched.has(k))&&e[k]);area.setAttribute('aria-invalid',String(!!text));areaError.textContent=text?e[text]:'';areaError.hidden=!text;}
+  if(all&&Object.keys(e).length){const k=Object.keys(e)[0];(keys.includes(k)&&area||scope.querySelector('#home-address-'+k))?.focus();}
   return !Object.keys(e).length;
  }
  scope._validateAddressForm=validate;
@@ -57,24 +59,48 @@ async function boundaryFor(row,signal){
  }catch(e){if(signal.aborted)throw e;}}
  throw Error('boundary');
 }
-function bind(host,{read,onSave,onInvalid,ctx}){if(host._addressMap)return;let map,marker,boundary,stage='address',editing=true,simulateBoundaryError=ctx?.state==='map-error',current='',last='',disposed=false,timer,controller;const scope=host.closest('.scr,#sheet');
+function bind(host,{read,onSave,onInvalid,ctx,picker=false}){if(host._addressMap)return;let map,marker,boundary,stage='address',editing=true,simulateBoundaryError=ctx?.state==='map-error'||(picker&&ctx?.state==='unavailable'),current='',last='',disposed=false,timer,controller;const scope=host.closest('.scr,#sheet');
 const clear=()=>{controller?.abort();map?.remove();map=null;marker=null;boundary=null;};const cleanup=()=>{disposed=true;clearTimeout(timer);clear();host._addressMap=null;scope?.removeEventListener('input',schedule);scope?.removeEventListener('change',schedule);};host._addressMap={cleanup};ctx?.onLeave?.(cleanup);
 const status=(text,tone='')=>{const n=host.querySelector('.address-map-status');if(n){n.textContent=text;n.className='address-map-status '+tone;}};
-function evaluate(){if(!marker||!boundary)return false;const p=marker.getLatLng(),ok=contains(boundary,[p.lng,p.lat]);host.querySelector('.address-map-save').disabled=!ok||!editing;marker.getElement()?.classList.toggle('is-outside',!ok);status(ok?'หมุดอยู่ในเขตที่อยู่ กดยืนยันเมื่ออยู่ตรงบ้าน':'ระยะไม่สอดคล้องกับที่อยู่ปัจจุบัน กรุณาขยับหมุดกลับเข้าเขตตำบล/แขวง',ok?'':'is-error');return ok;}
-async function show(){const a=read();if(!complete(a)){clear();host.hidden=true;current='';return;}const k=key(a);if(current===k)return;clear();current=k;host.hidden=false;host.innerHTML='<div class="address-map-heading"><b>ตำแหน่งสำหรับส่งยา</b><span>จำเป็น</span></div><p class="address-map-help">ขยับหมุดให้ตรงบ้าน ภายในตำบล/แขวงที่กรอกไว้</p><div class="address-map-canvas" tabindex="0" aria-label="แผนที่ตำแหน่งบ้าน ใช้ปุ่มลูกศรขยับหมุด"></div><p class="address-map-status" role="status" aria-live="polite">กำลังโหลดแผนที่และขอบเขตตำบล…</p><button type="button" class="btn primary address-map-save" disabled>บันทึกตำแหน่ง</button><button type="button" class="btn secondary address-map-edit" hidden>แก้ไขตำแหน่ง</button><button type="button" class="btn secondary address-map-center" hidden>กลับมาที่หมุด</button><button type="button" class="btn secondary address-map-retry" hidden>โหลดแผนที่อีกครั้ง</button>';const retryButton=host.querySelector('.address-map-retry');retryButton.onclick=()=>{current='';show();};controller=new AbortController();const signal=controller.signal;
+function evaluate(){if(!marker||!boundary)return false;const p=marker.getLatLng(),ok=contains(boundary,[p.lng,p.lat]);host.querySelector('.address-map-save').disabled=!ok||!editing;marker.getElement()?.classList.toggle('is-outside',!ok);const coords=host.querySelector('.address-map-coords');if(coords)coords.textContent=p.lat.toFixed(6)+', '+p.lng.toFixed(6);status(ok?(picker?'เลื่อนแผนที่หรือแตะให้หมุดตรงกับจุดรับยา':'หมุดอยู่ในเขตที่อยู่ กดยืนยันเมื่ออยู่ตรงบ้าน'):'ขยับหมุดให้อยู่ในตำบลหรือแขวงที่เลือก',ok?'':'is-error');return ok;}
+async function show(){const a=read();if(!complete(a)){clear();host.hidden=true;current='';return;}const k=key(a);if(current===k)return;clear();current=k;host.hidden=false;host.innerHTML='<div class="address-map-heading"><b>ตำแหน่งสำหรับส่งยา</b><span>จำเป็น</span></div><p class="address-map-help">ขยับหมุดให้ตรงบ้าน ภายในตำบล/แขวงที่กรอกไว้</p><div class="address-map-canvas" tabindex="0" aria-label="แผนที่ตำแหน่งบ้าน ใช้ปุ่มลูกศรขยับหมุด"></div><p class="address-map-status" role="status" aria-live="polite">กำลังโหลดแผนที่และขอบเขตตำบล…</p><button type="button" class="btn primary address-map-save" disabled>ยืนยันตำแหน่ง</button><button type="button" class="btn secondary address-map-edit" hidden>แก้ไขตำแหน่ง</button><button type="button" class="btn secondary address-map-center" hidden>กลับมาที่หมุด</button><button type="button" class="btn secondary address-map-retry" hidden>โหลดแผนที่อีกครั้ง</button>';if(picker)host.querySelector('.address-map-save').insertAdjacentHTML('beforebegin',
+  '<p class="address-map-coords"></p><button type="button" class="btn secondary address-map-locate" disabled>ค้นหาจากตำแหน่งปัจจุบัน</button>');
+const retryButton=host.querySelector('.address-map-retry');retryButton.onclick=()=>{current='';show();};controller=new AbortController();const signal=controller.signal;
 try{const TP=root.TP,dataRows=await TP.thaiAddressData.load(),rows=Array.isArray(dataRows)?dataRows:TP.thaiAddressData.rows;const row=rows.find(r=>r.province===a.prov&&r.amphoe===a.amp&&r.district===a.dist&&String(r.zipcode)===String(a.zip));if(!row)throw Error('address');stage='library';const L=await leaflet();if(disposed||!host.isConnected||key(read())!==k)return;
 stage='renderer';map=L.map(host.querySelector('.address-map-canvas'),{zoomControl:false,scrollWheelZoom:false}).setView([13.75,100.5],11);L.tileLayer(root.TP_MAP_TILE_URL||'https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'}).addTo(map).on('tileerror',()=>{status('โหลดถนนบางส่วนไม่ได้ กรุณาลองอีกครั้ง','is-error');retryButton.hidden=false;});L.control.zoom({position:'topright'}).addTo(map);status('กำลังตรวจสอบขอบเขตตำบล…');
 stage='boundary';if(simulateBoundaryError){simulateBoundaryError=false;throw Error('boundary');}
 const f=await boundaryFor(row,signal);if(disposed||!host.isConnected||key(read())!==k)return;boundary=f.geometry;
 stage='marker';const layer=L.geoJSON(f,{style:{color:'#005c67',weight:2,fillOpacity:.035,dashArray:'5 5'}});const savedInside=valid(a)&&a.location.code===String(f.properties.TAM_CODE)&&contains(boundary,[a.location.lng,a.location.lat]);if(valid(a)&&!savedInside)onInvalid();let p=savedInside?[a.location.lat,a.location.lng]:[Number(f.properties.Centroid_y),Number(f.properties.Centroid_x)];const initial=interior(boundary,[p[1],p[0]]);p=[initial[1],initial[0]];
-if(ctx?.state==='map-outside'){const b=layer.getBounds();p=[b.getNorth()+.003,b.getEast()+.003];onInvalid();}
-editing=!savedInside||ctx?.state==='map-outside';
+if(ctx?.state==='map-outside'||(picker&&ctx?.state==='outside')){const b=layer.getBounds();p=[b.getNorth()+.003,b.getEast()+.003];onInvalid();}
+editing=picker||!savedInside||ctx?.state==='map-outside';
 marker=L.marker(p,{draggable:true,keyboard:true,autoPan:true,title:'ตำแหน่งส่งยา',icon:L.divIcon({className:'address-marker',html:'<span></span>',iconSize:[32,42],iconAnchor:[16,42]})}).addTo(map);const editButton=host.querySelector('.address-map-edit'),saveButton=host.querySelector('.address-map-save'),centerButton=host.querySelector('.address-map-center');
 const controls=()=>{marker.setDraggable?.(editing);saveButton.hidden=!editing;editButton.hidden=editing;centerButton.hidden=false;};
 controls();map.setView(p,18);stage='overlay';layer.addTo(map);delete host.dataset.mapError;
 editButton.onclick=()=>{editing=true;controls();const point=marker.getLatLng();map.setView([point.lat,point.lng],18);evaluate();status('ลากหมุดหรือแตะแผนที่ให้ตรงบ้าน แล้วกดบันทึกตำแหน่ง');};
 centerButton.onclick=()=>{const point=marker.getLatLng();map.setView([point.lat,point.lng],18);};
-const moved=()=>{if(!editing)return;onInvalid();saveButton.textContent='บันทึกตำแหน่ง';evaluate();};marker.on('dragstart',()=>{if(!editing)return;onInvalid();host.querySelector('.address-map-save').disabled=true;});marker.on('dragend',moved);map.on('click',e=>{if(!editing)return;marker.setLatLng(e.latlng);moved();});host.querySelector('.address-map-canvas').onkeydown=e=>{if(!editing)return;const d={ArrowUp:[.0001,0],ArrowDown:[-.0001,0],ArrowLeft:[0,-.0001],ArrowRight:[0,.0001]}[e.key];if(!d)return;e.preventDefault();const p=marker.getLatLng();marker.setLatLng([p.lat+d[0],p.lng+d[1]]);moved();};const inside=evaluate();if(inside)status(valid(a)?'บันทึกตำแหน่งแล้ว · กดแก้ไขตำแหน่งได้เสมอ':'ตำแหน่งเริ่มต้นจากตำบล/แขวง กรุณาขยับหมุดให้ตรงบ้าน');host.querySelector('.address-map-save').onclick=()=>{if(!editing||key(read())!==k||!evaluate())return;const p=marker.getLatLng();onSave({lat:p.lat,lng:p.lng,code:String(f.properties.TAM_CODE),addressKey:k,verified:true,source:'DDPM',confirmedAt:new Date().toISOString()});editing=false;controls();saveButton.disabled=true;status('บันทึกตำแหน่งแล้ว · กดแก้ไขตำแหน่งได้เสมอ','is-success');};setTimeout(()=>map?.invalidateSize(),100);
+const moved=()=>{if(!editing)return;onInvalid();saveButton.textContent='ยืนยันตำแหน่ง';evaluate();};
+const locateButton = host.querySelector('.address-map-locate');
+if (locateButton) {
+  locateButton.disabled = false;
+  locateButton.onclick = () => {
+    if (!root.navigator?.geolocation) { status('อุปกรณ์นี้ไม่สามารถค้นหาตำแหน่งได้ กรุณาเลื่อนหมุดบนแผนที่', 'is-error'); return; }
+    locateButton.disabled = true;
+    status('กำลังอ่านตำแหน่ง…');
+    root.navigator.geolocation.getCurrentPosition(({coords}) => {
+      if (disposed || signal.aborted || key(read()) !== k) return;
+      locateButton.disabled = false;
+      const point = [coords.latitude, coords.longitude];
+      marker.setLatLng(point);
+      map.setView(point, 18);
+      moved();
+    }, () => {
+      if (disposed || signal.aborted || key(read()) !== k) return;
+      locateButton.disabled = false;
+      status('อ่านตำแหน่งปัจจุบันไม่ได้ กรุณาเลื่อนหมุดบนแผนที่', 'is-error');
+    }, {timeout: 8000, maximumAge: 0});
+  };
+}
+marker.on('dragstart',()=>{if(!editing)return;onInvalid();host.querySelector('.address-map-save').disabled=true;});marker.on('dragend',moved);map.on('click',e=>{if(!editing)return;marker.setLatLng(e.latlng);moved();});host.querySelector('.address-map-canvas').onkeydown=e=>{if(!editing)return;const d={ArrowUp:[.0001,0],ArrowDown:[-.0001,0],ArrowLeft:[0,-.0001],ArrowRight:[0,.0001]}[e.key];if(!d)return;e.preventDefault();const p=marker.getLatLng();marker.setLatLng([p.lat+d[0],p.lng+d[1]]);moved();};const inside=evaluate();if(inside)status(valid(a)?'บันทึกตำแหน่งแล้ว · กดแก้ไขตำแหน่งได้เสมอ':'ตำแหน่งเริ่มต้นจากตำบล/แขวง กรุณาขยับหมุดให้ตรงบ้าน');host.querySelector('.address-map-save').onclick=()=>{if(!editing||key(read())!==k||!evaluate())return;const p=marker.getLatLng();onSave({lat:p.lat,lng:p.lng,code:String(f.properties.TAM_CODE),addressKey:k,verified:true,source:'DDPM',confirmedAt:new Date().toISOString()});editing=false;controls();saveButton.disabled=true;status('บันทึกตำแหน่งแล้ว · กดแก้ไขตำแหน่งได้เสมอ','is-success');};setTimeout(()=>map?.invalidateSize(),100);
 }catch(e){if(signal.aborted||disposed||key(read())!==k)return;status(e.message==='address'?'ข้อมูลจังหวัด อำเภอ ตำบล และรหัสไปรษณีย์ไม่สัมพันธ์กัน':stage==='library'?'โหลดตัวแผนที่ไม่ได้ กรุณาลองอีกครั้ง':stage==='boundary'?'โหลดขอบเขตตำบลไม่ได้ ยังบันทึกหมุดไม่ได้ กรุณาลองอีกครั้ง':'แสดงหมุดบนแผนที่ไม่สำเร็จ กรุณาลองอีกครั้ง','is-error');host.dataset.mapError=stage+': '+(e.message||e.name||'unknown');console.warn('[address-map]',stage,e.stack||e.message||e.name);host.querySelector('.address-map-save').disabled=true;const b=host.querySelector('.address-map-retry');b.hidden=false;b.onclick=()=>{current='';show();};}}
 function schedule(){clearTimeout(timer);timer=setTimeout(()=>{const k=key(read());if(last&&last!==k)onInvalid();last=k;show();},200);}scope?.addEventListener('input',schedule);scope?.addEventListener('change',schedule);schedule();}
 function installAddressSelects(scope,ctx){
@@ -88,7 +114,37 @@ function installAddressSelects(scope,ctx){
  for(const [k,s]of Object.entries(controls))s.addEventListener('change',()=>{values[k]=s.value;if(k==='prov')values.amp=values.dist='';if(k==='amp')values.dist='';populate();});populate();controls.dist.dispatchEvent(new Event('change',{bubbles:true}));
  }).catch(()=>{const error=scope.querySelector('#home-address-error');if(error)error.textContent='โหลดข้อมูลพื้นที่ไม่ได้ กรุณากลับมาเปิดหน้านี้อีกครั้ง';});
 }
-// Address maps are paused by user request; keep select loading and form validation active.
-function mount(scope,ctx){if(scope.querySelector('.hm-address-form')){installAddressSelects(scope,ctx);mountValidation(scope,ctx);}}
-root.TPAddressMap={key,complete,errors,contains,interior,valid,mount,bind};if(typeof module!=='undefined')module.exports=root.TPAddressMap;
+/* C515 preview map (user 24 Nov 2026): read-only mini map of the saved pin, or of the subdistrict before a pin.
+   Tapping the surrounding button opens C521 to move the pin. Shows nothing until the address is complete. */
+function preview(host,{read,ctx}){
+ if(host._addressPreview)return;let map,current='',timer,controller,disposed=false;const scope=host.closest('.scr,#sheet');
+ const canvas=host.querySelector('.address-pin-canvas'),note=host.querySelector('.address-pin-note');
+ const state=(name,text)=>{host.dataset.state=name;if(note)note.textContent=text;};
+ const clear=()=>{controller?.abort();map?.remove();map=null;};
+ const cleanup=()=>{disposed=true;clearTimeout(timer);clear();host._addressPreview=null;scope?.removeEventListener('input',schedule);scope?.removeEventListener('change',schedule);};
+ host._addressPreview={cleanup,refresh(){current='';schedule();}};ctx?.onLeave?.(cleanup);
+ async function show(){
+  const a=read();if(!complete(a)){clear();current='';state('empty','กรอกที่อยู่ให้ครบ แล้วแตะเพื่อปักหมุดบนแผนที่');return;}
+  const k=key(a)+'|'+(valid(a)?a.location.lat+','+a.location.lng:'');if(current===k)return;clear();current=k;
+  state('loading','กำลังโหลดแผนที่…');controller=new AbortController();const signal=controller.signal;
+  try{
+   if(ctx?.state==='map-error')throw Error('boundary');
+   const TP=root.TP,dataRows=await TP.thaiAddressData.load(),rows=Array.isArray(dataRows)?dataRows:TP.thaiAddressData.rows;
+   const row=rows.find(r=>r.province===a.prov&&r.amphoe===a.amp&&r.district===a.dist&&String(r.zipcode)===String(a.zip));if(!row)throw Error('address');
+   const L=await leaflet();if(disposed||signal.aborted)return;
+   const f=await boundaryFor(row,signal);if(disposed||signal.aborted)return;
+   const saved=valid(a)&&a.location.code===String(f.properties.TAM_CODE)&&contains(f.geometry,[a.location.lng,a.location.lat]);
+   const c=saved?[a.location.lng,a.location.lat]:interior(f.geometry,[Number(f.properties.Centroid_x),Number(f.properties.Centroid_y)]);
+   map=L.map(canvas,{interactive:false});map.setView([c[1],c[0]],saved?17:14);L.geoJSON(f).addTo(map);
+   const marker=L.marker([c[1],c[0]],{title:'ตำแหน่งส่งยา',icon:L.divIcon({className:'address-marker'+(saved?'':' is-draft'),html:'<span></span>',iconSize:[32,42],iconAnchor:[16,42]})}).addTo(map);marker.setDraggable?.(false);
+   state(saved?'saved':'unpinned',saved?'ปักหมุดแล้ว · แตะเพื่อแก้ไขตำแหน่ง':'ยังไม่ได้ปักหมุด · แตะเพื่อปักหมุดให้ตรงบ้าน');
+   setTimeout(()=>map?.invalidateSize(),100);
+  }catch(e){if(signal.aborted||disposed)return;clear();state('error',e.message==='address'?'จังหวัด อำเภอ ตำบล และรหัสไปรษณีย์ไม่สัมพันธ์กัน':'โหลดแผนที่ไม่สำเร็จ · แตะเพื่อลองปักหมุดอีกครั้ง');}
+ }
+ function schedule(){clearTimeout(timer);timer=setTimeout(show,250);}
+ scope?.addEventListener('input',schedule);scope?.addEventListener('change',schedule);schedule();
+}
+// Address maps in forms stay paused (2 Nov 2026) except the C515 preview map the user asked for on 24 Nov 2026.
+function mount(scope,ctx){if(scope.querySelector('.hm-address-form')){installAddressSelects(scope,ctx);mountValidation(scope,ctx);const host=scope.querySelector('.address-pin-map');if(host)preview(host,{ctx,read:()=>{const pin=root.TP.addressEditPin?.()||{};return{...addressValues(scope),pin:pin.pin,location:pin.location};}});}}
+root.TPAddressMap={key,complete,errors,contains,interior,valid,mount,bind,preview};if(typeof module!=='undefined')module.exports=root.TPAddressMap;
 })(typeof window!=='undefined'?window:globalThis);

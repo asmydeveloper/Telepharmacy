@@ -1,7 +1,7 @@
 {
   "code": "C403",
   "screen": "history",
-  "title": "ประวัติ",
+  "title": "ประวัติคำสั่งซื้อ",
   "group": "after",
   "kind": "screen",
   "cases": [
@@ -14,7 +14,7 @@
     {
       "code": "C403.2",
       "state": "tab-shipping",
-      "label": "รอจัดส่ง",
+      "label": "ดำเนินการ",
       "url": "/?screen=history&state=tab-shipping&splash=0"
     },
     {
@@ -46,6 +46,12 @@
       "state": "error",
       "label": "โหลดไม่สำเร็จ",
       "url": "/?screen=history&state=error&splash=0"
+    },
+    {
+      "code": "C403.8",
+      "state": "legacy",
+      "label": "ชุดข้อมูลทดสอบเดิม",
+      "url": "/?screen=history&state=legacy&splash=0"
     }
   ]
 }

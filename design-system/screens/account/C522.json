@@ -1,0 +1,27 @@
+{
+  "code": "C522",
+  "screen": "addressarea",
+  "title": "เลือกพื้นที่จัดส่ง",
+  "group": "account",
+  "kind": "sheet",
+  "cases": [
+    {
+      "code": "C522.1",
+      "state": "normal",
+      "label": "ค้นหาและเลือกจังหวัด อำเภอ ตำบล",
+      "url": "/?screen=addressarea&state=normal&splash=0"
+    },
+    {
+      "code": "C522.2",
+      "state": "no-results",
+      "label": "ค้นหาแล้วไม่พบพื้นที่",
+      "url": "/?screen=addressarea&state=no-results&splash=0"
+    },
+    {
+      "code": "C522.3",
+      "state": "load-error",
+      "label": "โหลดพื้นที่ไม่สำเร็จ",
+      "url": "/?screen=addressarea&state=load-error&splash=0"
+    }
+  ]
+}

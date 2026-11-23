@@ -11,7 +11,7 @@ const demoProfiles = {"doctor": "/assets/profiles/doctor.png", "kid": "/assets/p
 
 const NOW = { date: '18/10/2026', time: '14:12' };
 const PHARM = {
-  kj: { id: 'kj', name: 'ภญ.ขวัญใจ เอื้อภราดร', short: 'ภญ.ขวัญใจ', lic: 'ภ.45279', ini: 'ขจ', shift: '08:55', photo: '/assets/288682665289edf4c6.jpg' },
+  kj: { id: 'kj', name: 'ภญ.ขวัญใจ เอื้อภราดร', short: 'ภญ.ขวัญใจ', lic: 'ภ.45279', ini: 'ขจ', previewPhoto: '/assets/photos/video-queue-cover-v1.jpg', shift: '08:55', photo: '/assets/288682665289edf4c6.jpg' },
   tp: { id: 'tp', name: 'ภก.ธัชพล', short: 'ภก.ธัชพล', lic: 'ภ.23577', ini: 'ธพ', shift: '08:58' }
 };
 const BRANCHES = [
@@ -20,12 +20,6 @@ const BRANCHES = [
   { id: 'on', photo: '/assets/stores/on-v1.png', name: 'สาขาอ่อนนุช', short: 'อ่อนนุช', lic: 'ข.ย.5 กท 52/2567', km: 4.8, hours: '09:00-21:00', phone: '080-235-3950', pharm: 'tp', area: 'ซอยสุขุมวิท 77',
     addr: '16 ซอยสุขุมวิท 77 แขวงพระโขนงเหนือ เขตวัฒนา กรุงเทพมหานคร 10110', map: 'https://maps.app.goo.gl/An74SFhk1YE56BNB7' }
 ];
-/* Design preview stores: fictional records; no real licence or contact details. */
-BRANCHES.push(...[
-  ['demo-1','ร้านยาสุขใจ',3.1,'08:00-21:00'], ['demo-2','ร้านยาใกล้บ้าน',4.6,'09:00-22:00'],
-  ['demo-3','ร้านยาอารีเฮลท์',6.2,'08:30-20:30'], ['demo-4','ร้านยาอบอุ่น',8.4,'09:00-20:00'],
-  ['demo-5','ร้านยาพร้อมดูแล',10.2,'08:00-22:00'], ['demo-6','ร้านยาร่มเย็น',22.8,'09:00-21:00']
-].map(([id,name,km,hours])=>({id,name,photo:`/assets/stores/${id==='demo-6'?'demo-5':id}-v1.png`,short:name,km,hours,demo:true,pharm:'kj',area:'ข้อมูลร้านตัวอย่าง',addr:'ที่อยู่ร้านตัวอย่าง',lic:'ข้อมูลตัวอย่าง',phone:'',map:''})));
 /* store-level facts every error screen and the pharmacist pass can show (licence from the old LIFF mask, owner to confirm) */
 const STORE = { lic: 'ข.ย.5 กท 29/2566', cs: '098-035-8000', csHours: '10:00-18:00' };
 
@@ -38,6 +32,99 @@ const ORDER_ITEMS = [
 const COLD_ITEM = { name: 'จุลินทรีย์ชนิดแคปซูล (เก็บในตู้เย็น)', qty: '1 กล่อง', type: 'ยาอันตราย', price: 290, how: 'รับประทานครั้งละ 1 แคปซูล วันละ 2 ครั้ง ก่อนอาหาร · เก็บในตู้เย็น 2-8 องศา', cold: true };
 
 /* Preview-only inbox examples; live notifications remain in S.inbox. */
+const demoAddress = { first: 'สมใจ', last: 'ใจดี', phone: '0812345678', house: '88/12',
+  alley: 'ซอยทวีวัฒนา 25', prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170' };
+const orderDate = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Bangkok', day: '2-digit', month: '2-digit', year: 'numeric',
+});
+const orderTime = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Bangkok', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+});
+// Keep the same instant throughout a preview session, including when opening a receipt.
+const orderPreviewNow = Date.now();
+// Order, stages and examples mirror DemoCatalog.orders in Flutter.
+const historyMethods = [
+  ['pickup', null, 0, 'รับที่ร้าน', 'คัดจมูกและจามมา 2 วัน',
+    ['preparing', 'preparing', 'ready', 'delivered'],
+    ['ชำระแล้ว', 'กำลังเตรียมยา', 'ยาพร้อมรับที่สาขาแล้ว', 'รับยาที่สาขาแล้ว']],
+  ['parcel', 'dhl', 40, 'DHL', 'ระคายคอและไอเล็กน้อย',
+    ['preparing', 'preparing', 'transit', 'delivered'],
+    ['ชำระแล้ว', 'กำลังเตรียมยา', 'พัสดุอยู่ระหว่างจัดส่ง', 'จัดส่งสำเร็จ']],
+  ['parcel', 'flash', 25, 'FLASH', 'ปวดศีรษะเป็นพัก ๆ ตั้งแต่เมื่อวาน',
+    ['preparing', 'preparing', 'transit', 'delivered'],
+    ['ชำระแล้ว', 'กำลังเตรียมยา', 'พัสดุอยู่ระหว่างจัดส่ง', 'จัดส่งสำเร็จ']],
+  ['express', null, 60, 'Lalamove', 'เจ็บคอเวลากลืน เริ่มมีอาการช่วงเช้า',
+    ['preparing', 'calling', 'delivering', 'delivered'],
+    ['ชำระแล้ว', 'กำลังหาไรเดอร์', 'ไรเดอร์กำลังส่งยา', 'ส่งถึงแล้ว']],
+];
+function historySamples() {
+  const [day, month, year] = orderDate.format(orderPreviewNow).split('/').map(Number);
+  return historyMethods.flatMap(([recv, courier, ship, deliveryLabel, concern, phases, labels], index) =>
+    [...phases, 'cancelled'].map((phase, i) => {
+      const cancelled = phase === 'cancelled', complete = i === 3;
+      const stage = cancelled ? 0 : i;
+      const daysAgo = [1, 2, 3, 5 + index * 4, 10 + index * 5][i];
+      const instant = !cancelled && !complete && recv !== 'parcel'
+        ? orderPreviewNow - (18 + stage * 40 + index * 7) * 60_000
+        : Date.UTC(year, month - 1, day - daysAgo, 3 + stage, 5 + index * 8);
+      const orderNo = 'MT' + instant;
+      const date = orderDate.format(instant), time = orderTime.format(instant);
+      const selected = stage % 2 === 0 ? [index, index + 1] : [index];
+      const items = cancelled ? [] : selected.map(item => ({ ...ORDER_ITEMS[item % ORDER_ITEMS.length] }));
+      const total = items.reduce((sum, item) => sum + item.price, 0);
+      const branch = index % 2 === 0 ? 'tw' : 'on';
+      const id = `mock-history-flutter-${courier || recv}-${i}`;
+      const paidAt = instant + 4 * 60_000;
+      const noticeDelay = cancelled ? 15 : [0, 10, recv === 'parcel' ? 1440 : 35, recv === 'parcel' ? 2880 : 120][stage];
+      const noticeAt = (cancelled ? instant : paidAt) + noticeDelay * 60_000;
+      const statusLabel = cancelled ? 'ยกเลิกคำสั่งซื้อ' : labels[stage];
+      const paid = cancelled ? null : {
+        recv, courier, deliveryLabel, items: total, ship, total: total + ship, fee: 0,
+        method: index % 2 === 0 ? 'promptpay' : 'bank',
+        ...(index % 2 !== 0 && { methodLabel: 'Mobile Banking' }),
+        date: orderDate.format(paidAt), at: orderTime.format(paidAt),
+        addr: recv === 'pickup' ? null : { ...demoAddress },
+        stage: phase,
+        ...(phase === 'ready' && { packDate: orderDate.format(noticeAt), packAt: orderTime.format(noticeAt) }),
+        ...(complete && (recv === 'pickup' ? { got: orderTime.format(noticeAt) } : { deliv: orderTime.format(noticeAt) })),
+      };
+      return {
+        id, date, time, who: 'me', branch, pharm: branch === 'tw' ? 'kj' : 'tp', orderNo, recv, courier, summary: true,
+        topic: concern, note: concern, noticeAt,
+        outcome: cancelled ? 'order-cancelled' : complete ? 'order-complete' : 'completed',
+        bought: paid?.total || 0,
+        order: {
+          no: orderNo, items, total, deliveryLabel, statusLabel, status: cancelled ? 'cancelled' : 'paid', picked: complete,
+          ...(paid && { paid, fulfillment: { status: ['calling', 'delivering', 'delivered'].includes(phase) ? phase : 'preparing' } }),
+        },
+        previewSummary: {
+          meds: items,
+          ...(cancelled ? { nomed: 'ยังไม่ได้รับยา เนื่องจากไม่ได้ชำระเงินภายในเวลาที่กำหนด' } : {}),
+          advice: 'อ่านวิธีใช้ในรายการยา หากมีข้อสงสัยให้ปรึกษาเภสัชกรของสาขา',
+        },
+      };
+    })
+  );
+}
+const isAddedOrder = record => String(record.id).startsWith('mock-history-flutter-');
+const isLegacyOrder = record => String(record.id).startsWith('mock-history-') && !isAddedOrder(record);
+const orderInbox = history => history.filter(isAddedOrder).map((record, index) => {
+  const order = record.order, phase = order.paid?.stage;
+  const cancelled = order.status === 'cancelled', complete = phase === 'delivered';
+  const paidNow = record.id.endsWith('-0');
+  const body = cancelled ? 'หมดเวลาชำระเงิน เปิดดูใบสรุปการปรึกษา'
+    : complete ? 'ดูใบสรุปการปรึกษาและใบเสร็จรับเงิน'
+    : paidNow ? 'ร้านได้รับคำสั่งซื้อแล้ว ดูรายละเอียดการชำระและวิธีรับยา'
+    : phase === 'ready' ? 'เปิดดูรหัสรับยาเพื่อแสดงที่เคาน์เตอร์'
+    : 'เปิดดูความคืบหน้าและรายละเอียดการรับยา';
+  return {
+    id: 'preview-note-' + record.id, kind: cancelled || complete ? 'summary' : paidNow ? 'pay' : 'delivery',
+    title: order.statusLabel, body,
+    time: orderDate.format(record.noticeAt) + ' ' + orderTime.format(record.noticeAt),
+    read: index % 3 !== 0, go: 'summary',
+    caseId: record.id, p: { id: record.id },
+  };
+});
 const previewInbox = (history) => {
  const records=history===undefined?[{id:'TC-261002-0087',summary:true}]:history;
  const summaryId=records.find(h=>h.summary)?.id;
@@ -56,7 +143,20 @@ const previewInbox = (history) => {
  ];
  return samples.map(([days,at,kind,title,body,go],index)=>{const date=new Date(Date.UTC(y,m-1,d-days)),dateText=[String(date.getUTCDate()).padStart(2,'0'),String(date.getUTCMonth()+1).padStart(2,'0'),date.getUTCFullYear()].join('/');return {id:'preview-note-'+index,kind,title,body,time:dateText+' '+at,read:true,go:records.length?'summary':'history',...(records.length?{caseId:go==='summary'&&summaryId?summaryId:records[index%records.length].id,p:{id:go==='summary'&&summaryId?summaryId:records[index%records.length].id}}:{})};});
 };
-const account = () => ({
+const demoTaxRecipients = [
+  { profileKey: 'saved-me', detail: '88/12 ซอยทวีวัฒนา 25', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170' },
+  { profileKey: 'saved-me-office', detail: '99/9 ชั้น 12', road: 'ถนนพระรามที่ 4', amp: 'คลองเตย', dist: 'คลองเตย', zip: '10110' },
+  { profileKey: 'saved-me-on-nut', detail: '59/3', alley: 'ซอยอ่อนนุช 17', amp: 'สวนหลวง', dist: 'สวนหลวง', zip: '10250' },
+].map(address => ({
+  id: '1101700203450', name: 'สมใจ ใจดี', first: 'สมใจ', last: 'ใจดี', phone: '0812345678',
+  prov: 'กรุงเทพมหานคร', country: 'ไทย', ...address,
+  addr: [address.detail, address.alley, address.road, 'แขวง' + address.dist, 'เขต' + address.amp, 'กรุงเทพมหานคร', address.zip].filter(Boolean).join(' '),
+}));
+const demoInvoiceEmail = 'somjai@example.com';
+const account = () => {
+ const addedOrders = historySamples();
+ const personalTaxProfiles = demoTaxRecipients.map(record => ({...record}));
+ return {
   firstTime: false,          // true = new user: sign-up, then C108 and onboarding C112
   loggedIn: true,
   consent: true,             // Preview fixture: returning account already accepted the current policy.
@@ -66,10 +166,10 @@ const account = () => ({
   notifAsked: true,
   notif: true,               // returning user allowed app notifications
   branch: 'tw',
-  branchState: { tw: 'open', on: 'pause', 'demo-2': 'closed', 'demo-3': 'pause' },  // open | pause | closed
-  queueLen: { tw: 2, on: 1, 'demo-1':0, 'demo-2':0, 'demo-3':0, 'demo-4':1, 'demo-5':0 },
-  user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
-  taxWho: {id:'1101700203450',name:'สมใจ ใจดี',first:'สมใจ',last:'ใจดี',phone:'0812345678',detail:'88/12 ซอยทวีวัฒนา 25',prov:'กรุงเทพมหานคร',amp:'ทวีวัฒนา',dist:'ทวีวัฒนา',zip:'10170',country:'ไทย',addr:'88/12 ซอยทวีวัฒนา 25 แขวงทวีวัฒนา เขตทวีวัฒนา กรุงเทพมหานคร 10170'},
+  branchState: { tw: 'open', on: 'open' },
+  queueLen: { tw: 2, on: 1 },
+  user: { name: 'สมใจ', last: 'ใจดี', full: 'สมใจ ใจดี', email: demoInvoiceEmail, nationalId: '1101700203450', birthDate: '1988-06-15', birthYear: 1988, sex: 'f', height: 160, phone: '081-234-5678', allergies: ['แอสไพริน'], allergySrc: 'บันทึกโดย ภญ.ขวัญใจ 02/10/2026', allergyState: 'set', meds: ['แอมโลดิพีน 5 มก. (ยาความดัน)'], weight: 58, born: '1988', foodNone: true },
+  taxWho: personalTaxProfiles[0], taxProfiles: { me: personalTaxProfiles },
   taxCo: null, _taxProfileMockInitialized: true,
   family: [], // Household feature paused; this app serves the account owner only.
   intake: { who: 'me', symptoms: [], custom: [], otherOpen: false, urgent: [], note: '', photos: 0, attachments: [], mode: 'chat' },
@@ -88,11 +188,24 @@ const account = () => ({
     {id:'mock-history-declined',date:'15/10/2026',time:'11:15',who:'me',topic:'สอบถามเรื่องยา',note:'สอบถามวิธีดูแลอาการเจ็บคอ',branch:'on',pharm:'tp',outcome:'declined-medicine',summary:true,previewSummary:{meds:[],nomed:'ไม่มีรายการยา ผู้รับบริการแจ้งว่าไม่รับยา',advice:'แนะนำให้พักผ่อนและดื่มน้ำ หากอาการไม่ดีขึ้นสามารถปรึกษาเภสัชกรได้อีกครั้ง'}} ,
     {id:'mock-history-no-meds',date:'14/10/2026',time:'09:30',who:'me',topic:'ปรึกษาการใช้ยา',note:'สอบถามวิธีใช้ยาที่มีอยู่',branch:'tw',pharm:'kj',outcome:'no-medicine',summary:true,previewSummary:{meds:[],nomed:'ไม่มีรายการยาในการปรึกษาครั้งนี้',advice:'เภสัชกรให้คำแนะนำการใช้ยาที่มีอยู่ และไม่มีการจ่ายยาเพิ่มเติม'}} ,
     {id:'mock-history-cancelled',date:'13/10/2026',time:'15:00',who:'me',topic:'ไอและระคายคอ',note:'ไอและระคายคอมา 1 วัน',branch:'tw',pharm:'kj',orderNo:'MT2026101301',outcome:'order-cancelled',summary:true,previewSummary:{meds:[],nomed:'ไม่ได้รับยา เนื่องจากยกเลิกคำสั่งซื้อ',advice:'ไม่มีคำแนะนำเพิ่มเติมที่บันทึกไว้'}} ,
-    {id:'mock-history-ended',date:'12/10/2026',time:'13:00',who:'me',topic:'สอบถามเรื่องยา',note:'สอบถามเรื่องยาที่ใช้ประจำ',branch:'on',pharm:'tp',outcome:'customer-ended',summary:true,previewSummary:{meds:[],nomed:'ไม่มีรายการยา เนื่องจากการสนทนาสิ้นสุดก่อนสรุป',advice:'ไม่มีคำแนะนำที่บันทึกไว้ เนื่องจากผู้รับบริการจบการสนทนาก่อนเภสัชกรสรุป'}}
+    {id:'mock-history-ended',date:'12/10/2026',time:'13:00',who:'me',topic:'สอบถามเรื่องยา',note:'สอบถามเรื่องยาที่ใช้ประจำ',branch:'on',pharm:'tp',outcome:'customer-ended',summary:true,previewSummary:{meds:[],nomed:'ไม่มีรายการยา เนื่องจากการสนทนาสิ้นสุดก่อนสรุป',advice:'ไม่มีคำแนะนำที่บันทึกไว้ เนื่องจากผู้รับบริการจบการสนทนาก่อนเภสัชกรสรุป'}},
+    ...addedOrders
   ],
-  inbox: previewInbox(),
+  inbox: [...previewInbox(), ...orderInbox(addedOrders)],
   st: {}                     // per-screen scenario picked in the panel: st[screenId] = key
-});
+ };
+};
 
-return { demoProfiles, NOW, PHARM, BRANCHES, STORE, ORDER_ITEMS, COLD_ITEM, previewInbox, account };
+const checkoutOutsideAddress = {
+  id: 'outside-demo', first: 'สมใจ', last: 'ใจดี', phone: '0812345678',
+  house: '88/12', prov: 'เชียงใหม่', amp: 'เมืองเชียงใหม่', dist: 'ศรีภูมิ', zip: '50200',
+};
+
+/* C515 preview mock button: sample values for blank fields. The area matches a local boundary file so C521 pinning works offline. */
+const addressFormSample = {
+  first: 'สมใจ', last: 'ใจดี', phone: '0812345678',
+  house: '88/12', building: 'หมู่บ้านมิตรอารี', alley: 'ซอยทวีวัฒนา 25', road: 'ถนนเลียบคลองทวีวัฒนา',
+  prov: 'กรุงเทพมหานคร', amp: 'ทวีวัฒนา', dist: 'ทวีวัฒนา', zip: '10170',
+};
+return { addressFormSample, demoProfiles, NOW, PHARM, BRANCHES, STORE, ORDER_ITEMS, COLD_ITEM, previewInbox, orderInbox, isAddedOrder, isLegacyOrder, account, checkoutOutsideAddress, demoTaxRecipients, demoInvoiceEmail };
 })();

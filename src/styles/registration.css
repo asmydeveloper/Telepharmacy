@@ -816,6 +816,11 @@
   gap: var(--space-4);
   min-width: 0;
 }
+/* Access to every policy document (C116) under the registration checkboxes. */
+.reg-policy-index-link {
+  justify-self: start;
+  text-align: start;
+}
 /* Required indicators and address entry share the registration form rhythm. */
 .reg-required {
   color: var(--danger);
@@ -852,10 +857,15 @@
 
 .tax-profile-page {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: var(--space-3);
   padding-bottom: var(--space-4);
 }
-.tax-profile-page .tax-summary {
+.phone .tax-profile-page .seg,
+.phone .tax-profile-page .seg button {
+  border-radius: var(--radius-pill);
+}
+:is(.tax-profile-page, .saved-address-page) .tax-summary {
   overflow: hidden;
   padding: 0;
 }
@@ -1606,23 +1616,111 @@
 .rc-tax-selected > p:first-of-type { color: var(--ink); font-weight: var(--weight-medium, 500); }
 .rc-tax-recipient-heading > b { font-size: var(--text-small); font-weight: var(--weight-semibold); }
 .rc-tax-recipient-heading .txtbtn { font-size: var(--text-small); }
+.rc-tax-picker {
+  display: grid;
+  gap: var(--space-2);
+}
 .rc-tax-pick-card {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-3);
   width: 100%;
-  padding: 0;
-  text-align: left;
+  min-height: var(--size-touch);
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-sm);
+  background: var(--semantic-surface);
+  text-align: start;
   font: inherit;
   color: inherit;
   cursor: pointer;
+  overflow-wrap: anywhere;
 }
-.rc-tax-pick-card .tax-summary-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.rc-tax-pick-card[aria-pressed='true'] { background: var(--brand-tint); }
+.rc-tax-pick-card small {
+  display: block;
+  margin-top: var(--space-1);
+  color: var(--semantic-text-secondary);
+  font-size: var(--text-small);
+}
+.invoice-choice-mark {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--color-neutral-400);
+  border-radius: var(--radius-pill);
+}
+.rc-tax-pick-card[aria-pressed='true'] .invoice-choice-mark {
+  border-color: var(--brand);
+  color: var(--brand-white);
+  background: var(--brand);
 }
 .rc-tax-pick-card:focus-visible {
   outline: 2px solid var(--semantic-primary);
   outline-offset: 3px;
+}
+
+.phone .invoice-options {
+  border: 0;
+  border-radius: var(--radius-sm);
+  box-shadow: none;
+}
+.phone .invoice-options :is(h3, p) { margin: 0; }
+.phone .invoice-options .rc-tax-check {
+  min-height: var(--size-touch);
+  padding: 0;
+}
+.invoice-kind-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.phone .invoice-kind-options .chip {
+  min-height: var(--size-touch);
+  border: 1px solid var(--semantic-border);
+  border-radius: var(--radius-sm);
+}
+.phone .invoice-kind-options .chip[aria-pressed='true'] {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand);
+}
+.invoice-recipient-details {
+  display: grid;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-neutral-50);
+  overflow-wrap: anywhere;
+}
+.invoice-recipient-details p,
+.invoice-recipient-empty,
+.tax-profile-intro { color: var(--semantic-text-secondary); font-size: var(--text-small); }
+.phone .invoice-options > .btn { width: 100%; }
+.invoice-requested {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.invoice-delivery-email {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--brand-tint);
+  color: var(--brand-deep);
+  font-size: var(--text-small);
+  overflow-wrap: anywhere;
+}
+.invoice-delivery-email .ic { flex: none; color: var(--brand); }
+.tax-profile-intro p { margin: 0 0 var(--space-1); }
+.tax-profile-intro .txtbtn {
+  margin: 0;
+  padding-inline: 0;
+  text-align: start;
 }
 
 /* C402.4 / C402.6 tax-invoice result cards (9 Nov 2026): same white card as the request card, one status row,
@@ -1657,6 +1755,6 @@
 .rc-tax-sent-band h3 { margin: 0; font-size: var(--text-body); font-weight: var(--weight-semibold); color: var(--ink); }
 .rc-tax-sent-band p { margin: 2px 0 0; font-size: var(--text-small); color: var(--semantic-text-secondary); overflow-wrap: anywhere; }
 .rc-tax-sent-band p b { color: var(--ink); font-weight: var(--weight-semibold); }
-.rc-tax-sent-ic { display: grid; place-items: center; flex: none; width: 36px; height: 36px; border-radius: 999px; background: var(--semantic-primary); color: var(--semantic-on-primary); }
+.rc-tax-sent-ic { display: grid; place-items: center; flex: none; width: 24px; height: 24px; border-radius: 999px; background: var(--semantic-primary); color: var(--semantic-on-primary); }
 .rc-tax-sent-body { display: grid; gap: var(--space-2); margin-inline: var(--space-4); padding: var(--space-3) 0 var(--space-4); border-top: 1px solid var(--semantic-border); }
 .is-sent .rc-tax-result-who { padding: 0; background: none; }

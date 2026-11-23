@@ -1,15 +1,45 @@
 {
   "code": "C111",
   "screen": "doc",
-  "title": "ข้อกำหนดการใช้งาน",
+  "title": "ข้อตกลงและนโยบาย",
   "group": "start",
   "kind": "sheet",
   "cases": [
     {
-      "code": "C111",
-      "state": "",
-      "label": "ปกติ",
-      "url": "/?screen=doc&splash=0"
+      "code": "C111.1",
+      "state": "terms",
+      "label": "เปิดหัวข้อข้อตกลงและเงื่อนไขการใช้บริการ",
+      "url": "/?screen=doc&state=terms&splash=0"
+    },
+    {
+      "code": "C111.2",
+      "state": "privacy",
+      "label": "เปิดหัวข้อนโยบายคุ้มครองข้อมูลส่วนบุคคล (PDPA)",
+      "url": "/?screen=doc&state=privacy&splash=0"
+    },
+    {
+      "code": "C111.3",
+      "state": "notice",
+      "label": "เปิดหัวข้อคำประกาศความเป็นส่วนตัว",
+      "url": "/?screen=doc&state=notice&splash=0"
+    },
+    {
+      "code": "C111.4",
+      "state": "load-error",
+      "label": "เปิดเอกสารไม่สำเร็จ",
+      "url": "/?screen=doc&state=load-error&splash=0"
+    },
+    {
+      "code": "C111.5",
+      "state": "shipping",
+      "label": "เปิดหัวข้อนโยบายการจัดส่ง คืนสินค้า และคืนเงิน",
+      "url": "/?screen=doc&state=shipping&splash=0"
+    },
+    {
+      "code": "C111.6",
+      "state": "collapsed",
+      "label": "พับทุกหัวข้อ (เปิดจากเมนู)",
+      "url": "/?screen=doc&state=collapsed&splash=0"
     }
   ]
 }

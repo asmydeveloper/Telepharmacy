@@ -9,8 +9,9 @@ const TP={flag:k=>TP.S.g?.[k]??false,S:{st:{}},SCREENS:defs,ORDER:Object.keys(de
 const played=[],ran=[],SIM=[];
 const context={TP,panel,SIM,badge:{innerHTML:''},fabCode:null,fab:{addEventListener(){},setAttribute(){},focus(){}},$:()=>null,esc:s=>String(s??''),ic:()=>'',tapped:null,anchorOf:()=>null,holdAnchor(){},keyOf:()=>'',document:{documentElement:{classList:{contains:()=>false}}},CSS:{escape:s=>s}};
 vm.createContext(context);
-vm.runInContext(source.slice(source.indexOf('TP.previewEventPolicy='),source.indexOf('/* ===== End preview event metadata ===== */')),context);
-const panelBody=source.slice(source.indexOf('/* ===== 40-panel.js'),source.indexOf("TP.on('screen', render);"));
+TP.previewEventPolicy=require('../public/runtime/preview-event-policy.js');
+const preview=fs.readFileSync('public/runtime/customer-preview.js','utf8');
+const panelBody=preview.slice(preview.indexOf('/* ===== 40-panel.js'),preview.indexOf("TP.on('screen', render);"));
 vm.runInContext(panelBody.slice(panelBody.indexOf('const GLOBAL = ['),panelBody.indexOf('/* review codes (owner')),context);
 vm.runInContext("function codeTag(code){return code?`<span>${code}</span>`:''}\nvar byCode=(a,b)=>(TP.def(a).code||'').localeCompare(TP.def(b).code||'');",context);
 vm.runInContext(panelBody.slice(panelBody.indexOf('TP.previewAutofill={')),context);
@@ -18,7 +19,11 @@ const click=(pn,k)=>events.click({target:{closest:()=>({dataset:k==null?{pn}:{pn
 
 context.render();
 const codes=[...panel.innerHTML.matchAll(/data-pn="state"[^>]*><b class="pn-sc">([^<]+)</g)].map(m=>m[1]);
-assert.deepEqual(codes,manifest.cases.map(c=>c.code));assert.equal(codes[0],'C102.1');assert.equal(codes.at(-1),'C102.15');
+assert.deepEqual(codes,manifest.cases.map(c=>c.code));assert.equal(codes[0],'C102.1');assert.equal(codes[2],'C102.3');assert.equal(codes.at(-1),'C102.17');
+const policyStates = [['', 'Default', true, 0], ['terms', 'Terms', true, 1]];
+assert.equal(context.stateCode({ code:'C111', states:policyStates }, ''), 'C111');
+assert.equal(context.stateCode({ code:'C111', states:policyStates }, 'terms'), 'C111.1');
+assert.deepEqual(Array.from(TP.positionalStates(policyStates), state=>state[0]), ['terms', '']);
 console.log('PASS: login panel lists visible login codes including filled and service errors, matching the screen manifest');
 
 for(const text of ['จอนี้','ลองสถานะของจอนี้','ทั้งแอป','ไปจอ · ทั้งหมด 3 จอ','data-pn="jump" data-k="home"','data-pn="g" data-k="storeOpen"','data-pn="restart"','pn-foot'])assert(panel.innerHTML.includes(text),text);
@@ -57,7 +62,7 @@ console.log('PASS: autofill stays off without a toggle');
 // The reviewer's user type survives app logic that clears S.firstTime, such as finishing sign-up.
 const flags={};vm.createContext(flags);
 vm.runInContext(source.match(/TP\.FLAG0 = \{[^\n]+\n[^\n]+\nTP\.setFlag[^\n]+/)[0].replace(/^TP\./,'var TP={};TP.'),flags);
-vm.runInContext(`TP.fresh=()=>({firstTime:false,loggedIn:true,consent:true});TP.emit=()=>{};TP.SCREENS={splash:{}};TP.go=()=>{};var toggle=()=>{};TP.S=TP.fresh();${source.match(/function restart\(mob\) \{[\s\S]*?\n\}/)[0]}`,flags);
+vm.runInContext(`TP.fresh=()=>({firstTime:false,loggedIn:true,consent:true});TP.emit=()=>{};TP.SCREENS={splash:{}};TP.go=()=>{};var toggle=()=>{};TP.S=TP.fresh();${preview.match(/function restart\(mob\) \{[\s\S]*?\n\}/)[0]}`,flags);
 vm.runInContext("TP.setFlag('firstTime',true);restart(false);",flags);
 assert.equal(flags.TP.S.firstTime,true);assert.equal(flags.TP.S.loggedIn,false);
 flags.TP.S.firstTime=false;
@@ -66,5 +71,5 @@ vm.runInContext('restart(false)',flags);
 assert.equal(flags.TP.S.firstTime,true);assert.equal(flags.TP.S.loggedIn,false);
 vm.runInContext("TP.setFlag('firstTime',false);restart(false);",flags);
 assert.equal(flags.TP.S.firstTime,false);assert.equal(flags.TP.S.loggedIn,true);
-assert(source.includes("(k === 'firstTime' ? TP.flag(k) : TP.S[k]) === v"));
+assert(preview.includes("(k === 'firstTime' ? TP.flag(k) : TP.S[k]) === v"));
 console.log('PASS: first-time user choice stays selected after sign-up and restart');

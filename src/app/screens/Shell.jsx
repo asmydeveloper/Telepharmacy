@@ -48,6 +48,7 @@ export default function Shell() {
           <div {...{ className: 'sp' }}></div>
           {'\n    '}
           <div {...{ className: 'tools' }}>
+            <a href="/mock">Mock Studio</a>
             {'\n      '}
             <div {...{ className: 'seg', role: 'group', 'aria-label': 'ฝั่งที่ดู' }}>
               {'\n        '}
