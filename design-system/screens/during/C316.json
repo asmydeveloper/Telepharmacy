@@ -6,12 +6,6 @@
   "kind": "sheet",
   "cases": [
     {
-      "code": "C316.1",
-      "state": "pickup",
-      "label": "รับยาที่ร้าน พร้อมข้อมูลสาขา",
-      "url": "/?screen=checkoutdelivery&state=pickup&splash=0"
-    },
-    {
       "code": "C316.2",
       "state": "dhl",
       "label": "จัดส่ง DHL",

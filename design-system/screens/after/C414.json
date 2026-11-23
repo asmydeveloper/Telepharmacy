@@ -1,69 +1,45 @@
 {
   "code": "C414",
   "screen": "track",
-  "title": "สถานะการจัดส่งยา",
+  "title": "ติดตามยา",
   "group": "after",
   "kind": "screen",
   "cases": [
     {
       "code": "C414.8",
       "state": "chat-preparing",
-      "label": "สนทนา: กำลังเตรียมยา",
+      "label": "ส่งด่วน · เตรียมการจัดส่ง",
       "url": "/?screen=track&state=chat-preparing&splash=0"
-    },
-    {
-      "code": "C414.9",
-      "state": "chat-calling",
-      "label": "สนทนา: กำลังเรียกไรเดอร์",
-      "url": "/?screen=track&state=chat-calling&splash=0"
     },
     {
       "code": "C414.10",
       "state": "chat-delivering",
-      "label": "สนทนา: ไรเดอร์กำลังส่งยา",
+      "label": "ส่งด่วน · อยู่ระหว่างการจัดส่ง",
       "url": "/?screen=track&state=chat-delivering&splash=0"
     },
     {
       "code": "C414.13",
       "state": "parcel-preparing",
-      "label": "จัดส่งปกติ · กำลังเตรียมยา",
+      "label": "จัดส่งปกติ · เตรียมการจัดส่ง",
       "url": "/?screen=track&state=parcel-preparing&splash=0"
-    },
-    {
-      "code": "C414.22",
-      "state": "parcel-packed",
-      "label": "จัดส่งปกติ · แพ็กแล้ว ส่งให้บริษัทขนส่ง",
-      "url": "/?screen=track&state=parcel-packed&splash=0"
     },
     {
       "code": "C414.14",
       "state": "parcel-transit",
-      "label": "จัดส่งปกติ · กำลังขนส่ง",
+      "label": "จัดส่งปกติ · อยู่ระหว่างการจัดส่ง",
       "url": "/?screen=track&state=parcel-transit&splash=0"
-    },
-    {
-      "code": "C414.15",
-      "state": "parcel-out",
-      "label": "จัดส่งปกติ · กำลังนำส่ง",
-      "url": "/?screen=track&state=parcel-out&splash=0"
     },
     {
       "code": "C414.17",
       "state": "pickup-preparing",
-      "label": "กำลังเตรียมยา",
+      "label": "รับที่ร้าน · เตรียมการจัดส่ง",
       "url": "/?screen=track&state=pickup-preparing&splash=0"
     },
     {
       "code": "C414.18",
       "state": "pickup-ready",
-      "label": "พร้อมรับยาที่สาขา",
+      "label": "รับที่ร้าน · เตรียมสินค้าเรียบร้อยแล้ว",
       "url": "/?screen=track&state=pickup-ready&splash=0"
-    },
-    {
-      "code": "C414.20",
-      "state": "pickup-overdue",
-      "label": "เลยกำหนดรับยา",
-      "url": "/?screen=track&state=pickup-overdue&splash=0"
     }
   ]
 }

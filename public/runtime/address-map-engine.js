@@ -4,8 +4,9 @@
  const gl=root.maplibregl;
  const boundsOf=f=>{const xy=[];function walk(c){if(typeof c[0]==='number')xy.push(c);else c.forEach(walk);}walk(f.geometry.coordinates);const xs=xy.map(p=>p[0]),ys=xy.map(p=>p[1]);const b={west:Math.min(...xs),east:Math.max(...xs),south:Math.min(...ys),north:Math.max(...ys),getNorth(){return this.north;},getEast(){return this.east;},extend(p){this.west=Math.min(this.west,p[1]);this.east=Math.max(this.east,p[1]);this.south=Math.min(this.south,p[0]);this.north=Math.max(this.north,p[0]);return this;}};return b;};
  const engine={
-  map(container){
-   const native=new gl.Map({container,style:'/assets/data/thailand/delivery-map-style.json',center:[100.5,13.75],zoom:11,maxZoom:20,attributionControl:false,dragRotate:false,pitchWithRotate:false,scrollZoom:false});
+  map(container,options={}){
+   // interactive:false = C515 preview map: no pan or zoom, taps fall through to the button around it.
+   const native=new gl.Map({container,style:'/assets/data/thailand/delivery-map-style.json',center:[100.5,13.75],zoom:11,maxZoom:20,attributionControl:false,dragRotate:false,pitchWithRotate:false,scrollZoom:false,interactive:options.interactive!==false});
    native.addControl(new gl.AttributionControl({compact:true}),'bottom-right');
    const wrapper={native,setView(p,z){native.jumpTo({center:[p[1],p[0]],zoom:z});return this;},fitBounds(b,o={}){native.fitBounds([[b.west,b.south],[b.east,b.north]],{padding:12,maxZoom:o.maxZoom||17,duration:0});return this;},remove(){native.remove();},invalidateSize(){native.resize();},on(event,cb){native.on(event,e=>cb(event==='click'?{latlng:{lat:e.lngLat.lat,lng:e.lngLat.lng}}:e));return this;}};
    return wrapper;

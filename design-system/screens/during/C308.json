@@ -8,7 +8,7 @@
     {
       "code": "C308.1",
       "state": "normal",
-      "label": "รับที่ร้าน (ค่าเริ่มต้น)",
+      "label": "จัดส่ง Lalamove (ค่าเริ่มต้น)",
       "url": "/?screen=pay&state=normal&splash=0"
     },
     {
@@ -94,6 +94,12 @@
       "state": "tax-picker",
       "label": "เลือกข้อมูลใบกำกับภาษี",
       "url": "/?screen=pay&state=tax-picker&splash=0"
+    },
+    {
+      "code": "C308.31",
+      "state": "pickup",
+      "label": "รับที่ร้าน",
+      "url": "/?screen=pay&state=pickup&splash=0"
     }
   ]
 }
